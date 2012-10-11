@@ -1,0 +1,3 @@
+//- Version -
+#define CE_VERSION_MAJOR @VERSION_MAJOR@
+#define CE_VERSION_MINOR @VERSION_MINOR@

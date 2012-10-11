@@ -1,0 +1,7 @@
+#ifndef _CE_CONFIG_DISPLAY_H_
+#define _CE_CONFIG_DISPLAY_H_
+
+#define CE_DISPLAY_USEXCB 0
+#define CE_DISPLAY_USEXLIB 1
+
+#endif

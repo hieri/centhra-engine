@@ -10,3 +10,24 @@
 *.lai
 *.la
 *.a
+
+# Generated CMake files
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CMakeFiles
+
+# Sublime Text 2 Project files
+*.sublime-*
+
+# Generated Config files
+ce_base/include/CE/ConfigBase.h
+ce_display/include/CE/ConfigDisplay.h
+
+# External Dependencies
+external/*
+
+# Compiled Engine files
+lib/*
+samples/bin/*
+

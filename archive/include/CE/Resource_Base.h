@@ -1,0 +1,1 @@
+#define CE_FONT_FREEMONO	1000

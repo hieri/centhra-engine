@@ -1,0 +1,4 @@
+#include <CE/Resource_Base.h>
+
+//- Default Fonts -
+CE_FONT_FREEMONO	FONT	FreeMono.ttf

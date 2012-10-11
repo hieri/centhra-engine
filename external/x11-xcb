@@ -1,0 +1,59 @@
+DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+git clone git://anongit.freedesktop.org/git/xorg/util/macros build/xorg/util/macros
+pushd $DIR/build/xorg/util/macros
+	./autogen.sh --prefix=$DIR
+	make install
+popd
+
+export ACLOCAL="aclocal -I "$DIR"/share/aclocal"
+
+git clone git://anongit.freedesktop.org/git/xcb/pthread-stubs build/xcb/pthread-stubs
+pushd $DIR/build/xcb/pthread-stubs
+	./autogen.sh --prefix=$DIR
+	make install
+popd
+
+git clone git://anongit.freedesktop.org/git/xcb/proto build/xcb/proto
+pushd $DIR/build/xcb/proto
+	./autogen.sh --prefix=$DIR
+	make install
+popd
+
+export PKG_CONFIG_PATH=$DIR/lib/pkgconfig
+
+git clone git://anongit.freedesktop.org/git/xcb/libxcb build/xcb/libxcb
+pushd $DIR/build/xcb/libxcb
+	./autogen.sh --prefix=$DIR
+	make install
+popd
+
+git clone git://anongit.freedesktop.org/git/xorg/proto/xextproto build/xorg/proto/xextproto
+pushd $DIR/build/xorg/proto/xextproto
+	./autogen.sh --prefix=$DIR
+	make install
+popd
+
+git clone git://anongit.freedesktop.org/git/xorg/proto/kbproto build/xorg/proto/kbproto
+pushd $DIR/build/xorg/proto/kbproto
+	./autogen.sh --prefix=$DIR
+	make install
+popd
+
+git clone git://anongit.freedesktop.org/git/xorg/proto/inputproto build/xorg/proto/inputproto
+pushd $DIR/build/xorg/proto/inputproto
+	./autogen.sh --prefix=$DIR
+	make install
+popd
+
+git clone git://anongit.freedesktop.org/git/xorg/lib/libxtrans build/xorg/lib/libxtrans
+pushd $DIR/build/xorg/lib/libxtrans
+	./autogen.sh --prefix=$DIR
+	make install
+popd
+
+git clone git://anongit.freedesktop.org/git/xorg/lib/libX11 build/xorg/lib/libX11
+pushd $DIR/build/xorg/lib/libX11
+	./autogen.sh --prefix=$DIR --with-xcb
+	make install
+popd

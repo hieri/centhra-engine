@@ -22,7 +22,7 @@ CMakeFiles
 
 # Generated Config files
 ce_base/include/CE/ConfigBase.h
-ce_display/include/CE/ConfigDisplay.h
+ce_frontend/include/CE/ConfigFrontend.h
 
 # External Dependencies
 external/*

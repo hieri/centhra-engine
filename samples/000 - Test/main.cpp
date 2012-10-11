@@ -1,13 +1,12 @@
-/*
 //- Centhra Engine -
-#include <CE/AppDisplay.h>
+#include <CE/AppFrontend.h>
 #include <CE/Base.h>
 #include <CE/Canvas.h>
 
 using namespace ce;
 
 //- Define your own implementation of the App class. -
-class AppTest : public AppDisplay
+class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
 
@@ -51,9 +50,9 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-*/
 
 
+/*
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -260,7 +259,7 @@ int main(int argc, char* argv[])
 
 	return retval;
 }
-
+*/
 
 /*
 //- Standard Library -

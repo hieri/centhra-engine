@@ -2,11 +2,11 @@ Implemented
 	ce_base
 	|-o App - Core App template
 	|-o Base - Module Functions/Definitions
-	ce_display
-	|-o AppDisplay - Display integrated App
-	|-o Display - Module Functions/Definitions
+	ce_frontend
+	|-o AppFrontend - OS Specific Frontend App
+	|-o Frontend - Module Functions/Definitions
 	|-o Canvas - Frontend Window Object
-
+	|-o Event - Event Structure
 
 Planned
 - templated handlers
@@ -15,7 +15,6 @@ Planned
 ce_plugBullet - physics handler
 ce_plugAssimp - asset loading handler
 ce_plugDevIL - image loading handler
-
 
 Deps:
 xcb

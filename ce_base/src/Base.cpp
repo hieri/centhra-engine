@@ -5,10 +5,14 @@
 #include <stdio.h>
 #include <string>
 
-#include <unistd.h>
+#ifdef linux
+	//- Linux -
+	#include <unistd.h>
+#endif
 
-//- Windows Patches -
-#ifdef _MSC_VER
+#ifdef _WIN32
+	//- Windows Patches -
+	#include <Windows.h>
 	#define snprintf _snprintf_s
 #endif
 
@@ -128,12 +132,14 @@ namespace ce
 		return string(text);
 	}
 
-	void sleepMS(unsigned int timeMS)
+	void sleepMS(unsigned long timeMS)
 	{
-		usleep(timeMS * 1000);
-	}
-	void sleepUS(unsigned int timeUS)
-	{
-		usleep(timeUS);
+		#ifdef linux
+			usleep(timeMS * 1000);
+		#endif
+
+		#ifdef _WIN32
+			Sleep(timeMS);
+		#endif
 	}
 }

@@ -1,8 +1,10 @@
+//- Standard Library -
+#include <stdlib.h>
+
 //- Centhra Engine -
 #include <CE/Base.h>
 #include <CE/AppFrontend.h>
-
-#include <stdlib.h>
+#include <CE/Canvas.h>
 
 #if CE_FRONTEND_USEXLIB
 	//- Xlib -
@@ -14,6 +16,12 @@
 		#include <xcb/xcb.h>
 	#endif
 #endif
+
+#ifdef _WIN32
+	#include <windows.h>
+#endif
+
+//- OpenGL -
 #include <GL/gl.h>
 
 namespace ce
@@ -27,6 +35,10 @@ namespace ce
 			#if CE_FRONTEND_USEXCB
 				m_xcbConnection = 0;
 			#endif
+		#endif
+
+		#if CE_FRONTEND_USEWIN
+			m_hInstance = 0;
 		#endif
 	}
 	AppFrontend::~AppFrontend()
@@ -73,7 +85,9 @@ namespace ce
 				}
 				free(xcbEvent);
 			}
-		#else
+		#endif
+
+		#if CE_FRONTEND_USEXLIB
 			while(XPending((Display *)m_xDisplay))
 			{
 				XEvent xEvent;
@@ -107,6 +121,44 @@ namespace ce
 			}
 		#endif
 
+		#if CE_FRONTEND_USEWIN
+			MSG wMsg;
+			while(PeekMessage(&wMsg, NULL, 0, 0, PM_REMOVE))
+			{
+				if(m_canvasMap.count(wMsg.hwnd))
+				{
+					Canvas *canvas = m_canvasMap[wMsg.hwnd];
+					Event event;
+
+					switch(wMsg.message)
+					{
+					case WM_DESTROY:
+						PostQuitMessage(0);
+						return quit();
+					case WM_KEYDOWN:
+						event.key.type = KeyDown;
+						event.key.keyCode = wMsg.wParam;
+						event.key.state = 1;
+						onEvent(event);
+						break;
+					case WM_KEYUP:
+						event.key.type = KeyUp;
+						event.key.keyCode = wMsg.wParam;
+						event.key.state = 0;
+						onEvent(event);
+						break;
+					}
+				}
+				else
+				{
+					//- TODO: Pop message back in queue for other applications, if necessary. -
+				}
+
+				TranslateMessage(&wMsg);
+				DispatchMessage(&wMsg);
+			}
+		#endif
+
 		return App::process();
 	}
 	bool AppFrontend::quit()
@@ -123,6 +175,11 @@ namespace ce
 			m_xDefaultScreen = 0;
 			m_xDisplay = 0;
 		#endif
+
+		#if CE_FRONTEND_USEWIN
+			m_hInstance = 0;
+		#endif
+
 		return App::quit();
 	}
 	bool AppFrontend::start()
@@ -164,6 +221,10 @@ namespace ce
 			#endif
 		#endif
 
+		#if CE_FRONTEND_USEWIN
+			m_hInstance = GetModuleHandle(NULL);
+		#endif
+
 		return App::start();
 	}
 
@@ -182,6 +243,13 @@ namespace ce
 			return m_xcbConnection;
 		}
 	#endif
+#endif
+
+#if CE_FRONTEND_USEWIN
+	void *AppFrontend::getHInstance() const
+	{
+		return m_hInstance;
+	}
 #endif
 
 	bool AppFrontend::onEvent(Event &event)

@@ -8,13 +8,19 @@ namespace ce
 {
 	class Thread
 	{
-		unsigned long m_pthread;
+		#if CE_BASE_USEPTHREAD
+			unsigned int m_pThread;
+		#endif
+		#if CE_BASE_USEWINTHREAD
+			void *m_threadHandle;
+		#endif
+
 		void *(*m_process)(void *);
 
 	public:
 		class Attributes
 		{
-			void *m_pthread_attr;
+			void *m_pThread_attr;
 
 		public:
 			Attributes();

@@ -2,6 +2,7 @@ Implemented
 	ce_base
 	|-o App - Core App template
 	|-o Base - Module Functions/Definitions
+	|-o Thread - Object Orientated Threading
 	ce_frontend
 	|-o AppFrontend - OS Specific Frontend App
 	|-o Frontend - Module Functions/Definitions

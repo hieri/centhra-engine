@@ -6,8 +6,13 @@
 #include <CE/ConfigFrontend.h>
 #include <CE/Event.h>
 
+//- Standard Library -
+#include <map>
+
 namespace ce
 {
+	class Canvas;
+
 	class AppFrontend : public App
 	{
 		#if CE_FRONTEND_USEXLIB
@@ -16,6 +21,11 @@ namespace ce
 			#if CE_FRONTEND_USEXCB
 				void *m_xcbConnection;
 			#endif
+		#endif
+
+		#if CE_FRONTEND_USEWIN
+			void *m_hInstance;
+			std::map<void *, Canvas *> m_canvasMap;
 		#endif
 
 	public:
@@ -34,11 +44,17 @@ namespace ce
 			#endif
 		#endif
 
+		#if CE_FRONTEND_USEWIN
+			void *getHInstance() const;
+		#endif
+
 		//- User-Defined Functions -
 		virtual bool onEvent(Event &event);
 		virtual bool onLoop();
 		virtual bool onQuit();
 		virtual bool onStart();
+
+		friend class Canvas;
 	};
 }
 

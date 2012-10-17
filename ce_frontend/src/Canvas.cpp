@@ -14,7 +14,11 @@
 	#endif
 #endif
 
-#include <GL/glx.h>
+#ifdef _WIN32
+	#include <windows.h>
+#endif
+
+//#include <GL/glx.h>
 #include <GL/gl.h>
 
 namespace ce
@@ -27,9 +31,11 @@ namespace ce
 		{
 			error("[Error] Canvas::create - There are no Apps running.\n");
 		}
+
 		#if CE_FRONTEND_USEXLIB
 			Display *xDisplay = (Display *)app->getXDisplay();
 			int xDefaultScreen = app->getXDefaultScreen();
+
 			#if CE_FRONTEND_USEXCB
 				xcb_connection_t *xcbConnection = (xcb_connection_t *)app->getXCBConnection();
 				xcb_screen_t *screen = 0;
@@ -113,6 +119,38 @@ namespace ce
 			#endif
 		#endif
 
+		#if CE_FRONTEND_USEWIN
+			HINSTANCE hInstance = (HINSTANCE)app->getHInstance();
+
+			WNDCLASS windowClass;
+			windowClass.style = CS_HREDRAW | CS_VREDRAW;
+			windowClass.lpfnWndProc = DefWindowProc;
+			windowClass.cbClsExtra = 0;
+			windowClass.cbWndExtra = 0;
+			windowClass.hInstance = hInstance;
+			windowClass.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
+			windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+			windowClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+			windowClass.lpszMenuName = "";
+			windowClass.lpszClassName = "ceApp";
+
+			if(!RegisterClass(&windowClass))
+			{
+				error("[Error] Window::create - RegisterClass failed\n");
+				return 0;
+			}
+
+			HWND hWnd = CreateWindow("ceApp", "fasdf", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 100, 100, 0, 0, hInstance, 0);
+			if(!hWnd)
+			{
+				error("[Error] Window::create - CreateWindow failed\n");
+				return 0;
+			}
+
+			ShowWindow(hWnd, SW_SHOWNORMAL);
+			UpdateWindow(hWnd);
+		#endif
+
 		Canvas *canvas = new Canvas();
 
 		#if CE_FRONTEND_USEXLIB
@@ -125,6 +163,11 @@ namespace ce
 			#endif
 		#endif
 
+		#if CE_FRONTEND_USEWIN
+			canvas->m_windowHandle = hWnd;
+			app->m_canvasMap[hWnd] = canvas;
+		#endif
+		
 		return canvas;
 	}
 
@@ -139,13 +182,19 @@ namespace ce
 				m_xWindow = 0;
 			#endif
 		#endif
+
+		#if CE_FRONTEND_USEWIN
+			m_windowClass = "";
+			m_windowHandle = 0;
+		#endif
 	}
 	Canvas::~Canvas()
 	{
 		AppFrontend *app = (AppFrontend *)App::getCurrent();
-		Display *xDisplay = (Display *)app->getXDisplay();
 
 		#if CE_DISPLAY_USEXLIB
+			Display *xDisplay = (Display *)app->getXDisplay();
+
 			#if CE_DISPLAY_USEXCB
 				xcb_connection_t *xcbConnection = (xcb_connection_t *)app->getXCBConnection();
 				glXDestroyWindow(xDisplay, m_glxWindow);
@@ -154,6 +203,14 @@ namespace ce
 			#else
 				XDestroyWindow(xDisplay, m_xWindow);
 			#endif
+		#endif
+
+		#if CE_FRONTEND_USEWIN
+			HINSTANCE hInstance = (HINSTANCE)app->getHInstance();
+			UnregisterClass(m_windowClass.c_str(), hInstance);
+			CloseWindow((HWND)m_windowHandle);
+			DestroyWindow((HWND)m_windowHandle);
+			app->m_canvasMap.erase(this);
 		#endif
 	}
 }

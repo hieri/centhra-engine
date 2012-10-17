@@ -16,7 +16,7 @@ namespace ce
 		static App *ms_current;
 
 		bool m_isRunning;
-		unsigned int m_startTimeMS;
+		unsigned long m_startTimeMS;
 
 	public:
 		static App *getCurrent();
@@ -24,12 +24,12 @@ namespace ce
 		App();
 		~App();
 
-		unsigned int getRunTimeMS() const;
+		unsigned long getRunTimeMS() const;
 		bool isRunning() const;
 		bool process();
 		bool quit();
 		void setCurrent();
-		void sleep(unsigned int timeMS);
+		void sleep(unsigned long timeMS);
 		bool start();
 
 		//- User-Defined Functions -

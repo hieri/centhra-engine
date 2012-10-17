@@ -20,6 +20,21 @@ CMakeFiles
 # Sublime Text 2 Project files
 *.sublime-*
 
+# Visual Studio Project Files
+*.vcproj*
+*.vcxproj*
+*.sln
+*.sdf
+*.suo
+*.opensdf
+*/Release
+*/Debug
+*/MinSizeRel
+*/RelWithDebInfo
+Win32
+ipch
+*.dir
+
 # Generated Config files
 ce_base/include/CE/ConfigBase.h
 ce_frontend/include/CE/ConfigFrontend.h

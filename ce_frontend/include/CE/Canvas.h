@@ -4,6 +4,9 @@
 //- Centhra Engine -
 #include <CE/ConfigFrontend.h>
 
+//- Standard Library -
+#include <string>
+
 namespace ce
 {
 	class Canvas
@@ -15,6 +18,11 @@ namespace ce
 			#else
 				int m_xWindow;
 			#endif
+		#endif
+
+		#if CE_FRONTEND_USEWIN
+			std::string m_windowClass;
+			void *m_windowHandle;
 		#endif
 
 	protected:

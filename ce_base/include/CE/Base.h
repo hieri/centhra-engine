@@ -10,8 +10,7 @@
 namespace ce
 {
 	//- Time -
-	void sleepMS(unsigned int timeMS);
-	void sleepUS(unsigned int timeUS);
+	void sleepMS(unsigned long timeMS);
 
 	//- Error Handling -
 	void clearError();

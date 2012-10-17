@@ -3,9 +3,18 @@
 #include <CE/AppFrontend.h>
 #include <CE/Canvas.h>
 
+#ifdef _WIN32
+	#include <windows.h>
+#endif
+
+//- OpenGL -
+#include <GL/gl.h>
+
 #if CE_FRONTEND_USEXLIB
 	//- Xlib -
 	#include <X11/Xlib.h>
+	#include <GL/glx.h>
+
 
 	#if CE_FRONTEND_USEXCB
 		//- XCB -
@@ -13,13 +22,6 @@
 		#include <xcb/xcb.h>
 	#endif
 #endif
-
-#ifdef _WIN32
-	#include <windows.h>
-#endif
-
-//#include <GL/glx.h>
-#include <GL/gl.h>
 
 namespace ce
 {

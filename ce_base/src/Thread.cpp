@@ -1,13 +1,13 @@
 #include <assert.h>
 
+//- Centhra Engine -
+#include <CE/ConfigBase.h>
+#include <CE/Thread.h>
+
 #if CE_BASE_USEPTHREAD
 	//- POSIX -
 	#include <pthread.h>
 #endif
-
-//- Centhra Engine -
-#include <CE/ConfigBase.h>
-#include <CE/Thread.h>
 
 #ifdef _WIN32
 	#include <windows.h>

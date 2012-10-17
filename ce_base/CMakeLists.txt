@@ -17,6 +17,18 @@ set(SRC
 	${SRC_DIR}/Thread.cpp
 )
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	set(BASE_USEPTHREAD ${CE_BASE_USEPTHREAD})
+else(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	set(BASE_USEPTHREAD 0)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	set(BASE_USEWINTHREAD ${CE_BASE_USEWINTHREAD})
+else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	set(BASE_USEWINTHREAD "0")
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
 configure_file(include/CE/ConfigBase.h.in include/CE/ConfigBase.h)
 
 set(LIB "")

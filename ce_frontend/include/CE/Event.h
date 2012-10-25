@@ -6,6 +6,8 @@
 
 namespace ce
 {
+	class Canvas;
+
 	typedef enum EventType
 	{
 		Null,
@@ -13,9 +15,16 @@ namespace ce
 		KeyUp
 	} EventType;
 
+	typedef struct DefaultEvent
+	{
+		int type;
+		Canvas *canvas;
+	} DefaultEvent;
+
 	typedef struct KeyEvent
 	{
 		int type;
+		Canvas *canvas;
 		unsigned int keyCode;
 		unsigned int state;
 	} KeyEvent;
@@ -23,9 +32,9 @@ namespace ce
 	typedef union Event
 	{
 		int type;
-
+		DefaultEvent base;
 		KeyEvent key;
-		char padding[12];
+		char padding[20];
 	} Event;
 }
 

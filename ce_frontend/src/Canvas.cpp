@@ -32,7 +32,40 @@ namespace ce
 {
 	int g_glxVersionMajor = 0, g_glxVersionMinor = 0;
 
-	Canvas *Canvas::create(int width, int height)
+	LRESULT CALLBACK WindowProc(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
+	{
+		Canvas *canvas = (Canvas *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+		if(canvas)
+		{
+			AppFrontend *app = canvas->getApp();
+
+			Event event;
+			event.base.canvas = canvas;
+
+			switch(wMsg)
+			{
+				case WM_DESTROY:
+					PostQuitMessage(0);
+					return app->quit();
+				case WM_KEYDOWN:
+					event.type = KeyDown;
+					event.key.keyCode = wParam;
+					event.key.state = 1;
+					app->onEvent(event);
+					break;
+				case WM_KEYUP:
+					event.type = KeyUp;
+					event.key.keyCode = wParam;
+					event.key.state = 0;
+					app->onEvent(event);
+					break;
+			}
+		}
+
+		return DefWindowProc(hWnd, wMsg, wParam, lParam);
+	}
+
+	Canvas *Canvas::create(int width, int height, const char *title)
 	{
 		AppFrontend *app = (AppFrontend *)App::getCurrent();
 
@@ -55,7 +88,7 @@ namespace ce
 				error("[Error] glxQueryVersion failed.\n");
 				return 0;
 			}
-		
+
 			#if CE_FRONTEND_USEXCB
 				xcb_connection_t *xcbConnection = (xcb_connection_t *)app->getXCBConnection();
 				xcb_screen_t *screen = 0;
@@ -100,7 +133,7 @@ namespace ce
 					uint32_t valuemask = XCB_CW_EVENT_MASK | XCB_CW_COLORMAP;
 
 					xcb_create_window(xcbConnection, XCB_COPY_FROM_PARENT, xcbWindow, screen->root, 0, 0, width, height, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, visualID, valuemask, valuelist);
-					
+
 					if(!xcbWindow)
 					{
 						glXDestroyContext(xDisplay, glxContext);
@@ -225,7 +258,7 @@ namespace ce
 					uint32_t valuemask = XCB_CW_EVENT_MASK | XCB_CW_COLORMAP;
 
 					xcb_create_window(xcbConnection, XCB_COPY_FROM_PARENT, xcbWindow, screen->root, 0, 0, width, height, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, xcbVisualInfo->visual_id, valuemask, valuelist);
-					
+
 					if(!xcbWindow)
 					{
 						glXDestroyContext(xDisplay, glxContext);
@@ -246,7 +279,7 @@ namespace ce
 					}
 				#else
 					Window xRootWindow = DefaultRootWindow(xDisplay);
-				
+
 					GLint attributeList[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER };
 					XVisualInfo *xVisualInfo = glXChooseVisual(xDisplay, 0, attributeList);
 
@@ -294,12 +327,15 @@ namespace ce
 			}
 		#endif
 
+		Canvas *canvas = new Canvas();
+		canvas->m_app = app;
+
 		#if CE_FRONTEND_USEWIN
 			HINSTANCE hInstance = (HINSTANCE)app->getHInstance();
 
 			WNDCLASS windowClass;
 			windowClass.style = CS_HREDRAW | CS_VREDRAW;
-			windowClass.lpfnWndProc = DefWindowProc;
+			windowClass.lpfnWndProc = WindowProc;
 			windowClass.cbClsExtra = 0;
 			windowClass.cbWndExtra = 0;
 			windowClass.hInstance = hInstance;
@@ -311,18 +347,35 @@ namespace ce
 
 			if(!RegisterClass(&windowClass))
 			{
+				delete canvas;
 				error("[Error] Window::create - RegisterClass failed\n");
 				return 0;
 			}
 
-			HWND hWnd = CreateWindow("ceApp", "fasdf", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, hInstance, 0);
+			HWND hWnd = CreateWindow("ceApp", title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, hInstance, 0);
 			if(!hWnd)
 			{
+				delete canvas;
 				error("[Error] Window::create - CreateWindow failed\n");
 				return 0;
 			}
 
+			SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)canvas);
+
 			HDC hDC = GetDC(hWnd);
+
+			PIXELFORMATDESCRIPTOR pfd;
+			ZeroMemory(&pfd, sizeof(pfd));
+			pfd.nSize = sizeof(pfd);
+			pfd.nVersion = 1;
+			pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+			pfd.iPixelType = PFD_TYPE_RGBA;
+			pfd.cColorBits = 32;
+			pfd.cDepthBits = 16;
+			pfd.iLayerType = PFD_MAIN_PLANE;
+			int format = ChoosePixelFormat(hDC, &pfd);
+			SetPixelFormat(hDC, format, &pfd);
+
 			HGLRC hRC = wglCreateContext(hDC);
 			wglMakeCurrent(hDC, hRC);
 
@@ -330,15 +383,15 @@ namespace ce
 			UpdateWindow(hWnd);
 		#endif
 
-		Canvas *canvas = new Canvas();
-
 		#if CE_FRONTEND_USEXLIB
 			canvas->m_glxContext = glxContext;
 			canvas->m_glxWindow = glxWindow;
 			#if CE_FRONTEND_USEXCB
+				xcb_change_property(xcbConnection, XCB_PROP_MODE_REPLACE, xcbWindow, WM_NAME, STRING, 8, strlen(title), title);
 				canvas->m_xcbWindow = xcbWindow;
 				app->m_canvasMap[xcbWindow] = canvas;
 			#else
+				XStoreName(xDisplay, xWindow, title);
 				canvas->m_xWindow = xWindow;
 				app->m_canvasMap[xWindow] = canvas;
 			#endif
@@ -347,7 +400,7 @@ namespace ce
 		#if CE_FRONTEND_USEWIN
 			canvas->m_windowHandle = hWnd;
 			canvas->m_deviceContextHandle = hDC;
-			canvas->m_glRenderingContext = hRC;
+			canvas->m_glRenderingContextHandle = hRC;
 			app->m_canvasMap[hWnd] = canvas;
 		#endif
 		
@@ -356,6 +409,9 @@ namespace ce
 
 	Canvas::Canvas()
 	{
+		m_app = 0;
+		m_lastRenderTimeMS = 0;
+
 		#if CE_FRONTEND_USEXLIB
 			#if CE_FRONTEND_USEXCB
 				m_xcbWindow = 0;
@@ -370,22 +426,20 @@ namespace ce
 			m_windowClass = "";
 			m_windowHandle = 0;
 			m_deviceContextHandle = 0;
-			m_glRenderingContext = 0;
+			m_glRenderingContextHandle = 0;
 		#endif
 	}
 	Canvas::~Canvas()
 	{
-		AppFrontend *app = (AppFrontend *)App::getCurrent();
-
 		#if CE_DISPLAY_USEXLIB
-			Display *xDisplay = (Display *)app->getXDisplay();
+			Display *xDisplay = (Display *)m_app->getXDisplay();
 
 			glXDestroyContext(xDisplay, (GLXContext *)m_glxContext);
 			glXDestroyWindow(xDisplay, m_glxWindow);
 
 			#if CE_DISPLAY_USEXCB
 				app->m_canvasMap.erase(m_xcbWindow);
-				xcb_connection_t *xcbConnection = (xcb_connection_t *)app->getXCBConnection();
+				xcb_connection_t *xcbConnection = (xcb_connection_t *)m_app->getXCBConnection();
 				xcb_destroy_window(xcbConnection, m_xcbWindow);
 			#else
 				app->m_canvasMap.erase(m_xWindow);
@@ -394,12 +448,13 @@ namespace ce
 		#endif
 
 		#if CE_FRONTEND_USEWIN
-			app->m_canvasMap.erase(m_windowHandle);
+			m_app->m_canvasMap.erase(m_windowHandle);
 
-			HINSTANCE hInstance = (HINSTANCE)app->getHInstance();
+			HINSTANCE hInstance = (HINSTANCE)m_app->getHInstance();
 
-			wglMakeCurrent((HDC)m_deviceContext, NULL);
-			wglDeleteContext((HGLRC)m_glRenderingContext);
+			wglMakeCurrent((HDC)m_deviceContextHandle, NULL);
+			wglDeleteContext((HGLRC)m_glRenderingContextHandle);
+            ReleaseDC((HWND)m_windowHandle, (HDC)m_deviceContextHandle);
 
 			UnregisterClass(m_windowClass.c_str(), hInstance);
 
@@ -407,20 +462,49 @@ namespace ce
 			DestroyWindow((HWND)m_windowHandle);
 		#endif
 	}
-	void Canvas::render() const
+	AppFrontend *Canvas::getApp() const
 	{
-		glClearColor(0.2, 0.4, 0.9, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
+		return m_app;
+	}
+	void Canvas::render()
+	{
+		unsigned long time = m_app->getRunTimeMS();
+		if((time - m_lastRenderTimeMS) > 15)
+		{
+			m_lastRenderTimeMS = time;
 
-		#if CE_FRONTEND_USEXLIB
-			AppFrontend *app = (AppFrontend *)App::getCurrent();
-			Display *xDisplay = (Display *)app->getXDisplay();
+			glClearColor(0.2f, 0.4f, 0.9f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
 
-			#if CE_FRONTEND_USEXCB
-				glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3 && 0) ? m_glxWindow : m_xcbWindow);
-			#else
-				glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3 && 0) ? m_glxWindow : m_xWindow);
+			#if CE_FRONTEND_USEXLIB
+				Display *xDisplay = (Display *)m_app->getXDisplay();
+
+				#if CE_FRONTEND_USEXCB
+					glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3 && 0) ? m_glxWindow : m_xcbWindow);
+				#else
+					glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3 && 0) ? m_glxWindow : m_xWindow);
+				#endif
 			#endif
-		#endif
+
+			#if CE_FRONTEND_USEWIN
+				SwapBuffers((HDC)m_deviceContextHandle);
+			#endif
+		}
+	}
+	bool Canvas::onEvent(Event &event)
+	{
+		print("%i %i\n", this, event.base.canvas);
+
+		switch(event.type)
+		{
+			case KeyDown:
+				print("Down: %i %i\n", event.key.keyCode, event.key.state);
+				break;
+			case KeyUp:
+				print("Up: %i %i\n", event.key.keyCode, event.key.state);
+				break;
+		}
+
+		return true;
 	}
 }

@@ -3,14 +3,20 @@
 
 //- Centhra Engine -
 #include <CE/ConfigFrontend.h>
+#include <CE/Event.h>
 
 //- Standard Library -
 #include <string>
 
 namespace ce
 {
+	class AppFrontend;
+
 	class Canvas
 	{
+		AppFrontend *m_app;
+		unsigned long m_lastRenderTimeMS;
+
 		#if CE_FRONTEND_USEXLIB
 			int m_glxWindow;
 			void *m_glxContext;
@@ -30,11 +36,15 @@ namespace ce
 		Canvas();
 
 	public:
-		static Canvas *create(int width = 64, int height = 64);
+		static Canvas *create(int width = 64, int height = 64, const char *title = "");
 
 		~Canvas();
 
-		void render() const;
+		AppFrontend *getApp() const;
+		void render();
+
+		//- User-Defined Functions -
+		virtual bool onEvent(Event &event);
 	};
 }
 

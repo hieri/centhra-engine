@@ -101,7 +101,7 @@ namespace ce
 	}
 	int Thread::Attributes::getDetachState() const
 	{
-		int detachState;
+		int detachState = 0;
 		#if CE_BASE_USEPTHREAD
 			pthread_attr_getdetachstate((pthread_attr_t *)m_pThread_attr, &detachState);
 		#endif
@@ -109,7 +109,7 @@ namespace ce
 	}
 	size_t Thread::Attributes::getStackSize() const
 	{
-		size_t stackSize;
+		size_t stackSize = 0;
 		#if CE_BASE_USEPTHREAD
 			pthread_attr_getstacksize((pthread_attr_t *)m_pThread_attr, &stackSize);
 		#endif

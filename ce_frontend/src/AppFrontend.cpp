@@ -24,6 +24,8 @@
 //- OpenGL -
 #include <GL/gl.h>
 
+using namespace std;
+
 namespace ce
 {
 	AppFrontend::AppFrontend()
@@ -57,21 +59,24 @@ namespace ce
 				while((xcbEvent = xcb_poll_for_event((xcb_connection_t *)m_xcbConnection)))
 				{
 					Event event;
+//					event.base.canvas = canvas;
+					event.base.canvas = 0;
+
 					switch(xcbEvent->response_type & ~0x80)
 					{
 					case XCB_EXPOSE:
 						xcbWindow = ((xcb_expose_event_t *)xcbEvent)->window;
-						if(m_canvasMap.count(xcbWindow))
-							m_canvasMap[xcbWindow]->render();
+//						if(m_canvasMap.count(xcbWindow))
+//							m_canvasMap[xcbWindow]->render();
 						break;
 					case XCB_KEY_PRESS:
-						event.key.type = KeyDown;
+						event.type = KeyDown;
 						event.key.keyCode = ((xcb_button_press_event_t *)xcbEvent)->detail;
 						event.key.state = ((xcb_button_press_event_t *)xcbEvent)->state;
 						onEvent(event);
 						break;
 					case XCB_KEY_RELEASE:
-						event.key.type = KeyUp;
+						event.type = KeyUp;
 						event.key.keyCode = ((xcb_button_press_event_t *)xcbEvent)->detail;
 						event.key.state = ((xcb_button_press_event_t *)xcbEvent)->state;
 						onEvent(event);
@@ -85,23 +90,26 @@ namespace ce
 					XEvent xEvent;
 					Window xWindow;
 					XNextEvent((Display *)m_xDisplay, &xEvent);
+
 					Event event;
+//					event.base.canvas = canvas;
+					event.base.canvas = 0;
 
 					switch(xEvent.type)
 					{
 						case Expose:
 							xWindow = xEvent.xexpose.window;
-							if(m_canvasMap.count(xWindow))
-								m_canvasMap[xWindow]->render();
+//							if(m_canvasMap.count(xWindow))
+//								m_canvasMap[xWindow]->render();
 							break;
 						case KeyPress:
-							event.key.type = KeyDown;
+							event.type = KeyDown;
 							event.key.keyCode = xEvent.xkey.keycode;
 							event.key.state = xEvent.xkey.state;
 							onEvent(event);
 							break;
 						case KeyRelease:
-							event.key.type = KeyUp;
+							event.type = KeyUp;
 							event.key.keyCode = xEvent.xkey.keycode;
 							event.key.state = xEvent.xkey.state;
 							onEvent(event);
@@ -115,39 +123,19 @@ namespace ce
 			MSG wMsg;
 			while(PeekMessage(&wMsg, NULL, 0, 0, PM_REMOVE))
 			{
-				if(m_canvasMap.count(wMsg.hwnd))
-				{
-					Canvas *canvas = m_canvasMap[wMsg.hwnd];
-					Event event;
-
-					switch(wMsg.message)
-					{
-					case WM_DESTROY:
-						PostQuitMessage(0);
-						return quit();
-					case WM_KEYDOWN:
-						event.key.type = KeyDown;
-						event.key.keyCode = wMsg.wParam;
-						event.key.state = 1;
-						onEvent(event);
-						break;
-					case WM_KEYUP:
-						event.key.type = KeyUp;
-						event.key.keyCode = wMsg.wParam;
-						event.key.state = 0;
-						onEvent(event);
-						break;
-					}
-				}
-				else
-				{
-					//- TODO: Pop message back in queue for other applications, if necessary. -
-				}
-
 				TranslateMessage(&wMsg);
 				DispatchMessage(&wMsg);
 			}
 		#endif
+
+		#if CE_FRONTEND_USEXLIB
+			map<int, Canvas *>::iterator it;
+		#endif
+		#if CE_FRONTEND_USEWIN
+			map<void *, Canvas *>::iterator it;
+		#endif
+		for(it = m_canvasMap.begin(); it != m_canvasMap.end(); it++)
+			it->second->render();
 
 		return App::process();
 	}
@@ -244,17 +232,8 @@ namespace ce
 
 	bool AppFrontend::onEvent(Event &event)
 	{
-		switch(event.type)
-		{
-			case KeyDown:
-				print("Down: %i %i\n", event.key.keyCode, event.key.state);
-				break;
-			case KeyUp:
-				print("Up: %i %i\n", event.key.keyCode, event.key.state);
-				break;
-		}
-
-		return true;
+		Canvas *canvas = event.base.canvas;
+		return (canvas) ? canvas->onEvent(event) : true;
 	}
 	bool AppFrontend::onLoop()
 	{

@@ -20,7 +20,7 @@ public:
 	bool onStart()
 	{
 		print("o-> onStart\n");
-		m_canvas = Canvas::create(640, 480);
+		m_canvas = Canvas::create(640, 480, "200 - Frontend App Sample");
 
 		return true;
 	}
@@ -46,7 +46,10 @@ int main(int argc, char **argv)
 
 	//- Run the App's main loop. -
 	while(myApp.isRunning())
+	{
 		myApp.process();
+		myApp.sleep(1);
+	}
 
 	return 0;
 }

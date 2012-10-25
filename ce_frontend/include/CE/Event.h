@@ -4,6 +4,8 @@
 //- Centhra Engine -
 #include <CE/ConfigFrontend.h>
 
+//- TODO: Incorporate event stack, with peek/wait functionality. -
+
 namespace ce
 {
 	class Canvas;
@@ -12,7 +14,10 @@ namespace ce
 	{
 		Null,
 		KeyDown,
-		KeyUp
+		KeyUp,
+		MouseButtonDown,
+		MouseButtonUp,
+		MouseMotion
 	} EventType;
 
 	typedef struct DefaultEvent
@@ -25,16 +30,32 @@ namespace ce
 	{
 		int type;
 		Canvas *canvas;
-		unsigned int keyCode;
-		unsigned int state;
+		unsigned int keyCode, state;
 	} KeyEvent;
+
+	typedef struct MouseButtonEvent
+	{
+		int type;
+		Canvas *canvas;
+		int x, y;
+		unsigned int button, state;
+	} MouseButtonEvent;
+
+	typedef struct MouseMotionEvent
+	{
+		int type;
+		Canvas *canvas;
+		int x, y;
+	} MouseMotionEvent;
 
 	typedef union Event
 	{
 		int type;
 		DefaultEvent base;
 		KeyEvent key;
-		char padding[20];
+		MouseButtonEvent mouseButton;
+		MouseMotionEvent mouseMotion;
+		char padding[32];
 	} Event;
 }
 

@@ -59,27 +59,78 @@ namespace ce
 				while((xcbEvent = xcb_poll_for_event((xcb_connection_t *)m_xcbConnection)))
 				{
 					Event event;
-//					event.base.canvas = canvas;
 					event.base.canvas = 0;
 
 					switch(xcbEvent->response_type & ~0x80)
 					{
-					case XCB_EXPOSE:
-						xcbWindow = ((xcb_expose_event_t *)xcbEvent)->window;
-//						if(m_canvasMap.count(xcbWindow))
-//							m_canvasMap[xcbWindow]->render();
-						break;
+					case XCB_DESTROY_NOTIFY:
+					case XCB_UNMAP_NOTIFY:
+						return quit();
 					case XCB_KEY_PRESS:
+					{
+						xcb_button_press_event_t *cast = (xcb_button_press_event_t *)xcbEvent;
 						event.type = KeyDown;
-						event.key.keyCode = ((xcb_button_press_event_t *)xcbEvent)->detail;
-						event.key.state = ((xcb_button_press_event_t *)xcbEvent)->state;
+						xcbWindow = cast->event;
+						if(m_canvasMap.count(xcbWindow))
+							event.base.canvas = m_canvasMap[xcbWindow];
+						event.key.keyCode = cast->detail;
+						event.key.state = cast->state;
 						onEvent(event);
 						break;
+					}
 					case XCB_KEY_RELEASE:
+					{
+						xcb_key_release_event_t *cast = (xcb_key_release_event_t *)xcbEvent;
 						event.type = KeyUp;
-						event.key.keyCode = ((xcb_button_press_event_t *)xcbEvent)->detail;
-						event.key.state = ((xcb_button_press_event_t *)xcbEvent)->state;
+						xcbWindow = cast->event;
+						if(m_canvasMap.count(xcbWindow))
+							event.base.canvas = m_canvasMap[xcbWindow];
+						event.key.keyCode = cast->detail;
+						event.key.state = cast->state;
 						onEvent(event);
+						break;
+					}
+					case XCB_BUTTON_PRESS:
+					{
+						xcb_button_release_event_t *cast = (xcb_button_release_event_t *)xcbEvent;
+						event.type = MouseButtonDown;
+						xcbWindow = cast->event;
+						if(m_canvasMap.count(xcbWindow))
+							event.base.canvas = m_canvasMap[xcbWindow];
+						event.mouseButton.button = cast->detail;
+						event.mouseButton.state = cast->state;
+						event.mouseButton.x = cast->event_x;
+						event.mouseButton.y = cast->event_y;
+						onEvent(event);
+						break;
+					}
+					case XCB_BUTTON_RELEASE:
+					{
+						xcb_button_release_event_t *cast = (xcb_button_release_event_t *)xcbEvent;
+						event.type = MouseButtonUp;
+						xcbWindow = cast->event;
+						if(m_canvasMap.count(xcbWindow))
+							event.base.canvas = m_canvasMap[xcbWindow];
+						event.mouseButton.button = cast->detail;
+						event.mouseButton.state = cast->state;
+						event.mouseButton.x = cast->event_x;
+						event.mouseButton.y = cast->event_y;
+						onEvent(event);
+						break;
+					}
+					case XCB_MOTION_NOTIFY:
+					{
+						xcb_motion_notify_event_t *cast = (xcb_motion_notify_event_t *)xcbEvent;
+						event.type = MouseMotion;
+						xcbWindow = cast->event;
+						if(m_canvasMap.count(xcbWindow))
+							event.base.canvas = m_canvasMap[xcbWindow];
+						event.mouseMotion.x = cast->event_x;
+						event.mouseMotion.y = cast->event_y;
+						onEvent(event);
+						break;
+					}
+					default:
 						break;
 					}
 					free(xcbEvent);
@@ -88,32 +139,54 @@ namespace ce
 				while(XPending((Display *)m_xDisplay))
 				{
 					XEvent xEvent;
-					Window xWindow;
 					XNextEvent((Display *)m_xDisplay, &xEvent);
 
+					Window xWindow = xEvent.xany.window;
+
 					Event event;
-//					event.base.canvas = canvas;
 					event.base.canvas = 0;
+					if(m_canvasMap.count(xWindow))
+						event.base.canvas = m_canvasMap[xWindow];
 
 					switch(xEvent.type)
 					{
-						case Expose:
-							xWindow = xEvent.xexpose.window;
-//							if(m_canvasMap.count(xWindow))
-//								m_canvasMap[xWindow]->render();
-							break;
-						case KeyPress:
-							event.type = KeyDown;
-							event.key.keyCode = xEvent.xkey.keycode;
-							event.key.state = xEvent.xkey.state;
-							onEvent(event);
-							break;
-						case KeyRelease:
-							event.type = KeyUp;
-							event.key.keyCode = xEvent.xkey.keycode;
-							event.key.state = xEvent.xkey.state;
-							onEvent(event);
-							break;
+					case DestroyNotify:
+					case UnmapNotify:
+						return quit();
+					case KeyPress:
+						event.type = KeyDown;
+						event.key.keyCode = xEvent.xkey.keycode;
+						event.key.state = xEvent.xkey.state;
+						onEvent(event);
+						break;
+					case KeyRelease:
+						event.type = KeyUp;
+						event.key.keyCode = xEvent.xkey.keycode;
+						event.key.state = xEvent.xkey.state;
+						onEvent(event);
+						break;;
+					case ButtonPress:
+						event.mouseButton.type = MouseButtonDown;
+						event.mouseButton.button = xEvent.xbutton.button;
+						event.mouseButton.state = xEvent.xbutton.state;
+						event.mouseButton.x = xEvent.xbutton.x;
+						event.mouseButton.y = xEvent.xbutton.y;
+						onEvent(event);
+						break;
+					case ButtonRelease:
+						event.mouseButton.type = MouseButtonUp;
+						event.mouseButton.button = xEvent.xbutton.button;
+						event.mouseButton.state = xEvent.xbutton.state;
+						event.mouseButton.x = xEvent.xbutton.x;
+						event.mouseButton.y = xEvent.xbutton.y;
+						onEvent(event);
+						break;
+					case MotionNotify:
+						event.type = MouseMotion;
+						event.mouseMotion.x = xEvent.xmotion.x;
+						event.mouseMotion.y = xEvent.xmotion.y;
+						onEvent(event);
+						break;
 					}
 				}
 			#endif

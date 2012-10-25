@@ -9,6 +9,7 @@
 #endif
 
 //- Standard Library -
+#include <string.h>
 #include <string>
 
 //- OpenGL -
@@ -32,6 +33,7 @@ namespace ce
 {
 	int g_glxVersionMajor = 0, g_glxVersionMinor = 0;
 
+#if CE_FRONTEND_USEWIN
 	LRESULT CALLBACK WindowProc(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	{
 		Canvas *canvas = (Canvas *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
@@ -64,6 +66,7 @@ namespace ce
 
 		return DefWindowProc(hWnd, wMsg, wParam, lParam);
 	}
+#endif
 
 	Canvas *Canvas::create(int width, int height, const char *title)
 	{
@@ -97,11 +100,25 @@ namespace ce
 				screen = screen_iter.data;
 
 				xcb_window_t xcbWindow;
+				uint32_t xcbEventMask = XCB_EVENT_MASK_KEY_PRESS
+					| XCB_EVENT_MASK_KEY_RELEASE
+					| XCB_EVENT_MASK_BUTTON_PRESS
+					| XCB_EVENT_MASK_BUTTON_RELEASE
+					| XCB_EVENT_MASK_POINTER_MOTION
+					| XCB_EVENT_MASK_STRUCTURE_NOTIFY
+					| XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY;
 			#else
 				Window xWindow;
+				uint32_t xEventMask = KeyPressMask
+					| KeyReleaseMask
+					| ButtonPressMask
+					| ButtonReleaseMask
+					| PointerMotionMask
+					| StructureNotifyMask
+					| SubstructureNotifyMask;
 			#endif
 
-			if(g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3 && 0)
+			if(g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3)
 			{
 				int fbNumConfig;
 				GLXFBConfig *fbConfig = glXChooseFBConfig(xDisplay, xDefaultScreen, 0, &fbNumConfig);
@@ -123,16 +140,15 @@ namespace ce
 					int visualID = 0;
 					glXGetFBConfigAttrib(xDisplay, fbConfig[0], GLX_VISUAL_ID , &visualID);
 
-					xcb_colormap_t colormap = xcb_generate_id(xcbConnection);
+					xcb_colormap_t xcbColorMap = xcb_generate_id(xcbConnection);
 					xcbWindow = xcb_generate_id(xcbConnection);
 
-					xcb_create_colormap(xcbConnection, XCB_COLORMAP_ALLOC_NONE, colormap, screen->root, visualID);
+					xcb_create_colormap(xcbConnection, XCB_COLORMAP_ALLOC_NONE, xcbColorMap, screen->root, visualID);
 
-					uint32_t eventmask = XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_KEY_RELEASE;
-					uint32_t valuelist[] = { eventmask, colormap, 0 };
-					uint32_t valuemask = XCB_CW_EVENT_MASK | XCB_CW_COLORMAP;
+					uint32_t xcbValueList[] = { xcbEventMask, xcbColorMap, 0 };
+					uint32_t xcbValueMask = XCB_CW_EVENT_MASK | XCB_CW_COLORMAP;
 
-					xcb_create_window(xcbConnection, XCB_COPY_FROM_PARENT, xcbWindow, screen->root, 0, 0, width, height, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, visualID, valuemask, valuelist);
+					xcb_create_window(xcbConnection, XCB_COPY_FROM_PARENT, xcbWindow, screen->root, 0, 0, width, height, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, visualID, xcbValueMask, xcbValueList);
 
 					if(!xcbWindow)
 					{
@@ -171,11 +187,11 @@ namespace ce
 						return 0;
 					}
 
-					Colormap xColormap = XCreateColormap(xDisplay, RootWindow(xDisplay, xVisualInfo->screen), xVisualInfo->visual, AllocNone);
+					Colormap xColorMap = XCreateColormap(xDisplay, RootWindow(xDisplay, xVisualInfo->screen), xVisualInfo->visual, AllocNone);
 
 					XSetWindowAttributes swa;
-					swa.colormap = xColormap;
-					swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask; 
+					swa.colormap = xColorMap;
+					swa.event_mask = xEventMask;
 					xWindow = XCreateWindow(xDisplay, RootWindow(xDisplay, xVisualInfo->screen), 0, 0, width, height, 0, xVisualInfo->depth, InputOutput, xVisualInfo->visual, CWColormap | CWEventMask, &swa);
 					
 					if(!xWindow)
@@ -241,7 +257,7 @@ namespace ce
 //					xVisualInfo.visual;
 					xVisualInfo.visualid = xcbVisualInfo->visual_id;
 
-					xcb_colormap_t colormap = xcb_generate_id(xcbConnection);
+					xcb_colormap_t xcbColorMap = xcb_generate_id(xcbConnection);
 					xcbWindow = xcb_generate_id(xcbConnection);
 
 					glxContext = glXCreateContext(xDisplay, &xVisualInfo, 0, GL_TRUE);
@@ -251,13 +267,12 @@ namespace ce
 						return 0;
 					}
 
-					xcb_create_colormap(xcbConnection, XCB_COLORMAP_ALLOC_NONE, colormap, screen->root, xcbVisualInfo->visual_id);
+					xcb_create_colormap(xcbConnection, XCB_COLORMAP_ALLOC_NONE, xcbColorMap, screen->root, xcbVisualInfo->visual_id);
 
-					uint32_t eventmask = XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_KEY_RELEASE;
-					uint32_t valuelist[] = { eventmask, colormap, 0 };
-					uint32_t valuemask = XCB_CW_EVENT_MASK | XCB_CW_COLORMAP;
+					uint32_t xcbValueList[] = { xcbEventMask, xcbColorMap, 0 };
+					uint32_t xcbValueMask = XCB_CW_EVENT_MASK | XCB_CW_COLORMAP;
 
-					xcb_create_window(xcbConnection, XCB_COPY_FROM_PARENT, xcbWindow, screen->root, 0, 0, width, height, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, xcbVisualInfo->visual_id, valuemask, valuelist);
+					xcb_create_window(xcbConnection, XCB_COPY_FROM_PARENT, xcbWindow, screen->root, 0, 0, width, height, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, xcbVisualInfo->visual_id, xcbValueMask, xcbValueList);
 
 					if(!xcbWindow)
 					{
@@ -296,12 +311,12 @@ namespace ce
 						return 0;
 					}
 
-					Colormap xColormap = XCreateColormap(xDisplay, xRootWindow, xVisualInfo->visual, AllocNone);
+					Colormap xColorMap = XCreateColormap(xDisplay, xRootWindow, xVisualInfo->visual, AllocNone);
 
 					XSetWindowAttributes swa;
-					swa.colormap = xColormap;
+					swa.colormap = xColorMap;
 					swa.border_pixel = 0;
-					swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask;
+					swa.event_mask = xEventMask;
 
 					xWindow = XCreateWindow(xDisplay, xRootWindow, 0, 0, width, height, 0, xVisualInfo->depth, InputOutput, xVisualInfo->visual, CWColormap | CWEventMask, &swa);
 
@@ -386,8 +401,9 @@ namespace ce
 		#if CE_FRONTEND_USEXLIB
 			canvas->m_glxContext = glxContext;
 			canvas->m_glxWindow = glxWindow;
+
 			#if CE_FRONTEND_USEXCB
-				xcb_change_property(xcbConnection, XCB_PROP_MODE_REPLACE, xcbWindow, WM_NAME, STRING, 8, strlen(title), title);
+				xcb_change_property(xcbConnection, XCB_PROP_MODE_REPLACE, xcbWindow, XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8, strlen(title), title);
 				canvas->m_xcbWindow = xcbWindow;
 				app->m_canvasMap[xcbWindow] = canvas;
 			#else
@@ -469,6 +485,8 @@ namespace ce
 	void Canvas::render()
 	{
 		unsigned long time = m_app->getRunTimeMS();
+
+		//- TODO: Integrate togglable VSync. -
 		if((time - m_lastRenderTimeMS) > 15)
 		{
 			m_lastRenderTimeMS = time;
@@ -480,9 +498,9 @@ namespace ce
 				Display *xDisplay = (Display *)m_app->getXDisplay();
 
 				#if CE_FRONTEND_USEXCB
-					glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3 && 0) ? m_glxWindow : m_xcbWindow);
+					glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3) ? m_glxWindow : m_xcbWindow);
 				#else
-					glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3 && 0) ? m_glxWindow : m_xWindow);
+					glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3) ? m_glxWindow : m_xWindow);
 				#endif
 			#endif
 
@@ -493,15 +511,22 @@ namespace ce
 	}
 	bool Canvas::onEvent(Event &event)
 	{
-		print("%i %i\n", this, event.base.canvas);
-
 		switch(event.type)
 		{
 			case KeyDown:
-				print("Down: %i %i\n", event.key.keyCode, event.key.state);
+//				print("Key Down: %i %i\n", event.key.keyCode, event.key.state);
 				break;
 			case KeyUp:
-				print("Up: %i %i\n", event.key.keyCode, event.key.state);
+//				print("Key Up: %i %i\n", event.key.keyCode, event.key.state);
+				break;
+			case MouseButtonDown:
+//				print("Mouse Down: %i %i %i %i\n", event.mouseButton.x, event.mouseButton.y, event.mouseButton.button, event.mouseButton.state);
+				break;
+			case MouseButtonUp:
+//				print("Mouse Up: %i %i %i %i\n", event.mouseButton.x, event.mouseButton.y, event.mouseButton.button, event.mouseButton.state);
+				break;
+			case MouseMotion:
+//				print("Mouse Motion: %i %i\n", event.mouseMotion.x, event.mouseMotion.y);
 				break;
 		}
 

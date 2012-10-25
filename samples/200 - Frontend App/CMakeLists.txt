@@ -25,7 +25,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 include_directories(${INCLUDE})
 
-set(NAME "000 - Test")
+set(NAME "200 - Frontend App")
 add_executable(${NAME} ${SRC})
 set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/samples/bin)
 target_link_libraries(${NAME} ${LIB})

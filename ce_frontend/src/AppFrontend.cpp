@@ -50,75 +50,65 @@ namespace ce
 		if(!isRunning())
 			return false;
 
-		#if CE_FRONTEND_USEXCB
-		/*
-			xcb_generic_event_t *xcbEvent = xcb_wait_for_event((xcb_connection_t *)m_xcbConnection);
-			if(!xcbEvent)
-			{
-				error("[Error] AppFrontend::process - i/o error in xcb_wait_for_event\n");
-				return false;
-			}
-		*/
-			xcb_generic_event_t *xcbEvent;
-			while(xcbEvent = xcb_poll_for_event((xcb_connection_t *)m_xcbConnection))
-			{
-				Event event;
-				switch(xcbEvent->response_type & ~0x80)
-				{
-				case XCB_EXPOSE:
-					/* Handle expose event, draw and swap buffers */
-					//                draw();
-					//               glXSwapBuffers(display, drawable);
-					break;
-				case XCB_KEY_PRESS:
-					event.key.type = KeyDown;
-					event.key.keyCode = ((xcb_button_press_event_t *)xcbEvent)->detail;
-					event.key.state = ((xcb_button_press_event_t *)xcbEvent)->state;
-					onEvent(event);
-					break;
-				case XCB_KEY_RELEASE:
-					event.key.type = KeyUp;
-					event.key.keyCode = ((xcb_button_press_event_t *)xcbEvent)->detail;
-					event.key.state = ((xcb_button_press_event_t *)xcbEvent)->state;
-					onEvent(event);
-					break;
-				}
-				free(xcbEvent);
-			}
-		#endif
-
 		#if CE_FRONTEND_USEXLIB
-			while(XPending((Display *)m_xDisplay))
-			{
-				XEvent xEvent;
-				XNextEvent((Display *)m_xDisplay, &xEvent);
-				Event event;
-
-				switch(xEvent.type)
+			#if CE_FRONTEND_USEXCB
+				xcb_generic_event_t *xcbEvent;
+				xcb_window_t xcbWindow;
+				while((xcbEvent = xcb_poll_for_event((xcb_connection_t *)m_xcbConnection)))
 				{
-					case Expose:
+					Event event;
+					switch(xcbEvent->response_type & ~0x80)
+					{
+					case XCB_EXPOSE:
+						xcbWindow = ((xcb_expose_event_t *)xcbEvent)->window;
+						if(m_canvasMap.count(xcbWindow))
+							m_canvasMap[xcbWindow]->render();
 						break;
-					case KeyPress:
+					case XCB_KEY_PRESS:
 						event.key.type = KeyDown;
-						event.key.keyCode = xEvent.xkey.keycode;
-						event.key.state = xEvent.xkey.state;
+						event.key.keyCode = ((xcb_button_press_event_t *)xcbEvent)->detail;
+						event.key.state = ((xcb_button_press_event_t *)xcbEvent)->state;
 						onEvent(event);
 						break;
-					case KeyRelease:
+					case XCB_KEY_RELEASE:
 						event.key.type = KeyUp;
-						event.key.keyCode = xEvent.xkey.keycode;
-						event.key.state = xEvent.xkey.state;
+						event.key.keyCode = ((xcb_button_press_event_t *)xcbEvent)->detail;
+						event.key.state = ((xcb_button_press_event_t *)xcbEvent)->state;
 						onEvent(event);
 						break;
+					}
+					free(xcbEvent);
 				}
-	//			if (e.type == Expose)
-	//			{
-	//				XFillRectangle((Display *)m_xDisplay, w, DefaultGC((Display *)m_xDisplay, s), 20, 20, 20, 10);
-	//				XDrawString((Display *)m_xDisplay, w, DefaultGC((Display *)m_xDisplay, s), 10, 50, msg, strlen(msg));
-	//			}
-	//			if (e.type == KeyPress)
-	//				return quit();
-			}
+			#else
+				while(XPending((Display *)m_xDisplay))
+				{
+					XEvent xEvent;
+					Window xWindow;
+					XNextEvent((Display *)m_xDisplay, &xEvent);
+					Event event;
+
+					switch(xEvent.type)
+					{
+						case Expose:
+							xWindow = xEvent.xexpose.window;
+							if(m_canvasMap.count(xWindow))
+								m_canvasMap[xWindow]->render();
+							break;
+						case KeyPress:
+							event.key.type = KeyDown;
+							event.key.keyCode = xEvent.xkey.keycode;
+							event.key.state = xEvent.xkey.state;
+							onEvent(event);
+							break;
+						case KeyRelease:
+							event.key.type = KeyUp;
+							event.key.keyCode = xEvent.xkey.keycode;
+							event.key.state = xEvent.xkey.state;
+							onEvent(event);
+							break;
+					}
+				}
+			#endif
 		#endif
 
 		#if CE_FRONTEND_USEWIN

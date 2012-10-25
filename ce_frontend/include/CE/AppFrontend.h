@@ -21,6 +21,7 @@ namespace ce
 			#if CE_FRONTEND_USEXCB
 				void *m_xcbConnection;
 			#endif
+			std::map<int, Canvas *> m_canvasMap;
 		#endif
 
 		#if CE_FRONTEND_USEWIN

@@ -13,6 +13,8 @@ namespace ce
 	typedef enum EventType
 	{
 		Null,
+		PreRender,
+		PostRender,
 		KeyDown,
 		KeyUp,
 		MouseButtonDown,
@@ -23,12 +25,21 @@ namespace ce
 	typedef struct DefaultEvent
 	{
 		int type;
+		unsigned long timeMS;
 		Canvas *canvas;
 	} DefaultEvent;
+
+	typedef struct RenderEvent
+	{
+		int type;
+		unsigned long timeMS;
+		Canvas *canvas;
+	} RenderEvent;
 
 	typedef struct KeyEvent
 	{
 		int type;
+		unsigned long timeMS;
 		Canvas *canvas;
 		unsigned int keyCode, state;
 	} KeyEvent;
@@ -36,6 +47,7 @@ namespace ce
 	typedef struct MouseButtonEvent
 	{
 		int type;
+		unsigned long timeMS;
 		Canvas *canvas;
 		int x, y;
 		unsigned int button, state;
@@ -44,6 +56,7 @@ namespace ce
 	typedef struct MouseMotionEvent
 	{
 		int type;
+		unsigned long timeMS;
 		Canvas *canvas;
 		int x, y;
 	} MouseMotionEvent;
@@ -52,6 +65,7 @@ namespace ce
 	{
 		int type;
 		DefaultEvent base;
+		RenderEvent render;
 		KeyEvent key;
 		MouseButtonEvent mouseButton;
 		MouseMotionEvent mouseMotion;

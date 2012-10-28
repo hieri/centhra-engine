@@ -59,6 +59,7 @@ namespace ce
 				while((xcbEvent = xcb_poll_for_event((xcb_connection_t *)m_xcbConnection)))
 				{
 					Event event;
+					event.base.timeMS = getRunTimeMS();
 					event.base.canvas = 0;
 
 					switch(xcbEvent->response_type & ~0x80)
@@ -144,6 +145,7 @@ namespace ce
 					Window xWindow = xEvent.xany.window;
 
 					Event event;
+					event.base.timeMS = getRunTimeMS();
 					event.base.canvas = 0;
 					if(m_canvasMap.count(xWindow))
 						event.base.canvas = m_canvasMap[xWindow];

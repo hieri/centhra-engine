@@ -29,6 +29,8 @@
 
 using namespace std;
 
+//- TODO: Sync mouse button values for cross-platform. -
+
 namespace ce
 {
 	int g_glxVersionMajor = 0, g_glxVersionMinor = 0;
@@ -42,6 +44,7 @@ namespace ce
 			AppFrontend *app = canvas->getApp();
 
 			Event event;
+			event.base.timeMS = app->getRunTimeMS();
 			event.base.canvas = canvas;
 
 			switch(wMsg)
@@ -59,6 +62,68 @@ namespace ce
 					event.type = KeyUp;
 					event.key.keyCode = wParam;
 					event.key.state = 0;
+					app->onEvent(event);
+					break;
+				case WM_LBUTTONDOWN:
+					event.type = MouseButtonDown;
+					event.mouseButton.button = MK_LBUTTON;
+					event.mouseButton.x = LOWORD(lParam);
+					event.mouseButton.y = HIWORD(lParam);
+					app->onEvent(event);
+					break;
+				case WM_LBUTTONUP:
+					event.type = MouseButtonUp;
+					event.mouseButton.button = MK_LBUTTON;
+					event.mouseButton.x = LOWORD(lParam);
+					event.mouseButton.y = HIWORD(lParam);
+					app->onEvent(event);
+					break;
+				case WM_RBUTTONDOWN:
+					event.type = MouseButtonDown;
+					event.mouseButton.button = MK_RBUTTON;
+					event.mouseButton.x = LOWORD(lParam);
+					event.mouseButton.y = HIWORD(lParam);
+					app->onEvent(event);
+					break;
+				case WM_RBUTTONUP:
+					event.type = MouseButtonUp;
+					event.mouseButton.button = MK_RBUTTON;
+					event.mouseButton.x = LOWORD(lParam);
+					event.mouseButton.y = HIWORD(lParam);
+					app->onEvent(event);
+					break;
+				case WM_MBUTTONDOWN:
+					event.type = MouseButtonDown;
+					event.mouseButton.button = MK_MBUTTON;
+					event.mouseButton.x = LOWORD(lParam);
+					event.mouseButton.y = HIWORD(lParam);
+					app->onEvent(event);
+					break;
+				case WM_MBUTTONUP:
+					event.type = MouseButtonUp;
+					event.mouseButton.button = MK_MBUTTON;
+					event.mouseButton.x = LOWORD(lParam);
+					event.mouseButton.y = HIWORD(lParam);
+					app->onEvent(event);
+					break;
+				case WM_XBUTTONDOWN:
+					event.type = MouseButtonDown;
+					event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
+					event.mouseButton.x = LOWORD(lParam);
+					event.mouseButton.y = HIWORD(lParam);
+					app->onEvent(event);
+					break;
+				case WM_XBUTTONUP:
+					event.type = MouseButtonUp;
+					event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
+					event.mouseButton.x = LOWORD(lParam);
+					event.mouseButton.y = HIWORD(lParam);
+					app->onEvent(event);
+					break;
+				case WM_MOUSEMOVE:
+					event.type = MouseMotion;
+					event.mouseMotion.x = LOWORD(lParam);
+					event.mouseMotion.y = HIWORD(lParam);
 					app->onEvent(event);
 					break;
 			}
@@ -491,6 +556,12 @@ namespace ce
 		{
 			m_lastRenderTimeMS = time;
 
+			Event event;
+			event.base.canvas = this;
+			event.base.timeMS = time;
+			event.type = PreRender;
+			m_app->onEvent(event);
+
 			glClearColor(0.2f, 0.4f, 0.9f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
@@ -504,6 +575,10 @@ namespace ce
 				#endif
 			#endif
 
+			event.base.timeMS = m_app->getRunTimeMS();
+			event.type = PostRender;
+			m_app->onEvent(event);
+
 			#if CE_FRONTEND_USEWIN
 				SwapBuffers((HDC)m_deviceContextHandle);
 			#endif
@@ -513,7 +588,12 @@ namespace ce
 	{
 		switch(event.type)
 		{
+			case PreRender:
+				break;
+			case PostRender:
+				break;
 			case KeyDown:
+				print("%i\n", event.base.timeMS);
 //				print("Key Down: %i %i\n", event.key.keyCode, event.key.state);
 				break;
 			case KeyUp:

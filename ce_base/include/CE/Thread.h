@@ -3,13 +3,14 @@
 
 //- Standard Library -
 #include <stdio.h>
+#include <pthread.h>
 
 namespace ce
 {
 	class Thread
 	{
 		#if CE_BASE_USEPTHREAD
-			unsigned int m_pThread;
+			unsigned long m_pThread;
 		#endif
 		#if CE_BASE_USEWINTHREAD
 			void *m_threadHandle;

@@ -20,7 +20,7 @@ void *threadFunc(void *arg)
 		sleepMS(1000);
 	}
 	
-	return 0;
+	Thread::exit(NULL);
 }
 
 int main(int argc, char **argv)

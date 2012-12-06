@@ -186,7 +186,8 @@ namespace ce
 			if(g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3)
 			{
 				int fbNumConfig;
-				GLXFBConfig *fbConfig = glXChooseFBConfig(xDisplay, xDefaultScreen, 0, &fbNumConfig);
+				GLint attributeList[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER };
+				GLXFBConfig *fbConfig = glXChooseFBConfig(xDisplay, xDefaultScreen, attributeList, &fbNumConfig);
 
 				if(!fbConfig || !fbNumConfig)
 				{
@@ -248,7 +249,7 @@ namespace ce
 
 					if(!xVisualInfo)
 					{
-						error("[Error] Window::create - glXChooseVisual failed.\n");
+						error("[Error] Window::create - glXGetVisualFromFBConfig failed.\n");
 						return 0;
 					}
 

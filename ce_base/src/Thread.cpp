@@ -3,7 +3,6 @@
 //- Centhra Engine -
 #include <CE/ConfigBase.h>
 #include <CE/Thread.h>
-#include <CE/Base.h>
 
 #if CE_BASE_USEPTHREAD
 	//- POSIX -

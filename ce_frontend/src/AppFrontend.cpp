@@ -26,6 +26,8 @@
 
 using namespace std;
 
+//- TODO: Properly handle X11/XCB quit events. -
+
 namespace ce
 {
 	AppFrontend::AppFrontend()

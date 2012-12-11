@@ -4,7 +4,7 @@
 #include <CE/ConfigBase.h>
 #include <CE/Thread.h>
 
-#if CE_BASE_USEPTHREAD
+#if CE_BASE_USEPOSIXTHREAD
 	//- POSIX -
 	#include <pthread.h>
 #endif

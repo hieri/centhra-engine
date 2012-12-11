@@ -8,19 +8,23 @@ set(INC
 	${INC_DIR}/App.h
 	${INC_DIR}/Base.h
 	${INC_DIR}/ConfigBase.h
+	${INC_DIR}/Socket.h
 	${INC_DIR}/Thread.h
 )
 
 set(SRC
 	${SRC_DIR}/App.cpp
 	${SRC_DIR}/Base.cpp
+	${SRC_DIR}/Socket.cpp
 	${SRC_DIR}/Thread.cpp
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	set(BASE_USEPTHREAD ${CE_BASE_USEPTHREAD})
+	set(BASE_USEPOSIXTHREAD ${CE_BASE_USEPOSIXTHREAD})
+	set(BASE_USEPOSIXSOCKET ${CE_BASE_USEPOSIXSOCKET})
 else(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	set(BASE_USEPTHREAD 0)
+	set(BASE_USEPOSIXTHREAD 0)
+	set(BASE_USEPOSIXSOCKET 0)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")

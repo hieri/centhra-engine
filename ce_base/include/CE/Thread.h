@@ -2,8 +2,7 @@
 #define _CE_THREAD_H_
 
 //- Standard Library -
-#include <stdio.h>
-#include <pthread.h>
+#include <stdlib.h>
 
 namespace ce
 {

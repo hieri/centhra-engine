@@ -186,7 +186,7 @@ namespace ce
 			if(g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3)
 			{
 				int fbNumConfig;
-				GLint attributeList[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER };
+				GLint attributeList[] = { GLX_RGBA, GLX_DOUBLEBUFFER };
 				GLXFBConfig *fbConfig = glXChooseFBConfig(xDisplay, xDefaultScreen, attributeList, &fbNumConfig);
 
 				if(!fbConfig || !fbNumConfig)
@@ -361,7 +361,7 @@ namespace ce
 				#else
 					Window xRootWindow = DefaultRootWindow(xDisplay);
 
-					GLint attributeList[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER };
+					GLint attributeList[] = { GLX_RGBA, GLX_DOUBLEBUFFER };
 					XVisualInfo *xVisualInfo = glXChooseVisual(xDisplay, 0, attributeList);
 
 					if(!xVisualInfo)
@@ -594,7 +594,6 @@ namespace ce
 			case PostRender:
 				break;
 			case KeyDown:
-				print("%i\n", event.base.timeMS);
 //				print("Key Down: %i %i\n", event.key.keyCode, event.key.state);
 				break;
 			case KeyUp:

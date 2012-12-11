@@ -8,6 +8,7 @@ set(CE_FRONTEND_USEXCB 0)
 
 # Windows
 set(CE_BASE_USEWINTHREAD 1)
+set(CE_BASE_USEWINSOCKET 1)
 set(CE_FRONTEND_USEWIN 1)
 
 project(ce)

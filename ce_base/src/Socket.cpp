@@ -16,76 +16,130 @@
 #endif
 
 #ifdef _WIN32
+	#if CE_BASE_USEWINSOCKET
+		//- WSA -
+		#include <winsock2.h>
+		#include <ws2tcpip.h>
+	#endif
 	#include <windows.h>
 #endif
 
 namespace ce
 {
+	int Socket::ms_count = 0;
+
+	#if CE_BASE_USEWINSOCKET
+		WSADATA g_wsaData;
+	#endif
+
 	Socket *Socket::create(Domain domain, Type type, Protocol protocol)
 	{
-		int pDomain = -1, pType = -1, pProtocol = -1;
+		int sDomain = -1, sType = -1, sProtocol = -1;
 
-		switch(domain)
-		{
-		case IP4:
-			pDomain = PF_INET;
-			break;
-		case IP6:
-			pDomain = PF_INET6;
-			break;
-		}
+		#if CE_BASE_USEPOSIXSOCKET
+			switch(domain)
+			{
+			case IP4:
+				sDomain = PF_INET;
+				break;
+			case IP6:
+				sDomain = PF_INET6;
+				break;
+			}
+		#endif
+
+		#if CE_BASE_USEWINSOCKET
+			if(!ms_count)
+			{
+				int res = WSAStartup(MAKEWORD(2,2), &g_wsaData);
+				if(res != 0)
+				{
+					error("[Error] Socket::create - WSAStartup failed with error: %d\n", res);
+					return 0;
+				}
+			}
+
+			switch(domain)
+			{
+			case IP4:
+				sDomain = IPPROTO_IP;
+				break;
+			case IP6:
+				sDomain = IPPROTO_IPV6;
+				break;
+			}
+		#endif
 
 		switch(type)
 		{
 		case Raw:
-			pType = SOCK_RAW;
+			sType = SOCK_RAW;
 			break;
 		case Stream:
-			pType = SOCK_STREAM;
+			sType = SOCK_STREAM;
 			break;
 		case Datagram:
-			pType = SOCK_DGRAM;
+			sType = SOCK_DGRAM;
 			break;
 		case SequencedPacket:
-			pType = SOCK_SEQPACKET;
+			sType = SOCK_SEQPACKET;
 			break;
 		}
 
 		switch(protocol)
 		{
 		case TCP:
-			pProtocol = IPPROTO_TCP;
+			sProtocol = IPPROTO_TCP;
 			break;
 		case UDP:
-			pProtocol = IPPROTO_UDP;
+			sProtocol = IPPROTO_UDP;
 		}
 
-		if(pDomain == -1 || pType == -1 || pProtocol == -1)
+		if(sDomain == -1 || sType == -1 || sProtocol == -1)
 		{
 			error("[Error] Socket::create - Unrecognized socket configuration.\n");
 			return 0;
 		}
 
-		int pSocket = socket(pDomain, pType, pProtocol);
+		int sSocket = socket(sDomain, sType, sProtocol);
 
-		if(pSocket == -1)
+		if(sSocket == -1)
 		{
-			close(pSocket);
+			#if CE_BASE_USEPOSIXSOCKET
+				close(sSocket);
+			#endif
+			#if CE_BASE_USEWINSOCKET
+				closesocket(sSocket);
+			#endif
+
 			error("[Error] Socket::create - Failed to create Socket.\n");
 		}
 
 		Socket *sock = new Socket();
-		sock->m_socket = pSocket;
+		sock->m_socket = sSocket;
 		return sock;
 	}
 
 	Socket::Socket()
 	{
 		m_socket = 0;
+		ms_count++;
 	}
 	Socket::~Socket()
 	{
-		close(m_socket);
+		#if CE_BASE_USEPOSIXSOCKET
+			close(m_socket);
+		#endif
+		#if CE_BASE_USEWINSOCKET
+			closesocket(m_socket);
+		#endif
+
+		ms_count--;
+		
+		#if CE_BASE_USEWINSOCKET
+			if(!ms_count)
+				WSACleanup();
+		#endif
 	}
 	Socket *Socket::Accept()
 	{
@@ -157,15 +211,25 @@ namespace ce
 	}
 	void Socket::Read(char *buffer, unsigned int length)
 	{
-		read(m_socket, buffer, length);
+		#if CE_BASE_USEPOSIXSOCKET
+			read(m_socket, buffer, length);
+		#endif
+		#if CE_BASE_USEWINSOCKET
+			recv(m_socket, buffer, length, 0);
+		#endif
 	}
 	bool Socket::Shutdown()
 	{
-		if(shutdown(m_socket, SHUT_RDWR) == -1)
-		{
-			error("[Error] Socket::Listen - Unable to shutdown socket.\n");
-			return false;
-		}
+		#if CE_BASE_USEPOSIXSOCKET
+			if(shutdown(m_socket, SHUT_RDWR) == -1)
+		#endif
+		#if CE_BASE_USEWINSOCKET
+			if(shutdown(m_socket, SD_SEND) == SOCKET_ERROR)
+		#endif
+			{
+				error("[Error] Socket::Listen - Unable to shutdown socket.\n");
+				return false;
+			}
 
 		return true;
 	}

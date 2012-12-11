@@ -19,9 +19,14 @@ set(SRC
 	${SRC_DIR}/Thread.cpp
 )
 
+set(LIB "")
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	set(BASE_USEPOSIXTHREAD ${CE_BASE_USEPOSIXTHREAD})
 	set(BASE_USEPOSIXSOCKET ${CE_BASE_USEPOSIXSOCKET})
+	if(${BASE_USEPOSIXTHREAD})
+		set(LIB ${LIB} pthread)
+	endif(${BASE_USEPOSIXTHREAD})
 else(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	set(BASE_USEPOSIXTHREAD 0)
 	set(BASE_USEPOSIXSOCKET 0)
@@ -29,16 +34,16 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	set(BASE_USEWINTHREAD ${CE_BASE_USEWINTHREAD})
+	set(BASE_USEWINSOCKET ${CE_BASE_USEWINSOCKET})
+	if(${BASE_USEWINSOCKET})
+		set(LIB ${LIB} ws2_32)
+	endif(${BASE_USEWINSOCKET})
 else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	set(BASE_USEWINTHREAD "0")
+	set(BASE_USEWINSOCKET "0")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 configure_file(include/CE/ConfigBase.h.in include/CE/ConfigBase.h)
-
-set(LIB "")
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	set(LIB ${LIB} pthread)
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_library(ce_base STATIC ${SRC} ${INC} ${RES})

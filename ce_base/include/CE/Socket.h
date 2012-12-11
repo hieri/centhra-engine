@@ -5,6 +5,8 @@ namespace ce
 {
 	class Socket
 	{
+		static int ms_count;
+
 		int m_socket;
 
 		Socket();

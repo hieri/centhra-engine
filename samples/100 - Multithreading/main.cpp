@@ -21,6 +21,7 @@ void *threadFunc(void *arg)
 	}
 	
 	Thread::exit(NULL);
+	return 0;
 }
 
 int main(int argc, char **argv)
@@ -37,4 +38,5 @@ int main(int argc, char **argv)
 
 	print("Main Finished\n");
 	Thread::exit(NULL);
+	return 0;
 }

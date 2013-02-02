@@ -30,7 +30,7 @@
 
 using namespace std;
 
-//- TODO: Sync mouse button values for cross-platform. -
+//- TODO: sync mouse button values for cross-platform -
 
 namespace ce
 {
@@ -150,7 +150,7 @@ namespace ce
 			GLXContext glxContext;
 			GLXWindow glxWindow;
 
-			//- TODO: Investigate why the Visual Info fails to be received when these int's aren't defined. -
+			//- TODO: investigate why the Visual Info fails to be received when these int's aren't defined -
 			int glxVersionMajor = 0, glxVersionMinor = 0;
 			if(!glXQueryVersion(xDisplay, &g_glxVersionMajor, &g_glxVersionMinor))
 			{
@@ -310,12 +310,12 @@ namespace ce
 
 					if(!xcbVisualInfo)
 					{
-						//- TODO: Fix this error message. -
+						//- TODO: fix this error message -
 						error("[Error] Window::create - xcb find visual failed.\n");
 						return 0;
 					}
 
-					//- TODO: Investigate if this is bad practice. -
+					//- TODO: investigate if this is bad practice -
 					XVisualInfo xVisualInfo;
 					xVisualInfo.bits_per_rgb = xcbVisualInfo->bits_per_rgb_value;
 					xVisualInfo.blue_mask = xcbVisualInfo->blue_mask;
@@ -557,7 +557,7 @@ namespace ce
 	{
 		unsigned long time = m_app->getRunTimeMS();
 
-		//- TODO: Integrate togglable VSync. -
+		//- TODO: integrate togglable VSync -
 		if((time - m_lastRenderTimeMS) > 15)
 		{
 			m_lastRenderTimeMS = time;

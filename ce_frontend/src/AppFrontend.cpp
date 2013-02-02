@@ -27,7 +27,7 @@
 
 using namespace std;
 
-//- TODO: Properly handle X11/XCB quit events. -
+//- TODO: properly handle X11/XCB quit events -
 
 namespace ce
 {

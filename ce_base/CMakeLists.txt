@@ -7,14 +7,18 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INC
 	${INC_DIR}/App.h
 	${INC_DIR}/Base.h
+	${INC_DIR}/Color.h
 	${INC_DIR}/ConfigBase.h
+	${INC_DIR}/Image.h
 	${INC_DIR}/Socket.h
 	${INC_DIR}/Thread.h
+	${INC_DIR}/Vector2.h
 )
 
 set(SRC
 	${SRC_DIR}/App.cpp
 	${SRC_DIR}/Base.cpp
+	${SRC_DIR}/Image.cpp
 	${SRC_DIR}/Socket.cpp
 	${SRC_DIR}/Thread.cpp
 )
@@ -42,6 +46,9 @@ else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	set(BASE_USEWINTHREAD "0")
 	set(BASE_USEWINSOCKET "0")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+find_package(DevIL REQUIRED)
+set(LIB ${LIB} ${IL_LIBRARIES} ${ILU_LIBRARIES})
 
 configure_file(include/CE/ConfigBase.h.in include/CE/ConfigBase.h)
 

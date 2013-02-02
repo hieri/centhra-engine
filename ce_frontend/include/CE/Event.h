@@ -4,7 +4,7 @@
 //- Centhra Engine -
 #include <CE/ConfigFrontend.h>
 
-//- TODO: Incorporate event stack, with peek/wait functionality. -
+//- TODO: incorporate event stack, with peek/wait functionality -
 
 namespace ce
 {

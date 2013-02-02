@@ -19,7 +19,7 @@
 //- Centhra Engine -
 #include <CE/Base.h>
 
-// TODO: Handle warn differently than print.
+//- TODO: handle warn differently than print -
 
 using namespace std;
 

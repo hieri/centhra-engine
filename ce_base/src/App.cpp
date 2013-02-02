@@ -10,7 +10,6 @@
 	#include <Windows.h>
 #endif
 
-
 //- Centhra Engine -
 #include <CE/Base.h>
 #include <CE/App.h>

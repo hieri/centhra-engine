@@ -1,7 +1,7 @@
 Centhra Engine
 ==============
 
-MIT Licensed Open Source Simulation Library
+MIT Licensed Open Source Game Engine
 
 Purpose
 -------

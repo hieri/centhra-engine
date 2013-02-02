@@ -67,14 +67,17 @@ namespace ce
 
 		return onLoop();
 	}
-	bool App::quit()
+	bool App::quit(bool force)
 	{
 		if(!m_isRunning)
 			return false;
 
-		m_isRunning = false;
+		bool isValid = onQuit(force) || force;
 
-		return onQuit();
+		if(isValid)
+			m_isRunning = false;
+
+		return isValid;
 	}
 	void App::setCurrent()
 	{
@@ -124,7 +127,7 @@ namespace ce
 	{
 		return true;
 	}
-	bool App::onQuit()
+	bool App::onQuit(bool force)
 	{
 		return true;
 	}

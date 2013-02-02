@@ -14,7 +14,7 @@ set(LIB
 
 include_directories(${INCLUDE})
 
-set(NAME "150 - TCP Client")
+set(NAME "150_TCP_Client")
 add_executable(${NAME} ${SRC})
 set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/samples/bin)
 target_link_libraries(${NAME} ${LIB})

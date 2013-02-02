@@ -3,6 +3,15 @@ Centhra Engine
 
 MIT Licensed Open Source Simulation Library
 
+Purpose
+-------
+This library is the product and medium of the research done by the Centhra Engine team on the development of simulation software.  It is not intended for commercial use.
+
+Project Scope
+-------------
+* Cross-Platform Graphical Frontend
+	* Currently supports OpenGL on Windows and Linux
+
 License
 -------
 

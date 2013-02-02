@@ -26,9 +26,10 @@ public:
 	}
 	bool onLoop()
 	{
+		sleep(1);
 		return true;
 	}
-	bool onQuit()
+	bool onQuit(bool force)
 	{
 		print("o-> onQuit\n");
 		delete m_canvas;
@@ -46,10 +47,7 @@ int main(int argc, char **argv)
 
 	//- Run the App's main loop. -
 	while(myApp.isRunning())
-	{
 		myApp.process();
-		myApp.sleep(1);
-	}
 
 	return 0;
 }

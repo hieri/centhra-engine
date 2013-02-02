@@ -27,14 +27,14 @@ namespace ce
 		unsigned long getRunTimeMS() const;
 		bool isRunning() const;
 		bool process();
-		bool quit();
+		bool quit(bool force = false);
 		void setCurrent();
 		void sleep(unsigned long timeMS);
 		bool start();
 
 		//- User-Defined Functions -
 		virtual bool onLoop();
-		virtual bool onQuit();
+		virtual bool onQuit(bool force = false);
 		virtual bool onStart();
 	};
 }

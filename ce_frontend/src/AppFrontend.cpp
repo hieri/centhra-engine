@@ -8,6 +8,7 @@
 
 #if CE_FRONTEND_USEXLIB
 	//- Xlib -
+	#include <X11/Xatom.h>
 	#include <X11/Xlib.h>
 
 	#if CE_FRONTEND_USEXCB
@@ -66,9 +67,13 @@ namespace ce
 
 					switch(xcbEvent->response_type & ~0x80)
 					{
+					case XCB_CLIENT_MESSAGE:
+						if((*(xcb_client_message_event_t*)xcbEvent).data.data32[0] == m_wmDeleteMessage)
+							return quit();
+						break;
 					case XCB_DESTROY_NOTIFY:
 					case XCB_UNMAP_NOTIFY:
-						return quit();
+						return quit(true);
 					case XCB_KEY_PRESS:
 					{
 						xcb_button_press_event_t *cast = (xcb_button_press_event_t *)xcbEvent;
@@ -154,9 +159,13 @@ namespace ce
 
 					switch(xEvent.type)
 					{
+					case ClientMessage:
+						if(xEvent.xclient.data.l[0] == m_wmDeleteMessage)
+							return quit();
+						break;
 					case DestroyNotify:
 					case UnmapNotify:
-						return quit();
+						return quit(true);
 					case KeyPress:
 						event.type = KeyDown;
 						event.key.keyCode = xEvent.xkey.keycode;
@@ -216,26 +225,31 @@ namespace ce
 
 		return App::process();
 	}
-	bool AppFrontend::quit()
+	bool AppFrontend::quit(bool force)
 	{
 		if(!isRunning())
 			return false;
 
-		#if CE_FRONTEND_USEXLIB
-			#if CE_FRONTEND_USEXCB
-				m_xcbConnection = 0;
+		bool isValid = App::quit(force);
+
+		if(isValid)
+		{
+			#if CE_FRONTEND_USEXLIB
+				#if CE_FRONTEND_USEXCB
+					m_xcbConnection = 0;
+				#endif
+				if(m_xDisplay)
+					XCloseDisplay((Display *)m_xDisplay);
+				m_xDefaultScreen = 0;
+				m_xDisplay = 0;
 			#endif
-			if(m_xDisplay)
-				XCloseDisplay((Display *)m_xDisplay);
-			m_xDefaultScreen = 0;
-			m_xDisplay = 0;
-		#endif
 
-		#if CE_FRONTEND_USEWIN
-			m_hInstance = 0;
-		#endif
+			#if CE_FRONTEND_USEWIN
+				m_hInstance = 0;
+			#endif
+		}
 
-		return App::quit();
+		return isValid;
 	}
 	bool AppFrontend::start()
 	{
@@ -264,10 +278,17 @@ namespace ce
 					return false;
 				}
 				XSetEventQueueOwner(xDisplay, XCBOwnsEventQueue);
+
+				xcb_intern_atom_cookie_t cookie = xcb_intern_atom(xcbConnection, 0, 16, "WM_DELETE_WINDOW");
+				xcb_intern_atom_reply_t* reply = xcb_intern_atom_reply(xcbConnection, cookie, 0);
+				xcb_atom_t wmDeleteMessage = reply->atom;
+			#else
+				Atom wmDeleteMessage = XInternAtom(xDisplay, "WM_DELETE_WINDOW", False);
 			#endif
 		#endif
 
 		#if CE_FRONTEND_USEXLIB
+			m_wmDeleteMessage = wmDeleteMessage;
 			m_xDefaultScreen = xDefaultScreen;
 			m_xDisplay = xDisplay;
 
@@ -316,7 +337,7 @@ namespace ce
 	{
 		return true;
 	}
-	bool AppFrontend::onQuit()
+	bool AppFrontend::onQuit(bool force)
 	{
 		return true;
 	}

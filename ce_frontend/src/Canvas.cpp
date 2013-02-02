@@ -17,6 +17,7 @@
 
 #if CE_FRONTEND_USEXLIB
 	//- Xlib -
+	#include <X11/Xatom.h>
 	#include <X11/Xlib.h>
 	#include <GL/glx.h>
 
@@ -225,6 +226,9 @@ namespace ce
 					}
 
 					xcb_map_window(xcbConnection, xcbWindow);
+					xcb_intern_atom_cookie_t cookie = xcb_intern_atom(xcbConnection, 1, 12, "WM_PROTOCOLS");
+					xcb_intern_atom_reply_t* reply = xcb_intern_atom_reply(xcbConnection, cookie, 0);
+					xcb_change_property(xcbConnection, XCB_PROP_MODE_REPLACE, xcbWindow, (*reply).atom, 4, 32, 1, &app->m_wmDeleteMessage);
 					glxWindow = glXCreateWindow(xDisplay, fbConfig[0], xcbWindow, 0);
 
 					if(!glxWindow)
@@ -269,6 +273,7 @@ namespace ce
 					}
 
 					XMapWindow(xDisplay, xWindow);
+					XSetWMProtocols(xDisplay, xWindow, (Atom *)&app->m_wmDeleteMessage, 1);
 					glxWindow = glXCreateWindow(xDisplay, fbConfig[0], xWindow, 0);
 
 					if(!glxWindow)

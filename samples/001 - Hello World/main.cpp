@@ -35,7 +35,7 @@ public:
 
 		return true;
 	}
-	bool onQuit()
+	bool onQuit(bool force)
 	{
 		print("o-> onQuit\n");
 

@@ -22,6 +22,7 @@ namespace ce
 		#if CE_FRONTEND_USEXLIB
 			void *m_xDisplay;
 			int m_xDefaultScreen;
+			unsigned long m_wmDeleteMessage;
 			#if CE_FRONTEND_USEXCB
 				void *m_xcbConnection;
 			#endif
@@ -38,7 +39,7 @@ namespace ce
 		~AppFrontend();
 
 		bool process();
-		bool quit();
+		bool quit(bool force = false);
 		bool start();
 
 		#if CE_FRONTEND_USEXLIB
@@ -56,7 +57,7 @@ namespace ce
 		//- User-Defined Functions -
 		virtual bool onEvent(Event &event);
 		virtual bool onLoop();
-		virtual bool onQuit();
+		virtual bool onQuit(bool force = false);
 		virtual bool onStart();
 
 		friend class Canvas;

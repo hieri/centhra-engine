@@ -8,7 +8,7 @@ namespace ce
 {
 	class Thread
 	{
-		#if CE_BASE_USEPTHREAD
+		#if CE_BASE_USEPOSIXTHREAD
 			unsigned long m_pThread;
 		#endif
 		#if CE_BASE_USEWINTHREAD

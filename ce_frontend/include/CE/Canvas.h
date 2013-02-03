@@ -12,6 +12,8 @@ namespace ce
 {
 	class AppFrontend;
 
+	/**	@brief Canvas Class
+	 */
 	class Canvas
 	{
 		AppFrontend *m_app;
@@ -36,14 +38,31 @@ namespace ce
 		Canvas();
 
 	public:
+		/**	@brief Constructor.
+		 *	@param width Width of the canvas.
+		 *	@param height Height of the canvas.
+		 *	@param title Title of the canvas.
+		 *	@return Canvas object or 0 if creation failed.
+		 */
 		static Canvas *Create(int width = 64, int height = 64, const char *title = "");
 
+		/**	@brief Destructor.
+		 */
 		~Canvas();
 
+		/**	@brief Returns the application that owns the canvas.
+		 *	@return Application that owns the canvas.
+		 */
 		AppFrontend *GetApp() const;
+
+		/**	@brief Renders the canvas.
+		 */
 		void Render();
 
-		//- User-Defined Functions -
+		/**	@brief Called when an event is queued by the canvas.
+		 *	@param event Queued Event.
+		 *	@return Whether or not the event should be processed.
+		 */
 		virtual bool OnEvent(Event &event);
 	};
 }

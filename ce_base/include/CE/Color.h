@@ -16,6 +16,10 @@ namespace ce
 
 	public:
 		/**	@brief Default Constructor.
+		 *	@param red Red component value.
+		 *	@param green Green component value.
+		 *	@param blue Blue component value.
+		 *	@param alpha Alpha component value.
 		 */
 		Color(unsigned char red = 255, unsigned char green = 255, unsigned char blue = 255, unsigned char alpha = 255) 
 		{
@@ -26,6 +30,7 @@ namespace ce
 		}
 
 		/**	@brief Array Constructor.
+		 *	@param array Arrayed color data.
 		 */
 		Color(const unsigned char *array)
 		{
@@ -74,7 +79,7 @@ namespace ce
 		}
 
 		/**	@brief Sets the blue component of the color.
-		 *	@param alpha Blue component value.
+		 *	@param blue Blue component value.
 		 */
 		inline void SetBlue(unsigned char blue)
 		{
@@ -82,7 +87,7 @@ namespace ce
 		}
 
 		/**	@brief Sets the green component of the color.
-		 *	@param alpha Green component value.
+		 *	@param green Green component value.
 		 */
 		inline void SetGreen(unsigned char green)
 		{
@@ -90,7 +95,7 @@ namespace ce
 		}
 
 		/**	@brief Set the red component of the color.
-		 *	@param alpha Red component value.
+		 *	@param red Red component value.
 		 */
 		inline void SetRed(unsigned char red)
 		{

@@ -62,18 +62,18 @@ namespace ce
 				while((xcbEvent = xcb_poll_for_event((xcb_connection_t *)m_xcbConnection)))
 				{
 					Event event;
-					event.base.timeMS = getRunTimeMS();
+					event.base.timeMS = GetRunTimeMS();
 					event.base.canvas = 0;
 
 					switch(xcbEvent->response_type & ~0x80)
 					{
 					case XCB_CLIENT_MESSAGE:
 						if((*(xcb_client_message_event_t*)xcbEvent).data.data32[0] == m_wmDeleteMessage)
-							return quit();
+							return Stop();
 						break;
 					case XCB_DESTROY_NOTIFY:
 					case XCB_UNMAP_NOTIFY:
-						return quit(true);
+						return Stop(true);
 					case XCB_KEY_PRESS:
 					{
 						xcb_button_press_event_t *cast = (xcb_button_press_event_t *)xcbEvent;
@@ -83,7 +83,7 @@ namespace ce
 							event.base.canvas = m_canvasMap[xcbWindow];
 						event.key.keyCode = cast->detail;
 						event.key.state = cast->state;
-						onEvent(event);
+						OnEvent(event);
 						break;
 					}
 					case XCB_KEY_RELEASE:
@@ -95,7 +95,7 @@ namespace ce
 							event.base.canvas = m_canvasMap[xcbWindow];
 						event.key.keyCode = cast->detail;
 						event.key.state = cast->state;
-						onEvent(event);
+						OnEvent(event);
 						break;
 					}
 					case XCB_BUTTON_PRESS:
@@ -109,7 +109,7 @@ namespace ce
 						event.mouseButton.state = cast->state;
 						event.mouseButton.x = cast->event_x;
 						event.mouseButton.y = cast->event_y;
-						onEvent(event);
+						OnEvent(event);
 						break;
 					}
 					case XCB_BUTTON_RELEASE:
@@ -123,7 +123,7 @@ namespace ce
 						event.mouseButton.state = cast->state;
 						event.mouseButton.x = cast->event_x;
 						event.mouseButton.y = cast->event_y;
-						onEvent(event);
+						OnEvent(event);
 						break;
 					}
 					case XCB_MOTION_NOTIFY:
@@ -135,7 +135,7 @@ namespace ce
 							event.base.canvas = m_canvasMap[xcbWindow];
 						event.mouseMotion.x = cast->event_x;
 						event.mouseMotion.y = cast->event_y;
-						onEvent(event);
+						OnEvent(event);
 						break;
 					}
 					default:
@@ -331,7 +331,7 @@ namespace ce
 	bool AppFrontend::OnEvent(Event &event)
 	{
 		Canvas *canvas = event.base.canvas;
-		return (canvas) ? canvas->OnEvent(event) : true;
+		return canvas ? canvas->OnEvent(event) : true;
 	}
 	bool AppFrontend::OnProcess()
 	{

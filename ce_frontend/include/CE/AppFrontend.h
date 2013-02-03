@@ -13,6 +13,8 @@ namespace ce
 {
 	class Canvas;
 
+	/**	@brief Frontend Application Class
+	 */
 	class AppFrontend : public App
 	{
 		//- TODO: Find more efficient way of attaching user pointers to OS specific objects. -
@@ -35,29 +37,76 @@ namespace ce
 		#endif
 
 	public:
+		/**	@brief Default Constructor.
+		 */
 		AppFrontend();
+
+		/**	@brief Destructor.
+		 */
 		~AppFrontend();
 
+		/**	@brief Processes the application run cycle.
+		 *	@return Whether or not the application is still running.
+		 */
 		bool Process();
+
+		/**	@brief Attempts to start the application.
+		 *	@return Whether or not the application has started.
+		 */
 		bool Start();
+
+		/**	@brief Attempts to stop the application.
+		 *	@param force If true, the stop is considered a force stop.
+		 *	@return Whether or not the application has stopped.
+		 */
 		bool Stop(bool force = false);
 
 		#if CE_FRONTEND_USEXLIB
+			/**	@brief [x11 Only] Returns the XDisplay of the application.
+			 *	@return XDisplay of the application.
+			 */
 			void *GetXDisplay() const;
+
+			/**	@brief [x11 Only] Returns the XDefaultScreen of the application.
+			 *	@return XDefaultScreen of the application.
+			 */
 			int GetXDefaultScreen() const;
+
 			#if CE_FRONTEND_USEXCB
+				/**	@brief [x11 + xcb Only] Returns the XCBConnection of the application.
+				 *	@return XCBConnection of the application.
+				 */
 				void *GetXCBConnection() const;
 			#endif
 		#endif
 
 		#if CE_FRONTEND_USEWIN
+			/**	@brief [Windows Only] Returns the HInstance of the application.
+			 *	@return HInstance of the application.
+			 */
 			void *GetHInstance() const;
 		#endif
 
-		//- User-Defined Functions -
+		/**	@brief Called when an event is queued by the application.
+		 *	@param event Queued Event.
+		 *	@return Whether or not the event should be processed.
+		 */
 		virtual bool OnEvent(Event &event);
+
+		/**	@brief Called when the application run cycle is processed.
+		 *	@return Whether or not the application should keep running.
+		 */
 		virtual bool OnProcess();
+
+		/**	@brief Called when the application is asked to start.
+		 *	@return Whether or not the application should start.
+		 */
 		virtual bool OnStart();
+
+		/**	@brief Called when the application is asked to stop.
+		 *	@param force If true, the stop is considered a force stop.
+		 *	@return Whether or not the application should stop.
+		 */
 		virtual bool OnStop(bool force = false);
 
 		friend class Canvas;

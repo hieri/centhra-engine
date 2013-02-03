@@ -35,56 +35,56 @@ namespace ce
 
 		/**	@brief Returns the alpha component of the color.
 		 */
-		inline unsigned char getAlpha() const
+		inline unsigned char GetAlpha() const
 		{
 			return m_data[3];
 		}
 
 		/**	@brief Returns the blue component of the color.
 		 */
-		inline unsigned char getBlue() const
+		inline unsigned char GetBlue() const
 		{
 			return m_data[2];
 		}
 
 		/**	@brief Returns the green component of the color.
 		 */
-		inline unsigned char getGreen() const
+		inline unsigned char GetGreen() const
 		{
 			return m_data[1];
 		}
 
 		/**	@brief Returns the red component of the color.
 		 */
-		inline unsigned char getRed() const
+		inline unsigned char GetRed() const
 		{
 			return m_data[0];
 		}
 
 		/**	@brief Sets the alpha component of the color.
 		 */
-		inline void setAlpha(unsigned char alpha)
+		inline void SetAlpha(unsigned char alpha)
 		{
 			m_data[3] = alpha;
 		}
 
 		/**	@brief Sets the blue component of the color.
 		 */
-		inline void setBlue(unsigned char blue)
+		inline void SetBlue(unsigned char blue)
 		{
 			m_data[2] = blue;
 		}
 
 		/**	@brief Sets the green component of the color.
 		 */
-		inline void setGreen(unsigned char green)
+		inline void SetGreen(unsigned char green)
 		{
 			m_data[1] = green;
 		}
 
 		/**	@brief Set the red component of the color.
 		 */
-		inline void setRed(unsigned char red)
+		inline void SetRed(unsigned char red)
 		{
 			m_data[0] = red;
 		}

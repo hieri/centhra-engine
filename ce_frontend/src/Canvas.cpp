@@ -134,9 +134,9 @@ namespace ce
 	}
 #endif
 
-	Canvas *Canvas::create(int width, int height, const char *title)
+	Canvas *Canvas::Create(int width, int height, const char *title)
 	{
-		AppFrontend *app = (AppFrontend *)App::getCurrent();
+		AppFrontend *app = (AppFrontend *)App::GetCurrent();
 
 		if(!app)
 		{
@@ -145,8 +145,8 @@ namespace ce
 		}
 
 		#if CE_FRONTEND_USEXLIB
-			Display *xDisplay = (Display *)app->getXDisplay();
-			int xDefaultScreen = app->getXDefaultScreen();
+			Display *xDisplay = (Display *)app->GetXDisplay();
+			int xDefaultScreen = app->GetXDefaultScreen();
 			GLXContext glxContext;
 			GLXWindow glxWindow;
 
@@ -549,13 +549,13 @@ namespace ce
 			DestroyWindow((HWND)m_windowHandle);
 		#endif
 	}
-	AppFrontend *Canvas::getApp() const
+	AppFrontend *Canvas::GetApp() const
 	{
 		return m_app;
 	}
-	void Canvas::render()
+	void Canvas::Render()
 	{
-		unsigned long time = m_app->getRunTimeMS();
+		unsigned long time = m_app->GetRunTimeMS();
 
 		//- TODO: integrate togglable VSync -
 		if((time - m_lastRenderTimeMS) > 15)
@@ -566,13 +566,13 @@ namespace ce
 			event.base.canvas = this;
 			event.base.timeMS = time;
 			event.type = PreRender;
-			m_app->onEvent(event);
+			m_app->OnEvent(event);
 
 			glClearColor(0.2f, 0.4f, 0.9f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			#if CE_FRONTEND_USEXLIB
-				Display *xDisplay = (Display *)m_app->getXDisplay();
+				Display *xDisplay = (Display *)m_app->GetXDisplay();
 
 				#if CE_FRONTEND_USEXCB
 					glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3) ? m_glxWindow : m_xcbWindow);
@@ -581,16 +581,16 @@ namespace ce
 				#endif
 			#endif
 
-			event.base.timeMS = m_app->getRunTimeMS();
+			event.base.timeMS = m_app->GetRunTimeMS();
 			event.type = PostRender;
-			m_app->onEvent(event);
+			m_app->OnEvent(event);
 
 			#if CE_FRONTEND_USEWIN
 				SwapBuffers((HDC)m_deviceContextHandle);
 			#endif
 		}
 	}
-	bool Canvas::onEvent(Event &event)
+	bool Canvas::OnEvent(Event &event)
 	{
 		switch(event.type)
 		{

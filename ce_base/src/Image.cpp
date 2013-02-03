@@ -16,7 +16,7 @@ using namespace std;
 
 namespace ce
 {
-	bool Image::init()
+	bool Image::Init()
 	{
 		ilInit();
 		iluInit();
@@ -24,7 +24,7 @@ namespace ce
 		return true;
 	}
 
-	Image *Image::createFromFile(const char *file)
+	Image *Image::CreateFromFile(const char *file)
 	{
 		if(!fileExists(file))
 		{
@@ -78,7 +78,7 @@ namespace ce
 		image->m_size = Vector2<int>(width, height);
 		return image;
 	}
-	Image *Image::createFromMemory(const unsigned char *memory, unsigned int size)
+	Image *Image::CreateFromMemory(const unsigned char *memory, unsigned int size)
 	{
 		if(!memory)
 		{
@@ -129,7 +129,7 @@ namespace ce
 		image->m_size = Vector2<int>(width, height);
 		return image;
 	}
-	Image *Image::createFromPixels(char *pixels, unsigned char bytesPerPixel, Vector2<int> size)
+	Image *Image::CreateFromPixels(char *pixels, unsigned char bytesPerPixel, Vector2<int> size)
 	{
 		unsigned int imageFormat = 0;
 		switch(bytesPerPixel)
@@ -175,7 +175,7 @@ namespace ce
 		if(m_glTexture)
 			glDeleteTextures(1, &m_glTexture);
 	}
-	void Image::bind()
+	void Image::Bind()
 	{
 		//- Create OpenGL Texture -
 		if(!m_glTexture)
@@ -190,7 +190,7 @@ namespace ce
 		else
 			glBindTexture(GL_TEXTURE_2D, m_glTexture);
 	}
-	Color Image::getPixel(unsigned int x, unsigned int y) const
+	Color Image::GetPixel(unsigned int x, unsigned int y) const
 	{
 		Color color;
 		ilBindImage(m_ilImage);
@@ -202,11 +202,11 @@ namespace ce
 
 		return color;
 	}
-	Vector2<int> Image::getSize() const
+	Vector2<int> Image::GetSize() const
 	{
 		return m_size;
 	}
-	bool Image::saveToFile(const char *file) const
+	bool Image::SaveToFile(const char *file) const
 	{
 		ilEnable(IL_FILE_OVERWRITE);
 		ilBindImage(m_ilImage);

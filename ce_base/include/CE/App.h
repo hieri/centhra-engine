@@ -23,7 +23,7 @@ namespace ce
 	public:
 		/**	@brief Returns current application instance.
 		 */
-		static App *getCurrent();
+		static App *GetCurrent();
 
 		/**	@brief Default Constructor.
 		 */
@@ -35,42 +35,42 @@ namespace ce
 
 		/**	@brief Returns the time since the application was started in milliseconds.
 		 */
-		unsigned long getRunTimeMS() const;
+		unsigned long GetRunTimeMS() const;
 
 		/**	@brief Returns true if the application is running.
 		 */
-		bool isRunning() const;
+		bool IsRunning() const;
 
 		/**	@brief Processes the application run cycle and returns true if the application is still running.
 		 */
-		bool process();
+		bool Process();
 
 		/**	@brief Sets the application instance as the current focus.
 		 */
-		void setCurrent();
+		void SetCurrent();
 
 		/**	@brief Attempts to start the application and returns true if successful.
 		 */
-		bool start();
+		bool Start();
 
 		/**	@brief Attempts to stop the application and returns true if successful.
 		 */
-		bool stop(bool force = false);
+		bool Stop(bool force = false);
 
 		/**	@brief Called when the application run cycle is processed.
 		 *	The return value determines whether or not the application should keep running.
 		 */
-		virtual bool onProcess();
+		virtual bool OnProcess();
 
 		/**	@brief Called when the application is asked to start.
 		 *	The return value determines whether or not the application has successfully started.
 		 */
-		virtual bool onStart();
+		virtual bool OnStart();
 
 		/**	@brief Called when the application is asked to stop.
 		 *	The return value determines whether or not the application has successfulled stopped.
 		 */
-		virtual bool onStop(bool force = false);
+		virtual bool OnStop(bool force = false);
 	};
 }
 

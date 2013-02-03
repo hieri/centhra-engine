@@ -36,15 +36,15 @@ namespace ce
 		Canvas();
 
 	public:
-		static Canvas *create(int width = 64, int height = 64, const char *title = "");
+		static Canvas *Create(int width = 64, int height = 64, const char *title = "");
 
 		~Canvas();
 
-		AppFrontend *getApp() const;
-		void render();
+		AppFrontend *GetApp() const;
+		void Render();
 
 		//- User-Defined Functions -
-		virtual bool onEvent(Event &event);
+		virtual bool OnEvent(Event &event);
 	};
 }
 

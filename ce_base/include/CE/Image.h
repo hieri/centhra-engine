@@ -23,19 +23,19 @@ namespace ce
 	public:
 		/**	@brief Initializes the registered image loaders.
 		 */
-		static bool init();
+		static bool Init();
 
 		/**	@brief File Constructor.
 		 */
-		static Image *createFromFile(const char *file);
+		static Image *CreateFromFile(const char *file);
 
 		/**	@brief Memory Constructor.
 		 */
-		static Image *createFromMemory(const unsigned char *memory, unsigned int size);
+		static Image *CreateFromMemory(const unsigned char *memory, unsigned int size);
 
 		/**	@brief Pixel Array Constructor.
 		 */
-		static Image *createFromPixels(char *pixels, unsigned char bytesPerPixel, Vector2<int> size);
+		static Image *CreateFromPixels(char *pixels, unsigned char bytesPerPixel, Vector2<int> size);
 
 		/**	@brief Destructor.
 		 */
@@ -43,19 +43,19 @@ namespace ce
 
 		/**	@brief Binds the image for rendering.
 		 */
-		void bind();
+		void Bind();
 
 		/**	@brief Returns the Color value of a pixel.
 		 */
-		Color getPixel(unsigned int x, unsigned int y) const;
+		Color GetPixel(unsigned int x, unsigned int y) const;
 
 		/**	@brief Returns the size of the image.
 		 */
-		Vector2<int> getSize() const;
+		Vector2<int> GetSize() const;
 
 		/**	@brief Saves the image to a file.
 		 */
-		bool saveToFile(const char *file) const;
+		bool SaveToFile(const char *file) const;
 	};
 }
 

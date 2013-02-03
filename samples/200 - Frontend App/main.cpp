@@ -20,7 +20,7 @@ public:
 	bool onStart()
 	{
 		print("o-> onStart\n");
-		m_canvas = Canvas::create(640, 480, "200 - Frontend App Sample");
+		m_canvas = Canvas::Create(640, 480, "200 - Frontend App Sample");
 
 		return true;
 	}
@@ -43,11 +43,11 @@ int main(int argc, char **argv)
 	print("200 - Frontend App Sample | Centhra Engine v%s\n", getVersionString().c_str());
 
 	AppFrontendSample myApp;
-	myApp.start();
+	myApp.Start();
 
 	//- Run the App's main loop. -
-	while(myApp.isRunning())
-		myApp.process();
+	while(myApp.IsRunning())
+		myApp.Process();
 
 	return 0;
 }

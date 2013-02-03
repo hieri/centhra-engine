@@ -20,7 +20,7 @@ void *threadFunc(void *arg)
 		sleepMS(1000);
 	}
 	
-	Thread::exit(NULL);
+	Thread::Exit(NULL);
 	return 0;
 }
 
@@ -31,11 +31,11 @@ int main(int argc, char **argv)
 	Thread threadA(&threadFunc), threadB(&threadFunc);
 
 	print("o-> Main Started\n");
-	threadA.start((void *)"Thread A");
+	threadA.Start((void *)"Thread A");
 	sleepMS(500);
-	threadB.start((void *)"Thread B");
+	threadB.Start((void *)"Thread B");
 
 	print("o-> Main Ended\n");
-	Thread::exit(NULL);
+	Thread::Exit(NULL);
 	return 0;
 }

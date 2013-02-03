@@ -17,7 +17,7 @@
 namespace ce
 {
 	App *App::ms_current = 0;
-	App *App::getCurrent()
+	App *App::GetCurrent()
 	{
 		return ms_current;
 	}
@@ -29,9 +29,9 @@ namespace ce
 	}
 	App::~App()
 	{
-		stop(true);
+		Stop(true);
 	}
-	unsigned long App::getRunTimeMS() const
+	unsigned long App::GetRunTimeMS() const
 	{
 		unsigned long currTimeMS;
 
@@ -55,33 +55,33 @@ namespace ce
 
 		return currTimeMS - m_startTimeMS;
 	}
-	bool App::isRunning() const
+	bool App::IsRunning() const
 	{
 		return m_isRunning;
 	}
-	bool App::process()
+	bool App::Process()
 	{
 		if(!m_isRunning)
 			return false;
 
-		bool keepRunning = onProcess();
+		bool keepRunning = OnProcess();
 		if(m_isRunning && !keepRunning)
-			stop(true);
+			Stop(true);
 
 		return m_isRunning;
 	}
-	void App::setCurrent()
+	void App::SetCurrent()
 	{
 		ms_current = this;
 	}
-	bool App::start()
+	bool App::Start()
 	{
 		if(m_isRunning)
 			return false;
 
-		setCurrent();
+		SetCurrent();
 
-		m_isRunning = onStart();
+		m_isRunning = OnStart();
 
 		if(m_isRunning)
 		{
@@ -106,12 +106,12 @@ namespace ce
 
 		return m_isRunning;
 	}
-	bool App::stop(bool force)
+	bool App::Stop(bool force)
 	{
 		if(!m_isRunning)
 			return false;
 
-		bool isValid = onStop(force) || force;
+		bool isValid = OnStop(force) || force;
 
 		if(isValid)
 			m_isRunning = false;
@@ -119,15 +119,15 @@ namespace ce
 		return isValid;
 	}
 
-	bool App::onProcess()
+	bool App::OnProcess()
 	{
 		return true;
 	}
-	bool App::onStart()
+	bool App::OnStart()
 	{
 		return true;
 	}
-	bool App::onStop(bool force)
+	bool App::OnStop(bool force)
 	{
 		return true;
 	}

@@ -38,27 +38,27 @@ namespace ce
 		AppFrontend();
 		~AppFrontend();
 
-		bool process();
-		bool start();
-		bool stop(bool force = false);
+		bool Process();
+		bool Start();
+		bool Stop(bool force = false);
 
 		#if CE_FRONTEND_USEXLIB
-			void *getXDisplay() const;
-			int getXDefaultScreen() const;
+			void *GetXDisplay() const;
+			int GetXDefaultScreen() const;
 			#if CE_FRONTEND_USEXCB
-				void *getXCBConnection() const;
+				void *GetXCBConnection() const;
 			#endif
 		#endif
 
 		#if CE_FRONTEND_USEWIN
-			void *getHInstance() const;
+			void *GetHInstance() const;
 		#endif
 
 		//- User-Defined Functions -
-		virtual bool onEvent(Event &event);
-		virtual bool onProcess();
-		virtual bool onStart();
-		virtual bool onStop(bool force = false);
+		virtual bool OnEvent(Event &event);
+		virtual bool OnProcess();
+		virtual bool OnStart();
+		virtual bool OnStop(bool force = false);
 
 		friend class Canvas;
 	};

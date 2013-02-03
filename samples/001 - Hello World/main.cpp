@@ -48,11 +48,11 @@ int main(int argc, char **argv)
 	print("001 - Hello World Sample | Centhra Engine v%s\n", getVersionString().c_str());
 
 	AppHelloWorld myApp;
-	myApp.start();
+	myApp.Start();
 
 	//- Run the App's main loop. -
-	while(myApp.isRunning())
-		myApp.process();
+	while(myApp.IsRunning())
+		myApp.Process();
 
 	return 0;
 }

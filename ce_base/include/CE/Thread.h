@@ -26,20 +26,20 @@ namespace ce
 			Attributes();
 			~Attributes();
 
-			int getDetachState() const;
-			size_t getStackSize() const;
-			void setDetachState(int detachState);
-			void setStackSize(size_t stackSize);
+			int GetDetachState() const;
+			size_t GetStackSize() const;
+			void SetDetachState(int detachState);
+			void SetStackSize(size_t stackSize);
 		};
 
-		static void exit(void *retVal = 0);
+		static void Exit(void *retVal = 0);
 
 		Thread(void *(*process)(void *));
 		~Thread();
 
-		void start(void *arg = 0, void *attributes = 0);
-		void join(void **ret = 0);
-		bool isRunning() const;
+		void Start(void *arg = 0, void *attributes = 0);
+		void Join(void **ret = 0);
+		bool IsRunning() const;
 
 	private:
 		Attributes *m_attributes;

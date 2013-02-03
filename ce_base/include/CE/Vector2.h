@@ -30,27 +30,27 @@ namespace ce
 			for(unsigned int a = 0; a < 2; a++)
 				m_data[a] = t[a];
 		}
-		inline Type dot(const Vector2 &v) const
+		inline Type Dot(const Vector2 &v) const
 		{
 			return m_data[0] * v[0] + m_data[1] * v[1];
 		}
-		inline Type getLength() const
+		inline Type GetLength() const
 		{
 			return (Type)sqrt((double)(m_data[0] * m_data[0] + m_data[1] * m_data[1]));
 		}
-		inline Type getX() const
+		inline Type GetX() const
 		{
 			return m_data[0];
 		}
-		inline Type getY() const
+		inline Type GetY() const
 		{
 			return m_data[1];
 		}
-		inline void setX(Type x)
+		inline void SetX(Type x)
 		{
 			m_data[0] = x;
 		}
-		inline void setY(Type y)
+		inline void SetY(Type y)
 		{
 			m_data[1] = y;
 		}

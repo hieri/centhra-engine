@@ -48,11 +48,11 @@ namespace ce
 	}
 	AppFrontend::~AppFrontend()
 	{
-		stop(true);
+		Stop(true);
 	}
-	bool AppFrontend::process()
+	bool AppFrontend::Process()
 	{
-		if(!isRunning())
+		if(!IsRunning())
 			return false;
 
 		#if CE_FRONTEND_USEXLIB
@@ -152,7 +152,7 @@ namespace ce
 					Window xWindow = xEvent.xany.window;
 
 					Event event;
-					event.base.timeMS = getRunTimeMS();
+					event.base.timeMS = GetRunTimeMS();
 					event.base.canvas = 0;
 					if(m_canvasMap.count(xWindow))
 						event.base.canvas = m_canvasMap[xWindow];
@@ -161,22 +161,22 @@ namespace ce
 					{
 					case ClientMessage:
 						if(xEvent.xclient.data.l[0] == m_wmDeleteMessage)
-							return stop();
+							return Stop();
 						break;
 					case DestroyNotify:
 					case UnmapNotify:
-						return stop(true);
+						return Stop(true);
 					case KeyPress:
 						event.type = KeyDown;
 						event.key.keyCode = xEvent.xkey.keycode;
 						event.key.state = xEvent.xkey.state;
-						onEvent(event);
+						OnEvent(event);
 						break;
 					case KeyRelease:
 						event.type = KeyUp;
 						event.key.keyCode = xEvent.xkey.keycode;
 						event.key.state = xEvent.xkey.state;
-						onEvent(event);
+						OnEvent(event);
 						break;;
 					case ButtonPress:
 						event.mouseButton.type = MouseButtonDown;
@@ -184,7 +184,7 @@ namespace ce
 						event.mouseButton.state = xEvent.xbutton.state;
 						event.mouseButton.x = xEvent.xbutton.x;
 						event.mouseButton.y = xEvent.xbutton.y;
-						onEvent(event);
+						OnEvent(event);
 						break;
 					case ButtonRelease:
 						event.mouseButton.type = MouseButtonUp;
@@ -192,13 +192,13 @@ namespace ce
 						event.mouseButton.state = xEvent.xbutton.state;
 						event.mouseButton.x = xEvent.xbutton.x;
 						event.mouseButton.y = xEvent.xbutton.y;
-						onEvent(event);
+						OnEvent(event);
 						break;
 					case MotionNotify:
 						event.type = MouseMotion;
 						event.mouseMotion.x = xEvent.xmotion.x;
 						event.mouseMotion.y = xEvent.xmotion.y;
-						onEvent(event);
+						OnEvent(event);
 						break;
 					}
 				}
@@ -221,16 +221,16 @@ namespace ce
 			map<void *, Canvas *>::iterator it;
 		#endif
 		for(it = m_canvasMap.begin(); it != m_canvasMap.end(); it++)
-			it->second->render();
+			it->second->Render();
 
-		return App::process();
+		return App::Process();
 	}
-	bool AppFrontend::start()
+	bool AppFrontend::Start()
 	{
-		if(isRunning())
+		if(IsRunning())
 			return false;
 
-		setCurrent();
+		SetCurrent();
 
 		#if CE_FRONTEND_USEXLIB
 			Display *xDisplay = XOpenDisplay(NULL);
@@ -275,14 +275,14 @@ namespace ce
 			m_hInstance = GetModuleHandle(NULL);
 		#endif
 
-		return App::start();
+		return App::Start();
 	}
-	bool AppFrontend::stop(bool force)
+	bool AppFrontend::Stop(bool force)
 	{
-		if(!isRunning())
+		if(!IsRunning())
 			return false;
 
-		bool isValid = App::stop(force);
+		bool isValid = App::Stop(force);
 
 		if(isValid)
 		{
@@ -305,16 +305,16 @@ namespace ce
 	}
 
 #if CE_FRONTEND_USEXLIB
-	void *AppFrontend::getXDisplay() const
+	void *AppFrontend::GetXDisplay() const
 	{
 		return m_xDisplay;
 	}
-	int AppFrontend::getXDefaultScreen() const
+	int AppFrontend::GetXDefaultScreen() const
 	{
 		return m_xDefaultScreen;
 	}
 	#if CE_FRONTEND_USEXCB
-		void *AppFrontend::getXCBConnection() const
+		void *AppFrontend::GetXCBConnection() const
 		{
 			return m_xcbConnection;
 		}
@@ -322,26 +322,26 @@ namespace ce
 #endif
 
 #if CE_FRONTEND_USEWIN
-	void *AppFrontend::getHInstance() const
+	void *AppFrontend::GetHInstance() const
 	{
 		return m_hInstance;
 	}
 #endif
 
-	bool AppFrontend::onEvent(Event &event)
+	bool AppFrontend::OnEvent(Event &event)
 	{
 		Canvas *canvas = event.base.canvas;
-		return (canvas) ? canvas->onEvent(event) : true;
+		return (canvas) ? canvas->OnEvent(event) : true;
 	}
-	bool AppFrontend::onProcess()
+	bool AppFrontend::OnProcess()
 	{
 		return true;
 	}
-	bool AppFrontend::onStart()
+	bool AppFrontend::OnStart()
 	{
 		return true;
 	}
-	bool AppFrontend::onStop(bool force)
+	bool AppFrontend::OnStop(bool force)
 	{
 		return true;
 	}

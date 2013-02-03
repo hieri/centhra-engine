@@ -20,13 +20,13 @@ public:
     bool onStart()
     {
         print("Initializing Image Library\n");
-        Image::init();
+        Image::Init();
 
         print("Loading <centhra.png>\n");
-        m_image = Image::createFromFile("centhra.png");
+        m_image = Image::CreateFromFile("centhra.png");
 
-        Vector2<int> imageSize = m_image->getSize();
-        print("  Width: %d Height: %d\n", imageSize.getX(), imageSize.getY());
+        Vector2<int> imageSize = m_image->GetSize();
+        print("  Width: %d Height: %d\n", imageSize.GetX(), imageSize.GetY());
 
         return true;
     }
@@ -47,11 +47,11 @@ int main(int argc, char **argv)
     print("000 - Test | Centhra Engine v%s\n", getVersionString().c_str());
 
     AppTest myApp;
-    myApp.start();
+    myApp.Start();
 
     //- Run the App's main loop. -
-    while(myApp.isRunning())
-        myApp.process();
+    while(myApp.IsRunning())
+        myApp.Process();
 
     return 0;
 }

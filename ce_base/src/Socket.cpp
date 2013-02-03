@@ -32,7 +32,7 @@ namespace ce
 		WSADATA g_wsaData;
 	#endif
 
-	Socket *Socket::create(Domain domain, Type type, Protocol protocol)
+	Socket *Socket::Create(Domain domain, Type type, Protocol protocol)
 	{
 		int sDomain = -1, sType = -1, sProtocol = -1;
 

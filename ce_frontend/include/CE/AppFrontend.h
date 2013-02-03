@@ -39,8 +39,8 @@ namespace ce
 		~AppFrontend();
 
 		bool process();
-		bool quit(bool force = false);
 		bool start();
+		bool stop(bool force = false);
 
 		#if CE_FRONTEND_USEXLIB
 			void *getXDisplay() const;
@@ -56,9 +56,9 @@ namespace ce
 
 		//- User-Defined Functions -
 		virtual bool onEvent(Event &event);
-		virtual bool onLoop();
-		virtual bool onQuit(bool force = false);
+		virtual bool onProcess();
 		virtual bool onStart();
+		virtual bool onStop(bool force = false);
 
 		friend class Canvas;
 	};

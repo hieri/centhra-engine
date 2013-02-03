@@ -43,8 +43,9 @@ ce_frontend/include/CE/ConfigFrontend.h
 external/*
 
 # Compiled Engine files
-lib/*
-samples/bin/*
+lib
+samples/bin
+docs
 
 # Generated Archived Files
 archive/include/CE/Config.h

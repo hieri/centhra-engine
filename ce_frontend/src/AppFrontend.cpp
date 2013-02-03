@@ -48,7 +48,7 @@ namespace ce
 	}
 	AppFrontend::~AppFrontend()
 	{
-		quit();
+		stop(true);
 	}
 	bool AppFrontend::process()
 	{
@@ -161,11 +161,11 @@ namespace ce
 					{
 					case ClientMessage:
 						if(xEvent.xclient.data.l[0] == m_wmDeleteMessage)
-							return quit();
+							return stop();
 						break;
 					case DestroyNotify:
 					case UnmapNotify:
-						return quit(true);
+						return stop(true);
 					case KeyPress:
 						event.type = KeyDown;
 						event.key.keyCode = xEvent.xkey.keycode;
@@ -225,32 +225,6 @@ namespace ce
 
 		return App::process();
 	}
-	bool AppFrontend::quit(bool force)
-	{
-		if(!isRunning())
-			return false;
-
-		bool isValid = App::quit(force);
-
-		if(isValid)
-		{
-			#if CE_FRONTEND_USEXLIB
-				#if CE_FRONTEND_USEXCB
-					m_xcbConnection = 0;
-				#endif
-				if(m_xDisplay)
-					XCloseDisplay((Display *)m_xDisplay);
-				m_xDefaultScreen = 0;
-				m_xDisplay = 0;
-			#endif
-
-			#if CE_FRONTEND_USEWIN
-				m_hInstance = 0;
-			#endif
-		}
-
-		return isValid;
-	}
 	bool AppFrontend::start()
 	{
 		if(isRunning())
@@ -303,6 +277,32 @@ namespace ce
 
 		return App::start();
 	}
+	bool AppFrontend::stop(bool force)
+	{
+		if(!isRunning())
+			return false;
+
+		bool isValid = App::stop(force);
+
+		if(isValid)
+		{
+			#if CE_FRONTEND_USEXLIB
+				#if CE_FRONTEND_USEXCB
+					m_xcbConnection = 0;
+				#endif
+				if(m_xDisplay)
+					XCloseDisplay((Display *)m_xDisplay);
+				m_xDefaultScreen = 0;
+				m_xDisplay = 0;
+			#endif
+
+			#if CE_FRONTEND_USEWIN
+				m_hInstance = 0;
+			#endif
+		}
+
+		return isValid;
+	}
 
 #if CE_FRONTEND_USEXLIB
 	void *AppFrontend::getXDisplay() const
@@ -333,15 +333,15 @@ namespace ce
 		Canvas *canvas = event.base.canvas;
 		return (canvas) ? canvas->onEvent(event) : true;
 	}
-	bool AppFrontend::onLoop()
-	{
-		return true;
-	}
-	bool AppFrontend::onQuit(bool force)
+	bool AppFrontend::onProcess()
 	{
 		return true;
 	}
 	bool AppFrontend::onStart()
+	{
+		return true;
+	}
+	bool AppFrontend::onStop(bool force)
 	{
 		return true;
 	}

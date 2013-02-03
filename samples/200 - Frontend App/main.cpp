@@ -24,14 +24,14 @@ public:
 
 		return true;
 	}
-	bool onLoop()
+	bool onProcess()
 	{
-		sleep(1);
+		sleepMS(1);
 		return true;
 	}
-	bool onQuit(bool force)
+	bool onStop(bool force)
 	{
-		print("o-> onQuit\n");
+		print("o-> onStop\n");
 		delete m_canvas;
 
 		return true;

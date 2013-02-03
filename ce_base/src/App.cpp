@@ -29,7 +29,7 @@ namespace ce
 	}
 	App::~App()
 	{
-		quit();
+		stop(true);
 	}
 	unsigned long App::getRunTimeMS() const
 	{
@@ -64,25 +64,17 @@ namespace ce
 		if(!m_isRunning)
 			return false;
 
-		return onLoop();
-	}
-	bool App::quit(bool force)
-	{
-		if(!m_isRunning)
-			return false;
+		bool keepRunning = onProcess();
+		if(m_isRunning && !keepRunning)
+			stop(true);
 
-		bool isValid = onQuit(force) || force;
-
-		if(isValid)
-			m_isRunning = false;
-
-		return isValid;
+		return m_isRunning;
 	}
 	void App::setCurrent()
 	{
 		ms_current = this;
 	}
-	void App::sleep(unsigned long timeMS)
+	void App::sleepMS(unsigned long timeMS)
 	{
 		#ifdef linux
 			usleep(timeMS * 1000);
@@ -99,38 +91,53 @@ namespace ce
 
 		setCurrent();
 
-		m_isRunning = true;
+		m_isRunning = onStart();
 
-		#ifdef linux
-			timeval currTime;
-			gettimeofday(&currTime, 0);
-			m_startTimeMS = currTime.tv_sec * 1000 + currTime.tv_usec / 1000;
-		#endif
+		if(m_isRunning)
+		{
+			#ifdef linux
+				timeval currTime;
+				gettimeofday(&currTime, 0);
+				m_startTimeMS = currTime.tv_sec * 1000 + currTime.tv_usec / 1000;
+			#endif
 
-		#ifdef _WIN32
-			LARGE_INTEGER frequency;
-			if(QueryPerformanceFrequency(&frequency))
-			{
-				LARGE_INTEGER count;
-				QueryPerformanceCounter(&count);
-				m_startTimeMS = (1000 * count.QuadPart) / frequency.QuadPart;
-			}
-			else
-				m_startTimeMS = GetTickCount();
-		#endif
+			#ifdef _WIN32
+				LARGE_INTEGER frequency;
+				if(QueryPerformanceFrequency(&frequency))
+				{
+					LARGE_INTEGER count;
+					QueryPerformanceCounter(&count);
+					m_startTimeMS = (1000 * count.QuadPart) / frequency.QuadPart;
+				}
+				else
+					m_startTimeMS = GetTickCount();
+			#endif
+		}
 
-		return onStart();
+		return m_isRunning;
 	}
-
-	bool App::onLoop()
+	bool App::stop(bool force)
 	{
-		return true;
+		if(!m_isRunning)
+			return false;
+
+		bool isValid = onStop(force) || force;
+
+		if(isValid)
+			m_isRunning = false;
+
+		return isValid;
 	}
-	bool App::onQuit(bool force)
+
+	bool App::onProcess()
 	{
 		return true;
 	}
 	bool App::onStart()
+	{
+		return true;
+	}
+	bool App::onStop(bool force)
 	{
 		return true;
 	}

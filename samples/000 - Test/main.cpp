@@ -30,11 +30,11 @@ public:
 
         return true;
     }
-    bool onLoop()
+    bool onProcess()
     {
-        return quit();
+        return false;
     }
-    bool onQuit(bool force)
+    bool onStop(bool force)
     {
         delete m_image;
 

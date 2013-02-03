@@ -22,22 +22,22 @@ public:
 
 		return true;
 	}
-	bool onLoop()
+	bool onProcess()
 	{
 		m_counter++;
 
-		print("| o-> onLoop [%i/10]\n", m_counter);
+		print("| o-> onProcess [%i/10]\n", m_counter);
 
 		if(m_counter >= 10)
-			return quit();
+			return false;
 		else
-			sleep(1000);
+			sleepMS(1000);
 
 		return true;
 	}
-	bool onQuit(bool force)
+	bool onStop(bool force)
 	{
-		print("o-> onQuit\n");
+		print("o-> onStop\n");
 
 		return true;
 	}

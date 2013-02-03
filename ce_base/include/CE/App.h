@@ -51,10 +51,6 @@ namespace ce
 		 */
 		void setCurrent();
 
-		/** @brief Puts the application to sleep for 'timeMS' milliseconds.
-		 */
-		void sleepMS(unsigned long timeMS);
-
 		/** @brief Attempts to start the application and returns true if successful.
 		 */
 		bool start();
@@ -63,7 +59,6 @@ namespace ce
 		 */
 		bool stop(bool force = false);
 
-		//- User-Defined Functions -
 		/** @brief Called when the application run cycle is processed.
 		 *	The return value determines whether or not the application should keep running.
 		 */

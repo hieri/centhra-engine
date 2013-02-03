@@ -74,16 +74,6 @@ namespace ce
 	{
 		ms_current = this;
 	}
-	void App::sleepMS(unsigned long timeMS)
-	{
-		#ifdef linux
-			usleep(timeMS * 1000);
-		#endif
-
-		#ifdef _WIN32
-			Sleep(timeMS);
-		#endif
-	}
 	bool App::start()
 	{
 		if(m_isRunning)

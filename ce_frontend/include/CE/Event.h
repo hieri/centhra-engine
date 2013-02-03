@@ -22,7 +22,7 @@ namespace ce
 		MouseMotion
 	} EventType;
 
-	/**	@brief Default Event Data Structure
+	/**	@brief Default Event Data Structure Class
 	 */
 	typedef struct DefaultEvent
 	{
@@ -31,7 +31,7 @@ namespace ce
 		Canvas *canvas;
 	} DefaultEvent;
 
-	/**	@brief Render Event Data Structure
+	/**	@brief Render Event Data Structure Class
 	 */
 	typedef struct RenderEvent
 	{
@@ -40,7 +40,7 @@ namespace ce
 		Canvas *canvas;
 	} RenderEvent;
 
-	/**	@brief Key Event Data Structure
+	/**	@brief Key Event Data Structure Class
 	 */
 	typedef struct KeyEvent
 	{
@@ -50,7 +50,7 @@ namespace ce
 		unsigned int keyCode, state;
 	} KeyEvent;
 
-	/**	@brief Mouse Button Event Data Structure
+	/**	@brief Mouse Button Event Data Structure Class
 	 */
 	typedef struct MouseButtonEvent
 	{
@@ -61,7 +61,7 @@ namespace ce
 		unsigned int button, state;
 	} MouseButtonEvent;
 
-	/**	@brief Mouse Motion Event Data Structure
+	/**	@brief Mouse Motion Event Data Structure Class
 	 */
 	typedef struct MouseMotionEvent
 	{
@@ -71,7 +71,7 @@ namespace ce
 		int x, y;
 	} MouseMotionEvent;
 
-	/**	@brief Event Union Data Structure
+	/**	@brief Event Union Data Structure Class
 	 */
 	typedef union Event
 	{

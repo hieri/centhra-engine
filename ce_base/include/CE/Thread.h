@@ -6,6 +6,8 @@
 
 namespace ce
 {
+	/**	@brief Thread Data Structure Class
+	 */
 	class Thread
 	{
 		#if CE_BASE_USEPOSIXTHREAD
@@ -18,31 +20,35 @@ namespace ce
 		void *(*m_process)(void *);
 
 	public:
-		class Attributes
-		{
-			void *m_pThread_attr;
-
-		public:
-			Attributes();
-			~Attributes();
-
-			int GetDetachState() const;
-			size_t GetStackSize() const;
-			void SetDetachState(int detachState);
-			void SetStackSize(size_t stackSize);
-		};
-
+		/**	@brief Exits the thread function.
+		 *	@param retVal Return value of the thread.
+		 */
 		static void Exit(void *retVal = 0);
 
+		/**	@brief Constructor.
+		 *	@param process Thread function.
+		 */
 		Thread(void *(*process)(void *));
+
+		/**	@brief Destructor.
+		 */
 		~Thread();
 
+		/**	@brief Starts the thread.
+		 *	@param arg Argument passed to the thread function.
+		 *	@param attributes Attributes for the thread.
+		 */
 		void Start(void *arg = 0, void *attributes = 0);
-		void Join(void **ret = 0);
-		bool IsRunning() const;
 
-	private:
-		Attributes *m_attributes;
+		/**	@brief Joins the thread with the current thread.
+		 *	@param ret Stores the return value of the thread.
+		 */
+		void Join(void **ret = 0);
+
+		/**	@brief Returns true if the thread is running.
+		 *	@return Whether or not the thraed is running.
+		 */
+		bool IsRunning() const;
 	};
 }
 

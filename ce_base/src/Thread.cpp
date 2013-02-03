@@ -17,7 +17,6 @@ namespace ce
 {
 	Thread::Thread(void *(*process)(void *))
 	{
-		m_attributes = 0;
 		m_process = process;
 
 		#if CE_BASE_USEPOSIXTHREAD
@@ -56,6 +55,10 @@ namespace ce
 		#if CE_BASE_USEPOSIXTHREAD
 			pthread_exit(retVal);
 		#endif
+
+		#if CE_BASE_USEWINTHREAD
+			ExitThread((DWORD)retVal);
+		#endif
 	}
 	void Thread::Join(void **ret)
 	{
@@ -83,48 +86,5 @@ namespace ce
 		#endif
 
 		return false;
-	}
-
-	Thread::Attributes::Attributes()
-	{
-		#if CE_BASE_USEPOSIXTHREAD
-			pthread_attr_t *attr = new pthread_attr_t;
-			pthread_attr_init(attr);
-			m_pThread_attr = attr;
-		#endif
-	}
-	Thread::Attributes::~Attributes()
-	{
-		#if CE_BASE_USEPOSIXTHREAD
-			pthread_attr_destroy((pthread_attr_t *)m_pThread_attr);
-		#endif
-	}
-	int Thread::Attributes::GetDetachState() const
-	{
-		int detachState = 0;
-		#if CE_BASE_USEPOSIXTHREAD
-			pthread_attr_getdetachstate((pthread_attr_t *)m_pThread_attr, &detachState);
-		#endif
-		return detachState;
-	}
-	size_t Thread::Attributes::GetStackSize() const
-	{
-		size_t stackSize = 0;
-		#if CE_BASE_USEPOSIXTHREAD
-			pthread_attr_getstacksize((pthread_attr_t *)m_pThread_attr, &stackSize);
-		#endif
-		return stackSize;
-	}
-	void Thread::Attributes::SetDetachState(int detachState)
-	{
-		#if CE_BASE_USEPOSIXTHREAD
-			pthread_attr_setdetachstate((pthread_attr_t *)m_pThread_attr, detachState);
-		#endif
-	}
-	void Thread::Attributes::SetStackSize(size_t stackSize)
-	{
-		#if CE_BASE_USEPOSIXTHREAD
-			pthread_attr_setstacksize((pthread_attr_t *)m_pThread_attr, stackSize);
-		#endif
 	}
 }

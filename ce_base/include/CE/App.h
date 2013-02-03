@@ -34,14 +34,17 @@ namespace ce
 		~App();
 
 		/**	@brief Returns the time since the application was started in milliseconds.
+		 *	@return Time since the application was started in milliseconds.
 		 */
 		unsigned long GetRunTimeMS() const;
 
 		/**	@brief Returns true if the application is running.
+		 *	@return Whether or not the application is running.
 		 */
 		bool IsRunning() const;
 
-		/**	@brief Processes the application run cycle and returns true if the application is still running.
+		/**	@brief Processes the application run cycle.
+		 *	@return Whether or not the application is still running.
 		 */
 		bool Process();
 
@@ -49,26 +52,30 @@ namespace ce
 		 */
 		void SetCurrent();
 
-		/**	@brief Attempts to start the application and returns true if successful.
+		/**	@brief Attempts to start the application.
+		 *	@return Whether or not the application has started.
 		 */
 		bool Start();
 
-		/**	@brief Attempts to stop the application and returns true if successful.
+		/**	@brief Attempts to stop the application.
+		 *	@param force If true, the stop is considered a force stop.
+		 *	@return Whether or not the application has stopped.
 		 */
 		bool Stop(bool force = false);
 
 		/**	@brief Called when the application run cycle is processed.
-		 *	The return value determines whether or not the application should keep running.
+		 *	@return Whether or not the application should keep running.
 		 */
 		virtual bool OnProcess();
 
 		/**	@brief Called when the application is asked to start.
-		 *	The return value determines whether or not the application has successfully started.
+		 *	@return Whether or not the application should start.
 		 */
 		virtual bool OnStart();
 
 		/**	@brief Called when the application is asked to stop.
-		 *	The return value determines whether or not the application has successfulled stopped.
+		 *	@param force If true, the stop is considered a force stop.
+		 *	@return Whether or not the application should stop.
 		 */
 		virtual bool OnStop(bool force = false);
 	};

@@ -31,6 +31,8 @@ namespace ce
 		}
 
 		/**	@brief Returns the dot product of the vector with another.
+		 *	@param v 2nd vector of the dot product.
+		 *	@return Dot product of this and v.
 		 */
 		inline Type Dot(const Vector2 &v) const
 		{
@@ -38,6 +40,7 @@ namespace ce
 		}
 
 		/**	@brief Returns the length of the vector.
+		 *	@return Length of the vector.
 		 */
 		inline Type GetLength() const
 		{
@@ -45,6 +48,7 @@ namespace ce
 		}
 
 		/**	@brief Returns the x component of the vector.
+		 *	@return X component of the vector.
 		 */
 		inline Type GetX() const
 		{
@@ -52,6 +56,7 @@ namespace ce
 		}
 
 		/**	@brief Returns the y component of the vector.
+		 *	@return Y component of the vector.
 		 */
 		inline Type GetY() const
 		{
@@ -59,6 +64,7 @@ namespace ce
 		}
 
 		/**	@brief Sets the x component of the vector.
+		 *	@param x X component value.
 		 */
 		inline void SetX(Type x)
 		{
@@ -66,6 +72,7 @@ namespace ce
 		}
 
 		/**	@brief Sets the y component of the vector.
+		 *	@param y Y component value.
 		 */
 		inline void SetY(Type y)
 		{

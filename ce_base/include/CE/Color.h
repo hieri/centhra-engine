@@ -34,6 +34,7 @@ namespace ce
 		}
 
 		/**	@brief Returns the alpha component of the color.
+		 *	@return Alpha component of the color.
 		 */
 		inline unsigned char GetAlpha() const
 		{
@@ -41,6 +42,7 @@ namespace ce
 		}
 
 		/**	@brief Returns the blue component of the color.
+		 *	@return Blue component of the color.
 		 */
 		inline unsigned char GetBlue() const
 		{
@@ -48,6 +50,7 @@ namespace ce
 		}
 
 		/**	@brief Returns the green component of the color.
+		 *	@return Green component of the color.
 		 */
 		inline unsigned char GetGreen() const
 		{
@@ -55,6 +58,7 @@ namespace ce
 		}
 
 		/**	@brief Returns the red component of the color.
+		 *	@return Red component of the color.
 		 */
 		inline unsigned char GetRed() const
 		{
@@ -62,6 +66,7 @@ namespace ce
 		}
 
 		/**	@brief Sets the alpha component of the color.
+		 *	@param alpha Alpha component value.
 		 */
 		inline void SetAlpha(unsigned char alpha)
 		{
@@ -69,6 +74,7 @@ namespace ce
 		}
 
 		/**	@brief Sets the blue component of the color.
+		 *	@param alpha Blue component value.
 		 */
 		inline void SetBlue(unsigned char blue)
 		{
@@ -76,6 +82,7 @@ namespace ce
 		}
 
 		/**	@brief Sets the green component of the color.
+		 *	@param alpha Green component value.
 		 */
 		inline void SetGreen(unsigned char green)
 		{
@@ -83,6 +90,7 @@ namespace ce
 		}
 
 		/**	@brief Set the red component of the color.
+		 *	@param alpha Red component value.
 		 */
 		inline void SetRed(unsigned char red)
 		{

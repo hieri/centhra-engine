@@ -12,8 +12,6 @@
 namespace ce
 {
 	/**	@brief Abstract Application Class
-	 *	@author Johnny Patterson
-	 *	@date February 2, 2013
 	 */
 	class App
 	{
@@ -23,53 +21,53 @@ namespace ce
 		unsigned long m_startTimeMS;
 
 	public:
-		/** @brief Returns current application instance.
+		/**	@brief Returns current application instance.
 		 */
 		static App *getCurrent();
 
-		/** @brief Default Constructor.
+		/**	@brief Default Constructor.
 		 */
 		App();
 
-		/** @brief Destructor.
+		/**	@brief Destructor.
 		 */
 		~App();
 
-		/** @brief Returns the time since the application was started in milliseconds.
+		/**	@brief Returns the time since the application was started in milliseconds.
 		 */
 		unsigned long getRunTimeMS() const;
 
-		/** @brief Returns true if the application is running.
+		/**	@brief Returns true if the application is running.
 		 */
 		bool isRunning() const;
 
-		/** @brief Processes the application run cycle and returns true if the application is still running.
+		/**	@brief Processes the application run cycle and returns true if the application is still running.
 		 */
 		bool process();
 
-		/** @brief Sets the application instance as the current focus.
+		/**	@brief Sets the application instance as the current focus.
 		 */
 		void setCurrent();
 
-		/** @brief Attempts to start the application and returns true if successful.
+		/**	@brief Attempts to start the application and returns true if successful.
 		 */
 		bool start();
 
-		/** @brief Attempts to stop the application and returns true if successful.
+		/**	@brief Attempts to stop the application and returns true if successful.
 		 */
 		bool stop(bool force = false);
 
-		/** @brief Called when the application run cycle is processed.
+		/**	@brief Called when the application run cycle is processed.
 		 *	The return value determines whether or not the application should keep running.
 		 */
 		virtual bool onProcess();
 
-		/** @brief Called when the application is asked to start.
+		/**	@brief Called when the application is asked to start.
 		 *	The return value determines whether or not the application has successfully started.
 		 */
 		virtual bool onStart();
 
-		/** @brief Called when the application is asked to stop.
+		/**	@brief Called when the application is asked to stop.
 		 *	The return value determines whether or not the application has successfulled stopped.
 		 */
 		virtual bool onStop(bool force = false);

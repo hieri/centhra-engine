@@ -12,6 +12,5 @@ set(CE_BASE_USEWINSOCKET 1)
 set(CE_FRONTEND_USEWIN 1)
 
 project(ce)
-add_subdirectory(ce_base)
-add_subdirectory(ce_frontend)
+add_subdirectory(modules)
 add_subdirectory(samples)

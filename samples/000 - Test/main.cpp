@@ -17,7 +17,7 @@ public:
     }
 
     //- Define the virtual functions for the class. -
-    bool onStart()
+    bool OnStart()
     {
         print("Initializing Image Library\n");
         Image::Init();
@@ -30,11 +30,11 @@ public:
 
         return true;
     }
-    bool onProcess()
+    bool OnProcess()
     {
         return false;
     }
-    bool onStop(bool force)
+    bool OnStop(bool force)
     {
         delete m_image;
 

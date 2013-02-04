@@ -2,7 +2,11 @@ Implemented
 	ce_base
 	|-o App - Core App template
 	|-o Base - Module Functions/Definitions
+	|-o Color - Color Data Structure
+	|-o Image - Image Data Structure
+	|-o Socket - Object Orientated Socketing
 	|-o Thread - Object Orientated Threading
+	|-o Vector2 - 2d Vector Data Structure
 	ce_frontend
 	|-o AppFrontend - OS Specific Frontend App
 	|-o Frontend - Module Functions/Definitions
@@ -13,6 +17,29 @@ Planned
 - templated handlers
 - ndk support
   - optional java names
+ce_base
+|-o Audio
+|-o Vector3
+|-o Quaternion
+|-o Matrix3x3
+|-o Matrix4x4
+ce_gameBase
+|-o AIController
+|-o GameConnection
+ce_game2d
+|-o Sprite
+|-o GameView2D
+ce_game3d
+|-o Asset
+|-o GameView3D
+ce_ui
+|-o Control
+  |-o Window
+  |-o Text
+  |-o Image
+  |-o Button
+  | |-o Radio Button
+  |-o List
 ce_plugBullet - physics handler
 ce_plugAssimp - asset loading handler
 ce_plugDevIL - image loading handler

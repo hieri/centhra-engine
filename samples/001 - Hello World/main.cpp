@@ -16,17 +16,17 @@ public:
 	}
 
 	//- Define the virtual functions for the class. -
-	bool onStart()
+	bool OnStart()
 	{
-		print("o-> onStart\n");
+		print("o-> OnStart\n");
 
 		return true;
 	}
-	bool onProcess()
+	bool OnProcess()
 	{
 		m_counter++;
 
-		print("| o-> onProcess [%i/10]\n", m_counter);
+		print("| o-> OnProcess [%i/10]\n", m_counter);
 
 		if(m_counter >= 10)
 			return false;
@@ -35,9 +35,9 @@ public:
 
 		return true;
 	}
-	bool onStop(bool force)
+	bool OnStop(bool force)
 	{
-		print("o-> onStop\n");
+		print("o-> OnStop\n");
 
 		return true;
 	}

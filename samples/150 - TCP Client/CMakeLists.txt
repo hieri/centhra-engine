@@ -5,7 +5,7 @@ set(SRC
 )
 
 set(INCLUDE
-	${PROJECT_SOURCE_DIR}/ce_base/include
+	${PROJECT_SOURCE_DIR}/modules/ce_base/include
 )
 
 set(LIB

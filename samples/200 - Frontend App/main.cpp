@@ -17,21 +17,21 @@ public:
 	}
 
 	//- Define the virtual functions for the class. -
-	bool onStart()
+	bool OnStart()
 	{
-		print("o-> onStart\n");
+		print("o-> OnStart\n");
 		m_canvas = Canvas::Create(640, 480, "200 - Frontend App Sample");
 
 		return true;
 	}
-	bool onProcess()
+	bool OnProcess()
 	{
 		sleepMS(1);
 		return true;
 	}
-	bool onStop(bool force)
+	bool OnStop(bool force)
 	{
-		print("o-> onStop\n");
+		print("o-> OnStop\n");
 		delete m_canvas;
 
 		return true;

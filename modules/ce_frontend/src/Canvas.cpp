@@ -54,75 +54,75 @@ namespace ce
 					PostQuitMessage(0);
 					return app->Stop();
 				case WM_KEYDOWN:
-					event.type = KeyDown;
+					event.type = event::KeyDown;
 					event.key.keyCode = wParam;
 					event.key.state = 1;
 					app->OnEvent(event);
 					break;
 				case WM_KEYUP:
-					event.type = KeyUp;
+					event.type = event::KeyUp;
 					event.key.keyCode = wParam;
 					event.key.state = 0;
 					app->OnEvent(event);
 					break;
 				case WM_LBUTTONDOWN:
-					event.type = MouseButtonDown;
+					event.type = event::MouseButtonDown;
 					event.mouseButton.button = MK_LBUTTON;
 					event.mouseButton.x = LOWORD(lParam);
 					event.mouseButton.y = HIWORD(lParam);
 					app->OnEvent(event);
 					break;
 				case WM_LBUTTONUP:
-					event.type = MouseButtonUp;
+					event.type = event::MouseButtonUp;
 					event.mouseButton.button = MK_LBUTTON;
 					event.mouseButton.x = LOWORD(lParam);
 					event.mouseButton.y = HIWORD(lParam);
 					app->OnEvent(event);
 					break;
 				case WM_RBUTTONDOWN:
-					event.type = MouseButtonDown;
+					event.type = event::MouseButtonDown;
 					event.mouseButton.button = MK_RBUTTON;
 					event.mouseButton.x = LOWORD(lParam);
 					event.mouseButton.y = HIWORD(lParam);
 					app->OnEvent(event);
 					break;
 				case WM_RBUTTONUP:
-					event.type = MouseButtonUp;
+					event.type = event::MouseButtonUp;
 					event.mouseButton.button = MK_RBUTTON;
 					event.mouseButton.x = LOWORD(lParam);
 					event.mouseButton.y = HIWORD(lParam);
 					app->OnEvent(event);
 					break;
 				case WM_MBUTTONDOWN:
-					event.type = MouseButtonDown;
+					event.type = event::MouseButtonDown;
 					event.mouseButton.button = MK_MBUTTON;
 					event.mouseButton.x = LOWORD(lParam);
 					event.mouseButton.y = HIWORD(lParam);
 					app->OnEvent(event);
 					break;
 				case WM_MBUTTONUP:
-					event.type = MouseButtonUp;
+					event.type = event::MouseButtonUp;
 					event.mouseButton.button = MK_MBUTTON;
 					event.mouseButton.x = LOWORD(lParam);
 					event.mouseButton.y = HIWORD(lParam);
 					app->OnEvent(event);
 					break;
 				case WM_XBUTTONDOWN:
-					event.type = MouseButtonDown;
+					event.type = event::MouseButtonDown;
 					event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
 					event.mouseButton.x = LOWORD(lParam);
 					event.mouseButton.y = HIWORD(lParam);
 					app->OnEvent(event);
 					break;
 				case WM_XBUTTONUP:
-					event.type = MouseButtonUp;
+					event.type = event::MouseButtonUp;
 					event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
 					event.mouseButton.x = LOWORD(lParam);
 					event.mouseButton.y = HIWORD(lParam);
 					app->OnEvent(event);
 					break;
 				case WM_MOUSEMOVE:
-					event.type = MouseMotion;
+					event.type = event::MouseMotion;
 					event.mouseMotion.x = LOWORD(lParam);
 					event.mouseMotion.y = HIWORD(lParam);
 					app->OnEvent(event);
@@ -562,14 +562,22 @@ namespace ce
 		{
 			m_lastRenderTimeMS = time;
 
+			glClearColor(0.2f, 0.4f, 0.9f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
+
 			Event event;
 			event.base.canvas = this;
 			event.base.timeMS = time;
-			event.type = PreRender;
+			event.type = event::PreRender;
 			m_app->OnEvent(event);
 
-			glClearColor(0.2f, 0.4f, 0.9f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+			event.base.timeMS = m_app->GetRunTimeMS();
+			event.type = event::Render;
+			m_app->OnEvent(event);
+
+			event.base.timeMS = m_app->GetRunTimeMS();
+			event.type = event::PostRender;
+			m_app->OnEvent(event);
 
 			#if CE_FRONTEND_USEXLIB
 				Display *xDisplay = (Display *)m_app->GetXDisplay();
@@ -580,11 +588,6 @@ namespace ce
 					glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3) ? m_glxWindow : m_xWindow);
 				#endif
 			#endif
-
-			event.base.timeMS = m_app->GetRunTimeMS();
-			event.type = PostRender;
-			m_app->OnEvent(event);
-
 			#if CE_FRONTEND_USEWIN
 				SwapBuffers((HDC)m_deviceContextHandle);
 			#endif
@@ -592,29 +595,6 @@ namespace ce
 	}
 	bool Canvas::OnEvent(Event &event)
 	{
-		switch(event.type)
-		{
-			case PreRender:
-				break;
-			case PostRender:
-				break;
-			case KeyDown:
-//				print("Key Down: %i %i\n", event.key.keyCode, event.key.state);
-				break;
-			case KeyUp:
-//				print("Key Up: %i %i\n", event.key.keyCode, event.key.state);
-				break;
-			case MouseButtonDown:
-//				print("Mouse Down: %i %i %i %i\n", event.mouseButton.x, event.mouseButton.y, event.mouseButton.button, event.mouseButton.state);
-				break;
-			case MouseButtonUp:
-//				print("Mouse Up: %i %i %i %i\n", event.mouseButton.x, event.mouseButton.y, event.mouseButton.button, event.mouseButton.state);
-				break;
-			case MouseMotion:
-//				print("Mouse Motion: %i %i\n", event.mouseMotion.x, event.mouseMotion.y);
-				break;
-		}
-
 		return true;
 	}
 }

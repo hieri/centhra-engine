@@ -77,7 +77,7 @@ namespace ce
 					case XCB_KEY_PRESS:
 					{
 						xcb_button_press_event_t *cast = (xcb_button_press_event_t *)xcbEvent;
-						event.type = KeyDown;
+						event.type = event::KeyDown;
 						xcbWindow = cast->event;
 						if(m_canvasMap.count(xcbWindow))
 							event.base.canvas = m_canvasMap[xcbWindow];
@@ -89,7 +89,7 @@ namespace ce
 					case XCB_KEY_RELEASE:
 					{
 						xcb_key_release_event_t *cast = (xcb_key_release_event_t *)xcbEvent;
-						event.type = KeyUp;
+						event.type = event::KeyUp;
 						xcbWindow = cast->event;
 						if(m_canvasMap.count(xcbWindow))
 							event.base.canvas = m_canvasMap[xcbWindow];
@@ -101,7 +101,7 @@ namespace ce
 					case XCB_BUTTON_PRESS:
 					{
 						xcb_button_release_event_t *cast = (xcb_button_release_event_t *)xcbEvent;
-						event.type = MouseButtonDown;
+						event.type = event::MouseButtonDown;
 						xcbWindow = cast->event;
 						if(m_canvasMap.count(xcbWindow))
 							event.base.canvas = m_canvasMap[xcbWindow];
@@ -115,7 +115,7 @@ namespace ce
 					case XCB_BUTTON_RELEASE:
 					{
 						xcb_button_release_event_t *cast = (xcb_button_release_event_t *)xcbEvent;
-						event.type = MouseButtonUp;
+						event.type = event::MouseButtonUp;
 						xcbWindow = cast->event;
 						if(m_canvasMap.count(xcbWindow))
 							event.base.canvas = m_canvasMap[xcbWindow];
@@ -129,7 +129,7 @@ namespace ce
 					case XCB_MOTION_NOTIFY:
 					{
 						xcb_motion_notify_event_t *cast = (xcb_motion_notify_event_t *)xcbEvent;
-						event.type = MouseMotion;
+						event.type = event::MouseMotion;
 						xcbWindow = cast->event;
 						if(m_canvasMap.count(xcbWindow))
 							event.base.canvas = m_canvasMap[xcbWindow];
@@ -167,19 +167,19 @@ namespace ce
 					case UnmapNotify:
 						return Stop(true);
 					case KeyPress:
-						event.type = KeyDown;
+						event.type = event::KeyDown;
 						event.key.keyCode = xEvent.xkey.keycode;
 						event.key.state = xEvent.xkey.state;
 						OnEvent(event);
 						break;
 					case KeyRelease:
-						event.type = KeyUp;
+						event.type = event::KeyUp;
 						event.key.keyCode = xEvent.xkey.keycode;
 						event.key.state = xEvent.xkey.state;
 						OnEvent(event);
 						break;;
 					case ButtonPress:
-						event.mouseButton.type = MouseButtonDown;
+						event.mouseButton.type = event::MouseButtonDown;
 						event.mouseButton.button = xEvent.xbutton.button;
 						event.mouseButton.state = xEvent.xbutton.state;
 						event.mouseButton.x = xEvent.xbutton.x;
@@ -187,7 +187,7 @@ namespace ce
 						OnEvent(event);
 						break;
 					case ButtonRelease:
-						event.mouseButton.type = MouseButtonUp;
+						event.mouseButton.type = event::MouseButtonUp;
 						event.mouseButton.button = xEvent.xbutton.button;
 						event.mouseButton.state = xEvent.xbutton.state;
 						event.mouseButton.x = xEvent.xbutton.x;
@@ -195,7 +195,7 @@ namespace ce
 						OnEvent(event);
 						break;
 					case MotionNotify:
-						event.type = MouseMotion;
+						event.type = event::MouseMotion;
 						event.mouseMotion.x = xEvent.xmotion.x;
 						event.mouseMotion.y = xEvent.xmotion.y;
 						OnEvent(event);

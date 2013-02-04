@@ -10,17 +10,21 @@ namespace ce
 {
 	class Canvas;
 
-	typedef enum EventType
+	namespace event
 	{
-		Null,
-		PreRender,
-		PostRender,
-		KeyDown,
-		KeyUp,
-		MouseButtonDown,
-		MouseButtonUp,
-		MouseMotion
-	} EventType;
+		typedef enum EventType
+		{
+			Null,
+			PreRender,
+			Render,
+			PostRender,
+			KeyDown,
+			KeyUp,
+			MouseButtonDown,
+			MouseButtonUp,
+			MouseMotion
+		} EventType;
+	}
 
 	/**	@brief Default Event Data Structure Class
 	 */

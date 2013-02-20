@@ -35,6 +35,9 @@ int main(int argc, char **argv)
 	sleepMS(500);
 	threadB.Start((void *)"Thread B");
 
+	threadA.Join();
+	threadB.Join();
+
 	print("o-> Main Ended\n");
 	Thread::Exit(NULL);
 	return 0;

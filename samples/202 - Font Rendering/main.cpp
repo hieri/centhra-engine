@@ -2,7 +2,6 @@
 #include <CE/AppFrontend.h>
 #include <CE/Base.h>
 #include <CE/Canvas.h>
-#include <CE/Image.h>
 #include <CE/Font.h>
 
 //- OpenGL -
@@ -15,41 +14,27 @@ using namespace ce;
 class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
-	Image *m_image;
 	Font *m_font;
 
 public:
 	AppTest()
 	{
 		m_canvas = 0;
-		m_image = 0;
+		m_font = 0;
 	}
 
 	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
-		print("Initializing Image Library\n");
-		Image::Init();
+		print("Initializing Font Library\n");
 		Font::Init();
 
-		m_canvas = Canvas::Create(300, 300, "201 - Image Rendering");
+		m_canvas = Canvas::Create(300, 300, "202 - Font Rendering");
 
-		print("Loading <../201 - Image Rendering/centhra.png>\n");
-		m_image = Image::CreateFromFile("../201 - Image Rendering/centhra.png");
-		if(m_image)
-		{
-			Vector2<int> imageSize = m_image->GetSize();
-			print("  Width: %d Height: %d\n", imageSize.GetX(), imageSize.GetY());
-		}
-		else
-			print("  Unable to load image.\n");
-
-		print("Loading <../000 - Test/FreeMono.ttf>\n");
-		m_font = Font::CreateFromFile("../000 - Test/FreeMono.ttf");
+		print("Loading <../202 - Font Rendering/res/FreeMono.ttf>\n");
+		m_font = Font::CreateFromFile("../202 - Font Rendering/res/FreeMono.ttf");
 		if(m_font)
-		{
 			m_font->SetCharSize(0, 14*64, 96, 96);
-		}
 		else
 			print("  Unable to load font.\n");
 
@@ -74,7 +59,6 @@ public:
 	bool OnStop(bool force)
 	{
 		delete m_canvas;
-		delete m_image;
 		delete m_font;
 
 		return true;
@@ -87,15 +71,25 @@ public:
 				glClear(GL_COLOR_BUFFER_BIT);
 				glClearColor(0.f, 0.f, 0.f, 1.f);
 				glPushMatrix();
-					glTranslatef(0.f, 100.f, 0.f);
+					glTranslatef(0.f, 8.f, 0.f);
 					glColor4f(1.f, 0.f, 0.f, 1.f);
 					glPushMatrix();
-						m_font->DrawText("glPopMatrix();");
+						m_font->DrawText("Hello font rendering!");
 					glPopMatrix();
 					glTranslatef(0.f, 20.f, 0.f);
 					glColor4f(1.f, 1.f, 1.f, 1.f);
 					glPushMatrix();
-						m_font->DrawText("glPopMatrix();");
+						m_font->DrawText("Hello font rendering!");
+					glPopMatrix();
+					glTranslatef(0.f, 20.f, 0.f);
+					glColor4f(0.f, 0.f, 1.f, 1.f);
+					glPushMatrix();
+						m_font->DrawText("Hello font rendering!");
+					glPopMatrix();
+					glTranslatef(0.f, 20.f, 0.f);
+					glColor4f(0.f, 1.f, 0.f, 1.f);
+					glPushMatrix();
+						m_font->DrawText("Hello font rendering!");
 					glPopMatrix();
 				glPopMatrix();
 				break;
@@ -106,7 +100,7 @@ public:
 
 int main(int argc, char **argv)
 {
-	print("201 - Image Rendering | Centhra Engine v%s\n", getVersionString().c_str());
+	print("202 - Font Rendering | Centhra Engine v%s\n", getVersionString().c_str());
 
 	AppTest myApp;
 	myApp.Start();

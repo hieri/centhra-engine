@@ -562,9 +562,6 @@ namespace ce
 		{
 			m_lastRenderTimeMS = time;
 
-			glClearColor(0.2f, 0.4f, 0.9f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
-
 			Event event;
 			event.base.canvas = this;
 			event.base.timeMS = time;

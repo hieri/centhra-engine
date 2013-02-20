@@ -62,6 +62,7 @@ public:
 			case event::PostRender:
 				if(m_image)
 				{
+					glClear(GL_COLOR_BUFFER_BIT);
 					glEnable(GL_TEXTURE_2D);
 						m_image->Bind();
 						glBegin(GL_QUADS);

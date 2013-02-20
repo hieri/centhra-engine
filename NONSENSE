@@ -26,6 +26,7 @@ ce_base
 |-o Quaternion
 |-o Matrix3x3
 |-o Matrix4x4
+|-o Font
 ce_gameBase
 |-o AIController
 |-o GameConnection

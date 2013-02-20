@@ -28,7 +28,7 @@ namespace ce
 	{
 		if(!fileExists(file))
 		{
-			setError("Image::createFromFile: File does not exist <%s>.", file);
+			setError("Image::CreateFromFile: File does not exist <%s>.", file);
 			return 0;
 		}
 
@@ -58,7 +58,7 @@ namespace ce
 				break;
 			default:
 				ilDeleteImages(1, &ilImage);
-				setError("Image::createFromFile: Format not supported for <%s>", file);
+				setError("Image::CreateFromFile: Format not supported for <%s>", file);
 				return 0;
 		}
 
@@ -82,7 +82,7 @@ namespace ce
 	{
 		if(!memory)
 		{
-			setError("Image::createFromMemory: Empty memory pointer");
+			setError("Image::CreateFromMemory: Empty memory pointer");
 			return 0;
 		}
 
@@ -109,7 +109,7 @@ namespace ce
 				break;
 			default:
 				ilDeleteImages(1, &ilImage);
-				setError("Image::createFromFile: Format not supported.");
+				setError("Image::CreateFromFile: Format not supported.");
 				return 0;
 		}
 
@@ -141,7 +141,7 @@ namespace ce
 				imageFormat = IL_RGBA;
 				break;
 			default:
-				setError("Image::createFromPixels: Format not supported.");
+				setError("Image::CreateFromPixels: Format not supported.");
 				return 0;
 		}
 

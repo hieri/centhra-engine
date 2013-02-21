@@ -5,6 +5,9 @@
 //- Standard Library -
 #include <algorithm>
 
+//- OpenGL -
+#include <GL/gl.h>
+
 using namespace std;
 
 namespace ce
@@ -13,6 +16,7 @@ namespace ce
 	{
 		Control::Control()
 		{
+			m_isVisible = true;
 			m_parent = 0;
 		}
 		void Control::Add(Control *control)
@@ -58,6 +62,10 @@ namespace ce
 				return false;
 			return find(m_children.begin(), m_children.end(), control) != m_children.end();
 		}
+		bool Control::IsVisible() const
+		{
+			return m_isVisible;
+		}
 		void Control::Remove(Control *control)
 		{
 			if(this != control)
@@ -69,6 +77,24 @@ namespace ce
 					m_children.erase(it);
 				}
 			}
+		}
+		void Control::Render()
+		{
+			if(m_isVisible)
+			{
+				glPushMatrix();
+				DoRender();
+				for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+					(*it)->Render();
+				glPopMatrix();
+			}
+		}
+		void Control::DoRender()
+		{
+		}
+		void Control::SetVisible(bool isVisible)
+		{
+			m_isVisible = isVisible;
 		}
 	}
 }

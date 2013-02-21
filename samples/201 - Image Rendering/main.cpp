@@ -62,21 +62,20 @@ public:
 			case event::PostRender:
 				if(m_image)
 				{
-					glClear(GL_COLOR_BUFFER_BIT);
 					glEnable(GL_TEXTURE_2D);
 						m_image->Bind();
 						glBegin(GL_QUADS);
 							glTexCoord2i(0, 0);
-							glVertex2i(-1, -1);
+							glVertex2i(0, 0);
 
 							glTexCoord2i(1, 0);
-							glVertex2i(1, -1);
+							glVertex2i(300, 0);
 
 							glTexCoord2i(1, 1);
-							glVertex2i(1, 1);
+							glVertex2i(300, 300);
 
 							glTexCoord2i(0, 1);
-							glVertex2i(-1, 1);
+							glVertex2i(0, 300);
 						glEnd();
 					glDisable(GL_TEXTURE_2D);
 				}

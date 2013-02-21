@@ -14,6 +14,7 @@
 
 //- OpenGL -
 #include <GL/gl.h>
+#include <GL/glu.h>
 
 #if CE_FRONTEND_USEXLIB
 	//- Xlib -
@@ -415,6 +416,8 @@ namespace ce
 
 		Canvas *canvas = new Canvas();
 		canvas->m_app = app;
+		canvas->m_width = width;
+		canvas->m_height = height;
 
 		#if CE_FRONTEND_USEWIN
 			HINSTANCE hInstance = (HINSTANCE)app->GetHInstance();
@@ -498,6 +501,8 @@ namespace ce
 	{
 		m_app = 0;
 		m_lastRenderTimeMS = 0;
+		m_width = 0;
+		m_height = 0;
 
 		#if CE_FRONTEND_USEXLIB
 			#if CE_FRONTEND_USEXCB
@@ -560,6 +565,18 @@ namespace ce
 		//- TODO: integrate togglable VSync -
 		if((time - m_lastRenderTimeMS) > 15)
 		{
+			glViewport(0, 0, m_width, m_height);
+
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluOrtho2D(0.f, (float)m_width, 0.f, (float)m_height);
+
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+
+			glClear(GL_COLOR_BUFFER_BIT);
+			glClearColor(0.f, 0.f, 0.f, 1.f);
+
 			m_lastRenderTimeMS = time;
 
 			Event event;

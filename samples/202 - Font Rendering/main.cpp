@@ -38,17 +38,6 @@ public:
 		else
 			print("  Unable to load font.\n");
 
-		glViewport(0, 0, 300, 300);
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		gluOrtho2D(0.f, 300.f, 0.f, 300.f);
-
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-		glClear(GL_COLOR_BUFFER_BIT);
-
 		return true;
 	}
 	bool OnProcess()
@@ -68,8 +57,6 @@ public:
 		switch(event.type)
 		{
 			case event::PostRender:
-				glClear(GL_COLOR_BUFFER_BIT);
-				glClearColor(0.f, 0.f, 0.f, 1.f);
 				glPushMatrix();
 					glTranslatef(0.f, 8.f, 0.f);
 					glColor4f(1.f, 0.f, 0.f, 1.f);

@@ -3,6 +3,7 @@ Implemented
 	|-o App - Core App template
 	|-o Base - Module Functions/Definitions
 	|-o Color - Color Data Structure
+	|-o Font
 	|-o Image - Image Data Structure
 	|-o Socket - Object Orientated Socketing
 	|-o Thread - Object Orientated Threading
@@ -26,7 +27,6 @@ ce_base
 |-o Quaternion
 |-o Matrix3x3
 |-o Matrix4x4
-|-o Font
 ce_gameBase
 |-o AIController
 |-o GameConnection
@@ -47,6 +47,7 @@ ce_ui
 ce_plugBullet - physics handler
 ce_plugAssimp - asset loading handler
 ce_plugDevIL - image loading handler
+ce_plugFreeType - font loading handler
 
 Deps:
 xcb

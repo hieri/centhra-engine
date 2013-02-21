@@ -13,9 +13,13 @@ namespace ce
 	{
 		class Control
 		{
+			bool m_isVisible;
 			Control *m_parent;
 			std::vector<Control *> m_children;
 			Vector2<int> m_position, m_extent;
+
+		protected:
+			virtual void DoRender();
 
 		public:
 			Control();
@@ -24,8 +28,11 @@ namespace ce
 			void Remove(Control *control);
 			bool IsAncestor(Control *control) const;
 			bool IsMember(Control *control) const;
+			bool IsVisible() const;
 			bool Contains(Control *control);
 			Control *GetParent() const;
+			void Render();
+			void SetVisible(bool isVisible);
 		};
 	}
 }

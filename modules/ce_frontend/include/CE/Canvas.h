@@ -18,6 +18,7 @@ namespace ce
 	{
 		AppFrontend *m_app;
 		unsigned long m_lastRenderTimeMS;
+		int m_width, m_height;
 
 		#if CE_FRONTEND_USEXLIB
 			int m_glxWindow;

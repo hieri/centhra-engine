@@ -2,8 +2,13 @@
 #include <CE/AppFrontend.h>
 #include <CE/Base.h>
 #include <CE/Canvas.h>
-#include <CE/Image.h>
-#include <CE/Font.h>
+#include <CE/Game2D/Plane.h>
+#include <CE/Game2D/ZoneEntity.h>
+#include <CE/Game2D/ZoneCamera.h>
+#include <CE/UI/GameView2D.h>
+
+//- Standard Library -
+#include <stdlib.h>
 
 //- OpenGL -
 #include <GL/gl.h>
@@ -11,58 +16,52 @@
 
 using namespace ce;
 
+#define NUMRANDOMS 250
+
 //- Define your own implementation of the AppFrontend class. -
 class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
-	Image *m_image;
-	Font *m_font;
+	game2d::Plane *m_plane;
+	game2d::ZoneEntity *m_entity;
+	game2d::ZoneCamera *m_camera;
+	ui::GameView2D *m_view;
+	bool w,a,s,d;
+	game2d::ZoneEntity **m_randoms;
 
 public:
 	AppTest()
 	{
 		m_canvas = 0;
-		m_image = 0;
+		m_plane = 0;
+		m_entity = 0;
+		m_camera = 0;
+		m_view = 0;
+		w = a = s = d = false;
+		m_randoms = 0;
 	}
 
 	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
-		print("Initializing Image Library\n");
-		Image::Init();
-		Font::Init();
+		srand(GetRunTimeMS());
+		m_canvas = Canvas::Create(640, 480, "000 - Test");
+		m_plane = new game2d::Plane(16, 16, 64.f);
+		m_entity = new game2d::ZoneEntity(Vector2<float>(128.f, 128.f), Vector2<float>(64.f, 64.f));
+		m_plane->Place(m_entity);
+		
+		m_camera = new game2d::ZoneCamera();
+		m_camera->SetFocus(m_entity);
 
-		m_canvas = Canvas::Create(300, 300, "201 - Image Rendering");
+		m_view = new ui::GameView2D(Vector2<int>(0, 0), Vector2<int>(640, 480));
+		m_view->SetCamera(m_camera);
 
-		print("Loading <../201 - Image Rendering/centhra.png>\n");
-		m_image = Image::CreateFromFile("../201 - Image Rendering/centhra.png");
-		if(m_image)
+		m_randoms = new game2d::ZoneEntity *[NUMRANDOMS];
+		for(int a = 0; a < NUMRANDOMS; a++)
 		{
-			Vector2<int> imageSize = m_image->GetSize();
-			print("  Width: %d Height: %d\n", imageSize.GetX(), imageSize.GetY());
+			m_randoms[a] = new game2d::ZoneEntity(Vector2<float>((float)(rand() % 1024), (float)(rand() % 1024)), Vector2<float>(16.f, 16.f));
+			m_plane->Place(m_randoms[a]);
 		}
-		else
-			print("  Unable to load image.\n");
-
-		print("Loading <../000 - Test/FreeMono.ttf>\n");
-		m_font = Font::CreateFromFile("../000 - Test/FreeMono.ttf");
-		if(m_font)
-		{
-			m_font->SetCharSize(0, 14*64, 96, 96);
-		}
-		else
-			print("  Unable to load font.\n");
-
-		glViewport(0, 0, 300, 300);
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		gluOrtho2D(0.f, 300.f, 0.f, 300.f);
-
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-		glClear(GL_COLOR_BUFFER_BIT);
 
 		return true;
 	}
@@ -74,8 +73,13 @@ public:
 	bool OnStop(bool force)
 	{
 		delete m_canvas;
-		delete m_image;
-		delete m_font;
+		delete m_plane;
+		delete m_entity;
+		delete m_camera;
+		delete m_view;
+		for(int a = 0; a < NUMRANDOMS; a++)
+			delete m_randoms[a];
+		delete [] m_randoms;
 
 		return true;
 	}
@@ -83,21 +87,78 @@ public:
 	{
 		switch(event.type)
 		{
+			case event::KeyDown:
+				switch(event.key.keyCode)
+				{
+					case 25:
+						w = true;
+						break;
+					case 38:
+						a = true;
+						break;
+					case 39:
+						s = true;
+						break;
+					case 40:
+						d = true;
+						break;
+				}
+				break;
+			case event::KeyUp:
+				switch(event.key.keyCode)
+				{
+					case 25:
+						w = false;
+						break;
+					case 38:
+						a = false;
+						break;
+					case 39:
+						s = false;
+						break;
+					case 40:
+						d = false;
+						break;
+				}
+				break;
 			case event::PostRender:
-				glClear(GL_COLOR_BUFFER_BIT);
-				glClearColor(0.f, 0.f, 0.f, 1.f);
-				glPushMatrix();
-					glTranslatef(0.f, 100.f, 0.f);
-					glColor4f(1.f, 0.f, 0.f, 1.f);
-					glPushMatrix();
-						m_font->DrawText("glPopMatrix();");
-					glPopMatrix();
-					glTranslatef(0.f, 20.f, 0.f);
-					glColor4f(1.f, 1.f, 1.f, 1.f);
-					glPushMatrix();
-						m_font->DrawText("glPopMatrix();");
-					glPopMatrix();
-				glPopMatrix();
+				Vector2<float> dif;
+				if(w)
+					dif[1] += 5.2f;
+				if(a)
+					dif[0] -= 5.2f;
+				if(s)
+					dif[1] -= 5.2f;
+				if(d)
+					dif[0] += 5.2f;
+
+				m_entity->Move(dif);
+
+				for(int a = 0; a < NUMRANDOMS; a++)
+				{
+					dif = Vector2<float>(0.f, 0.f);
+					unsigned char mov = rand() % 16;
+					if(mov & 1)
+						dif[1] += 1.f;
+					if(mov & 2)
+						dif[0] -= 1.f;
+					if(mov & 4)
+						dif[1] -= 1.f;
+					if(mov & 8)
+						dif[0] += 1.f;
+					Vector2<float> pos = m_randoms[a]->GetPosition();
+					if(pos[0] > 1024.f && dif[0] > 0)
+						dif[0] *= -1.f;
+					if(pos[0] < 0.f && dif[0] < 0)
+						dif[0] *= -1.f;
+					if(pos[1] > 1024.f && dif[1] > 0)
+						dif[1] *= -1.f;
+					if(pos[1] < 0.f && dif[1] < 0)
+						dif[1] *= -1.f;
+					m_randoms[a]->Move(dif);
+				}
+
+				m_view->Render();
 				break;
 		}
 		return true;
@@ -106,7 +167,7 @@ public:
 
 int main(int argc, char **argv)
 {
-	print("201 - Image Rendering | Centhra Engine v%s\n", getVersionString().c_str());
+	print("000 - Test | Centhra Engine v%s\n", getVersionString().c_str());
 
 	AppTest myApp;
 	myApp.Start();

@@ -14,10 +14,12 @@ namespace ce
 {
 	namespace ui
 	{
-		Control::Control()
+		Control::Control(Vector2<int> position, Vector2<int> extent)
 		{
 			m_isVisible = true;
 			m_parent = 0;
+			m_position = position;
+			m_extent = extent;
 		}
 		void Control::Add(Control *control)
 		{
@@ -95,6 +97,22 @@ namespace ce
 		void Control::SetVisible(bool isVisible)
 		{
 			m_isVisible = isVisible;
+		}
+		Vector2<int> Control::GetPosition() const
+		{
+			return m_position;
+		}
+		Vector2<int> Control::GetExtent() const
+		{
+			return m_extent;
+		}
+		void Control::SetPosition(Vector2<int> position)
+		{
+			m_position = position;
+		}
+		void Control::SetExtent(Vector2<int> extent)
+		{
+			m_extent = extent;
 		}
 	}
 }

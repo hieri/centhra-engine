@@ -1,3 +1,4 @@
 add_subdirectory(ce_base)
 add_subdirectory(ce_frontend)
 add_subdirectory(ce_ui)
+add_subdirectory(ce_game2d)

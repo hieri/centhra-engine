@@ -7,6 +7,7 @@ set(SRC
 set(INCLUDE
 	${PROJECT_SOURCE_DIR}/modules/ce_base/include
 	${PROJECT_SOURCE_DIR}/modules/ce_frontend/include
+	${PROJECT_SOURCE_DIR}/modules/ce_game2d/include
 	${PROJECT_SOURCE_DIR}/modules/ce_ui/include
 )
 
@@ -15,6 +16,7 @@ find_package(OpenGL REQUIRED)
 set(LIB
 	ce_base
 	ce_frontend
+	ce_game2d
 	ce_ui
 	${OPENGL_LIBRARIES}
 )

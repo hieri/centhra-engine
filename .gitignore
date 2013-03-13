@@ -38,6 +38,7 @@ ipch
 # Generated Config files
 modules/ce_base/include/CE/ConfigBase.h
 modules/ce_frontend/include/CE/ConfigFrontend.h
+modules/ce_game2d/include/CE/ConfigGame2D.h
 modules/ce_ui/include/CE/ConfigUI.h
 
 # External Dependencies

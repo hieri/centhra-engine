@@ -22,6 +22,7 @@ namespace ce
 			void Render(float minX, float minY, float maxX, float maxY);
 			void Place(ZoneEntity *entity);
 			void MoveEntity(ZoneEntity *entity, Vector2<float> movement);
+			void ProcessPhysics(float dt);
 		};
 	}
 }

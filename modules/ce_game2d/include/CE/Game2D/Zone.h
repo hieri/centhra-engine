@@ -31,6 +31,15 @@ namespace ce
 
 			void SetPlane(Plane *plane);
 			Plane *GetPlane() const;
+
+			void MoveEntity(ZoneEntity *entity, Vector2<float> movement);
+			void ProcessPhysics(float dt);
+
+			void PhysicsPhase1(float dt);
+			void PhysicsPhase2(float dt);
+			void PhysicsPhase3(float dt);
+
+			friend class Plane;
 		};
 	}
 }

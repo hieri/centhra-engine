@@ -6,6 +6,7 @@
 #include <CE/Game2D/ZoneEntity.h>
 #include <CE/Game2D/ZoneCamera.h>
 #include <CE/UI/GameView2D.h>
+#include <CE/Thread.h>
 
 //- Standard Library -
 #include <stdlib.h>
@@ -16,29 +17,41 @@
 
 using namespace ce;
 
-#define NUMRANDOMS 250
+#define NUMRANDOMS 128
+
+void *physicsFunc(void *arg);
 
 //- Define your own implementation of the AppFrontend class. -
 class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
-	game2d::Plane *m_plane;
-	game2d::ZoneEntity *m_entity;
+	game2d::ZoneEntity *m_entity, *m_entityA, *m_entityB;
 	game2d::ZoneCamera *m_camera;
 	ui::GameView2D *m_view;
 	bool w,a,s,d;
 	game2d::ZoneEntity **m_randoms;
 
 public:
+	Thread* m_physicsThread;
+	game2d::Plane *m_plane;
+	game2d::Zone *m_zone;
+
 	AppTest()
 	{
 		m_canvas = 0;
 		m_plane = 0;
-		m_entity = 0;
+		m_entity = m_entityA = m_entityB = 0;
 		m_camera = 0;
 		m_view = 0;
 		w = a = s = d = false;
 		m_randoms = 0;
+		m_zone = 0;
+		m_physicsThread = new Thread(&physicsFunc);
+	}
+	~AppTest()
+	{
+		m_physicsThread->Join();
+		delete m_physicsThread;
 	}
 
 	//- Define the virtual functions for the class. -
@@ -47,36 +60,87 @@ public:
 		srand(GetRunTimeMS());
 		m_canvas = Canvas::Create(640, 480, "000 - Test");
 		m_plane = new game2d::Plane(16, 16, 64.f);
-		m_entity = new game2d::ZoneEntity(Vector2<float>(128.f, 128.f), Vector2<float>(64.f, 64.f));
+//		m_zone = new game2d::Zone(0.f, 0.f, 1024.f, 1024.f);
+		m_entity = new game2d::ZoneEntity(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
+//		m_entityA = new game2d::ZoneEntity(Vector2<float>(32.f, 57.f), Vector2<float>(16.f, 16.f));
+//		m_entityB = new game2d::ZoneEntity(Vector2<float>(160.f, 128.f), Vector2<float>(16.f, 16.f));
 		m_plane->Place(m_entity);
-		
+//		m_zone->Add(m_entity);
+//		m_zone->Add(m_entityA);
+//		m_zone->Add(m_entityB);
+
+//		m_entityA->SetVelocity(Vector2<float>(100.f, 0.f));
+//		m_entityB->SetVelocity(Vector2<float>(-100.f, -100.f));
+
 		m_camera = new game2d::ZoneCamera();
 		m_camera->SetFocus(m_entity);
 
 		m_view = new ui::GameView2D(Vector2<int>(0, 0), Vector2<int>(640, 480));
 		m_view->SetCamera(m_camera);
 
+		m_entity->SetCollisionMask(0);
+
 		m_randoms = new game2d::ZoneEntity *[NUMRANDOMS];
-		for(int a = 0; a < NUMRANDOMS; a++)
+		bool randBuff[1024];
+		for(unsigned int a = 0; a < 1024; a++)
+			randBuff[a] = true;
+		randBuff[16 * 32 + 16] = false;
+		for(unsigned int a = 0; a < NUMRANDOMS; a++)
 		{
-			m_randoms[a] = new game2d::ZoneEntity(Vector2<float>((float)(rand() % 1024), (float)(rand() % 1024)), Vector2<float>(16.f, 16.f));
+			unsigned int rx, ry;
+			do
+			{
+				rx = rand() % 32;
+				ry = rand() % 32;
+			}
+			while(!randBuff[ry * 32 + rx]);
+			randBuff[ry * 32 + rx] = false;
+
+			m_randoms[a] = new game2d::ZoneEntity(Vector2<float>((float)rx * 32.f, (float)ry * 32.f), Vector2<float>(16.f, 16.f));
 			m_plane->Place(m_randoms[a]);
+//			m_zone->Add(m_randoms[a]);
+
+			Vector2<float> dif = Vector2<float>((float)(rand() % 1024 - 512), (float)(rand() % 1024 - 512));
+//			dif /= 2.f;
+			//print("%d %f %f\n", mov, dif[0], dif[1]);
+			m_randoms[a]->SetVelocity(dif);
 		}
+
+		m_physicsThread->Start(this);
 
 		return true;
 	}
+//	unsigned long lastProcess = 0;
 	bool OnProcess()
-	{
+	{/*
+		unsigned long t = GetRunTimeMS();
+		if((t - lastProcess) > 15)
+		{
+			float dt = (float)(t - lastProcess) / 1000.f;
+			lastProcess = t;
+
+//			app->m_zone->ProcessPhysics(dt);
+			print("Start\n");
+			m_plane->ProcessPhysics(dt);
+			print("End\n");
+		}*/
+
 		sleepMS(1);
 		return true;
 	}
 	bool OnStop(bool force)
 	{
+		game2d::ZoneEntity::Cleanup();
 		delete m_canvas;
-		delete m_plane;
+		if(m_plane)
+			delete m_plane;
 		delete m_entity;
+		delete m_entityA;
+		delete m_entityB;
 		delete m_camera;
 		delete m_view;
+		if(m_zone)
+			delete m_zone;
 		for(int a = 0; a < NUMRANDOMS; a++)
 			delete m_randoms[a];
 		delete [] m_randoms;
@@ -124,39 +188,42 @@ public:
 			case event::PostRender:
 				Vector2<float> dif;
 				if(w)
-					dif[1] += 5.2f;
+					dif[1] += 1.f;
 				if(a)
-					dif[0] -= 5.2f;
+					dif[0] -= 1.f;
 				if(s)
-					dif[1] -= 5.2f;
+					dif[1] -= 1.f;
 				if(d)
-					dif[0] += 5.2f;
+					dif[0] += 1.f;
 
-				m_entity->Move(dif);
+				dif *= 256.f;
+
+				m_entity->SetVelocity(dif);
+
+				Vector2<float> origin(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
+//				Vector2<float> origin(512.f, 512.f);
 
 				for(int a = 0; a < NUMRANDOMS; a++)
 				{
-					dif = Vector2<float>(0.f, 0.f);
-					unsigned char mov = rand() % 16;
-					if(mov & 1)
-						dif[1] += 1.f;
-					if(mov & 2)
-						dif[0] -= 1.f;
-					if(mov & 4)
-						dif[1] -= 1.f;
-					if(mov & 8)
-						dif[0] += 1.f;
 					Vector2<float> pos = m_randoms[a]->GetPosition();
-					if(pos[0] > 1024.f && dif[0] > 0)
-						dif[0] *= -1.f;
-					if(pos[0] < 0.f && dif[0] < 0)
-						dif[0] *= -1.f;
-					if(pos[1] > 1024.f && dif[1] > 0)
-						dif[1] *= -1.f;
-					if(pos[1] < 0.f && dif[1] < 0)
-						dif[1] *= -1.f;
-					m_randoms[a]->Move(dif);
+//					Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
+//					Vector2<float> vel = m_randoms[a]->GetVelocity();
+					Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
+//					Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
+		//			vel /= vel.GetLength();
+		//			vel *= 256.f;
+
+					if(pos[0] > 1008.f && vel[0] > 0)
+						vel[0] *= -1.f;
+					if(pos[0] < 0.f && vel[0] < 0)
+						vel[0] *= -1.f;
+					if(pos[1] > 1008.f && vel[1] > 0)
+						vel[1] *= -1.f;
+					if(pos[1] < 0.f && vel[1] < 0)
+						vel[1] *= -1.f;
+					m_randoms[a]->SetVelocity(vel);
 				}
+				
 
 				m_view->Render();
 				break;
@@ -164,6 +231,32 @@ public:
 		return true;
 	}
 };
+
+void *physicsFunc(void *arg)
+{
+	AppTest *app = (AppTest *)arg;
+	unsigned long lastProcess = app->GetRunTimeMS();
+
+	while(app->IsRunning())
+	{
+		unsigned long t = app->GetRunTimeMS();
+		if((t - lastProcess) > 15)
+		{
+			float dt = (float)(t - lastProcess) / 1000.f;
+			lastProcess = t;
+
+//			app->m_zone->ProcessPhysics(dt);
+			print("Start\n");
+			app->m_plane->ProcessPhysics(dt);
+			print("End\n");
+		}
+
+		sleepMS(1);
+	}
+
+	Thread::Exit(NULL);
+	return 0;
+}
 
 int main(int argc, char **argv)
 {
@@ -176,5 +269,6 @@ int main(int argc, char **argv)
 	while(myApp.IsRunning())
 		myApp.Process();
 
+	Thread::Exit(NULL);
 	return 0;
 }

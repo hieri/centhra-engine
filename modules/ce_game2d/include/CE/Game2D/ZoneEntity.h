@@ -14,14 +14,20 @@ namespace ce
 	namespace game2d
 	{
 		class Zone;
+		class Plane;
 		class ZoneEntity : public Entity
 		{
-			Vector2<float> m_position, m_extent;
+			static unsigned int ms_lastID;
+
+			Vector2<float> m_position, m_extent, m_velocity, m_moveBoxMin, m_moveBoxMax, m_movement, m_movePadding;
+			bool m_canMove[2], m_isRendered, m_startedPhysics, m_finishedPhysics;
 			Color m_color;
-			bool m_isRendered;
+			unsigned int m_id;
 			std::vector<Zone *> m_zones;
 
 		protected:
+			unsigned int m_collisionMask;
+
 			void DoRender();
 
 		public:
@@ -35,10 +41,23 @@ namespace ce
 			void FinishRender();
 			Vector2<float> GetExtent() const;
 			Vector2<float> GetPosition() const;
+			Vector2<float> GetVelocity() const;
 			void SetExtent(Vector2<float> extent);
 			void SetPosition(Vector2<float> position);
+			void SetVelocity(Vector2<float> velocity);
 			void Move(Vector2<float> movement);
+			bool CollidesWith(ZoneEntity *entity, Vector2<float> offsetA = Vector2<float>(0.f, 0.f), Vector2<float> offsetB = Vector2<float>(0.f, 0.f));
+			bool CollidesWith(Vector2<float> boxMin, Vector2<float> boxMax, Vector2<float> offset = Vector2<float>(0.f, 0.f));
 			std::vector<Zone *> &GetZones();
+
+			unsigned int GetCollisionMask() const;
+			void SetCollisionMask(unsigned int mask);
+
+
+			static void Cleanup();
+
+			friend class Zone;
+			friend class Plane;
 		};
 	}
 }

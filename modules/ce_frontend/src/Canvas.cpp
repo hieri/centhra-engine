@@ -494,6 +494,15 @@ namespace ce
 			app->m_canvasMap[hWnd] = canvas;
 		#endif
 		
+		glViewport(0, 0, width, height);
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluOrtho2D(0.f, (float)width, 0.f, (float)height);
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
 		return canvas;
 	}
 
@@ -565,15 +574,6 @@ namespace ce
 		//- TODO: integrate togglable VSync -
 		if((time - m_lastRenderTimeMS) > 15)
 		{
-			glViewport(0, 0, m_width, m_height);
-
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			gluOrtho2D(0.f, (float)m_width, 0.f, (float)m_height);
-
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
 			glClear(GL_COLOR_BUFFER_BIT);
 			glClearColor(0.f, 0.f, 0.f, 1.f);
 

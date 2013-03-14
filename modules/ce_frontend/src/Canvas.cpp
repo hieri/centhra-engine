@@ -188,7 +188,7 @@ namespace ce
 			if(g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3)
 			{
 				int fbNumConfig;
-				GLint attributeList[] = { GLX_RGBA, GLX_DOUBLEBUFFER };
+				GLint attributeList[] = { GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT, GLX_RENDER_TYPE, GLX_RGBA_BIT, GLX_DOUBLEBUFFER, True, None};
 				GLXFBConfig *fbConfig = glXChooseFBConfig(xDisplay, xDefaultScreen, attributeList, &fbNumConfig);
 
 				if(!fbConfig || !fbNumConfig)
@@ -367,7 +367,7 @@ namespace ce
 				#else
 					Window xRootWindow = DefaultRootWindow(xDisplay);
 
-					GLint attributeList[] = { GLX_RGBA, GLX_DOUBLEBUFFER };
+					GLint attributeList[] = { GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT, GLX_RENDER_TYPE, GLX_RGBA_BIT, GLX_DOUBLEBUFFER, True, None};
 					XVisualInfo *xVisualInfo = glXChooseVisual(xDisplay, 0, attributeList);
 
 					if(!xVisualInfo)

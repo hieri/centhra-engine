@@ -80,9 +80,9 @@ namespace ce
 				(*it)->Render();
 			for(vector<ZoneEntity *>::iterator it = entities.begin(); it != entities.end(); it++)
 				(*it)->FinishRender();
-			for(int a = _minX; a <= _maxX; a++)
-				for(int b = _minY; b <= _maxY; b++)
-					m_zones[a][b]->Render();
+//			for(int a = _minX; a <= _maxX; a++)
+//				for(int b = _minY; b <= _maxY; b++)
+//					m_zones[a][b]->Render();
 /*
 			for(int a = _minX; a <= _maxX; a++)
 				for(int b = _minY; b <= _maxY; b++)
@@ -185,7 +185,6 @@ namespace ce
 		}
 		void Plane::ProcessPhysics(float dt)
 		{
-			print("A \n");
 			vector<ZoneEntity *> entities;
 			for(unsigned int a = 0; a < m_width; a++)
 				for(unsigned int b = 0; b < m_height; b++)
@@ -198,7 +197,6 @@ namespace ce
 				for(unsigned int b = 0; b < m_height; b++)
 					m_zones[a][b]->PhysicsPhase1(dt);
 
-			print("B \n");
 			for(vector<ZoneEntity *>::iterator it = entities.begin(); it != entities.end(); it++)
 			{
 				ZoneEntity *entity = *it;
@@ -263,13 +261,10 @@ namespace ce
 				entity->m_startedPhysics = true;
 			}
 
-			// Clean
 			for(unsigned int a = 0; a < m_width; a++)
 				for(unsigned int b = 0; b < m_height; b++)
 					m_zones[a][b]->PhysicsPhase2(dt);
 
-			print("C \n");
-			print("D \n");
 			for(vector<ZoneEntity *>::iterator it = entities.begin(); it != entities.end(); it++)
 			{
 				ZoneEntity *entity = *it;
@@ -364,10 +359,14 @@ namespace ce
 						for(int y = bMinY; y <= bMaxY; y++)
 							if(x < aMinX || y < aMinY || x > aMaxX || y > aMaxY)
 								m_zones[x][y]->Add(entity);
+					
+					if(!entity->m_canMove[0])
+						entity->m_velocity[0] *= -1.f;
+					if(!entity->m_canMove[1])
+						entity->m_velocity[1] *= -1.f;
 					entity->m_movement = Vector2<float>(0.f, 0.f);
 				}
 			}
-			print("E\n");
 		}
 	}
 }

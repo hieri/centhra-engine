@@ -17,7 +17,7 @@
 
 using namespace ce;
 
-#define NUMRANDOMS 128
+#define NUMRANDOMS 3072
 
 void *physicsFunc(void *arg);
 
@@ -81,22 +81,22 @@ public:
 		m_entity->SetCollisionMask(0);
 
 		m_randoms = new game2d::ZoneEntity *[NUMRANDOMS];
-		bool randBuff[1024];
-		for(unsigned int a = 0; a < 1024; a++)
+		bool randBuff[4096];
+		for(unsigned int a = 0; a < 4096; a++)
 			randBuff[a] = true;
-		randBuff[16 * 32 + 16] = false;
+		randBuff[32 * 64 + 32] = false;
 		for(unsigned int a = 0; a < NUMRANDOMS; a++)
 		{
 			unsigned int rx, ry;
 			do
 			{
-				rx = rand() % 32;
-				ry = rand() % 32;
+				rx = rand() % 64;
+				ry = rand() % 64;
 			}
-			while(!randBuff[ry * 32 + rx]);
-			randBuff[ry * 32 + rx] = false;
+			while(!randBuff[ry * 64 + rx]);
+			randBuff[ry * 64 + rx] = false;
 
-			m_randoms[a] = new game2d::ZoneEntity(Vector2<float>((float)rx * 32.f, (float)ry * 32.f), Vector2<float>(16.f, 16.f));
+			m_randoms[a] = new game2d::ZoneEntity(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>(1.f, 1.f));
 			m_plane->Place(m_randoms[a]);
 //			m_zone->Add(m_randoms[a]);
 
@@ -106,24 +106,22 @@ public:
 			m_randoms[a]->SetVelocity(dif);
 		}
 
-		m_physicsThread->Start(this);
+//		m_physicsThread->Start(this);
 
 		return true;
 	}
-//	unsigned long lastProcess = 0;
+	unsigned long lastProcess = 0;
 	bool OnProcess()
-	{/*
+	{
 		unsigned long t = GetRunTimeMS();
 		if((t - lastProcess) > 15)
 		{
 			float dt = (float)(t - lastProcess) / 1000.f;
 			lastProcess = t;
 
-//			app->m_zone->ProcessPhysics(dt);
-			print("Start\n");
+//			m_zone->ProcessPhysics(dt);
 			m_plane->ProcessPhysics(dt);
-			print("End\n");
-		}*/
+		}
 
 		sleepMS(1);
 		return true;
@@ -207,8 +205,8 @@ public:
 				{
 					Vector2<float> pos = m_randoms[a]->GetPosition();
 //					Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
-//					Vector2<float> vel = m_randoms[a]->GetVelocity();
-					Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
+					Vector2<float> vel = m_randoms[a]->GetVelocity();
+//					Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
 //					Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
 		//			vel /= vel.GetLength();
 		//			vel *= 256.f;
@@ -246,9 +244,7 @@ void *physicsFunc(void *arg)
 			lastProcess = t;
 
 //			app->m_zone->ProcessPhysics(dt);
-			print("Start\n");
 			app->m_plane->ProcessPhysics(dt);
-			print("End\n");
 		}
 
 		sleepMS(1);

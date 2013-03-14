@@ -224,9 +224,9 @@ namespace ce
 						if(entity->m_canMove[1])
 							entity->m_movePadding[1] = 1.f;
 					}
-	/*				if(entity->m_movement[0] == 0.f)
+	/*				if(!entity->m_canMove[0])
 						entity->m_velocity[0] *= -1.f;
-					if(entity->m_movement[1] == 0.f)
+					if(!entity->m_canMove[1])
 						entity->m_velocity[1] *= -1.f;
 	*/				entity->m_movement = Vector2<float>(0.f, 0.f);
 				}

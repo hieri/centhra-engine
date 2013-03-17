@@ -175,12 +175,14 @@ namespace ce
 						}
 					if((entityA->m_canMove[0] || entityA->m_canMove[1]) && diagonals.size())
 					{
-						entityA->m_canMove[1] = false;
-						for(vector<ZoneEntity *>::iterator itB = diagonals.begin(); itB != diagonals.end(); itB++)
+						//entityA->m_canMove[1] = false;
+						entityA->m_canMove[0] = false;
+/*						for(vector<ZoneEntity *>::iterator itB = diagonals.begin(); itB != diagonals.end(); itB++)
 						{
 							ZoneEntity *entityB = *itB;
-							entityB->m_canMove[1] = false;
-						}
+							//entityB->m_canMove[1] = false;
+							entityB->m_canMove[0] = false;
+						}*/
 					}
 				}
 			}

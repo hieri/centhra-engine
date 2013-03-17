@@ -32,6 +32,7 @@
 using namespace std;
 
 //- TODO: sync mouse button values for cross-platform -
+//- TODO: fix xcb opengl window creation
 
 namespace ce
 {
@@ -610,5 +611,39 @@ namespace ce
 	bool Canvas::OnEvent(Event &event)
 	{
 		return true;
+	}
+	void Canvas::SetFullscreen(bool fullscreen)
+	{
+		if(fullscreen)
+		{
+			#if CE_FRONTEND_USEXLIB
+				#if CE_FRONTEND_USEXCB
+				#else
+					Display *xDisplay = (Display *)m_app->GetXDisplay();
+					Atom wm_state = XInternAtom(xDisplay, "_NET_WM_STATE", False);
+					Atom fullscreen = XInternAtom(xDisplay, "_NET_WM_STATE_FULLSCREEN", False);
+
+					XEvent xev;
+					memset(&xev, 0, sizeof(xev));
+					xev.type = ClientMessage;
+					xev.xclient.window = m_xWindow;
+					xev.xclient.message_type = wm_state;
+					xev.xclient.format = 32;
+					xev.xclient.data.l[0] = 1;
+					xev.xclient.data.l[1] = fullscreen;
+					xev.xclient.data.l[2] = 0;
+					XSendEvent(xDisplay, DefaultRootWindow(xDisplay), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
+
+					glViewport(0, 0, 1366, 768);
+
+					glMatrixMode(GL_PROJECTION);
+					glLoadIdentity();
+					gluOrtho2D(0.f, (float)1366, 0.f, (float)768);
+
+					glMatrixMode(GL_MODELVIEW);
+					glLoadIdentity();
+				#endif
+			#endif
+		}
 	}
 }

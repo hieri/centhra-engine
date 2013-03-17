@@ -65,6 +65,8 @@ namespace ce
 		 *	@return Whether or not the event should be processed.
 		 */
 		virtual bool OnEvent(Event &event);
+
+		void SetFullscreen(bool fullscreen);
 	};
 }
 

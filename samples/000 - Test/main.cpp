@@ -17,7 +17,7 @@
 
 using namespace ce;
 
-#define NUMRANDOMS 3072
+#define NUMRANDOMS 1024
 
 void *physicsFunc(void *arg);
 
@@ -76,6 +76,7 @@ public:
 		m_camera->SetFocus(m_entity);
 
 		m_view = new ui::GameView2D(Vector2<int>(0, 0), Vector2<int>(640, 480));
+//		m_view = new ui::GameView2D(Vector2<int>(0, 0), Vector2<int>(1366, 768));
 		m_view->SetCamera(m_camera);
 
 		m_entity->SetCollisionMask(0);
@@ -96,7 +97,7 @@ public:
 			while(!randBuff[ry * 64 + rx]);
 			randBuff[ry * 64 + rx] = false;
 
-			m_randoms[a] = new game2d::ZoneEntity(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>(1.f, 1.f));
+			m_randoms[a] = new game2d::ZoneEntity(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>(16.f, 16.f));
 			m_plane->Place(m_randoms[a]);
 //			m_zone->Add(m_randoms[a]);
 
@@ -107,6 +108,7 @@ public:
 		}
 
 //		m_physicsThread->Start(this);
+//		m_canvas->SetFullscreen(true);
 
 		return true;
 	}
@@ -145,10 +147,18 @@ public:
 
 		return true;
 	}
+
+	Vector2<float> origin;
 	bool OnEvent(Event &event)
 	{
+		float x, y;
 		switch(event.type)
 		{
+			case event::MouseMotion:
+//				x = (float)event.mouseMotion.x - (1366.f/2.f - m_entity->GetPosition()[0]);
+//				y = (768.f - (float)event.mouseMotion.y) - (768.f/2.f - m_entity->GetPosition()[1]);
+//				origin = Vector2<float>(x, y);
+				break;
 			case event::KeyDown:
 				switch(event.key.keyCode)
 				{
@@ -198,18 +208,18 @@ public:
 
 				m_entity->SetVelocity(dif);
 
-				Vector2<float> origin(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
-//				Vector2<float> origin(512.f, 512.f);
+				origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
+//				origin = Vector2<float>(512.f, 512.f);
 
 				for(int a = 0; a < NUMRANDOMS; a++)
 				{
 					Vector2<float> pos = m_randoms[a]->GetPosition();
 //					Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
-					Vector2<float> vel = m_randoms[a]->GetVelocity();
+//					Vector2<float> vel = m_randoms[a]->GetVelocity();
 //					Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
-//					Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
-		//			vel /= vel.GetLength();
-		//			vel *= 256.f;
+					Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
+					vel /= vel.GetLength();
+					vel *= 512.f;
 
 					if(pos[0] > 1008.f && vel[0] > 0)
 						vel[0] *= -1.f;

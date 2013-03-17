@@ -360,11 +360,11 @@ namespace ce
 							if(x < aMinX || y < aMinY || x > aMaxX || y > aMaxY)
 								m_zones[x][y]->Add(entity);
 					
-					if(!entity->m_canMove[0])
+/*					if(!entity->m_canMove[0])
 						entity->m_velocity[0] *= -1.f;
 					if(!entity->m_canMove[1])
 						entity->m_velocity[1] *= -1.f;
-					entity->m_movement = Vector2<float>(0.f, 0.f);
+*/					entity->m_movement = Vector2<float>(0.f, 0.f);
 				}
 			}
 		}

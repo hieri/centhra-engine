@@ -8,7 +8,7 @@ namespace ce
 {
 	namespace game2d
 	{
-		class Plane
+		class Plane : public Entity
 		{
 			float m_zoneSize;
 			unsigned int m_width, m_height;

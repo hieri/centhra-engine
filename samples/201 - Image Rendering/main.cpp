@@ -35,7 +35,7 @@ public:
 
 		if(m_image)
 		{
-			Vector2<int> imageSize = m_image->GetSize();
+			Vector2<unsigned int> imageSize = m_image->GetSize();
 			print("  Width: %d Height: %d\n", imageSize.GetX(), imageSize.GetY());
 		}
 		else

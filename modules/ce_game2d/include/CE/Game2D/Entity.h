@@ -8,7 +8,7 @@ namespace ce
 		class Entity
 		{
 		protected:
-			void DoRender();
+			virtual void DoRender();
 
 		public:
 			Entity();

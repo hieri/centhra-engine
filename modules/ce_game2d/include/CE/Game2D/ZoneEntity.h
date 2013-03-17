@@ -28,7 +28,7 @@ namespace ce
 		protected:
 			unsigned int m_collisionMask;
 
-			void DoRender();
+			virtual void DoRender();
 
 		public:
 			ZoneEntity(Vector2<float> position, Vector2<float> extent);
@@ -52,7 +52,6 @@ namespace ce
 
 			unsigned int GetCollisionMask() const;
 			void SetCollisionMask(unsigned int mask);
-
 
 			static void Cleanup();
 

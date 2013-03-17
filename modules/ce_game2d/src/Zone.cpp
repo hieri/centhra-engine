@@ -26,7 +26,7 @@ namespace ce
 		Zone::~Zone()
 		{
 		}
-		void Zone::Render()
+		void Zone::DoRender()
 		{
 		//	for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 		//		(*it)->Render();

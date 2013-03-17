@@ -12,11 +12,14 @@ namespace ce
 	namespace game2d
 	{
 		class Plane;
-		class Zone
+		class Zone : public Entity
 		{
 			float m_minX, m_minY, m_maxX, m_maxY;
 			Plane *m_plane;
 			std::vector<ZoneEntity *> m_children;
+
+		protected:
+			virtual void DoRender();
 
 		public:
 			Zone(float minX, float minY, float maxX, float maxY);
@@ -26,7 +29,6 @@ namespace ce
 			void Remove(ZoneEntity *entity);
 			bool IsMember(ZoneEntity *entity) const;
 
-			void Render();
 			void FinishRender();
 
 			void SetPlane(Plane *plane);

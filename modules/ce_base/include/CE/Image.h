@@ -16,7 +16,7 @@ namespace ce
 	{
 		unsigned char m_bytesPerPixel;
 		unsigned int m_glTexture, m_ilImage;
-		Vector2<int> m_size;
+		Vector2<unsigned int> m_size;
 
 		Image();
 
@@ -45,7 +45,7 @@ namespace ce
 		 *	@param size Size of the image.
 		 *	@return Image object or 0 if creation failed.
 		 */
-		static Image *CreateFromPixels(char *pixels, unsigned char bytesPerPixel, Vector2<int> size);
+		static Image *CreateFromPixels(char *pixels, unsigned char bytesPerPixel, Vector2<unsigned int> size);
 
 		/**	@brief Destructor.
 		 */
@@ -65,7 +65,7 @@ namespace ce
 		/**	@brief Returns the size of the image.
 		 *	@return Size of the image.
 		 */
-		Vector2<int> GetSize() const;
+		Vector2<unsigned int> GetSize() const;
 
 		/**	@brief Saves the image to a file.
 		 *	@param file Target path of file saving.

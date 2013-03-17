@@ -75,7 +75,7 @@ namespace ce
 		Image *image = new Image;
 		image->m_bytesPerPixel = bytesPerPixel;
 		image->m_ilImage = ilImage;
-		image->m_size = Vector2<int>(width, height);
+		image->m_size = Vector2<unsigned int>(width, height);
 		return image;
 	}
 	Image *Image::CreateFromMemory(const unsigned char *memory, unsigned int size)
@@ -126,10 +126,10 @@ namespace ce
 		Image *image = new Image;
 		image->m_bytesPerPixel = bytesPerPixel;
 		image->m_ilImage = ilImage;
-		image->m_size = Vector2<int>(width, height);
+		image->m_size = Vector2<unsigned int>(width, height);
 		return image;
 	}
-	Image *Image::CreateFromPixels(char *pixels, unsigned char bytesPerPixel, Vector2<int> size)
+	Image *Image::CreateFromPixels(char *pixels, unsigned char bytesPerPixel, Vector2<unsigned int> size)
 	{
 		unsigned int imageFormat = 0;
 		switch(bytesPerPixel)
@@ -202,7 +202,7 @@ namespace ce
 
 		return color;
 	}
-	Vector2<int> Image::GetSize() const
+	Vector2<unsigned int> Image::GetSize() const
 	{
 		return m_size;
 	}

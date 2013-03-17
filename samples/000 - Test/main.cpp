@@ -5,6 +5,7 @@
 #include <CE/Game2D/Plane.h>
 #include <CE/Game2D/ZoneEntity.h>
 #include <CE/Game2D/ZoneCamera.h>
+#include <CE/Game2D/TileMap.h>
 #include <CE/UI/GameView2D.h>
 #include <CE/Thread.h>
 
@@ -30,6 +31,8 @@ class AppTest : public AppFrontend
 	ui::GameView2D *m_view;
 	bool w,a,s,d;
 	game2d::ZoneEntity **m_randoms;
+	Image *m_tileSet;
+	game2d::TileMap *m_tileMap;
 
 public:
 	Thread* m_physicsThread;
@@ -46,6 +49,8 @@ public:
 		w = a = s = d = false;
 		m_randoms = 0;
 		m_zone = 0;
+		m_tileMap = 0;
+		m_tileSet = 0;
 		m_physicsThread = new Thread(&physicsFunc);
 	}
 	~AppTest()
@@ -58,6 +63,7 @@ public:
 	bool OnStart()
 	{
 		srand(GetRunTimeMS());
+		Image::Init();
 		m_canvas = Canvas::Create(640, 480, "000 - Test");
 		m_plane = new game2d::Plane(16, 16, 64.f);
 //		m_zone = new game2d::Zone(0.f, 0.f, 1024.f, 1024.f);
@@ -107,6 +113,12 @@ public:
 			m_randoms[a]->SetVelocity(dif);
 		}
 
+		m_tileSet = Image::CreateFromFile("../000 - Test/tileSet.png");
+		m_tileMap = new game2d::TileMap(Vector2<unsigned int>(16, 16), Vector2<unsigned int>(16, 16), m_tileSet);
+
+		m_tileMap->SetTile(15, 5, Vector2<unsigned char>(0, 1));
+		m_tileMap->SetTile(14, 5, Vector2<unsigned char>(1, 1));
+
 //		m_physicsThread->Start(this);
 //		m_canvas->SetFullscreen(true);
 
@@ -139,6 +151,8 @@ public:
 		delete m_entityB;
 		delete m_camera;
 		delete m_view;
+		delete m_tileMap;
+		delete m_tileSet;
 		if(m_zone)
 			delete m_zone;
 		for(int a = 0; a < NUMRANDOMS; a++)
@@ -232,8 +246,8 @@ public:
 					m_randoms[a]->SetVelocity(vel);
 				}
 				
-
 				m_view->Render();
+				m_tileMap->Render();
 				break;
 		}
 		return true;

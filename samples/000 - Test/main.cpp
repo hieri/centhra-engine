@@ -218,8 +218,8 @@ public:
 //					Vector2<float> vel = m_randoms[a]->GetVelocity();
 //					Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
 					Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
-					vel /= vel.GetLength();
-					vel *= 512.f;
+//					vel /= vel.GetLength();
+//					vel *= 64.f;
 
 					if(pos[0] > 1008.f && vel[0] > 0)
 						vel[0] *= -1.f;

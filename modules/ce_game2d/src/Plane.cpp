@@ -279,7 +279,7 @@ namespace ce
 					aMaxX = (int)floor(entity->m_moveBoxMax[0] / m_zoneSize);
 					aMaxY = (int)floor(entity->m_moveBoxMax[1] / m_zoneSize);
 
-					if(!entity->m_canMove[0])
+/*					if(!entity->m_canMove[0])
 					{
 						if(entity->m_movePadding[0] >= 0.01f)
 							entity->m_movePadding[0] /= 2.f;
@@ -293,7 +293,7 @@ namespace ce
 						else
 							entity->m_movement[1] = 1.f;
 					}
-
+*/
 					if(entity->m_canMove[0] || entity->m_canMove[1])
 					{
 						if(!entity->m_canMove[0])
@@ -304,11 +304,11 @@ namespace ce
 						entity->m_position += entity->m_movement;
 //						entity->Move(entity->m_movement);
 
-						if(entity->m_canMove[0])
+/*						if(entity->m_canMove[0])
 							entity->m_movePadding[0] = 1.f;
 						if(entity->m_canMove[1])
 							entity->m_movePadding[1] = 1.f;
-					}
+*/					}
 
 					Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent();
 					bMinX = (int)floor(position[0] / m_zoneSize);

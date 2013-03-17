@@ -197,7 +197,7 @@ namespace ce
 					entity->m_finishedPhysics = true;
 					Vector2<float> velocity = entity->GetVelocity();
 
-					if(!entity->m_canMove[0])
+/*					if(!entity->m_canMove[0])
 					{
 						if(entity->m_movePadding[0] > 0.1f)
 							entity->m_movePadding[0] /= 2.f;
@@ -211,7 +211,7 @@ namespace ce
 						else
 							entity->m_movePadding[1] = 0.1f;
 					}
-
+*/
 					if(entity->m_canMove[0] || entity->m_canMove[1])
 					{
 						if(!entity->m_canMove[0])
@@ -221,11 +221,11 @@ namespace ce
 
 						entity->Move(entity->m_movement);
 
-						if(entity->m_canMove[0])
+/*						if(entity->m_canMove[0])
 							entity->m_movePadding[0] = 1.f;
 						if(entity->m_canMove[1])
 							entity->m_movePadding[1] = 1.f;
-					}
+*/					}
 	/*				if(!entity->m_canMove[0])
 						entity->m_velocity[0] *= -1.f;
 					if(!entity->m_canMove[1])

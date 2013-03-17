@@ -13,6 +13,13 @@ Implemented
 	|-o Frontend - Module Functions/Definitions
 	|-o Canvas - Frontend Window Object
 	|-o Event - Event Structure
+	ce_game2d
+	|-o Entity - Abstract object
+	|-o Zone - Container for entities
+	|-o ZoneEntity - Entities contained within Zones
+	|-o ZoneCamera - Camera entity
+	|-o Plane - Grid of Zone
+	|-o GameView2d - 2d View UI Control
 	ce_ui
 	|-o Control - Abstract UI Control Class
 	|-o UI - Module Functions/Definitions
@@ -32,7 +39,6 @@ ce_gameBase
 |-o GameConnection
 ce_game2d
 |-o Sprite
-|-o GameView2D
 ce_game3d
 |-o Asset
 |-o GameView3D

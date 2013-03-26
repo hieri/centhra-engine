@@ -23,9 +23,9 @@ namespace ce
 			bool m_canMove[2], m_isRendered, m_startedPhysics, m_finishedPhysics;
 			Color m_color;
 			unsigned int m_id;
-			std::vector<Zone *> m_zones;
 
 		protected:
+			std::vector<Zone *> m_zones;
 			unsigned int m_collisionMask;
 
 			virtual void DoRender();

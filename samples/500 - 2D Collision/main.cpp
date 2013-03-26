@@ -25,52 +25,43 @@ void *physicsFunc(void *arg);
 class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
-	game2d::ZoneEntity *m_entity, *m_entityA, *m_entityB;
+	game2d::ZoneEntity *m_entity;
 	game2d::ZoneCamera *m_camera;
 	ui::GameView2D *m_view;
 	bool w,a,s,d;
 	game2d::ZoneEntity **m_randoms;
+	unsigned long m_lastProcess;
 
 public:
-	Thread* m_physicsThread;
+//	Thread* m_physicsThread;
 	game2d::Plane *m_plane;
-	game2d::Zone *m_zone;
 
 	AppTest()
 	{
 		m_canvas = 0;
 		m_plane = 0;
-		m_entity = m_entityA = m_entityB = 0;
+		m_entity =0;
 		m_camera = 0;
 		m_view = 0;
+		m_lastProcess = 0;
 		w = a = s = d = false;
 		m_randoms = 0;
-		m_zone = 0;
-		m_physicsThread = new Thread(&physicsFunc);
+//		m_physicsThread = new Thread(&physicsFunc);
 	}
 	~AppTest()
 	{
-		m_physicsThread->Join();
-		delete m_physicsThread;
+//		m_physicsThread->Join();
+//		delete m_physicsThread;
 	}
 
 	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
 		srand(GetRunTimeMS());
-		m_canvas = Canvas::Create(640, 480, "000 - Test");
+		m_canvas = Canvas::Create(640, 480, "500 - 2D Collision");
 		m_plane = new game2d::Plane(16, 16, 64.f);
-//		m_zone = new game2d::Zone(0.f, 0.f, 1024.f, 1024.f);
 		m_entity = new game2d::ZoneEntity(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
-//		m_entityA = new game2d::ZoneEntity(Vector2<float>(32.f, 57.f), Vector2<float>(16.f, 16.f));
-//		m_entityB = new game2d::ZoneEntity(Vector2<float>(160.f, 128.f), Vector2<float>(16.f, 16.f));
 		m_plane->Place(m_entity);
-//		m_zone->Add(m_entity);
-//		m_zone->Add(m_entityA);
-//		m_zone->Add(m_entityB);
-
-//		m_entityA->SetVelocity(Vector2<float>(100.f, 0.f));
-//		m_entityB->SetVelocity(Vector2<float>(-100.f, -100.f));
 
 		m_camera = new game2d::ZoneCamera();
 		m_camera->SetFocus(m_entity);
@@ -99,11 +90,8 @@ public:
 
 			m_randoms[a] = new game2d::ZoneEntity(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>(16.f, 16.f));
 			m_plane->Place(m_randoms[a]);
-//			m_zone->Add(m_randoms[a]);
 
 			Vector2<float> dif = Vector2<float>((float)(rand() % 1024 - 512), (float)(rand() % 1024 - 512));
-//			dif /= 2.f;
-			//print("%d %f %f\n", mov, dif[0], dif[1]);
 			m_randoms[a]->SetVelocity(dif);
 		}
 
@@ -112,16 +100,14 @@ public:
 
 		return true;
 	}
-	unsigned long lastProcess = 0;
 	bool OnProcess()
 	{
 		unsigned long t = GetRunTimeMS();
-		if((t - lastProcess) > 15)
+		if((t - m_lastProcess) > 15)
 		{
-			float dt = (float)(t - lastProcess) / 1000.f;
-			lastProcess = t;
+			float dt = (float)(t - m_lastProcess) / 1000.f;
+			m_lastProcess = t;
 
-//			m_zone->ProcessPhysics(dt);
 			m_plane->ProcessPhysics(dt);
 		}
 
@@ -135,12 +121,8 @@ public:
 		if(m_plane)
 			delete m_plane;
 		delete m_entity;
-		delete m_entityA;
-		delete m_entityB;
 		delete m_camera;
 		delete m_view;
-		if(m_zone)
-			delete m_zone;
 		for(int a = 0; a < NUMRANDOMS; a++)
 			delete m_randoms[a];
 		delete [] m_randoms;
@@ -252,7 +234,6 @@ void *physicsFunc(void *arg)
 			float dt = (float)(t - lastProcess) / 1000.f;
 			lastProcess = t;
 
-//			app->m_zone->ProcessPhysics(dt);
 			app->m_plane->ProcessPhysics(dt);
 		}
 
@@ -265,7 +246,7 @@ void *physicsFunc(void *arg)
 
 int main(int argc, char **argv)
 {
-	print("000 - Test | Centhra Engine v%s\n", getVersionString().c_str());
+	print("500 - 2D Collision | Centhra Engine v%s\n", getVersionString().c_str());
 
 	AppTest myApp;
 	myApp.Start();
@@ -274,6 +255,6 @@ int main(int argc, char **argv)
 	while(myApp.IsRunning())
 		myApp.Process();
 
-	Thread::Exit(NULL);
+//	Thread::Exit(NULL);
 	return 0;
 }

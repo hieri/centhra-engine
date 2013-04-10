@@ -19,7 +19,7 @@ if(${WIN32})
 	set(ILU_LIBRARIES ${PROJECT_SOURCE_DIR}/../DevIL/lib/ILU.lib)
 	set(ILUT_LIBRARIES ${PROJECT_SOURCE_DIR}/../DevIL/lib/ILUT.lib)
 	set(FREETYPE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../freetype2/include)
-	set(FREETYPE_LIBRARY ${PROJECT_SOURCE_DIR}/../freetype2/lib/library)
+	set(FREETYPE_LIBRARY ${PROJECT_SOURCE_DIR}/../freetype2/lib/freetype.lib)
 endif(${WIN32})
 
 add_subdirectory(modules)

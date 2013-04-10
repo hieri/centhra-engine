@@ -70,6 +70,12 @@ namespace ce
 			*/
 			if(!g_squareVBO)
 			{
+				#ifdef _WIN32 // TODO: Remove this work around.
+					glGenBuffers = (PFNGLGENBUFFERSPROC)glGetProcAddress("glGenBuffers");
+					glBindBuffer = (PFNGLBINDBUFFERPROC)glGetProcAddress("glBindBuffer");
+					glBufferData = (PFNGLBUFFERDATAPROC)glGetProcAddress("glBufferData");
+					glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)glGetProcAddress("glDeleteBuffers");
+				#endif
 				glGenBuffers(1, &g_squareVBO);
 				glBindBuffer(0x8892, g_squareVBO);
 

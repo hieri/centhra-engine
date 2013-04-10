@@ -4,6 +4,11 @@
 #include <CE/Canvas.h>
 #include <CE/Font.h>
 
+#ifdef _WIN32
+	//- Windows -
+	#include <Windows.h>
+#endif
+
 //- OpenGL -
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -61,22 +66,22 @@ public:
 					glTranslatef(0.f, 8.f, 0.f);
 					glColor4f(1.f, 0.f, 0.f, 1.f);
 					glPushMatrix();
-						m_font->DrawText("Hello font rendering!");
+						m_font->DrawString("Hello font rendering!");
 					glPopMatrix();
 					glTranslatef(0.f, 20.f, 0.f);
 					glColor4f(1.f, 1.f, 1.f, 1.f);
 					glPushMatrix();
-						m_font->DrawText("Hello font rendering!");
+						m_font->DrawString("Hello font rendering!");
 					glPopMatrix();
 					glTranslatef(0.f, 20.f, 0.f);
 					glColor4f(0.f, 0.f, 1.f, 1.f);
 					glPushMatrix();
-						m_font->DrawText("Hello font rendering!");
+						m_font->DrawString("Hello font rendering!");
 					glPopMatrix();
 					glTranslatef(0.f, 20.f, 0.f);
 					glColor4f(0.f, 1.f, 0.f, 1.f);
 					glPushMatrix();
-						m_font->DrawText("Hello font rendering!");
+						m_font->DrawString("Hello font rendering!");
 					glPopMatrix();
 				glPopMatrix();
 				break;

@@ -11,10 +11,6 @@
 //- Standard Library -
 #include <stdlib.h>
 
-//- OpenGL -
-#include <GL/gl.h>
-#include <GL/glu.h>
-
 using namespace ce;
 
 #define NUMRANDOMS 1024

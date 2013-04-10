@@ -11,10 +11,6 @@
 //- Standard Library -
 #include <stdlib.h>
 
-//- OpenGL -
-#include <GL/gl.h>
-#include <GL/glu.h>
-
 using namespace ce;
 
 #define NUMRANDOMS 1024
@@ -29,6 +25,7 @@ class AppTest : public AppFrontend
 	game2d::ZoneCamera *m_camera;
 	ui::GameView2D *m_view;
 	bool w,a,s,d;
+	unsigned long m_lastProcess;
 	game2d::ZoneEntity **m_randoms;
 
 public:
@@ -46,6 +43,7 @@ public:
 		w = a = s = d = false;
 		m_randoms = 0;
 		m_zone = 0;
+		m_lastProcess = 0;
 		m_physicsThread = new Thread(&physicsFunc);
 	}
 	~AppTest()
@@ -112,14 +110,13 @@ public:
 
 		return true;
 	}
-	unsigned long lastProcess = 0;
 	bool OnProcess()
 	{
 		unsigned long t = GetRunTimeMS();
-		if((t - lastProcess) > 15)
+		if((t - m_lastProcess) > 15)
 		{
-			float dt = (float)(t - lastProcess) / 1000.f;
-			lastProcess = t;
+			float dt = (float)(t - m_lastProcess) / 1000.f;
+			m_lastProcess = t;
 
 //			m_zone->ProcessPhysics(dt);
 			m_plane->ProcessPhysics(dt);

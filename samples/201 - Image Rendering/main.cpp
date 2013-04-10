@@ -53,12 +53,10 @@ public:
 		sleepMS(1);
 		return true;
 	}
-	bool OnStop(bool force)
+	void OnStopped()
 	{
 		delete m_canvas;
 		delete m_image;
-
-		return true;
 	}
 	bool OnEvent(Event &event)
 	{

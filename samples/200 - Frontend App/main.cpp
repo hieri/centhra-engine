@@ -15,6 +15,9 @@ public:
 	{
 		m_canvas = 0;
 	}
+	~AppFrontendSample()
+	{
+	}
 
 	//- Define the virtual functions for the class. -
 	bool OnStart()
@@ -29,11 +32,19 @@ public:
 		sleepMS(1);
 		return true;
 	}
-	bool OnStop(bool force)
+	void OnStopped()
 	{
-		print("o-> OnStop\n");
+		print("o-> OnStopped\n");
 		delete m_canvas;
-
+	}
+	bool OnEvent(Event &event)
+	{
+		switch(event.type)
+		{
+		case event::KeyDown:
+			print("%d\n", event.key.keyCode);
+			break;
+		}
 		return true;
 	}
 };
@@ -43,6 +54,7 @@ int main(int argc, char **argv)
 	print("200 - Frontend App Sample | Centhra Engine v%s\n", getVersionString().c_str());
 
 	AppFrontendSample myApp;
+
 	myApp.Start();
 
 	//- Run the App's main loop. -

@@ -17,8 +17,10 @@ namespace ce
 	{
 		static App *ms_current;
 
-		bool m_isRunning;
 		unsigned long m_startTimeMS;
+
+	protected:
+		bool m_isRunning;
 
 	public:
 		/**	@brief Returns current application instance.
@@ -78,6 +80,10 @@ namespace ce
 		 *	@return Whether or not the application should stop.
 		 */
 		virtual bool OnStop(bool force = false);
+
+		/**	@brief Called when the application has stopped.
+		 */
+		virtual void OnStopped();
 	};
 }
 

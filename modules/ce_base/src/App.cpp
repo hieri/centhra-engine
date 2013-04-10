@@ -112,9 +112,11 @@ namespace ce
 			return false;
 
 		bool isValid = OnStop(force) || force;
-
 		if(isValid)
+		{
 			m_isRunning = false;
+			OnStopped();
+		}
 
 		return isValid;
 	}
@@ -130,5 +132,8 @@ namespace ce
 	bool App::OnStop(bool force)
 	{
 		return true;
+	}
+	void App::OnStopped()
+	{
 	}
 }

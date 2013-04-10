@@ -50,12 +50,10 @@ public:
 		sleepMS(1);
 		return true;
 	}
-	bool OnStop(bool force)
+	void OnStopped()
 	{
 		delete m_canvas;
 		delete m_font;
-
-		return true;
 	}
 	bool OnEvent(Event &event)
 	{

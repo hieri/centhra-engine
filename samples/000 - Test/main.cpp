@@ -125,10 +125,9 @@ public:
 		sleepMS(1);
 		return true;
 	}
-	bool OnStop(bool force)
+	void OnStopped()
 	{
 		game2d::ZoneEntity::Cleanup();
-		delete m_canvas;
 		if(m_plane)
 			delete m_plane;
 		delete m_entity;
@@ -141,8 +140,7 @@ public:
 		for(int a = 0; a < NUMRANDOMS; a++)
 			delete m_randoms[a];
 		delete [] m_randoms;
-
-		return true;
+		delete m_canvas;
 	}
 
 	Vector2<float> origin;

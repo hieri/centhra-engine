@@ -283,10 +283,12 @@ namespace ce
 		if(!IsRunning())
 			return false;
 
-		bool isValid = App::Stop(force);
-
+		bool isValid = OnStop(force) || force;
 		if(isValid)
 		{
+			m_isRunning = false;
+			OnStopped();
+
 			#if CE_FRONTEND_USEXLIB
 				#if CE_FRONTEND_USEXCB
 					m_xcbConnection = 0;

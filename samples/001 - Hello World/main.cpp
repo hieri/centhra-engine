@@ -35,11 +35,9 @@ public:
 
 		return true;
 	}
-	bool OnStop(bool force)
+	void OnStopped()
 	{
-		print("o-> OnStop\n");
-
-		return true;
+		print("o-> OnStopped\n");
 	}
 };
 

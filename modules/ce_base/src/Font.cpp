@@ -6,6 +6,11 @@
 #include <CE/Base.h>
 #include <CE/Font.h>
 
+#ifdef _WIN32
+	//- Windows -
+	#include <Windows.h>
+#endif
+
 //- OpenGL -
 #include <GL/gl.h>
 
@@ -80,10 +85,10 @@ namespace ce
 		FT_Face ftFace = (FT_Face)m_ftFace;
 		FT_Set_Char_Size(ftFace, width, height, horizontalDpi, verticalDpi);
 	}
-	void Font::DrawText(const char *text)
+	void Font::DrawString(const char *str)
 	{
-		for(unsigned int a = 0; a < strlen(text); a++)
-			DrawUnicodeChar(text[a]);
+		for(unsigned int a = 0; a < strlen(str); a++)
+			DrawUnicodeChar(str[a]);
 	}
 	void Font::DrawUnicodeChar(unsigned short unicodeChar)
 	{

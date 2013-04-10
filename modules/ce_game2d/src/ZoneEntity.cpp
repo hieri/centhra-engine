@@ -8,12 +8,19 @@
 #include <algorithm>
 #include <stdlib.h>
 
+#ifdef _WIN32
+	//- Windows -
+	#include <Windows.h>
+#endif
+
 //- OpenGL -
 #include <GL/gl.h>
 
 using namespace std;
 
 #ifdef _WIN32
+	#include <GL/glext.h>
+	#include <GL/wglext.h>
 	#define glGetProcAddress wglGetProcAddress
 #elif __linux__
 	#include <GL/glx.h>

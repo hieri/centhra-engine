@@ -12,5 +12,15 @@ set(CE_BASE_USEWINSOCKET 1)
 set(CE_FRONTEND_USEWIN 1)
 
 project(ce)
+
+if(${WIN32})
+	set(IL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../DevIL/include/IL)
+	set(IL_LIBRARIES ${PROJECT_SOURCE_DIR}/../DevIL/lib/DevIL.lib)
+	set(ILU_LIBRARIES ${PROJECT_SOURCE_DIR}/../DevIL/lib/ILU.lib)
+	set(ILUT_LIBRARIES ${PROJECT_SOURCE_DIR}/../DevIL/lib/ILUT.lib)
+	set(FREETYPE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../freetype2/include)
+	set(FREETYPE_LIBRARY ${PROJECT_SOURCE_DIR}/../freetype2/lib/library)
+endif(${WIN32})
+
 add_subdirectory(modules)
 add_subdirectory(samples)

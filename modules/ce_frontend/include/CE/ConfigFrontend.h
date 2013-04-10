@@ -1,8 +1,0 @@
-#ifndef _CE_CONFIG_FRONTEND_H_
-#define _CE_CONFIG_FRONTEND_H_
-
-#define CE_FRONTEND_USEXLIB 1
-#define CE_FRONTEND_USEXCB 0
-#define CE_FRONTEND_USEWIN 0
-
-#endif

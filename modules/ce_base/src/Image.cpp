@@ -6,6 +6,11 @@
 #include <CE/Base.h>
 #include <CE/Image.h>
 
+#ifdef _WIN32
+	//- Windows -
+	#include <Windows.h>
+#endif
+
 //- OpenGL -
 #include <GL/gl.h>
 

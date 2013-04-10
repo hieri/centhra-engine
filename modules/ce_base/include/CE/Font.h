@@ -30,7 +30,7 @@ namespace ce
 
 		~Font();
 
-		void DrawText(const char *text);
+		void DrawString(const char *str);
 		void DrawUnicodeChar(unsigned short unicodeChar);
 		void SetCharSize(unsigned int width, unsigned int height, unsigned int horizontalDpi, unsigned int verticalDpi);
 	};

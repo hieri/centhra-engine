@@ -25,6 +25,12 @@ set(SRC
 
 configure_file(include/CE/ConfigGame2D.h.in include/CE/ConfigGame2D.h)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/modules/ce_base/include ${PROJECT_SOURCE_DIR}/modules/ce_ui/include ${PROJECT_SOURCE_DIR}/external/include)
+set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/modules/ce_base/include ${PROJECT_SOURCE_DIR}/modules/ce_ui/include)
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	set(INCLUDE ${INCLUDE} ${PROJECT_SOURCE_DIR}/external/OpenGL/include)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+include_directories(${INCLUDE})
 add_library(ce_game2d STATIC ${SRC} ${INC} ${RES})
 set_target_properties(ce_game2d PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)

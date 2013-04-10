@@ -19,7 +19,8 @@
 #endif
 
 #ifdef _WIN32
-	#include <windows.h>
+	//- Windows -
+	#include <Windows.h>
 #endif
 
 //- OpenGL -

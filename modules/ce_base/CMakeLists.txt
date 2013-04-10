@@ -25,6 +25,7 @@ set(SRC
 	${SRC_DIR}/Thread.cpp
 )
 
+set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(LIB "")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -39,6 +40,7 @@ else(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	set(INCLUDE ${INCLUDE} ${PROJECT_SOURCE_DIR}/external/OpenGL/include)
 	set(BASE_USEWINTHREAD ${CE_BASE_USEWINTHREAD})
 	set(BASE_USEWINSOCKET ${CE_BASE_USEWINSOCKET})
 	if(${BASE_USEWINSOCKET})
@@ -51,13 +53,15 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 find_package(DevIL REQUIRED)
 set(LIB ${LIB} ${IL_LIBRARIES} ${ILU_LIBRARIES})
+set(INCLUDE ${INCLUDE} ${IL_INCLUDE_DIR}/..)
 
 find_package(Freetype REQUIRED)
 set(LIB ${LIB} ${FREETYPE_LIBRARIES})
+set(INCLUDE ${INCLUDE} ${FREETYPE_INCLUDE_DIRS})
 
 configure_file(include/CE/ConfigBase.h.in include/CE/ConfigBase.h)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${FREETYPE_INCLUDE_DIRS} ${IL_INCLUDE_DIR}/..)
+include_directories(${INCLUDE})
 add_library(ce_base STATIC ${SRC} ${INC} ${RES})
 set_target_properties(ce_base PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 target_link_libraries(ce_base ${LIB})

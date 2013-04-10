@@ -5,6 +5,11 @@
 //- Standard Library -
 #include <algorithm>
 
+#ifdef _WIN32
+	//- Windows -
+	#include <Windows.h>
+#endif
+
 //- OpenGL -
 #include <GL/gl.h>
 

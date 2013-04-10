@@ -27,10 +27,10 @@ CMakeFiles
 *.sdf
 *.suo
 *.opensdf
-*/Release
-*/Debug
-*/MinSizeRel
-*/RelWithDebInfo
+*/*/Release
+*/*/Debug
+*/*/MinSizeRel
+*/*/RelWithDebInfo
 Win32
 ipch
 *.dir

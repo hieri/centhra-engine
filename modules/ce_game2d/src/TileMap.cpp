@@ -2,6 +2,11 @@
 #include <CE/Game2D/TileMap.h>
 #include <CE/Base.h>
 
+#ifdef _WIN32
+	//- Windows -
+	#include <Windows.h>
+#endif
+
 //- OpenGL -
 #include <GL/gl.h>
 

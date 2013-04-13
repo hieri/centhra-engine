@@ -190,6 +190,9 @@ namespace ce
 								if(!xCol && !yCol)
 									diagonals.push_back(entityB);
 								colCount++;
+
+								// TODO: Remove this temporary callback placement. It does not actually care if the entities truly collided.
+								entityA->OnCollision(entityB);
 							}
 						}
 					if((entityA->m_canMove[0] || entityA->m_canMove[1]) && diagonals.size())

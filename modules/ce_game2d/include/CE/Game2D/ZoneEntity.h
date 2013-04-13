@@ -53,6 +53,8 @@ namespace ce
 			unsigned int GetCollisionMask() const;
 			void SetCollisionMask(unsigned int mask);
 
+			virtual bool OnCollision(ZoneEntity *collider);
+
 			static void Cleanup();
 
 			friend class Zone;

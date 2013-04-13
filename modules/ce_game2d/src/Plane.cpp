@@ -273,7 +273,7 @@ namespace ce
 					entity->m_finishedPhysics = true;
 					Vector2<float> velocity = entity->GetVelocity();
 					int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
-						
+
 					aMinX = (int)floor(entity->m_moveBoxMin[0] / m_zoneSize);
 					aMinY = (int)floor(entity->m_moveBoxMin[1] / m_zoneSize);
 					aMaxX = (int)floor(entity->m_moveBoxMax[0] / m_zoneSize);

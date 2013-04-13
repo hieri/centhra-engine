@@ -253,5 +253,9 @@ namespace ce
 		{
 			m_collisionMask = mask;
 		}
+		bool ZoneEntity::OnCollision(ZoneEntity *collider)
+		{
+			return true;
+		}
 	}
 }

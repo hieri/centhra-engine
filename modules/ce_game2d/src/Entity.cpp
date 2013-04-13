@@ -27,7 +27,6 @@ namespace ce
 		}
 		void Entity::DoRender()
 		{
-			print("ATF\n");
 		}
 	}
 }

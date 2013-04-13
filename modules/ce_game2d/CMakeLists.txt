@@ -6,6 +6,7 @@ set(INC
 	${INC_DIR}/UI/GameView2D.h
 	${INC_DIR}/Game2D/Entity.h
 	${INC_DIR}/Game2D/Plane.h
+	${INC_DIR}/Game2D/Sprite.h
 	${INC_DIR}/Game2D/TileMap.h
 	${INC_DIR}/Game2D/Zone.h
 	${INC_DIR}/Game2D/ZoneCamera.h
@@ -17,6 +18,7 @@ set(SRC
 	${SRC_DIR}/GameView2D.cpp
 	${SRC_DIR}/Entity.cpp
 	${SRC_DIR}/Plane.cpp
+	${SRC_DIR}/Sprite.cpp
 	${SRC_DIR}/TileMap.cpp
 	${SRC_DIR}/Zone.cpp
 	${SRC_DIR}/ZoneCamera.cpp

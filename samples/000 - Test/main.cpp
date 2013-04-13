@@ -2,261 +2,88 @@
 #include <CE/AppFrontend.h>
 #include <CE/Base.h>
 #include <CE/Canvas.h>
-#include <CE/Game2D/Plane.h>
-#include <CE/Game2D/ZoneEntity.h>
-#include <CE/Game2D/ZoneCamera.h>
-#include <CE/UI/GameView2D.h>
-#include <CE/Thread.h>
+#include <CE/Image.h>
+#include <CE/Game2D/Sprite.h>
 
-//- Standard Library -
-#include <stdlib.h>
+#ifdef _WIN32
+	//- Windows -
+	#include <Windows.h>
+#endif
+
+//- OpenGL -
+#include <GL/gl.h>
 
 using namespace ce;
-
-#define NUMRANDOMS 1024
-
-void *physicsFunc(void *arg);
 
 //- Define your own implementation of the AppFrontend class. -
 class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
-	game2d::ZoneEntity *m_entity, *m_entityA, *m_entityB;
-	game2d::ZoneCamera *m_camera;
-	ui::GameView2D *m_view;
-	bool w,a,s,d;
-	unsigned long m_lastProcess;
-	game2d::ZoneEntity **m_randoms;
+	Image *m_image;
+	game2d::Sprite *m_sprite;
 
 public:
-	Thread* m_physicsThread;
-	game2d::Plane *m_plane;
-	game2d::Zone *m_zone;
-
 	AppTest()
 	{
 		m_canvas = 0;
-		m_plane = 0;
-		m_entity = m_entityA = m_entityB = 0;
-		m_camera = 0;
-		m_view = 0;
-		w = a = s = d = false;
-		m_randoms = 0;
-		m_zone = 0;
-		m_lastProcess = 0;
-		m_physicsThread = new Thread(&physicsFunc);
-	}
-	~AppTest()
-	{
-		m_physicsThread->Join();
-		delete m_physicsThread;
+		m_image = 0;
+		m_sprite = 0;
 	}
 
 	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
-		srand(GetRunTimeMS());
-		m_canvas = Canvas::Create(640, 480, "000 - Test");
-		m_plane = new game2d::Plane(16, 16, 64.f);
-//		m_zone = new game2d::Zone(0.f, 0.f, 1024.f, 1024.f);
-		m_entity = new game2d::ZoneEntity(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
-//		m_entityA = new game2d::ZoneEntity(Vector2<float>(32.f, 57.f), Vector2<float>(16.f, 16.f));
-//		m_entityB = new game2d::ZoneEntity(Vector2<float>(160.f, 128.f), Vector2<float>(16.f, 16.f));
-		m_plane->Place(m_entity);
-//		m_zone->Add(m_entity);
-//		m_zone->Add(m_entityA);
-//		m_zone->Add(m_entityB);
+		print("Initializing Image Library\n");
+		Image::Init();
 
-//		m_entityA->SetVelocity(Vector2<float>(100.f, 0.f));
-//		m_entityB->SetVelocity(Vector2<float>(-100.f, -100.f));
+		m_canvas = Canvas::Create(300, 300, "000 - Test");
 
-		m_camera = new game2d::ZoneCamera();
-		m_camera->SetFocus(m_entity);
+		print("Loading <../000 - Test/sprite.png>\n");
+		m_image = Image::CreateFromFile("../000 - Test/sprite.png");
+		m_sprite = new game2d::Sprite(m_image);
+		float times[3] = { 1.f, 2.f, 3.f };
+		m_sprite->AddAnimation(Vector2<float>(0.f, 0.f), Vector2<float>(15.f/256.f, 15.f/256.f), Vector2<float>(15.f/256.f, 0.f), times, 3);
 
-		m_view = new ui::GameView2D(Vector2<int>(0, 0), Vector2<int>(640, 480));
-//		m_view = new ui::GameView2D(Vector2<int>(0, 0), Vector2<int>(1366, 768));
-		m_view->SetCamera(m_camera);
-
-		m_entity->SetCollisionMask(0);
-
-		m_randoms = new game2d::ZoneEntity *[NUMRANDOMS];
-		bool randBuff[4096];
-		for(unsigned int a = 0; a < 4096; a++)
-			randBuff[a] = true;
-		randBuff[32 * 64 + 32] = false;
-		for(unsigned int a = 0; a < NUMRANDOMS; a++)
+		if(m_image)
 		{
-			unsigned int rx, ry;
-			do
-			{
-				rx = rand() % 64;
-				ry = rand() % 64;
-			}
-			while(!randBuff[ry * 64 + rx]);
-			randBuff[ry * 64 + rx] = false;
-
-			m_randoms[a] = new game2d::ZoneEntity(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>(16.f, 16.f));
-			m_plane->Place(m_randoms[a]);
-//			m_zone->Add(m_randoms[a]);
-
-			Vector2<float> dif = Vector2<float>((float)(rand() % 1024 - 512), (float)(rand() % 1024 - 512));
-//			dif /= 2.f;
-			//print("%d %f %f\n", mov, dif[0], dif[1]);
-			m_randoms[a]->SetVelocity(dif);
+			Vector2<unsigned int> imageSize = m_image->GetSize();
+			print("  Width: %d Height: %d\n", imageSize.GetX(), imageSize.GetY());
 		}
-
-//		m_physicsThread->Start(this);
-//		m_canvas->SetFullscreen(true);
+		else
+			print("  Unable to load image.\n");
 
 		return true;
 	}
 	bool OnProcess()
 	{
-		unsigned long t = GetRunTimeMS();
-		if((t - m_lastProcess) > 15)
-		{
-			float dt = (float)(t - m_lastProcess) / 1000.f;
-			m_lastProcess = t;
-
-//			m_zone->ProcessPhysics(dt);
-			m_plane->ProcessPhysics(dt);
-		}
-
 		sleepMS(1);
 		return true;
 	}
 	void OnStopped()
 	{
-		game2d::ZoneEntity::Cleanup();
-		if(m_plane)
-			delete m_plane;
-		delete m_entity;
-		delete m_entityA;
-		delete m_entityB;
-		delete m_camera;
-		delete m_view;
-		if(m_zone)
-			delete m_zone;
-		for(int a = 0; a < NUMRANDOMS; a++)
-			delete m_randoms[a];
-		delete [] m_randoms;
+		delete m_sprite;
+		delete m_image;
 		delete m_canvas;
 	}
-
-	Vector2<float> origin;
 	bool OnEvent(Event &event)
 	{
-		float x, y;
 		switch(event.type)
 		{
-			case event::MouseMotion:
-//				x = (float)event.mouseMotion.x - (1366.f/2.f - m_entity->GetPosition()[0]);
-//				y = (768.f - (float)event.mouseMotion.y) - (768.f/2.f - m_entity->GetPosition()[1]);
-//				origin = Vector2<float>(x, y);
-				break;
-			case event::KeyDown:
-				switch(event.key.keyCode)
-				{
-					case 25:
-						w = true;
-						break;
-					case 38:
-						a = true;
-						break;
-					case 39:
-						s = true;
-						break;
-					case 40:
-						d = true;
-						break;
-				}
-				break;
-			case event::KeyUp:
-				switch(event.key.keyCode)
-				{
-					case 25:
-						w = false;
-						break;
-					case 38:
-						a = false;
-						break;
-					case 39:
-						s = false;
-						break;
-					case 40:
-						d = false;
-						break;
-				}
-				break;
 			case event::PostRender:
-				Vector2<float> dif;
-				if(w)
-					dif[1] += 1.f;
-				if(a)
-					dif[0] -= 1.f;
-				if(s)
-					dif[1] -= 1.f;
-				if(d)
-					dif[0] += 1.f;
-
-				dif *= 256.f;
-
-				m_entity->SetVelocity(dif);
-
-				origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
-//				origin = Vector2<float>(512.f, 512.f);
-
-				for(int a = 0; a < NUMRANDOMS; a++)
+				if(m_image)
 				{
-					Vector2<float> pos = m_randoms[a]->GetPosition();
-//					Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
-//					Vector2<float> vel = m_randoms[a]->GetVelocity();
-//					Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
-					Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
-//					vel /= vel.GetLength();
-//					vel *= 64.f;
-
-					if(pos[0] > 1008.f && vel[0] > 0)
-						vel[0] *= -1.f;
-					if(pos[0] < 0.f && vel[0] < 0)
-						vel[0] *= -1.f;
-					if(pos[1] > 1008.f && vel[1] > 0)
-						vel[1] *= -1.f;
-					if(pos[1] < 0.f && vel[1] < 0)
-						vel[1] *= -1.f;
-					m_randoms[a]->SetVelocity(vel);
+					glEnable(GL_TEXTURE_2D);
+						glPushMatrix();
+							glScalef(128.f, 128.f, 1.f);
+							m_sprite->Draw(0, ((float)GetRunTimeMS()) / 1000.f);
+						glPopMatrix();
+					glDisable(GL_TEXTURE_2D);
 				}
-				
-				m_view->Render();
 				break;
 		}
 		return true;
 	}
 };
-
-void *physicsFunc(void *arg)
-{
-	AppTest *app = (AppTest *)arg;
-	unsigned long lastProcess = app->GetRunTimeMS();
-
-	while(app->IsRunning())
-	{
-		unsigned long t = app->GetRunTimeMS();
-		if((t - lastProcess) > 15)
-		{
-			float dt = (float)(t - lastProcess) / 1000.f;
-			lastProcess = t;
-
-//			app->m_zone->ProcessPhysics(dt);
-			app->m_plane->ProcessPhysics(dt);
-		}
-
-		sleepMS(1);
-	}
-
-	Thread::Exit(NULL);
-	return 0;
-}
 
 int main(int argc, char **argv)
 {
@@ -269,6 +96,5 @@ int main(int argc, char **argv)
 	while(myApp.IsRunning())
 		myApp.Process();
 
-	Thread::Exit(NULL);
 	return 0;
 }

@@ -87,8 +87,10 @@ namespace ce
 	}
 	void Font::DrawString(const char *str)
 	{
-		for(unsigned int a = 0; a < strlen(str); a++)
-			DrawUnicodeChar(str[a]);
+		glPushMatrix();
+			for(unsigned int a = 0; a < strlen(str); a++)
+				DrawUnicodeChar(str[a]);
+		glPopMatrix();
 	}
 	void Font::DrawUnicodeChar(unsigned short unicodeChar)
 	{
@@ -147,27 +149,36 @@ namespace ce
 
 			glDisplayList = glGenLists(1);
 			glNewList(glDisplayList, GL_COMPILE);
-				glPushMatrix();
-					glTranslatef(ftGlyph->bitmap_left, 0, 0);
-					glTranslatef(0, ftGlyph->bitmap_top, 0);
+				if(unicodeChar == '\n')
+				{
+					glPopMatrix();
+					glTranslatef(0, ((float)m_height) / -64.f - 4.f, 0);
+					glPushMatrix();
+				}
+				else
+				{
+					glPushMatrix();
+						glTranslatef(ftGlyph->bitmap_left, 0, 0);
+						glTranslatef(0, ftGlyph->bitmap_top, 0);
 
-					float x = (float)width / (float)w;
-					float y = (float)height / (float)h;
+						float x = (float)width / (float)w;
+						float y = (float)height / (float)h;
 
-					glBegin(GL_QUADS);
-						glTexCoord2f(0, y); glVertex2f(0, -ftBitmap.rows);
-						glTexCoord2f(0, 0); glVertex2f(0, 0);
-						glTexCoord2f(x, 0); glVertex2f(ftBitmap.width, 0);
-						glTexCoord2f(x, y); glVertex2f(ftBitmap.width, -ftBitmap.rows);
+						glBegin(GL_QUADS);
+							glTexCoord2f(0, y); glVertex2f(0, -ftBitmap.rows);
+							glTexCoord2f(0, 0); glVertex2f(0, 0);
+							glTexCoord2f(x, 0); glVertex2f(ftBitmap.width, 0);
+							glTexCoord2f(x, y); glVertex2f(ftBitmap.width, -ftBitmap.rows);
 
-/*						glTexCoord2f(0, 0); glVertex2f(0, ftBitmap.rows);
-						glTexCoord2f(0, y); glVertex2f(0, 0);
-						glTexCoord2f(x, y); glVertex2f(ftBitmap.width, 0);
-						glTexCoord2f(x, 0); glVertex2f(ftBitmap.width, ftBitmap.rows);
-*/
-					glEnd();
-				glPopMatrix();
-				glTranslatef(ftGlyph->advance.x >> 6, 0, 0);
+	/*						glTexCoord2f(0, 0); glVertex2f(0, ftBitmap.rows);
+							glTexCoord2f(0, y); glVertex2f(0, 0);
+							glTexCoord2f(x, y); glVertex2f(ftBitmap.width, 0);
+							glTexCoord2f(x, 0); glVertex2f(ftBitmap.width, ftBitmap.rows);
+	*/
+						glEnd();
+					glPopMatrix();
+					glTranslatef(ftGlyph->advance.x >> 6, 0, 0);
+				}
 			glEndList();
 
 			m_glDisplayListMap[m_height][unicodeChar] = glDisplayList;
@@ -178,5 +189,9 @@ namespace ce
 		glCallLists(1, GL_UNSIGNED_BYTE, &glDisplayList);
 		glDisable(GL_BLEND);
 		glDisable(GL_TEXTURE_2D);
+	}
+	unsigned int Font::GetCharHeight() const
+	{
+		return m_height / 64;
 	}
 }

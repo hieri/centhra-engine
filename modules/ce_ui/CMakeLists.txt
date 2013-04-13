@@ -6,11 +6,13 @@ set(INC
 	${INC_DIR}/ConfigUI.h
 	${INC_DIR}/UI.h
 	${INC_DIR}/UI/Control.h
+	${INC_DIR}/UI/TextCtrl.h
 )
 
 set(SRC
 	${SRC_DIR}/UI.cpp
 	${SRC_DIR}/Control.cpp
+	${SRC_DIR}/TextCtrl.cpp
 )
 
 configure_file(include/CE/ConfigUI.h.in include/CE/ConfigUI.h)

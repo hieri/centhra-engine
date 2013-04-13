@@ -33,6 +33,7 @@ namespace ce
 		void DrawString(const char *str);
 		void DrawUnicodeChar(unsigned short unicodeChar);
 		void SetCharSize(unsigned int width, unsigned int height, unsigned int horizontalDpi, unsigned int verticalDpi);
+		unsigned int GetCharHeight() const;
 	};
 }
 

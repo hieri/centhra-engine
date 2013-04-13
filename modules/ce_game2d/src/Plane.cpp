@@ -368,5 +368,11 @@ namespace ce
 				}
 			}
 		}
+		void Plane::RemoveDead()
+		{
+			for(unsigned int a = 0; a < m_width; a++)
+				for(unsigned int b = 0; b < m_height; b++)
+					m_zones[a][b]->RemoveDead();
+		}
 	}
 }

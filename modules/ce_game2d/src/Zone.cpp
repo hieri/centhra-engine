@@ -73,6 +73,20 @@ namespace ce
 				m_children.erase(it);
 			}
 		}
+		void Zone::RemoveDead()
+		{
+			vector<ZoneEntity *>::iterator it = m_children.begin();
+			while(it != m_children.end())
+			{
+				if((*it)->IsDead())
+				{
+					m_children.erase(it);
+					it = m_children.begin();
+				}
+				else
+					it++;
+			}
+		}
 		void Zone::FinishRender()
 		{
 			for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)

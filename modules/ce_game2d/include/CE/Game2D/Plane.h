@@ -23,6 +23,7 @@ namespace ce
 			void Place(ZoneEntity *entity);
 			void MoveEntity(ZoneEntity *entity, Vector2<float> movement);
 			void ProcessPhysics(float dt);
+			void RemoveDead();
 		};
 	}
 }

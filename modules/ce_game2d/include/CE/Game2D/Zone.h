@@ -28,6 +28,7 @@ namespace ce
 			void Add(ZoneEntity *entity);
 			void Remove(ZoneEntity *entity);
 			bool IsMember(ZoneEntity *entity) const;
+			void RemoveDead();
 
 			void FinishRender();
 

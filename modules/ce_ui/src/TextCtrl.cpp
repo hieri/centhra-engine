@@ -38,6 +38,14 @@ namespace ce
 		{
 			return m_text.c_str();
 		}
+		void TextCtrl::SetColor(Color color)
+		{
+			m_color = color;
+		}
+		Color TextCtrl::GetColor() const
+		{
+			return m_color;
+		}
 		void TextCtrl::DoRender()
 		{
 			glPushMatrix();

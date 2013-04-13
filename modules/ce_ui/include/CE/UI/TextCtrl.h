@@ -25,6 +25,8 @@ namespace ce
 		public:
 			TextCtrl(Vector2<int> position, Vector2<int> extent, Font *font, const char *text = "", Color color = Color());
 			
+			Color GetColor() const;
+			void SetColor(Color color);
 			Font *GetFont() const;
 			void SetFont(Font *text);
 			const char *GetText() const;

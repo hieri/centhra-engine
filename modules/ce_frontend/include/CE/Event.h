@@ -3,6 +3,7 @@
 
 //- Centhra Engine -
 #include <CE/ConfigFrontend.h>
+#include <CE/KeyCode.h>
 
 //- TODO: incorporate event stack, with peek/wait functionality -
 

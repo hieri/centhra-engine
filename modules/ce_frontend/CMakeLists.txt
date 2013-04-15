@@ -7,6 +7,8 @@ set(INC
 	${INC_DIR}/ConfigFrontend.h
 	${INC_DIR}/Event.h
 	${INC_DIR}/Frontend.h
+	${INC_DIR}/KeyCode.h
+	${INC_DIR}/ScanCode.h
 )
 
 set(SRC

@@ -6,7 +6,9 @@
 
 namespace ce
 {
-	unsigned int ConvertNativeScanCode(unsigned int scanCode);
+	unsigned int NativeScanCodeToKeyCode(unsigned int nativeScanCode);
+	unsigned int NativeScanCodeToScanCode(unsigned int nativeScanCode);
+	unsigned int ScanCodeToKeyCode(unsigned int scanCode);
 }
 
 #endif

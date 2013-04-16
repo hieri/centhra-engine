@@ -203,23 +203,23 @@ namespace ce
 		Key_KB_International8 = SCANCODE_TO_KEYCODE(Scan_KB_International8),
 		Key_KB_International9 = SCANCODE_TO_KEYCODE(Scan_KB_International9),
 
-		Key_KB_Langauge1 = SCANCODE_TO_KEYCODE(Scan_KB_Langauge1), //- Hanguel/English -
-		Key_KB_Langauge2 = SCANCODE_TO_KEYCODE(Scan_KB_Langauge2), //- Hanja -
-		Key_KB_Langauge3 = SCANCODE_TO_KEYCODE(Scan_KB_Langauge3), //- Katakana -
-		Key_KB_Langauge4 = SCANCODE_TO_KEYCODE(Scan_KB_Langauge4), //- Hiragana -
-		Key_KB_Langauge5 = SCANCODE_TO_KEYCODE(Scan_KB_Langauge5), //- Zenkaku/Hankaku -
-		Key_KB_Langauge6 = SCANCODE_TO_KEYCODE(Scan_KB_Langauge6),
-		Key_KB_Langauge7 = SCANCODE_TO_KEYCODE(Scan_KB_Langauge7),
-		Key_KB_Langauge8 = SCANCODE_TO_KEYCODE(Scan_KB_Langauge8),
-		Key_KB_Langauge9 = SCANCODE_TO_KEYCODE(Scan_KB_Langauge9),
+		Key_KB_Language1 = SCANCODE_TO_KEYCODE(Scan_KB_Language1), //- Hanguel/English -
+		Key_KB_Language2 = SCANCODE_TO_KEYCODE(Scan_KB_Language2), //- Hanja -
+		Key_KB_Language3 = SCANCODE_TO_KEYCODE(Scan_KB_Language3), //- Katakana -
+		Key_KB_Language4 = SCANCODE_TO_KEYCODE(Scan_KB_Language4), //- Hiragana -
+		Key_KB_Language5 = SCANCODE_TO_KEYCODE(Scan_KB_Language5), //- Zenkaku/Hankaku -
+		Key_KB_Language6 = SCANCODE_TO_KEYCODE(Scan_KB_Language6),
+		Key_KB_Language7 = SCANCODE_TO_KEYCODE(Scan_KB_Language7),
+		Key_KB_Language8 = SCANCODE_TO_KEYCODE(Scan_KB_Language8),
+		Key_KB_Language9 = SCANCODE_TO_KEYCODE(Scan_KB_Language9),
 
-		Key_KB_AlternateErase = SCANCODE_TO_KEYCODE(Scan_KB_AlternateErase),
+		Key_KB_AltErase = SCANCODE_TO_KEYCODE(Scan_KB_AltErase),
 		Key_KB_SystemRequest = SCANCODE_TO_KEYCODE(Scan_KB_SystemRequest),
 		Key_KB_Cancel = SCANCODE_TO_KEYCODE(Scan_KB_Cancel),
 		Key_KB_Clear = SCANCODE_TO_KEYCODE(Scan_KB_Clear),
 		Key_KB_Prior = SCANCODE_TO_KEYCODE(Scan_KB_Prior),
 		Key_KB_Return = SCANCODE_TO_KEYCODE(Scan_KB_Return),
-		Key_KB_Seperator = SCANCODE_TO_KEYCODE(Scan_KB_Seperator),
+		Key_KB_Separator = SCANCODE_TO_KEYCODE(Scan_KB_Separator),
 		Key_KB_Out = SCANCODE_TO_KEYCODE(Scan_KB_Out),
 		Key_KB_Oper = SCANCODE_TO_KEYCODE(Scan_KB_Oper),
 		Key_KB_ClearAgain = SCANCODE_TO_KEYCODE(Scan_KB_ClearAgain),
@@ -228,8 +228,8 @@ namespace ce
 
 		Key_KP_00 = SCANCODE_TO_KEYCODE(Scan_KP_00),
 		Key_KP_000 = SCANCODE_TO_KEYCODE(Scan_KP_000),
-		Key_KP_ThousandsSeperator = SCANCODE_TO_KEYCODE(Scan_KP_ThousandsSeperator),
-		Key_KP_DecimalSeperator = SCANCODE_TO_KEYCODE(Scan_KP_DecimalSeperator),
+		Key_KP_ThousandsSeparator = SCANCODE_TO_KEYCODE(Scan_KP_ThousandsSeparator),
+		Key_KP_DecimalSeparator = SCANCODE_TO_KEYCODE(Scan_KP_DecimalSeparator),
 		Key_KP_CurrencyUnit = SCANCODE_TO_KEYCODE(Scan_KP_CurrencyUnit),
 		Key_KP_CurrencySubUnit = SCANCODE_TO_KEYCODE(Scan_KP_CurrencySubUnit),
 		Key_KP_ParenthesisLeft = SCANCODE_TO_KEYCODE(Scan_KP_ParenthesisLeft),
@@ -275,11 +275,11 @@ namespace ce
 
 		Key_ControlLeft = SCANCODE_TO_KEYCODE(Scan_ControlLeft),
 		Key_ShiftLeft = SCANCODE_TO_KEYCODE(Scan_ShiftLeft),
-		Key_AlternativeLeft = SCANCODE_TO_KEYCODE(Scan_AlternativeLeft),
+		Key_AltLeft = SCANCODE_TO_KEYCODE(Scan_AltLeft),
 		Key_GUILeft = SCANCODE_TO_KEYCODE(Scan_GUILeft),
 		Key_ControlRight = SCANCODE_TO_KEYCODE(Scan_ControlRight),
 		Key_ShiftRight = SCANCODE_TO_KEYCODE(Scan_ShiftRight),
-		Key_AlternativeRight = SCANCODE_TO_KEYCODE(Scan_AlternativeRight),
+		Key_AltRight = SCANCODE_TO_KEYCODE(Scan_AltRight),
 		Key_GUIRight = SCANCODE_TO_KEYCODE(Scan_GUIRight)
 	};
 
@@ -290,8 +290,8 @@ namespace ce
 		Mod_ShiftRight = 0x0002,
 		Mod_ControlLeft = 0x0040,
 		Mod_ControlRight = 0x0080,
-		Mod_AlternativeLeft = 0x0100,
-		Mod_AlternativeRight = 0x0200,
+		Mod_AltLeft = 0x0100,
+		Mod_AltRight = 0x0200,
 		Mod_GUILeft = 0x0400,
 		Mod_GUIRight = 0x0800,
 		Mod_NumLock = 0x1000,
@@ -299,7 +299,7 @@ namespace ce
 
 		Mod_Control = Mod_ControlLeft | Mod_ControlRight,
 		Mod_Shift = Mod_ShiftLeft | Mod_ShiftRight,
-		Mod_Alternative = Mod_AlternativeLeft | Mod_AlternativeRight,
+		Mod_Alt = Mod_AltLeft | Mod_AltRight,
 		Mod_GUI = Mod_GUILeft | Mod_GUIRight
 	};
 }

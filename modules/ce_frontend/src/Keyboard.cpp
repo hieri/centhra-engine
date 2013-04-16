@@ -4,7 +4,9 @@
 namespace ce
 {
 #ifdef _WIN32
-	unsigned int g_windowsScanCodeTable [] =
+	#define NUMNATIVESCANCODES 256
+	#define NUMSCANCODES 512
+	unsigned int g_scanCodeTable[NUMNATIVESCANCODES] =
 	{
 		Scan_Unknown,
 		Scan_Escape,
@@ -149,10 +151,283 @@ namespace ce
 		Scan_Unknown,
 		Scan_Unknown
 	};
-
-	unsigned int ConvertNativeScanCode(unsigned long scanCode)
+	unsigned int g_keyCodeTable[NUMSCANCODES] =
 	{
-		return 0;
+		Key_Unknown,
+		Key_Unknown,
+		Key_Unknown,
+		Key_Unknown,
+		Key_A,
+		Key_B,
+		Key_C,
+		Key_D,
+
+		Key_E,
+		Key_F,
+		Key_G,
+		Key_H,
+		Key_I,
+		Key_J,
+		Key_K,
+		Key_L,
+
+		Key_M,
+		Key_N,
+		Key_O,
+		Key_P,
+		Key_Q,
+		Key_R,
+		Key_S,
+		Key_T,
+
+		Key_U,
+		Key_V,
+		Key_W,
+		Key_X,
+		Key_Y,
+		Key_Z,
+		Key_1,
+		Key_2,
+
+		Key_3,
+		Key_4,
+		Key_5,
+		Key_6,
+		Key_7,
+		Key_8,
+		Key_9,
+		Key_0,
+
+		Key_Return,
+		Key_Escape,
+		Key_Backspace,
+		Key_Tab,
+		Key_Space,
+		Key_Minus,
+		Key_Equal,
+		Key_BracketLeft,
+
+		Key_BracketRight,
+		Key_Backslash,
+		Key_Backslash,
+		Key_Semicolon,
+		Key_Apostrophe,
+		Key_Grave,
+		Key_Comma,
+		Key_Period,
+
+		Key_Slash,
+		Key_CapsLock,
+		Key_F1,
+		Key_F2,
+		Key_F3,
+		Key_F4,
+		Key_F5,
+		Key_F6,
+
+		Key_F7,
+		Key_F8,
+		Key_F9,
+		Key_F10,
+		Key_F11,
+		Key_F12,
+		Key_PrintScreen,
+		Key_ScrollLock,
+
+		Key_Break,
+		Key_Insert,
+		Key_Home,
+		Key_PageUp,
+		Key_Delete,
+		Key_End,
+		Key_PageDown,
+		Key_Right,
+
+		Key_Left,
+		Key_Down,
+		Key_Up,
+		Key_NumLock,
+		Key_KP_Slash,
+		Key_KP_Asterisk,
+		Key_KP_Minus,
+		Key_KP_Plus,
+
+		Key_KP_Enter,
+		Key_KP_1,
+		Key_KP_2,
+		Key_KP_3,
+		Key_KP_4,
+		Key_KP_5,
+		Key_KP_6,
+		Key_KP_7,
+
+		Key_KP_8,
+		Key_KP_9,
+		Key_KP_0,
+		Key_KP_Period,
+		Key_NUS_Slash,
+		Key_Application,
+		Key_KB_Power,
+		Key_KP_Equal,
+
+		Key_F13,
+		Key_F14,
+		Key_F15,
+		Key_F16,
+		Key_F17,
+		Key_F18,
+		Key_F19,
+		Key_F20,
+
+		Key_F21,
+		Key_F22,
+		Key_F23,
+		Key_F24,
+		Key_KB_Execute,
+		Key_KB_Help,
+		Key_KB_Menu,
+		Key_KB_Select,
+
+		Key_KB_Stop,
+		Key_KB_Again,
+		Key_KB_Undo,
+		Key_KB_Cut,
+		Key_KB_Copy,
+		Key_KB_Paste,
+		Key_KB_Find,
+		Key_KB_Mute,
+
+		Key_KB_VolumeUp,
+		Key_KB_VolumeDown,
+		Key_KB_LockingCapsLock,
+		Key_KB_LockingNumLock,
+		Key_KB_LockingScrollLock,
+		Key_KP_Comma,
+		Key_KB_Equal,
+		Key_KB_International1,
+
+		Key_KB_International2,
+		Key_KB_International3,
+		Key_KB_International4,
+		Key_KB_International5,
+		Key_KB_International6,
+		Key_KB_International7,
+		Key_KB_International8,
+		Key_KB_International9,
+
+		Key_KB_Language1,
+		Key_KB_Language2,
+		Key_KB_Language3,
+		Key_KB_Language4,
+		Key_KB_Language5,
+		Key_KB_Language6,
+		Key_KB_Language7,
+		Key_KB_Language8,
+
+		Key_KB_Language9,
+		Key_KB_AltErase,
+		Key_KB_SystemRequest,
+		Key_KB_Cancel,
+		Key_KB_Clear,
+		Key_KB_Prior,
+		Key_KB_Return,
+		Key_KB_Separator,
+
+		Key_KB_Out,
+		Key_KB_Oper,
+		Key_KB_ClearAgain,
+		Key_KB_CrSelProps,
+		Key_KB_ExSel,
+		Key_Unknown,
+		Key_Unknown,
+		Key_Unknown,
+
+		Key_Unknown,
+		Key_Unknown,
+		Key_Unknown,
+		Key_Unknown,
+		Key_Unknown,
+		Key_Unknown,
+		Key_Unknown,
+		Key_Unknown,
+
+		Key_KP_00,
+		Key_KP_000,
+		Key_KP_ThousandsSeparator,
+		Key_KP_DecimalSeparator,
+		Key_KP_CurrencyUnit,
+		Key_KP_CurrencySubUnit,
+		Key_KP_ParenthesisLeft,
+		Key_KP_ParenthesisRight,
+
+		Key_KP_CurlyBracketLeft,
+		Key_KP_CurlyBracketRight,
+		Key_KP_Tab,
+		Key_KP_Backspace,
+		Key_KP_A,
+		Key_KP_B,
+		Key_KP_C,
+		Key_KP_D,
+
+		Key_KP_E,
+		Key_KP_F,
+		Key_KP_XOR,
+		Key_KP_Caret,
+		Key_KP_Percent,
+		Key_KP_LessThan,
+		Key_KP_GreaterThan,
+		Key_KP_Ampersand,
+
+		Key_KP_DoubleAmpersand,
+		Key_KP_VerticalBar,
+		Key_KP_DoubleVerticalBar,
+		Key_KP_Colon,
+		Key_KP_Number,
+		Key_KP_Space,
+		Key_KP_At,
+		Key_KP_Exclamation,
+
+		Key_KP_MemoryStore,
+		Key_KP_MemoryRecall,
+		Key_KP_MemoryClear,
+		Key_KP_MemoryAdd,
+		Key_KP_MemorySubtract,
+		Key_KP_MemoryMultiply,
+		Key_KP_MemoryDivide,
+		Key_KP_PlusMinus,
+
+		Key_KP_Clear,
+		Key_KP_ClearEntry,
+		Key_KP_Binary,
+		Key_KP_Octal,
+		Key_KP_Decimal,
+		Key_KP_Hexadecimal,
+		Key_Unknown,
+		Key_Unknown,
+
+		Key_ControlLeft,
+		Key_ShiftLeft,
+		Key_AltLeft,
+		Key_GUILeft,
+		Key_ControlRight,
+		Key_ShiftRight,
+		Key_AltRight,
+		Key_GUIRight
+	};
+
+	unsigned int NativeScanCodeToKeyCode(unsigned int nativeScanCode)
+	{
+		return ScanCodeToKeyCode(NativeScanCodeToScanCode(nativeScanCode));
+	}
+	unsigned int NativeScanCodeToScanCode(unsigned int nativeScanCode)
+	{
+		if(nativeScanCode >= NUMNATIVESCANCODES)
+			return Scan_Unknown;
+		return g_scanCodeTable[nativeScanCode];
+	}
+	unsigned int ScanCodeToKeyCode(unsigned int scanCode)
+	{
+		return g_keyCodeTable[scanCode];
 	}
 #endif
 }

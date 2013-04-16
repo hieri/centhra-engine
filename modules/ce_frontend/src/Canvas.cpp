@@ -2,6 +2,7 @@
 #include <CE/Base.h>
 #include <CE/AppFrontend.h>
 #include <CE/Canvas.h>
+#include <CE/Keyboard.h>
 
 #ifdef _WIN32
 	//- Windows -
@@ -49,7 +50,6 @@ namespace ce
 			Event event;
 			event.base.timeMS = app->GetRunTimeMS();
 			event.base.canvas = canvas;
-
 			switch(wMsg)
 			{
 				case WM_DESTROY:
@@ -57,16 +57,15 @@ namespace ce
 					return app->Stop();
 				case WM_KEYDOWN:
 					event.type = event::KeyDown;
-//					event.key.keyCode = wParam;
-					event.key.keyCode = 0;
-//					event.key.scanCode = (unsigned char)((lParam & 0x0000FF00) >> 8);
-//					print("SCAN: %d\n", MapVirtualKey(wParam, MAPVK_VK_TO_VSC) & 0xFF);
+					event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
+					event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 					event.key.state = 1;
 					app->OnEvent(event);
 					break;
 				case WM_KEYUP:
 					event.type = event::KeyUp;
-					event.key.keyCode = wParam;
+					event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
+					event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 					event.key.state = 0;
 					app->OnEvent(event);
 					break;

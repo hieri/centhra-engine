@@ -58,7 +58,7 @@ namespace ce
 		Scan_ParenthesisLeft,
 		Scan_ParenthesisRight,
 
-		Scan_Return = 41,
+		Scan_Return = 40,
 		Scan_Escape,
 		Scan_Backspace,
 		Scan_Tab,
@@ -198,15 +198,15 @@ namespace ce
 		Scan_KB_International8,
 		Scan_KB_International9,
 
-		Scan_KB_Langauge1 = 144, //- Hanguel/English -
-		Scan_KB_Langauge2, //- Hanja -
-		Scan_KB_Langauge3, //- Katakana -
-		Scan_KB_Langauge4, //- Hiragana -
-		Scan_KB_Langauge5, //- Zenkaku/Hankaku -
-		Scan_KB_Langauge6,
-		Scan_KB_Langauge7,
-		Scan_KB_Langauge8,
-		Scan_KB_Langauge9,
+		Scan_KB_Language1 = 144, //- Hanguel/English -
+		Scan_KB_Language2, //- Hanja -
+		Scan_KB_Language3, //- Katakana -
+		Scan_KB_Language4, //- Hiragana -
+		Scan_KB_Language5, //- Zenkaku/Hankaku -
+		Scan_KB_Language6,
+		Scan_KB_Language7,
+		Scan_KB_Language8,
+		Scan_KB_Language9,
 
 		Scan_KB_AltErase = 153,
 		Scan_KB_SystemRequest,
@@ -214,7 +214,7 @@ namespace ce
 		Scan_KB_Clear,
 		Scan_KB_Prior,
 		Scan_KB_Return,
-		Scan_KB_Seperator,
+		Scan_KB_Separator,
 		Scan_KB_Out,
 		Scan_KB_Oper,
 		Scan_KB_ClearAgain,
@@ -223,8 +223,8 @@ namespace ce
 
 		Scan_KP_00 = 176,
 		Scan_KP_000,
-		Scan_KP_ThousandsSeperator,
-		Scan_KP_DecimalSeperator,
+		Scan_KP_ThousandsSeparator,
+		Scan_KP_DecimalSeparator,
 		Scan_KP_CurrencyUnit,
 		Scan_KP_CurrencySubUnit,
 		Scan_KP_ParenthesisLeft,

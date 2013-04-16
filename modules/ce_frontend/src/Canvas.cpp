@@ -57,7 +57,10 @@ namespace ce
 					return app->Stop();
 				case WM_KEYDOWN:
 					event.type = event::KeyDown;
-					event.key.keyCode = wParam;
+//					event.key.keyCode = wParam;
+					event.key.keyCode = 0;
+//					event.key.scanCode = (unsigned char)((lParam & 0x0000FF00) >> 8);
+//					print("SCAN: %d\n", MapVirtualKey(wParam, MAPVK_VK_TO_VSC) & 0xFF);
 					event.key.state = 1;
 					app->OnEvent(event);
 					break;

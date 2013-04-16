@@ -7,7 +7,7 @@ namespace ce
 {
 	enum ScanCode
 	{
-		Scan_NoEvent,
+		Scan_Unknown,
 
 		Scan_A = 4,
 		Scan_B,
@@ -208,7 +208,7 @@ namespace ce
 		Scan_KB_Langauge8,
 		Scan_KB_Langauge9,
 
-		Scan_KB_AlternateErase = 153,
+		Scan_KB_AltErase = 153,
 		Scan_KB_SystemRequest,
 		Scan_KB_Cancel,
 		Scan_KB_Clear,
@@ -270,11 +270,11 @@ namespace ce
 
 		Scan_ControlLeft = 224,
 		Scan_ShiftLeft,
-		Scan_AlternativeLeft,
+		Scan_AltLeft,
 		Scan_GUILeft,
 		Scan_ControlRight,
 		Scan_ShiftRight,
-		Scan_AlternativeRight,
+		Scan_AltRight,
 		Scan_GUIRight
 	};
 }

@@ -52,6 +52,7 @@ namespace ce
 		int type;
 		unsigned long timeMS;
 		Canvas *canvas;
+		unsigned char scanCode;
 		unsigned int keyCode, state;
 	} KeyEvent;
 
@@ -86,7 +87,7 @@ namespace ce
 		KeyEvent key;
 		MouseButtonEvent mouseButton;
 		MouseMotionEvent mouseMotion;
-		char padding[32];
+		char padding[64];
 	} Event;
 }
 

@@ -5,6 +5,7 @@
 #include <CE/Base.h>
 #include <CE/AppFrontend.h>
 #include <CE/Canvas.h>
+#include <CE/Keyboard.h>
 
 #if CE_FRONTEND_USEXLIB
 	//- Xlib -
@@ -82,7 +83,8 @@ namespace ce
 						xcbWindow = cast->event;
 						if(m_canvasMap.count(xcbWindow))
 							event.base.canvas = m_canvasMap[xcbWindow];
-						event.key.keyCode = cast->detail;
+						event.key.scanCode = NativeScanCodeToScanCode(cast->detail);
+						event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 						event.key.state = cast->state;
 						OnEvent(event);
 						break;
@@ -94,7 +96,8 @@ namespace ce
 						xcbWindow = cast->event;
 						if(m_canvasMap.count(xcbWindow))
 							event.base.canvas = m_canvasMap[xcbWindow];
-						event.key.keyCode = cast->detail;
+						event.key.scanCode = NativeScanCodeToScanCode(cast->detail);
+						event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 						event.key.state = cast->state;
 						OnEvent(event);
 						break;
@@ -169,13 +172,15 @@ namespace ce
 						return Stop(true);
 					case KeyPress:
 						event.type = event::KeyDown;
-						event.key.keyCode = xEvent.xkey.keycode;
+						event.key.scanCode = NativeScanCodeToScanCode(xEvent.xkey.keycode);
+						event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 						event.key.state = xEvent.xkey.state;
 						OnEvent(event);
 						break;
 					case KeyRelease:
 						event.type = event::KeyUp;
-						event.key.keyCode = xEvent.xkey.keycode;
+						event.key.scanCode = NativeScanCodeToScanCode(xEvent.xkey.keycode);
+						event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 						event.key.state = xEvent.xkey.state;
 						OnEvent(event);
 						break;;

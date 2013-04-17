@@ -18,6 +18,7 @@
 
 //- Centhra Engine -
 #include <CE/Base.h>
+#include <CE/App.h>
 
 //- TODO: handle warn differently than print -
 
@@ -99,21 +100,33 @@ namespace ce
 	{
 		va_list	ap;
 		va_start(ap, format);
-		cerr << compileMessage(format, ap);
+		string msg = compileMessage(format, ap);
+		App *current = App::GetCurrent();
+		if(current)
+			current->OnError(msg.c_str());
+		cerr << msg;
 		va_end(ap);
 	}
 	void print(const char *format, ...)
 	{
 		va_list	ap;
 		va_start(ap, format);
-		cout << compileMessage(format, ap);
+		string msg = compileMessage(format, ap);
+		App *current = App::GetCurrent();
+		if(current)
+			current->OnPrint(msg.c_str());
+		cout << msg;
 		va_end(ap);
 	}
 	void warn(const char *format, ...)
 	{
 		va_list	ap;
 		va_start(ap, format);
-		cout << compileMessage(format, ap);
+		string msg = compileMessage(format, ap);
+		App *current = App::GetCurrent();
+		if(current)
+			current->OnWarn(msg.c_str());
+		cout << msg;
 		va_end(ap);
 	}
 

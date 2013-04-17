@@ -102,6 +102,8 @@ namespace ce
 				else
 					m_startTimeMS = GetTickCount();
 			#endif
+
+			OnStarted();
 		}
 
 		return m_isRunning;
@@ -129,11 +131,23 @@ namespace ce
 	{
 		return true;
 	}
+	void App::OnStarted()
+	{
+	}
 	bool App::OnStop(bool force)
 	{
 		return true;
 	}
 	void App::OnStopped()
+	{
+	}
+	void App::OnError(const char *str)
+	{
+	}
+	void App::OnPrint(const char *str)
+	{
+	}
+	void App::OnWarn(const char *str)
 	{
 	}
 }

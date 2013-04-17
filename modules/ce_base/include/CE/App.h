@@ -75,6 +75,10 @@ namespace ce
 		 */
 		virtual bool OnStart();
 
+		/**	@brief Called when the application has started.
+		 */
+		virtual void OnStarted();
+
 		/**	@brief Called when the application is asked to stop.
 		 *	@param force If true, the stop is considered a force stop.
 		 *	@return Whether or not the application should stop.
@@ -84,6 +88,10 @@ namespace ce
 		/**	@brief Called when the application has stopped.
 		 */
 		virtual void OnStopped();
+
+		virtual void OnError(const char *str);
+		virtual void OnPrint(const char *str);
+		virtual void OnWarn(const char *str);
 	};
 }
 

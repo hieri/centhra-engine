@@ -206,6 +206,18 @@ namespace ce
 						event.mouseMotion.y = xEvent.xmotion.y;
 						OnEvent(event);
 						break;
+					case ConfigureNotify:
+						if(xEvent.xconfigure.width != event.base.canvas->GetWidth() || xEvent.xconfigure.height != event.base.canvas->GetHeight())
+						{
+							event.base.canvas->m_width = xEvent.xconfigure.width;
+							event.base.canvas->m_height = xEvent.xconfigure.height;
+							event.base.canvas->UpdateViewport();
+							event.type = event::WindowResize;
+							event.windowResize.width = xEvent.xconfigure.width;
+							event.windowResize.height = xEvent.xconfigure.height;
+							OnEvent(event);
+						}
+						break;
 					}
 				}
 			#endif

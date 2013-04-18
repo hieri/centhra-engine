@@ -42,7 +42,10 @@ public:
 		switch(event.type)
 		{
 		case event::KeyDown:
-			print("%d\n", event.key.keyCode);
+			print("Key Down: %d\n", event.key.keyCode);
+			break;
+		case event::WindowResize:
+			print("Window Resize: %d %d\n", event.windowResize.width, event.windowResize.height);
 			break;
 		}
 		return true;

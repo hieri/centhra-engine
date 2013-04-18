@@ -67,6 +67,12 @@ namespace ce
 		virtual bool OnEvent(Event &event);
 
 		void SetFullscreen(bool fullscreen);
+
+		int GetWidth() const;
+		int GetHeight() const;
+		void UpdateViewport();
+
+		friend class AppFrontend;
 	};
 }
 

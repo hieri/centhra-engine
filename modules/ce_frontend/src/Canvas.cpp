@@ -497,14 +497,7 @@ namespace ce
 			app->m_canvasMap[hWnd] = canvas;
 		#endif
 		
-		glViewport(0, 0, width, height);
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		gluOrtho2D(0.f, (float)width, 0.f, (float)height);
-
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+		canvas->UpdateViewport();
 
 		return canvas;
 	}
@@ -647,5 +640,24 @@ namespace ce
 				#endif
 			#endif
 		}
+	}
+	int Canvas::GetWidth() const
+	{
+		return m_width;
+	}
+	int Canvas::GetHeight() const
+	{
+		return m_height;
+	}
+	void Canvas::UpdateViewport()
+	{
+		glViewport(0, 0, m_width, m_height);
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluOrtho2D(0.f, (float)m_width, 0.f, (float)m_height);
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
 	}
 }

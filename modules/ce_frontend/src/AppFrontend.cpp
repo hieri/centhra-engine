@@ -142,6 +142,26 @@ namespace ce
 						OnEvent(event);
 						break;
 					}
+					case XCB_CONFIGURE_NOTIFY:
+					{
+						xcb_configure_notify_event_t *cast = (xcb_configure_notify_event_t *)xcbEvent;
+						xcbWindow = cast->event;
+						if(m_canvasMap.count(xcbWindow))
+							event.base.canvas = m_canvasMap[xcbWindow];
+
+						if(cast->width != event.base.canvas->GetWidth() || cast->height != event.base.canvas->GetHeight())
+						{
+							event.base.canvas->m_width = cast->width;
+							event.base.canvas->m_height = cast->height;
+							event.base.canvas->UpdateViewport();
+							event.type = event::WindowResize;
+							event.windowResize.width = cast->width;
+							event.windowResize.height = cast->height;
+							OnEvent(event);
+						}
+
+						break;
+					}
 					default:
 						break;
 					}

@@ -6,6 +6,7 @@
 
 //- Centhra Engine -
 #include <CE/Vector2.h>
+#include <CE/Event.h>
 
 namespace ce
 {
@@ -37,6 +38,7 @@ namespace ce
 			Vector2<int> GetExtent() const;
 			void SetPosition(Vector2<int> position);
 			void SetExtent(Vector2<int> extent);
+			virtual bool OnEvent(Event &event);
 		};
 	}
 }

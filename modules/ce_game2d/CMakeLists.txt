@@ -27,7 +27,7 @@ set(SRC
 
 configure_file(include/CE/ConfigGame2D.h.in include/CE/ConfigGame2D.h)
 
-set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/modules/ce_base/include ${PROJECT_SOURCE_DIR}/modules/ce_ui/include)
+set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/modules/ce_base/include ${PROJECT_SOURCE_DIR}/modules/ce_frontend/include  ${PROJECT_SOURCE_DIR}/modules/ce_ui/include)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	set(INCLUDE ${INCLUDE} ${PROJECT_SOURCE_DIR}/external/OpenGL/include)

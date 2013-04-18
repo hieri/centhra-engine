@@ -119,5 +119,9 @@ namespace ce
 		{
 			m_extent = extent;
 		}
+		bool Control::OnEvent(Event &event)
+		{
+			return true;
+		}
 	}
 }

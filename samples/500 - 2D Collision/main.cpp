@@ -130,88 +130,91 @@ public:
 	bool OnEvent(Event &event)
 	{
 		float x, y;
+		Vector2<float> dif;
 		switch(event.type)
 		{
-			case event::MouseMotion:
-//				x = (float)event.mouseMotion.x - (1366.f/2.f - m_entity->GetPosition()[0]);
-//				y = (768.f - (float)event.mouseMotion.y) - (768.f/2.f - m_entity->GetPosition()[1]);
-//				origin = Vector2<float>(x, y);
+		case event::MouseMotion:
+//			x = (float)event.mouseMotion.x - (1366.f/2.f - m_entity->GetPosition()[0]);
+//			y = (768.f - (float)event.mouseMotion.y) - (768.f/2.f - m_entity->GetPosition()[1]);
+//			origin = Vector2<float>(x, y);
+			break;
+		case event::KeyDown:
+			switch(event.key.keyCode)
+			{
+			case Key_W:
+				w = true;
 				break;
-			case event::KeyDown:
-				switch(event.key.keyCode)
-				{
-					case Key_W:
-						w = true;
-						break;
-					case Key_A:
-						a = true;
-						break;
-					case Key_S:
-						s = true;
-						break;
-					case Key_D:
-						d = true;
-						break;
-				}
+			case Key_A:
+				a = true;
 				break;
-			case event::KeyUp:
-				switch(event.key.keyCode)
-				{
-					case Key_W:
-						w = false;
-						break;
-					case Key_A:
-						a = false;
-						break;
-					case Key_S:
-						s = false;
-						break;
-					case Key_D:
-						d = false;
-						break;
-				}
+			case Key_S:
+				s = true;
 				break;
-			case event::PostRender:
-				Vector2<float> dif;
-				if(w)
-					dif[1] += 1.f;
-				if(a)
-					dif[0] -= 1.f;
-				if(s)
-					dif[1] -= 1.f;
-				if(d)
-					dif[0] += 1.f;
+			case Key_D:
+				d = true;
+				break;
+			}
+			break;
+		case event::KeyUp:
+			switch(event.key.keyCode)
+			{
+			case Key_W:
+				w = false;
+				break;
+			case Key_A:
+				a = false;
+				break;
+			case Key_S:
+				s = false;
+				break;
+			case Key_D:
+				d = false;
+				break;
+			}
+			break;
+		case event::PostRender:
+			if(w)
+				dif[1] += 1.f;
+			if(a)
+				dif[0] -= 1.f;
+			if(s)
+				dif[1] -= 1.f;
+			if(d)
+				dif[0] += 1.f;
 
-				dif *= 256.f;
+			dif *= 256.f;
 
-				m_entity->SetVelocity(dif);
+			m_entity->SetVelocity(dif);
 
-				origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
+			origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
 //				origin = Vector2<float>(512.f, 512.f);
 
-				for(int a = 0; a < NUMRANDOMS; a++)
-				{
-					Vector2<float> pos = m_randoms[a]->GetPosition();
-//					Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
-//					Vector2<float> vel = m_randoms[a]->GetVelocity();
-//					Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
-					Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
-//					vel /= vel.GetLength();
-//					vel *= 64.f;
+			for(int a = 0; a < NUMRANDOMS; a++)
+			{
+				Vector2<float> pos = m_randoms[a]->GetPosition();
+//				Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
+//				Vector2<float> vel = m_randoms[a]->GetVelocity();
+//				Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
+				Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
+//				vel /= vel.GetLength();
+//				vel *= 64.f;
 
-					if(pos[0] > 1008.f && vel[0] > 0)
-						vel[0] *= -1.f;
-					if(pos[0] < 0.f && vel[0] < 0)
-						vel[0] *= -1.f;
-					if(pos[1] > 1008.f && vel[1] > 0)
-						vel[1] *= -1.f;
-					if(pos[1] < 0.f && vel[1] < 0)
-						vel[1] *= -1.f;
-					m_randoms[a]->SetVelocity(vel);
-				}
+				if(pos[0] > 1008.f && vel[0] > 0)
+					vel[0] *= -1.f;
+				if(pos[0] < 0.f && vel[0] < 0)
+					vel[0] *= -1.f;
+				if(pos[1] > 1008.f && vel[1] > 0)
+					vel[1] *= -1.f;
+				if(pos[1] < 0.f && vel[1] < 0)
+					vel[1] *= -1.f;
+				m_randoms[a]->SetVelocity(vel);
+			}
 				
-				m_view->Render();
-				break;
+			m_view->Render();
+			break;
+		case event::WindowResize:
+			m_view->SetExtent(Vector2<int>(event.windowResize.width, event.windowResize.height));
+			break;
 		}
 		return true;
 	}

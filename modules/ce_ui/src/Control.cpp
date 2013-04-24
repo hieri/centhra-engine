@@ -117,7 +117,8 @@ namespace ce
 		}
 		void Control::SetExtent(Vector2<int> extent)
 		{
-			m_extent = extent;
+//			print("%d %d\n", extent[0], extent[1]);
+//			m_extent = extent;
 		}
 		bool Control::OnEvent(Event &event)
 		{

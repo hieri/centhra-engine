@@ -52,85 +52,94 @@ namespace ce
 			event.base.canvas = canvas;
 			switch(wMsg)
 			{
-				case WM_DESTROY:
-					PostQuitMessage(0);
-					return app->Stop();
-				case WM_KEYDOWN:
-					event.type = event::KeyDown;
-					event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
-					event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
-					event.key.state = 1;
-					app->OnEvent(event);
-					break;
-				case WM_KEYUP:
-					event.type = event::KeyUp;
-					event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
-					event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
-					event.key.state = 0;
-					app->OnEvent(event);
-					break;
-				case WM_LBUTTONDOWN:
-					event.type = event::MouseButtonDown;
-					event.mouseButton.button = MK_LBUTTON;
-					event.mouseButton.x = LOWORD(lParam);
-					event.mouseButton.y = HIWORD(lParam);
-					app->OnEvent(event);
-					break;
-				case WM_LBUTTONUP:
-					event.type = event::MouseButtonUp;
-					event.mouseButton.button = MK_LBUTTON;
-					event.mouseButton.x = LOWORD(lParam);
-					event.mouseButton.y = HIWORD(lParam);
-					app->OnEvent(event);
-					break;
-				case WM_RBUTTONDOWN:
-					event.type = event::MouseButtonDown;
-					event.mouseButton.button = MK_RBUTTON;
-					event.mouseButton.x = LOWORD(lParam);
-					event.mouseButton.y = HIWORD(lParam);
-					app->OnEvent(event);
-					break;
-				case WM_RBUTTONUP:
-					event.type = event::MouseButtonUp;
-					event.mouseButton.button = MK_RBUTTON;
-					event.mouseButton.x = LOWORD(lParam);
-					event.mouseButton.y = HIWORD(lParam);
-					app->OnEvent(event);
-					break;
-				case WM_MBUTTONDOWN:
-					event.type = event::MouseButtonDown;
-					event.mouseButton.button = MK_MBUTTON;
-					event.mouseButton.x = LOWORD(lParam);
-					event.mouseButton.y = HIWORD(lParam);
-					app->OnEvent(event);
-					break;
-				case WM_MBUTTONUP:
-					event.type = event::MouseButtonUp;
-					event.mouseButton.button = MK_MBUTTON;
-					event.mouseButton.x = LOWORD(lParam);
-					event.mouseButton.y = HIWORD(lParam);
-					app->OnEvent(event);
-					break;
-				case WM_XBUTTONDOWN:
-					event.type = event::MouseButtonDown;
-					event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
-					event.mouseButton.x = LOWORD(lParam);
-					event.mouseButton.y = HIWORD(lParam);
-					app->OnEvent(event);
-					break;
-				case WM_XBUTTONUP:
-					event.type = event::MouseButtonUp;
-					event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
-					event.mouseButton.x = LOWORD(lParam);
-					event.mouseButton.y = HIWORD(lParam);
-					app->OnEvent(event);
-					break;
-				case WM_MOUSEMOVE:
-					event.type = event::MouseMotion;
-					event.mouseMotion.x = LOWORD(lParam);
-					event.mouseMotion.y = HIWORD(lParam);
-					app->OnEvent(event);
-					break;
+			case WM_DESTROY:
+				PostQuitMessage(0);
+				return app->Stop();
+			case WM_KEYDOWN:
+				event.type = event::KeyDown;
+				event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
+				event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
+				event.key.state = 1;
+				app->OnEvent(event);
+				break;
+			case WM_KEYUP:
+				event.type = event::KeyUp;
+				event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
+				event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
+				event.key.state = 0;
+				app->OnEvent(event);
+				break;
+			case WM_LBUTTONDOWN:
+				event.type = event::MouseButtonDown;
+				event.mouseButton.button = MK_LBUTTON;
+				event.mouseButton.x = LOWORD(lParam);
+				event.mouseButton.y = HIWORD(lParam);
+				app->OnEvent(event);
+				break;
+			case WM_LBUTTONUP:
+				event.type = event::MouseButtonUp;
+				event.mouseButton.button = MK_LBUTTON;
+				event.mouseButton.x = LOWORD(lParam);
+				event.mouseButton.y = HIWORD(lParam);
+				app->OnEvent(event);
+				break;
+			case WM_RBUTTONDOWN:
+				event.type = event::MouseButtonDown;
+				event.mouseButton.button = MK_RBUTTON;
+				event.mouseButton.x = LOWORD(lParam);
+				event.mouseButton.y = HIWORD(lParam);
+				app->OnEvent(event);
+				break;
+			case WM_RBUTTONUP:
+				event.type = event::MouseButtonUp;
+				event.mouseButton.button = MK_RBUTTON;
+				event.mouseButton.x = LOWORD(lParam);
+				event.mouseButton.y = HIWORD(lParam);
+				app->OnEvent(event);
+				break;
+			case WM_MBUTTONDOWN:
+				event.type = event::MouseButtonDown;
+				event.mouseButton.button = MK_MBUTTON;
+				event.mouseButton.x = LOWORD(lParam);
+				event.mouseButton.y = HIWORD(lParam);
+				app->OnEvent(event);
+				break;
+			case WM_MBUTTONUP:
+				event.type = event::MouseButtonUp;
+				event.mouseButton.button = MK_MBUTTON;
+				event.mouseButton.x = LOWORD(lParam);
+				event.mouseButton.y = HIWORD(lParam);
+				app->OnEvent(event);
+				break;
+			case WM_XBUTTONDOWN:
+				event.type = event::MouseButtonDown;
+				event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
+				event.mouseButton.x = LOWORD(lParam);
+				event.mouseButton.y = HIWORD(lParam);
+				app->OnEvent(event);
+				break;
+			case WM_XBUTTONUP:
+				event.type = event::MouseButtonUp;
+				event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
+				event.mouseButton.x = LOWORD(lParam);
+				event.mouseButton.y = HIWORD(lParam);
+				app->OnEvent(event);
+				break;
+			case WM_MOUSEMOVE:
+				event.type = event::MouseMotion;
+				event.mouseMotion.x = LOWORD(lParam);
+				event.mouseMotion.y = HIWORD(lParam);
+				app->OnEvent(event);
+				break;
+			case WM_SIZE:
+			{
+				canvas->UpdateViewport(LOWORD(lParam), HIWORD(lParam));
+				event.type = event::WindowResize;
+				event.windowResize.width = LOWORD(lParam);
+				event.windowResize.height = HIWORD(lParam);
+				app->OnEvent(event);
+				break;
+			}
 			}
 		}
 
@@ -444,7 +453,14 @@ namespace ce
 				return 0;
 			}
 
-			HWND hWnd = CreateWindow("ceApp", title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, hInstance, 0);
+			RECT extent;
+			extent.left = 0;
+			extent.top = 0;
+			extent.right = width;
+			extent.bottom = height;
+			AdjustWindowRect(&extent, WS_OVERLAPPEDWINDOW, FALSE);
+
+			HWND hWnd = CreateWindow("ceApp", title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, extent.right - extent.left, extent.bottom - extent.top, 0, 0, hInstance, 0);
 			if(!hWnd)
 			{
 				delete canvas;
@@ -497,7 +513,7 @@ namespace ce
 			app->m_canvasMap[hWnd] = canvas;
 		#endif
 		
-		canvas->UpdateViewport();
+		canvas->UpdateViewport(width, height);
 
 		return canvas;
 	}
@@ -649,13 +665,16 @@ namespace ce
 	{
 		return m_height;
 	}
-	void Canvas::UpdateViewport()
+	void Canvas::UpdateViewport(int width, int height)
 	{
-		glViewport(0, 0, m_width, m_height);
+		m_width = width;
+		m_height = height;
+
+		glViewport(0, 0, width, height);
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluOrtho2D(0.f, (float)m_width, 0.f, (float)m_height);
+		gluOrtho2D(0.f, (float)width, 0.f, (float)height);
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();

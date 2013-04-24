@@ -151,9 +151,7 @@ namespace ce
 
 						if(cast->width != event.base.canvas->GetWidth() || cast->height != event.base.canvas->GetHeight())
 						{
-							event.base.canvas->m_width = cast->width;
-							event.base.canvas->m_height = cast->height;
-							event.base.canvas->UpdateViewport();
+							event.base.canvas->UpdateViewport(cast->width, cast->height);
 							event.type = event::WindowResize;
 							event.windowResize.width = cast->width;
 							event.windowResize.height = cast->height;
@@ -229,9 +227,7 @@ namespace ce
 					case ConfigureNotify:
 						if(xEvent.xconfigure.width != event.base.canvas->GetWidth() || xEvent.xconfigure.height != event.base.canvas->GetHeight())
 						{
-							event.base.canvas->m_width = xEvent.xconfigure.width;
-							event.base.canvas->m_height = xEvent.xconfigure.height;
-							event.base.canvas->UpdateViewport();
+							event.base.canvas->UpdateViewport(xEvent.xconfigure.width, xEvent.xconfigure.height);
 							event.type = event::WindowResize;
 							event.windowResize.width = xEvent.xconfigure.width;
 							event.windowResize.height = xEvent.xconfigure.height;

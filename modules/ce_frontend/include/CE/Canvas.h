@@ -70,9 +70,7 @@ namespace ce
 
 		int GetWidth() const;
 		int GetHeight() const;
-		void UpdateViewport();
-
-		friend class AppFrontend;
+		void UpdateViewport(int width, int height);
 	};
 }
 

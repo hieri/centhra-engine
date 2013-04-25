@@ -42,7 +42,7 @@ namespace ce
 		}
 		void Sprite::Draw(int animation, float time)
 		{
-			if(m_animations.size() > animation && animation >= 0)
+			if(((int)m_animations.size()) > animation && animation >= 0)
 			{
 					Animation *anim = m_animations[animation];
 

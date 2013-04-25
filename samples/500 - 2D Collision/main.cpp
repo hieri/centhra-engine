@@ -114,22 +114,23 @@ public:
 	}
 	void OnStopped()
 	{
-		game2d::ZoneEntity::Cleanup();
-		delete m_canvas;
+		delete m_view;
+		delete m_camera;
 		if(m_plane)
 			delete m_plane;
+		game2d::Entity::DeleteDead();
 		delete m_entity;
-		delete m_camera;
-		delete m_view;
 		for(int a = 0; a < NUMRANDOMS; a++)
 			delete m_randoms[a];
 		delete [] m_randoms;
+		game2d::ZoneEntity::Cleanup();
+		delete m_canvas;
 	}
 
 	Vector2<float> origin;
 	bool OnEvent(Event &event)
 	{
-		float x, y;
+//		float x, y;
 		Vector2<float> dif;
 		switch(event.type)
 		{
@@ -213,7 +214,8 @@ public:
 			m_view->Render();
 			break;
 		case event::WindowResize:
-			m_view->SetExtent(Vector2<int>(event.windowResize.width, event.windowResize.height));
+			if(m_view)
+				m_view->SetExtent(Vector2<int>(event.windowResize.width, event.windowResize.height));
 			break;
 		}
 		return true;

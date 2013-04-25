@@ -158,26 +158,26 @@ namespace ce
 				else
 				{
 					glPushMatrix();
-						glTranslatef(ftGlyph->bitmap_left, 0, 0);
-						glTranslatef(0, ftGlyph->bitmap_top, 0);
+						glTranslatef((GLfloat)ftGlyph->bitmap_left, 0, 0);
+						glTranslatef(0, (GLfloat)ftGlyph->bitmap_top, 0);
 
 						float x = (float)width / (float)w;
 						float y = (float)height / (float)h;
 
 						glBegin(GL_QUADS);
-							glTexCoord2f(0, y); glVertex2f(0, -ftBitmap.rows);
+							glTexCoord2f(0, y); glVertex2f(0, (GLfloat)-ftBitmap.rows);
 							glTexCoord2f(0, 0); glVertex2f(0, 0);
-							glTexCoord2f(x, 0); glVertex2f(ftBitmap.width, 0);
-							glTexCoord2f(x, y); glVertex2f(ftBitmap.width, -ftBitmap.rows);
+							glTexCoord2f(x, 0); glVertex2f((GLfloat)ftBitmap.width, 0);
+							glTexCoord2f(x, y); glVertex2f((GLfloat)ftBitmap.width, (GLfloat)-ftBitmap.rows);
 
-	/*						glTexCoord2f(0, 0); glVertex2f(0, ftBitmap.rows);
+	/*						glTexCoord2f(0, 0); glVertex2f(0, (GLfloat)ftBitmap.rows);
 							glTexCoord2f(0, y); glVertex2f(0, 0);
-							glTexCoord2f(x, y); glVertex2f(ftBitmap.width, 0);
-							glTexCoord2f(x, 0); glVertex2f(ftBitmap.width, ftBitmap.rows);
+							glTexCoord2f(x, y); glVertex2f((GLfloat)ftBitmap.width, 0);
+							glTexCoord2f(x, 0); glVertex2f((GLfloat)ftBitmap.width, (GLfloat)ftBitmap.rows);
 	*/
 						glEnd();
 					glPopMatrix();
-					glTranslatef(ftGlyph->advance.x >> 6, 0, 0);
+					glTranslatef((GLfloat)(ftGlyph->advance.x >> 6), 0, 0);
 				}
 			glEndList();
 

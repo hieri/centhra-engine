@@ -103,22 +103,21 @@ namespace ce
 		{
 			m_isVisible = isVisible;
 		}
-		Vector2<int> Control::GetPosition() const
-		{
-			return m_position;
-		}
 		Vector2<int> Control::GetExtent() const
 		{
 			return m_extent;
 		}
-		void Control::SetPosition(Vector2<int> position)
+		Vector2<int> Control::GetPosition() const
 		{
-			m_position = position;
+			return m_position;
 		}
 		void Control::SetExtent(Vector2<int> extent)
 		{
-//			print("%d %d\n", extent[0], extent[1]);
-//			m_extent = extent;
+			m_extent = extent;
+		}
+		void Control::SetPosition(Vector2<int> position)
+		{
+			m_position = position;
 		}
 		bool Control::OnEvent(Event &event)
 		{

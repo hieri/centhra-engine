@@ -14,6 +14,7 @@
 	//- Windows Patches -
 	#include <Windows.h>
 	#define snprintf _snprintf_s
+	#define vsnprintf _vsnprintf_s
 #endif
 
 //- Centhra Engine -

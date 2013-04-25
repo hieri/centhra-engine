@@ -53,7 +53,7 @@ namespace ce
 //		GLint g_squareList = 0;
 		void RenderSquare()
 		{
-			/*
+/*
 			if(!g_squareList)
 			{
 				g_squareList = glGenLists(1);
@@ -67,7 +67,8 @@ namespace ce
 				glEndList();
 			}
 			glCallLists(1, GL_UNSIGNED_BYTE, &g_squareList);
-			*/
+*/
+
 			if(!g_squareVBO)
 			{
 				#ifdef _WIN32 // TODO: Remove this work around.
@@ -128,10 +129,18 @@ namespace ce
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 
 			glDisableClientState(GL_VERTEX_ARRAY);
-		}
+/*			
+			glBegin(GL_QUADS);
+				glVertex2f(0.f, 0.f);
+				glVertex2f(1.f, 0.f);
+				glVertex2f(1.f, 1.f);
+				glVertex2f(0.f, 1.f);
+			glEnd();
+*/		}
 		void ZoneEntity::Cleanup()
 		{
 //			glDeleteLists(g_squareList, 1);
+			glDeleteBuffers(1, &g_squareEBO);
 			glDeleteBuffers(1, &g_squareVBO);
 		}
 

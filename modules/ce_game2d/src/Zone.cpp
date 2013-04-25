@@ -30,6 +30,8 @@ namespace ce
 		}
 		Zone::~Zone()
 		{
+			for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+				(*it)->RemoveZone(this);
 		}
 		void Zone::DoRender()
 		{

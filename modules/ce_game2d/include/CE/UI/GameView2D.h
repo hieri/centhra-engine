@@ -12,6 +12,7 @@ namespace ce
 		class GameView2D : public Control
 		{
 			game2d::ZoneCamera *m_camera;
+			Vector2<float> m_viewScale;
 
 		protected:
 			virtual void DoRender();
@@ -21,6 +22,8 @@ namespace ce
 
 			game2d::ZoneCamera *GetCamera() const;
 			void SetCamera(game2d::ZoneCamera *camera);
+			Vector2<float> GetViewScale() const;
+			void SetViewScale(Vector2<float> viewScale);
 		};
 	}
 }

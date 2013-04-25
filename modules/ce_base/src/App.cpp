@@ -47,7 +47,7 @@ namespace ce
 			{
 				LARGE_INTEGER count;
 				QueryPerformanceCounter(&count);
-				currTimeMS = (1000 * count.QuadPart) / frequency.QuadPart;
+				currTimeMS = (unsigned long)((1000 * count.QuadPart) / frequency.QuadPart);
 			}
 			else
 				currTimeMS = GetTickCount();
@@ -97,7 +97,7 @@ namespace ce
 				{
 					LARGE_INTEGER count;
 					QueryPerformanceCounter(&count);
-					m_startTimeMS = (1000 * count.QuadPart) / frequency.QuadPart;
+					m_startTimeMS = (unsigned long)((1000 * count.QuadPart) / frequency.QuadPart);
 				}
 				else
 					m_startTimeMS = GetTickCount();

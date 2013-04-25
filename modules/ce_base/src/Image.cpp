@@ -54,11 +54,11 @@ namespace ce
 		switch(bytesPerPixel)
 		{
 			case 3:
-				conversion = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
+				conversion = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE) == TRUE;
 				textureFormat = GL_RGB;
 				break;
 			case 4:
-				conversion = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+				conversion = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE) == TRUE;
 				textureFormat = GL_RGBA;
 				break;
 			default:
@@ -107,10 +107,10 @@ namespace ce
 		switch(bytesPerPixel)
 		{
 			case 3:
-				conversion = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
+				conversion = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE) == TRUE;
 				break;
 			case 4:
-				conversion = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+				conversion = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE) == TRUE;
 				break;
 			default:
 				ilDeleteImages(1, &ilImage);

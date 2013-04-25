@@ -46,33 +46,33 @@ namespace ce
 		}
 		void Plane::Render(float minX, float minY, float maxX, float maxY)
 		{
-			unsigned int _minX, _minY, _maxX, _maxY;
-			_minX = (unsigned int)floor(minX / m_zoneSize);
-			_minY = (unsigned int)floor(minY / m_zoneSize);
-			_maxX = (unsigned int)floor(maxX / m_zoneSize);
-			_maxY = (unsigned int)floor(maxY / m_zoneSize);
+			int _minX, _minY, _maxX, _maxY;
+			_minX = (int)floor(minX / m_zoneSize);
+			_minY = (int)floor(minY / m_zoneSize);
+			_maxX = (int)floor(maxX / m_zoneSize);
+			_maxY = (int)floor(maxY / m_zoneSize);
 
 			if(_minX < 0)
 				_minX = 0;
-			else if(_minX >= m_width)
+			else if(_minX >= (int)m_width)
 				_minX = m_width - 1;
 			if(_minY < 0)
 				_minY = 0;
-			else if(_minY >= m_height)
+			else if(_minY >= (int)m_height)
 				_minY = m_height - 1;
 			if(_maxX < 0)
 				_maxX = 0;
-			else if(_maxX >= m_width)
+			else if(_maxX >= (int)m_width)
 				_maxX = m_width - 1;
 			if(_maxY < 0)
 				_maxY = 0;
-			else if(_maxY >= m_height)
+			else if(_maxY >= (int)m_height)
 				_maxY = m_height - 1;
 
 			vector<ZoneEntity *> entities;
 
-			for(unsigned int a = _minX; a <= _maxX; a++)
-				for(unsigned int b = _minY; b <= _maxY; b++)
+			for(int a = _minX; a <= _maxX; a++)
+				for(int b = _minY; b <= _maxY; b++)
 					for(vector<ZoneEntity *>::iterator it = m_zones[a][b]->m_children.begin(); it != m_zones[a][b]->m_children.end(); it++)
 						entities.push_back(*it);
 
@@ -80,106 +80,106 @@ namespace ce
 				(*it)->Render();
 			for(vector<ZoneEntity *>::iterator it = entities.begin(); it != entities.end(); it++)
 				(*it)->FinishRender();
-//			for(unsigned int a = _minX; a <= _maxX; a++)
-//				for(unsigned int b = _minY; b <= _maxY; b++)
+//			for(int a = _minX; a <= _maxX; a++)
+//				for(int b = _minY; b <= _maxY; b++)
 //					m_zones[a][b]->Render();
 /*
-			for(unsigned int a = _minX; a <= _maxX; a++)
-				for(unsigned int b = _minY; b <= _maxY; b++)
+			for(int a = _minX; a <= _maxX; a++)
+				for(int b = _minY; b <= _maxY; b++)
 					m_zones[a][b]->Render();
-			for(unsigned int a = _minX; a <= _maxX; a++)
-				for(unsigned int b = _minY; b <= _maxY; b++)
+			for(int a = _minX; a <= _maxX; a++)
+				for(int b = _minY; b <= _maxY; b++)
 					m_zones[a][b]->FinishRender();
 */		}
 		void Plane::Place(ZoneEntity *entity)
 		{
 			Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent();
-			unsigned int _minX, _minY, _maxX, _maxY;
-			_minX = (unsigned int)floor(position[0] / m_zoneSize);
-			_minY = (unsigned int)floor(position[1] / m_zoneSize);
-			_maxX = (unsigned int)floor((position[0] + extent[0]) / m_zoneSize);
-			_maxY = (unsigned int)floor((position[1] + extent[1]) / m_zoneSize);
+			int _minX, _minY, _maxX, _maxY;
+			_minX = (int)floor(position[0] / m_zoneSize);
+			_minY = (int)floor(position[1] / m_zoneSize);
+			_maxX = (int)floor((position[0] + extent[0]) / m_zoneSize);
+			_maxY = (int)floor((position[1] + extent[1]) / m_zoneSize);
 
 			if(_minX < 0)
 				_minX = 0;
-			else if(_minX >= m_width)
+			else if(_minX >= (int)m_width)
 				_minX = m_width - 1;
 			if(_minY < 0)
 				_minY = 0;
-			else if(_minY >= m_height)
+			else if(_minY >= (int)m_height)
 				_minY = m_height - 1;
 			if(_maxX < 0)
 				_maxX = 0;
-			else if(_maxX >= m_width)
+			else if(_maxX >= (int)m_width)
 				_maxX = m_width - 1;
 			if(_maxY < 0)
 				_maxY = 0;
-			else if(_maxY >= m_height)
+			else if(_maxY >= (int)m_height)
 				_maxY = m_height - 1;
 
-			for(unsigned int a = _minX; a <= _maxX; a++)
-				for(unsigned int b = _minY; b <= _maxY; b++)
+			for(int a = _minX; a <= _maxX; a++)
+				for(int b = _minY; b <= _maxY; b++)
 					m_zones[a][b]->Add(entity);
 		}
 		void Plane::MoveEntity(ce::game2d::ZoneEntity *entity, Vector2<float> movement)
 		{
 			Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent();
 
-			unsigned int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
-			aMinX = (unsigned int)floor(position[0] / m_zoneSize);
-			aMinY = (unsigned int)floor(position[1] / m_zoneSize);
-			aMaxX = (unsigned int)floor((position[0] + extent[0]) / m_zoneSize);
-			aMaxY = (unsigned int)floor((position[1] + extent[1]) / m_zoneSize);
+			int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
+			aMinX = (int)floor(position[0] / m_zoneSize);
+			aMinY = (int)floor(position[1] / m_zoneSize);
+			aMaxX = (int)floor((position[0] + extent[0]) / m_zoneSize);
+			aMaxY = (int)floor((position[1] + extent[1]) / m_zoneSize);
 
 			position += movement;
 			entity->SetPosition(position);
 
-			bMinX = (unsigned int)floor(position[0] / m_zoneSize);
-			bMinY = (unsigned int)floor(position[1] / m_zoneSize);
-			bMaxX = (unsigned int)floor((position[0] + extent[0]) / m_zoneSize);
-			bMaxY = (unsigned int)floor((position[1] + extent[1]) / m_zoneSize);
+			bMinX = (int)floor(position[0] / m_zoneSize);
+			bMinY = (int)floor(position[1] / m_zoneSize);
+			bMaxX = (int)floor((position[0] + extent[0]) / m_zoneSize);
+			bMaxY = (int)floor((position[1] + extent[1]) / m_zoneSize);
 
 			if(aMinX < 0)
 				aMinX = 0;
-			else if(aMinX >= m_width)
+			else if(aMinX >= (int)m_width)
 				aMinX = m_width - 1;
 			if(aMinY < 0)
 				aMinY = 0;
-			else if(aMinY >= m_height)
+			else if(aMinY >= (int)m_height)
 				aMinY = m_height - 1;
 			if(aMaxX < 0)
 				aMaxX = 0;
-			else if(aMaxX >= m_width)
+			else if(aMaxX >= (int)m_width)
 				aMaxX = m_width - 1;
 			if(aMaxY < 0)
 				aMaxY = 0;
-			else if(aMaxY >= m_height)
+			else if(aMaxY >= (int)m_height)
 				aMaxY = m_height - 1;
 
 			if(bMinX < 0)
 				bMinX = 0;
-			else if(bMinX >= m_width)
+			else if(bMinX >= (int)m_width)
 				bMinX = m_width - 1;
 			if(bMinY < 0)
 				bMinY = 0;
-			else if(bMinY >= m_height)
+			else if(bMinY >= (int)m_height)
 				bMinY = m_height - 1;
 			if(bMaxX < 0)
 				bMaxX = 0;
-			else if(bMaxX >= m_width)
+			else if(bMaxX >= (int)m_width)
 				bMaxX = m_width - 1;
 			if(bMaxY < 0)
 				bMaxY = 0;
-			else if(bMaxY >= m_height)
+			else if(bMaxY >= (int)m_height)
 				bMaxY = m_height - 1;
 
-			for(unsigned int a = aMinX; a <= aMaxX; a++)
-				for(unsigned int b = aMinY; b <= aMaxY; b++)
+			for(int a = aMinX; a <= aMaxX; a++)
+				for(int b = aMinY; b <= aMaxY; b++)
 					if(a < bMinX || b < bMinY || a > bMaxX || b > bMaxY)
 						m_zones[a][b]->Remove(entity);
 
-			for(unsigned int a = bMinX; a <= bMaxX; a++)
-				for(unsigned int b = bMinY; b <= bMaxY; b++)
+			for(int a = bMinX; a <= bMaxX; a++)
+				for(int b = bMinY; b <= bMaxY; b++)
 					if(a < aMinX || b < aMinY || a > aMaxX || b > aMaxY)
 						m_zones[a][b]->Add(entity);
 		}
@@ -203,58 +203,58 @@ namespace ce
 				if(entity->m_startedPhysics)
 					continue;
 				Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent();
-				unsigned int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
-				aMinX = (unsigned int)floor(position[0] / m_zoneSize);
-				aMinY = (unsigned int)floor(position[1] / m_zoneSize);
-				aMaxX = (unsigned int)floor((position[0] + extent[0]) / m_zoneSize);
-				aMaxY = (unsigned int)floor((position[1] + extent[1]) / m_zoneSize);
+				int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
+				aMinX = (int)floor(position[0] / m_zoneSize);
+				aMinY = (int)floor(position[1] / m_zoneSize);
+				aMaxX = (int)floor((position[0] + extent[0]) / m_zoneSize);
+				aMaxY = (int)floor((position[1] + extent[1]) / m_zoneSize);
 
-				bMinX = (unsigned int)floor(entity->m_moveBoxMin[0] / m_zoneSize);
-				bMinY = (unsigned int)floor(entity->m_moveBoxMin[1] / m_zoneSize);
-				bMaxX = (unsigned int)floor(entity->m_moveBoxMax[0] / m_zoneSize);
-				bMaxY = (unsigned int)floor(entity->m_moveBoxMax[1] / m_zoneSize);
+				bMinX = (int)floor(entity->m_moveBoxMin[0] / m_zoneSize);
+				bMinY = (int)floor(entity->m_moveBoxMin[1] / m_zoneSize);
+				bMaxX = (int)floor(entity->m_moveBoxMax[0] / m_zoneSize);
+				bMaxY = (int)floor(entity->m_moveBoxMax[1] / m_zoneSize);
 
 				if(aMinX < 0)
 					aMinX = 0;
-				else if(aMinX >= m_width)
+				else if(aMinX >= (int)m_width)
 					aMinX = m_width - 1;
 				if(aMinY < 0)
 					aMinY = 0;
-				else if(aMinY >= m_height)
+				else if(aMinY >= (int)m_height)
 					aMinY = m_height - 1;
 				if(aMaxX < 0)
 					aMaxX = 0;
-				else if(aMaxX >= m_width)
+				else if(aMaxX >= (int)m_width)
 					aMaxX = m_width - 1;
 				if(aMaxY < 0)
 					aMaxY = 0;
-				else if(aMaxY >= m_height)
+				else if(aMaxY >= (int)m_height)
 					aMaxY = m_height - 1;
 
 				if(bMinX < 0)
 					bMinX = 0;
-				else if(bMinX >= m_width)
+				else if(bMinX >= (int)m_width)
 					bMinX = m_width - 1;
 				if(bMinY < 0)
 					bMinY = 0;
-				else if(bMinY >= m_height)
+				else if(bMinY >= (int)m_height)
 					bMinY = m_height - 1;
 				if(bMaxX < 0)
 					bMaxX = 0;
-				else if(bMaxX >= m_width)
+				else if(bMaxX >= (int)m_width)
 					bMaxX = m_width - 1;
 				if(bMaxY < 0)
 					bMaxY = 0;
-				else if(bMaxY >= m_height)
+				else if(bMaxY >= (int)m_height)
 					bMaxY = m_height - 1;
 
-				for(unsigned int x = aMinX; x <= aMaxX; x++)
-					for(unsigned int y = aMinY; y <= aMaxY; y++)
+				for(int x = aMinX; x <= aMaxX; x++)
+					for(int y = aMinY; y <= aMaxY; y++)
 						if(x < bMinX || y < bMinY || x > bMaxX || y > bMaxY)
 							m_zones[x][y]->Remove(entity);
 
-				for(unsigned int x = bMinX; x <= bMaxX; x++)
-					for(unsigned int y = bMinY; y <= bMaxY; y++)
+				for(int x = bMinX; x <= bMaxX; x++)
+					for(int y = bMinY; y <= bMaxY; y++)
 						if(x < aMinX || y < aMinY || x > aMaxX || y > aMaxY)
 							m_zones[x][y]->Add(entity);
 
@@ -272,12 +272,12 @@ namespace ce
 				{
 					entity->m_finishedPhysics = true;
 					Vector2<float> velocity = entity->GetVelocity();
-					unsigned int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
+					int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
 
-					aMinX = (unsigned int)floor(entity->m_moveBoxMin[0] / m_zoneSize);
-					aMinY = (unsigned int)floor(entity->m_moveBoxMin[1] / m_zoneSize);
-					aMaxX = (unsigned int)floor(entity->m_moveBoxMax[0] / m_zoneSize);
-					aMaxY = (unsigned int)floor(entity->m_moveBoxMax[1] / m_zoneSize);
+					aMinX = (int)floor(entity->m_moveBoxMin[0] / m_zoneSize);
+					aMinY = (int)floor(entity->m_moveBoxMin[1] / m_zoneSize);
+					aMaxX = (int)floor(entity->m_moveBoxMax[0] / m_zoneSize);
+					aMaxY = (int)floor(entity->m_moveBoxMax[1] / m_zoneSize);
 
 /*					if(!entity->m_canMove[0])
 					{
@@ -311,52 +311,52 @@ namespace ce
 */					}
 
 					Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent();
-					bMinX = (unsigned int)floor(position[0] / m_zoneSize);
-					bMinY = (unsigned int)floor(position[1] / m_zoneSize);
-					bMaxX = (unsigned int)floor((position[0] + extent[0]) / m_zoneSize);
-					bMaxY = (unsigned int)floor((position[1] + extent[1]) / m_zoneSize);
+					bMinX = (int)floor(position[0] / m_zoneSize);
+					bMinY = (int)floor(position[1] / m_zoneSize);
+					bMaxX = (int)floor((position[0] + extent[0]) / m_zoneSize);
+					bMaxY = (int)floor((position[1] + extent[1]) / m_zoneSize);
 					
 					 if(aMinX < 0)
 						aMinX = 0;
-					else if(aMinX >= m_width)
+					else if(aMinX >= (int)m_width)
 						aMinX = m_width - 1;
 					if(aMinY < 0)
 						aMinY = 0;
-					else if(aMinY >= m_height)
+					else if(aMinY >= (int)m_height)
 						aMinY = m_height - 1;
 					if(aMaxX < 0)
 						aMaxX = 0;
-					else if(aMaxX >= m_width)
+					else if(aMaxX >= (int)m_width)
 						aMaxX = m_width - 1;
 					if(aMaxY < 0)
 						aMaxY = 0;
-					else if(aMaxY >= m_height)
+					else if(aMaxY >= (int)m_height)
 						aMaxY = m_height - 1;
 
 					if(bMinX < 0)
 						bMinX = 0;
-					else if(bMinX >= m_width)
+					else if(bMinX >= (int)m_width)
 						bMinX = m_width - 1;
 					if(bMinY < 0)
 						bMinY = 0;
-					else if(bMinY >= m_height)
+					else if(bMinY >= (int)m_height)
 						bMinY = m_height - 1;
 					if(bMaxX < 0)
 						bMaxX = 0;
-					else if(bMaxX >= m_width)
+					else if(bMaxX >= (int)m_width)
 						bMaxX = m_width - 1;
 					if(bMaxY < 0)
 						bMaxY = 0;
-					else if(bMaxY >= m_height)
+					else if(bMaxY >= (int)m_height)
 						bMaxY = m_height - 1;
 
-					for(unsigned int x = aMinX; x <= aMaxX; x++)
-						for(unsigned int y = aMinY; y <= aMaxY; y++)
+					for(int x = aMinX; x <= aMaxX; x++)
+						for(int y = aMinY; y <= aMaxY; y++)
 							if(x < bMinX || y < bMinY || x > bMaxX || y > bMaxY)
 								m_zones[x][y]->Remove(entity);
 
-					for(unsigned int x = bMinX; x <= bMaxX; x++)
-						for(unsigned int y = bMinY; y <= bMaxY; y++)
+					for(int x = bMinX; x <= bMaxX; x++)
+						for(int y = bMinY; y <= bMaxY; y++)
 							if(x < aMinX || y < aMinY || x > aMaxX || y > aMaxY)
 								m_zones[x][y]->Add(entity);
 					

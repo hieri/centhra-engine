@@ -11,6 +11,7 @@ set(INC
 	${INC_DIR}/Game2D/Zone.h
 	${INC_DIR}/Game2D/ZoneCamera.h
 	${INC_DIR}/Game2D/ZoneEntity.h
+	${INC_DIR}/Game2D/ZoneTrigger.h
 )
 
 set(SRC
@@ -23,6 +24,7 @@ set(SRC
 	${SRC_DIR}/Zone.cpp
 	${SRC_DIR}/ZoneCamera.cpp
 	${SRC_DIR}/ZoneEntity.cpp
+	${SRC_DIR}/ZoneTrigger.cpp
 )
 
 configure_file(include/CE/ConfigGame2D.h.in include/CE/ConfigGame2D.h)

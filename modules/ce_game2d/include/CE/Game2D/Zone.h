@@ -42,7 +42,7 @@ namespace ce
 			void PhysicsPhase2(float dt);
 			void PhysicsPhase3(float dt);
 
-			std::vector<ZoneEntity *> BoxSearch(float minX, float minY, float maxX, float maxY);
+			std::vector<ZoneEntity *> BoxSearch(float minX, float minY, float maxX, float maxY, ZoneEntity *ignore = 0);
 
 			friend class Plane;
 		};

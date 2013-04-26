@@ -24,7 +24,7 @@ namespace ce
 			void MoveEntity(ZoneEntity *entity, Vector2<float> movement);
 			void ProcessPhysics(float dt);
 			void RemoveDead();
-			std::vector<ZoneEntity *> BoxSearch(float minX, float minY, float maxX, float maxY);
+			std::vector<ZoneEntity *> BoxSearch(float minX, float minY, float maxX, float maxY, ZoneEntity *ignore = 0);
 		};
 	}
 }

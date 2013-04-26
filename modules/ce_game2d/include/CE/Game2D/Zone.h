@@ -43,6 +43,7 @@ namespace ce
 			void PhysicsPhase3(float dt);
 
 			std::vector<ZoneEntity *> BoxSearch(float minX, float minY, float maxX, float maxY, ZoneEntity *ignore = 0);
+			std::vector<ZoneEntity *> SegmentSearch(float startX, float startY, float endX, float endY, ZoneEntity *ignore = 0);
 
 			friend class Plane;
 		};

@@ -419,5 +419,71 @@ namespace ce
 
 			return found;
 		}
+		vector<ZoneEntity *> Plane::SegmentSearch(float startX, float startY, float endX, float endY, ZoneEntity *ignore)
+		{
+			map<ZoneEntity *, bool> foundMap;
+			vector<ZoneEntity *> found;
+
+			if(startX > endX)
+			{
+				swap(startX, endX);
+				swap(startY, endY);
+			}
+
+			//- TODO: Handle vertical lines differently -
+			float slope = (endY - startY) / (endX - startX);
+			vector<Zone *> searchZones;
+
+			int MinX = (int)floor(startX / m_zoneSize);
+			int MaxX = (int)floor(endX / m_zoneSize);
+			
+			if(MinX < 0)
+				MinX = 0;
+			else if(MinX >= (int)m_width)
+				MinX = m_width - 1;
+			if(MaxX < 0)
+				MaxX = 0;
+			else if(MaxX >= (int)m_width)
+				MaxX = m_width - 1;
+
+			float originY = startY - (startX - MinX * m_zoneSize) * slope;
+
+			for(int a = MinX; a <= MaxX; a++)
+			{
+				int MinY = (int)floor((a * m_zoneSize * slope + originY) / m_zoneSize);
+				int MaxY = (int)floor(((a + 1) * m_zoneSize * slope + originY - 0.001f) / m_zoneSize);
+
+				if(MinY > MaxY)
+					swap(MinY, MaxY);
+
+				if(MinY < 0)
+					MinY = 0;
+				else if(MinY >= (int)m_height)
+					MinY = m_height - 1;
+				if(MaxY < 0)
+					MaxY = 0;
+				else if(MaxY >= (int)m_height)
+					MaxY = m_height - 1;
+
+				for(int b = MinY; b <= MaxY; b++)
+					searchZones.push_back(m_zones[a][b]);
+			}
+
+			for(vector<Zone *>::iterator itA = searchZones.begin(); itA != searchZones.end(); itA++)
+			{
+				vector<ZoneEntity *> localFound = (*itA)->SegmentSearch(startX, startY, endX, endY, ignore);
+				for(vector<ZoneEntity *>::iterator itB = localFound.begin(); itB != localFound.end(); itB++)
+				{
+					ZoneEntity *entity = *itB;
+					if(!foundMap.count(entity))
+					{
+						found.push_back(entity);
+						foundMap[entity] = true;
+					}
+				}
+			}
+
+			return found;
+		}
 	}
 }

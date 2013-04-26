@@ -1,6 +1,7 @@
 //- Standard Library -
 #include <math.h>
 #include <vector>
+#include <map>
 
 //- Centhra Engine -
 #include <CE/Game2D/Plane.h>
@@ -373,6 +374,50 @@ namespace ce
 			for(unsigned int a = 0; a < m_width; a++)
 				for(unsigned int b = 0; b < m_height; b++)
 					m_zones[a][b]->RemoveDead();
+		}
+		vector<ZoneEntity *> Plane::BoxSearch(float minX, float minY, float maxX, float maxY)
+		{
+			map<ZoneEntity *, bool> foundMap;
+			vector<ZoneEntity *> found;
+
+			int MinX = (int)floor(minX / m_zoneSize);
+			int MinY = (int)floor(minY / m_zoneSize);
+			int MaxX = (int)floor(maxX / m_zoneSize);
+			int MaxY = (int)floor(maxY / m_zoneSize);
+
+			if(MinX < 0)
+				MinX = 0;
+			else if(MinX >= (int)m_width)
+				MinX = m_width - 1;
+			if(MinY < 0)
+				MinY = 0;
+			else if(MinY >= (int)m_height)
+				MinY = m_height - 1;
+			if(MaxX < 0)
+				MaxX = 0;
+			else if(MaxX >= (int)m_width)
+				MaxX = m_width - 1;
+			if(MaxY < 0)
+				MaxY = 0;
+			else if(MaxY >= (int)m_height)
+				MaxY = m_height - 1;
+
+			for(int x = MinX; x <= MaxX; x++)
+				for(int y = MinY; y <= MaxY; y++)
+				{
+					vector<ZoneEntity *> localFound = m_zones[x][y]->BoxSearch(minX, minY, maxX, maxY);
+					for(vector<ZoneEntity *>::iterator it = localFound.begin(); it != localFound.end(); it++)
+					{
+						ZoneEntity *entity = *it;
+						if(!foundMap.count(entity))
+						{
+							found.push_back(entity);
+							foundMap[entity] = true;
+						}
+					}
+				}
+
+			return found;
 		}
 	}
 }

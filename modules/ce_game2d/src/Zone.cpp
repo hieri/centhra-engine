@@ -258,5 +258,17 @@ namespace ce
 				}
 			}
 		}
+		vector<ZoneEntity *> Zone::BoxSearch(float minX, float minY, float maxX, float maxY)
+		{
+			Vector2<float> _min(minX, minY), _max(maxX, maxY);
+			vector<ZoneEntity *> found;
+			for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+			{
+				ZoneEntity *entity = *it;
+				if(entity->CollidesWith(_min, _max))
+					found.push_back(entity);
+			}
+			return found;
+		}
 	}
 }

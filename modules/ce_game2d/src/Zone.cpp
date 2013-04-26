@@ -258,20 +258,21 @@ namespace ce
 				}
 			}
 		}
-		vector<ZoneEntity *> Zone::BoxSearch(float minX, float minY, float maxX, float maxY, ZoneEntity *ignore)
+		vector<ZoneEntity *> Zone::BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask, ZoneEntity *ignore)
 		{
 			Vector2<float> _min(minX, minY), _max(maxX, maxY);
 			vector<ZoneEntity *> found;
 			for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 			{
 				ZoneEntity *entity = *it;
-				if(entity != ignore)
-					if(entity->CollidesWith(_min, _max))
-						found.push_back(entity);
+				if(entity->m_collisionMask & mask)
+					if(entity != ignore)
+						if(entity->CollidesWith(_min, _max))
+							found.push_back(entity);
 			}
 			return found;
 		}
-		vector<ZoneEntity *> Zone::SegmentSearch(float startX, float startY, float endX, float endY, ZoneEntity *ignore)
+		vector<ZoneEntity *> Zone::SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, ZoneEntity *ignore)
 		{
 			Vector2<float> _min(min(startX, endX), min(startY, endY)), _max(max(startX, endX), max(startY, endY));
 			vector<ZoneEntity *> found;
@@ -283,28 +284,28 @@ namespace ce
 			}
 
 			//- TODO: Handle vertical lines differently -
-			bool isBottomLeftOrigin = startY < endY;
 			float slope = (endY - startY) / (endX - startX);
 
 			for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 			{
 				ZoneEntity *entity = *it;
-				if(entity != ignore)
-					if(entity->CollidesWith(_min, _max))
-					{
-						Vector2<float> position = entity->GetPosition();
-						Vector2<float> extent = entity->GetExtent();
+				if(entity->m_collisionMask & mask)
+					if(entity != ignore)
+						if(entity->CollidesWith(_min, _max))
+						{
+							Vector2<float> position = entity->GetPosition();
+							Vector2<float> extent = entity->GetExtent();
 
-						float _startX = position[0];
-						float _startY = startY + (_startX - startX) * slope;
-						float _endX = position[0] + extent[0];
-						float _endY = startY + (_endX - startX) * slope;
+							float _startX = position[0];
+							float _startY = startY + (_startX - startX) * slope;
+							float _endX = position[0] + extent[0];
+							float _endY = startY + (_endX - startX) * slope;
 
-						Vector2<float> rMin(min(_startX, _endX), min(_startY, _endY)), rMax(max(_startX, _endX), max(_startY, _endY));
+							Vector2<float> rMin(min(_startX, _endX), min(_startY, _endY)), rMax(max(_startX, _endX), max(_startY, _endY));
 
-						if(entity->CollidesWith(rMin, rMax))
-							found.push_back(entity);
-					}
+							if(entity->CollidesWith(rMin, rMax))
+								found.push_back(entity);
+						}
 			}
 
 			return found;

@@ -13,6 +13,15 @@ namespace ce
 		ZoneTrigger::ZoneTrigger(Vector2<float> position, Vector2<float> extent) : ZoneEntity(position, extent)
 		{
 			m_collisionMask = 0;
+			m_detectionMask = -1;
+		}
+		unsigned int ZoneTrigger::GetDetectionMask() const
+		{
+			return m_detectionMask;
+		}
+		void ZoneTrigger::SetDetectionMask(unsigned int mask)
+		{
+			m_detectionMask = mask;
 		}
 		void ZoneTrigger::Process()
 		{
@@ -21,9 +30,9 @@ namespace ce
 				vector<ZoneEntity *> intersections;
 				Vector2<float> position = GetPosition(), extent = GetExtent();
 				if(m_zones[0]->GetPlane())
-					intersections = m_zones[0]->GetPlane()->BoxSearch(position[0], position[1], position[0] + extent[0], position[1] + extent[1], this);
+					intersections = m_zones[0]->GetPlane()->BoxSearch(position[0], position[1], position[0] + extent[0], position[1] + extent[1], m_detectionMask, this);
 				else
-					intersections = m_zones[0]->BoxSearch(position[0], position[1], position[0] + extent[0], position[1] + extent[1], this);
+					intersections = m_zones[0]->BoxSearch(position[0], position[1], position[0] + extent[0], position[1] + extent[1], m_detectionMask, this);
 				OnProcess(intersections);
 			}
 		}

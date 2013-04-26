@@ -375,7 +375,7 @@ namespace ce
 				for(unsigned int b = 0; b < m_height; b++)
 					m_zones[a][b]->RemoveDead();
 		}
-		vector<ZoneEntity *> Plane::BoxSearch(float minX, float minY, float maxX, float maxY, ZoneEntity *ignore)
+		vector<ZoneEntity *> Plane::BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask, ZoneEntity *ignore)
 		{
 			map<ZoneEntity *, bool> foundMap;
 			vector<ZoneEntity *> found;
@@ -405,7 +405,7 @@ namespace ce
 			for(int x = MinX; x <= MaxX; x++)
 				for(int y = MinY; y <= MaxY; y++)
 				{
-					vector<ZoneEntity *> localFound = m_zones[x][y]->BoxSearch(minX, minY, maxX, maxY, ignore);
+					vector<ZoneEntity *> localFound = m_zones[x][y]->BoxSearch(minX, minY, maxX, maxY, mask, ignore);
 					for(vector<ZoneEntity *>::iterator it = localFound.begin(); it != localFound.end(); it++)
 					{
 						ZoneEntity *entity = *it;
@@ -419,7 +419,7 @@ namespace ce
 
 			return found;
 		}
-		vector<ZoneEntity *> Plane::SegmentSearch(float startX, float startY, float endX, float endY, ZoneEntity *ignore)
+		vector<ZoneEntity *> Plane::SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, ZoneEntity *ignore)
 		{
 			map<ZoneEntity *, bool> foundMap;
 			vector<ZoneEntity *> found;
@@ -471,7 +471,7 @@ namespace ce
 
 			for(vector<Zone *>::iterator itA = searchZones.begin(); itA != searchZones.end(); itA++)
 			{
-				vector<ZoneEntity *> localFound = (*itA)->SegmentSearch(startX, startY, endX, endY, ignore);
+				vector<ZoneEntity *> localFound = (*itA)->SegmentSearch(startX, startY, endX, endY, mask, ignore);
 				for(vector<ZoneEntity *>::iterator itB = localFound.begin(); itB != localFound.end(); itB++)
 				{
 					ZoneEntity *entity = *itB;

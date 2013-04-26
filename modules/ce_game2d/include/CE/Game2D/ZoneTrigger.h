@@ -10,8 +10,13 @@ namespace ce
 	{
 		class ZoneTrigger : public ZoneEntity
 		{
+			unsigned int m_detectionMask;
+
 		public:
 			ZoneTrigger(Vector2<float> position, Vector2<float> extent);
+			
+			unsigned int GetDetectionMask() const;
+			void SetDetectionMask(unsigned int mask);
 
 			void Process();
 			virtual void OnProcess(std::vector<ZoneEntity *> intersections);

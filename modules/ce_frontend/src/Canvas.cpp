@@ -655,6 +655,28 @@ namespace ce
 					glLoadIdentity();
 				#endif
 			#endif
+
+			#if CE_FRONTEND_USEWIN
+				HWND hwnd = (HWND)m_windowHandle;
+				HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+				MONITORINFO mi = { sizeof(mi) };
+				if(GetMonitorInfo(hmon, &mi))
+				{
+					DEVMODE fullscreenSettings;
+					int fullscreenWidth = mi.rcMonitor.right - mi.rcMonitor.left, fullscreenHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
+
+					EnumDisplaySettings(NULL, 0, &fullscreenSettings);
+					fullscreenSettings.dmPelsWidth        = fullscreenWidth;
+					fullscreenSettings.dmPelsHeight       = fullscreenHeight;
+					fullscreenSettings.dmFields           = DM_PELSWIDTH | DM_PELSHEIGHT;
+
+					SetWindowLongPtr(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
+					SetWindowLongPtr(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+					SetWindowPos(hwnd, 0, 0, 0, fullscreenWidth, fullscreenHeight, SWP_SHOWWINDOW);
+					ChangeDisplaySettings(&fullscreenSettings, CDS_FULLSCREEN) == DISP_CHANGE_SUCCESSFUL;
+					ShowWindow(hwnd, SW_MAXIMIZE);
+				}
+			#endif
 		}
 	}
 	int Canvas::GetWidth() const

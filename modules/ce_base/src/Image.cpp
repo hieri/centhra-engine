@@ -25,7 +25,6 @@ namespace ce
 	{
 		ilInit();
 		iluInit();
-
 		return true;
 	}
 

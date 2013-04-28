@@ -6,6 +6,7 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(INC
 	${INC_DIR}/App.h
+	${INC_DIR}/Audio.h
 	${INC_DIR}/Base.h
 	${INC_DIR}/Color.h
 	${INC_DIR}/ConfigBase.h
@@ -18,6 +19,7 @@ set(INC
 
 set(SRC
 	${SRC_DIR}/App.cpp
+	${SRC_DIR}/Audio.cpp
 	${SRC_DIR}/Base.cpp
 	${SRC_DIR}/Font.cpp
 	${SRC_DIR}/Image.cpp
@@ -58,6 +60,10 @@ set(INCLUDE ${INCLUDE} ${IL_INCLUDE_DIR}/..)
 find_package(Freetype REQUIRED)
 set(LIB ${LIB} ${FREETYPE_LIBRARIES})
 set(INCLUDE ${INCLUDE} ${FREETYPE_INCLUDE_DIRS})
+
+find_package(OpenAL REQUIRED)
+set(LIB ${LIB} ${OPENAL_LIBRARY})
+set(INCLUDE ${INCLUDE} ${OPENAL_INCLUDE_DIR})
 
 configure_file(include/CE/ConfigBase.h.in include/CE/ConfigBase.h)
 

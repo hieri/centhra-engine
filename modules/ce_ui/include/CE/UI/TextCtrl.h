@@ -28,7 +28,7 @@ namespace ce
 			Color GetColor() const;
 			void SetColor(Color color);
 			Font *GetFont() const;
-			void SetFont(Font *text);
+			void SetFont(Font *font);
 			const char *GetText() const;
 			void SetText(const char *text);
 		};

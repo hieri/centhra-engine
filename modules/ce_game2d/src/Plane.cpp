@@ -376,7 +376,6 @@ namespace ce
 		}
 		vector<ZoneEntity *> Plane::BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask, ZoneEntity *ignore)
 		{
-			map<ZoneEntity *, bool> foundMap;
 			vector<ZoneEntity *> found;
 
 			int MinX = (int)floor(minX / m_zoneSize);
@@ -408,19 +407,16 @@ namespace ce
 					for(vector<ZoneEntity *>::iterator it = localFound.begin(); it != localFound.end(); it++)
 					{
 						ZoneEntity *entity = *it;
-						if(!foundMap.count(entity))
-						{
+						if(entity->Cache(1))
 							found.push_back(entity);
-							foundMap[entity] = true;
-						}
 					}
 				}
+			ZoneEntity::ClearCache(1);
 
 			return found;
 		}
 		vector<ZoneEntity *> Plane::SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, ZoneEntity *ignore)
 		{
-			map<ZoneEntity *, bool> foundMap;
 			vector<ZoneEntity *> found;
 
 			if(startX > endX)
@@ -474,13 +470,11 @@ namespace ce
 				for(vector<ZoneEntity *>::iterator itB = localFound.begin(); itB != localFound.end(); itB++)
 				{
 					ZoneEntity *entity = *itB;
-					if(!foundMap.count(entity))
-					{
+					if(entity->Cache(1))
 						found.push_back(entity);
-						foundMap[entity] = true;
-					}
 				}
 			}
+			ZoneEntity::ClearCache(1);
 
 			return found;
 		}

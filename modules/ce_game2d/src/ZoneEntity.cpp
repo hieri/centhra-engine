@@ -49,6 +49,15 @@ namespace ce
 {
 	namespace game2d
 	{
+		std::vector<ZoneEntity *> ZoneEntity::ms_cacheVectors[8];
+		void ZoneEntity::ClearCache(unsigned int idx)
+		{
+			std::vector<ZoneEntity *> &cacheVector = ms_cacheVectors[idx];
+			for(vector<ZoneEntity *>::iterator it = cacheVector.begin(); it != cacheVector.end(); it++)
+				(*it)->m_cache[idx] = false;
+			cacheVector.clear();
+		}
+
 		GLuint g_squareVBO = 0, g_squareEBO = 0;
 //		GLint g_squareList = 0;
 		void RenderSquare()
@@ -149,12 +158,15 @@ namespace ce
 		{
 			m_position = position;
 			m_extent = extent;
-			m_isRendered = m_startedPhysics = m_finishedPhysics = false;
+			m_startedPhysics = m_finishedPhysics = false;
 			m_color = Color(rand() % 256,  rand() % 256, rand() % 256);
 			m_velocity = Vector2<float>(0.f, 0.f);
 			m_movePadding = Vector2<float>(1.f, 1.f);
 			m_canMove[0] = m_canMove[1] = true;
 			m_collisionMask |= 1;
+
+			for(int a = 0; a < CE_ZONEENTITY_CACHESIZE; a++)
+				m_cache[a] = false;
 
 			ms_lastID++;
 			m_id = ms_lastID;
@@ -166,13 +178,9 @@ namespace ce
 		}
 		void ZoneEntity::Render()
 		{
-			if(!m_isRendered)
-			{
-				glPushMatrix();
-				DoRender();
-				glPopMatrix();
-				m_isRendered = true;
-			}
+			glPushMatrix();
+			DoRender();
+			glPopMatrix();
 		}
 		void ZoneEntity::DoRender()
 		{
@@ -181,10 +189,6 @@ namespace ce
 			glScalef(m_extent[0], m_extent[1], 1.f);
 			RenderSquare();
 			glColor3ub(255, 255, 255);
-		}
-		void ZoneEntity::FinishRender()
-		{
-			m_isRendered = false;
 		}
 		void ZoneEntity::AddZone(Zone *zone)
 		{
@@ -264,6 +268,15 @@ namespace ce
 		}
 		bool ZoneEntity::OnCollision(ZoneEntity *collider)
 		{
+			return true;
+		}
+		bool ZoneEntity::Cache(unsigned int idx)
+		{
+			if(m_cache[idx])
+				return false;
+
+			m_cache[idx] = true;
+			ms_cacheVectors[idx].push_back(this);
 			return true;
 		}
 	}

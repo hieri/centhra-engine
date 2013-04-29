@@ -673,7 +673,7 @@ namespace ce
 					SetWindowLongPtr(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
 					SetWindowLongPtr(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
 					SetWindowPos(hwnd, 0, 0, 0, fullscreenWidth, fullscreenHeight, SWP_SHOWWINDOW);
-					ChangeDisplaySettings(&fullscreenSettings, CDS_FULLSCREEN) == DISP_CHANGE_SUCCESSFUL;
+					bool success = ChangeDisplaySettings(&fullscreenSettings, CDS_FULLSCREEN) == DISP_CHANGE_SUCCESSFUL;
 					ShowWindow(hwnd, SW_MAXIMIZE);
 				}
 			#endif

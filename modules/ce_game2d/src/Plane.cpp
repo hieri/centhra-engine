@@ -70,17 +70,16 @@ namespace ce
 			else if(_maxY >= (int)m_height)
 				_maxY = m_height - 1;
 
-			vector<ZoneEntity *> entities;
-
 			for(int a = _minX; a <= _maxX; a++)
 				for(int b = _minY; b <= _maxY; b++)
 					for(vector<ZoneEntity *>::iterator it = m_zones[a][b]->m_children.begin(); it != m_zones[a][b]->m_children.end(); it++)
-						entities.push_back(*it);
+					{
+						ZoneEntity *entity = *it;
+						if(entity->Cache(0))
+							entity->Render();
+					}
+			ZoneEntity::ClearCache(0);
 
-			for(vector<ZoneEntity *>::iterator it = entities.begin(); it != entities.end(); it++)
-				(*it)->Render();
-			for(vector<ZoneEntity *>::iterator it = entities.begin(); it != entities.end(); it++)
-				(*it)->FinishRender();
 //			for(int a = _minX; a <= _maxX; a++)
 //				for(int b = _minY; b <= _maxY; b++)
 //					m_zones[a][b]->Render();

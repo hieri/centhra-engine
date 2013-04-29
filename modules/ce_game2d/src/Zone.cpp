@@ -35,9 +35,13 @@ namespace ce
 		}
 		void Zone::DoRender()
 		{
-		//	for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-		//		(*it)->Render();
-
+/*			for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+			{
+				ZoneEntity *entity = *it;
+				if(entity->Cache(0))
+					entity->Render();
+			}
+*/
 			glPushMatrix();
 				if(m_children.size())
 					glColor3ub(255, 0, 0);
@@ -52,7 +56,7 @@ namespace ce
 			glPopMatrix();
 
 			if(!m_plane)
-				FinishRender();
+				ZoneEntity::ClearCache(0);
 		}
 		void Zone::Add(ZoneEntity *entity)
 		{
@@ -88,11 +92,6 @@ namespace ce
 				else
 					it++;
 			}
-		}
-		void Zone::FinishRender()
-		{
-			for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-				(*it)->FinishRender();
 		}
 		void Zone::SetPlane(Plane *plane)
 		{

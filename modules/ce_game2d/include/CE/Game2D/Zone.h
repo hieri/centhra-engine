@@ -30,8 +30,6 @@ namespace ce
 			bool IsMember(ZoneEntity *entity) const;
 			void RemoveDead();
 
-			void FinishRender();
-
 			void SetPlane(Plane *plane);
 			Plane *GetPlane() const;
 

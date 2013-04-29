@@ -9,6 +9,8 @@
 #include <CE/Vector2.h>
 #include <CE/Game2D/Entity.h>
 
+#define CE_ZONEENTITY_CACHESIZE 8
+
 namespace ce
 {
 	namespace game2d
@@ -20,9 +22,13 @@ namespace ce
 			static unsigned int ms_lastID;
 
 			Vector2<float> m_position, m_extent, m_velocity, m_moveBoxMin, m_moveBoxMax, m_movement, m_movePadding;
-			bool m_canMove[2], m_isRendered, m_startedPhysics, m_finishedPhysics;
+			bool m_canMove[2], m_startedPhysics, m_finishedPhysics, m_cache[CE_ZONEENTITY_CACHESIZE];
 			Color m_color;
 			unsigned int m_id;
+
+			static std::vector<ZoneEntity *> ms_cacheVectors[8];
+			static void ClearCache(unsigned int idx);
+			bool Cache(unsigned int idx);
 
 		protected:
 			std::vector<Zone *> m_zones;
@@ -38,7 +44,6 @@ namespace ce
 			bool ContainsZone(Zone *zone) const;
 			void RemoveZone(Zone *zone);
 			void Render();
-			void FinishRender();
 			Vector2<float> GetExtent() const;
 			Vector2<float> GetPosition() const;
 			Vector2<float> GetVelocity() const;

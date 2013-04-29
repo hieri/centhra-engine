@@ -14,12 +14,12 @@ namespace ce
 	{
 		class Control
 		{
+		protected:
 			bool m_isVisible;
 			Control *m_parent;
 			std::vector<Control *> m_children;
 			Vector2<int> m_position, m_extent;
 
-		protected:
 			virtual void DoRender();
 
 		public:

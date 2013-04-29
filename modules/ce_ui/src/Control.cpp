@@ -90,6 +90,7 @@ namespace ce
 			if(m_isVisible)
 			{
 				glPushMatrix();
+				glTranslatef((float)m_position[0], (float)m_position[1], 0);
 				DoRender();
 				for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 					(*it)->Render();

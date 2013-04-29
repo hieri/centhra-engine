@@ -30,16 +30,14 @@ namespace ce
 		}
 		void ColorCtrl::DoRender()
 		{
-			Vector2<int> position = GetPosition();
-			Vector2<int> extent = GetExtent();
-
 			glPushMatrix();
 				glColor4ubv(&m_color[0]);
+				glScalef((float)m_extent[0], (float)m_extent[1], 0.f);
 				glBegin(GL_QUADS);
-					glVertex2i(position[0], position[1]);
-					glVertex2i(position[0] + extent[0], position[1]);
-					glVertex2i(position[0] + extent[0], position[1] + extent[1]);
-					glVertex2i(position[0], position[1] + extent[1]);
+					glVertex2i(0, 0);
+					glVertex2i(1, 0);
+					glVertex2i(1, 1);
+					glVertex2i(0, 1);
 				glEnd();
 				glColor4ub(255, 255, 255, 255);
 			glPopMatrix();

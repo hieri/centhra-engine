@@ -14,9 +14,9 @@ namespace ce
 	{
 		class ColorCtrl : public Control
 		{
+		protected:
 			Color m_color;
 
-		protected:
 			virtual void DoRender();
 
 		public:

@@ -16,9 +16,8 @@ namespace ce
 {
 	namespace ui
 	{
-		TextCtrl::TextCtrl(Vector2<int> position, Vector2<int> extent, Font *font, const char *text, Color color) : Control(position, extent)
+		TextCtrl::TextCtrl(Vector2<int> position, Vector2<int> extent, Font *font, const char *text, Color color) : ColorCtrl(position, extent, color)
 		{
-			m_color = color;
 			m_font = font;
 			m_text = string(text);
 		}
@@ -38,19 +37,11 @@ namespace ce
 		{
 			return m_text.c_str();
 		}
-		void TextCtrl::SetColor(Color color)
-		{
-			m_color = color;
-		}
-		Color TextCtrl::GetColor() const
-		{
-			return m_color;
-		}
 		void TextCtrl::DoRender()
 		{
 			glPushMatrix();
 				glColor4ubv(&m_color[0]);
-				glTranslatef(0.f, GetExtent()[1] - (float)m_font->GetCharHeight(), 0.f);
+				glTranslatef(0.f, m_extent[1] - (float)m_font->GetCharHeight(), 0.f);
 				m_font->DrawString(m_text.c_str());
 				glColor4ub(255, 255, 255, 255);
 			glPopMatrix();

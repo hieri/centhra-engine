@@ -16,9 +16,8 @@ namespace ce
 {
 	namespace ui
 	{
-		ImageCtrl::ImageCtrl(Vector2<int> position, Vector2<int> extent, Image *image,  Color color) : Control(position, extent)
+		ImageCtrl::ImageCtrl(Vector2<int> position, Vector2<int> extent, Image *image, Color color) : ColorCtrl(position, extent, color)
 		{
-			m_color = color;
 			m_image = image;
 		}
 		void ImageCtrl::SetImage(Image *image)
@@ -29,20 +28,11 @@ namespace ce
 		{
 			return m_image;
 		}
-		void ImageCtrl::SetColor(Color color)
-		{
-			m_color = color;
-		}
-		Color ImageCtrl::GetColor() const
-		{
-			return m_color;
-		}
 		void ImageCtrl::DoRender()
 		{
-			Vector2<int> extent = GetExtent();
 			glPushMatrix();
 				glColor4ubv(&m_color[0]);
-				glScalef((float)extent[0], (float)extent[1], 0.f);
+				glScalef((float)m_extent[0], (float)m_extent[1], 0.f);
 				if(m_image)
 				{
 					glEnable(GL_TEXTURE_2D);

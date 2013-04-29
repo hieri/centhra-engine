@@ -5,6 +5,7 @@ set(INC
 	${INC_DIR}/Game2D.h
 	${INC_DIR}/UI/GameView2D.h
 	${INC_DIR}/Game2D/Entity.h
+	${INC_DIR}/Game2D/Graph.h
 	${INC_DIR}/Game2D/Plane.h
 	${INC_DIR}/Game2D/Sprite.h
 	${INC_DIR}/Game2D/TileMap.h
@@ -18,6 +19,7 @@ set(SRC
 	${SRC_DIR}/Game2D.cpp
 	${SRC_DIR}/GameView2D.cpp
 	${SRC_DIR}/Entity.cpp
+	${SRC_DIR}/Graph.cpp
 	${SRC_DIR}/Plane.cpp
 	${SRC_DIR}/Sprite.cpp
 	${SRC_DIR}/TileMap.cpp

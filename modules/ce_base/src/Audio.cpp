@@ -6,9 +6,14 @@
 	#include <Windows.h>
 #endif
 
+#ifdef linux
+	//- Linux -
+	#include <unistd.h>
+#endif
+
 //- OpenAL -
-#include <al.h>
-#include <alc.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 
 namespace ce
 {

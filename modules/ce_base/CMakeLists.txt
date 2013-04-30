@@ -64,6 +64,7 @@ set(INCLUDE ${INCLUDE} ${FREETYPE_INCLUDE_DIRS})
 find_package(OpenAL REQUIRED)
 set(LIB ${LIB} ${OPENAL_LIBRARY})
 set(INCLUDE ${INCLUDE} ${OPENAL_INCLUDE_DIR})
+message("${OPENAL_INCLUDE_DIR}/..")
 
 configure_file(include/CE/ConfigBase.h.in include/CE/ConfigBase.h)
 

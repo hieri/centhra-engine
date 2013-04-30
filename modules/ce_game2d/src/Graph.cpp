@@ -1,5 +1,6 @@
 //- Standard Library -
 #include <map>
+#include <algorithm>
 
 //- Centhra Engine -
 #include <CE/Base.h>

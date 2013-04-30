@@ -300,6 +300,48 @@ namespace ce
 
 			return path;
 		}
+		void Graph::GenerateNeighbors(Zone *zone, unsigned int mask)
+		{
+			for(vector<Node *>::iterator it = m_nodes.begin(); it != m_nodes.end(); it++)
+				(*it)->ClearNeighbors();
+
+			for(vector<Node *>::iterator itA = m_nodes.begin(); itA != m_nodes.end(); itA++)
+			{
+				Node *nodeA = *itA;
+				for(vector<Node *>::iterator itB = m_nodes.begin(); itB != m_nodes.end(); itB++)
+				{
+					Node *nodeB = *itB;
+					if(nodeA != nodeB)
+						if(!nodeA->IsNeighbor(nodeB))
+							if(!zone->SegmentSearch(nodeA->m_position[0], nodeA->m_position[1], nodeB->m_position[0], nodeB->m_position[1], mask).size())
+							{
+								nodeA->AddNeighbor(nodeB);
+								nodeB->AddNeighbor(nodeA);
+							}
+				}
+			}
+		}
+		void Graph::GenerateNeighbors(Plane *plane, unsigned int mask)
+		{
+			for(vector<Node *>::iterator it = m_nodes.begin(); it != m_nodes.end(); it++)
+				(*it)->ClearNeighbors();
+
+			for(vector<Node *>::iterator itA = m_nodes.begin(); itA != m_nodes.end(); itA++)
+			{
+				Node *nodeA = *itA;
+				for(vector<Node *>::iterator itB = m_nodes.begin(); itB != m_nodes.end(); itB++)
+				{
+					Node *nodeB = *itB;
+					if(nodeA != nodeB)
+						if(!nodeA->IsNeighbor(nodeB))
+							if(!plane->SegmentSearch(nodeA->m_position[0], nodeA->m_position[1], nodeB->m_position[0], nodeB->m_position[1], mask).size())
+							{
+								nodeA->AddNeighbor(nodeB);
+								nodeB->AddNeighbor(nodeA);
+							}
+				}
+			}
+		}
 
 		vector<Graph::Node *> Graph::Node::ms_cacheVectors[CE_GRAPHNODE_CACHESIZE];
 		void Graph::Node::ClearCache(unsigned int idx)

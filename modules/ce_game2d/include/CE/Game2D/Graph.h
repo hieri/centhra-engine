@@ -48,6 +48,8 @@ namespace ce
 			std::vector<Node *> FindPath(Node *nodeA, Node *nodeB);
 			std::vector<Vector2<float> > FindPath(Vector2<float> posA, Vector2<float> posB, unsigned int mask, Zone *zone, ZoneEntity *ignore = 0);
 			std::vector<Vector2<float> > FindPath(Vector2<float> posA, Vector2<float> posB, unsigned int mask, Plane *plane, ZoneEntity *ignore = 0);
+			void GenerateNeighbors(Zone *zone, unsigned int mask);
+			void GenerateNeighbors(Plane *plane, unsigned int mask);
 
 		private:
 			std::vector<Node *> m_nodes;

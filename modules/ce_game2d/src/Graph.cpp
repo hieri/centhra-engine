@@ -88,6 +88,218 @@ namespace ce
 
 			return path;
 		}
+		vector<Vector2<float> > Graph::FindPath(Vector2<float> posA, Vector2<float> posB, unsigned int mask, Zone *zone, ZoneEntity *ignore)
+		{
+			vector<Vector2<float> > path;
+			vector<Node *> queue;
+			map<Node *, Node *> pathMap;
+			map<Node *, float> distMap, endDistMap;
+
+			vector<Node *> neighborsA, neighborsB;
+			for(vector<Node *>::iterator it = m_nodes.begin(); it != m_nodes.end(); it++)
+			{
+				Node *node = *it;
+				if(!zone->SegmentSearch(posA[0], posA[1], node->m_position[0], node->m_position[1], mask, ignore).size())
+				{
+					float dist = (posA - node->m_position).GetLength();
+					neighborsA.push_back(node);
+					pathMap[node] = 0;
+					distMap[node] = dist;
+
+					vector<Node *>::iterator itB;
+					for(itB = queue.begin(); itB != queue.end(); itB++)
+						if(distMap[*itB] > dist)
+							break;
+					queue.insert(itB, node);
+				}
+				if(!zone->SegmentSearch(posB[0], posB[1], node->m_position[0], node->m_position[1], mask, ignore).size())
+				{
+					neighborsB.push_back(node);
+					endDistMap[node] = (posB - node->m_position).GetLength();
+				}
+			}
+
+			int n = 0;
+			while(queue.size())
+			{
+				Node *node = queue[0];
+				queue.erase(queue.begin());
+				if(endDistMap.count(node))
+					n++;
+				if(n == endDistMap.size())
+					break;
+
+				int count = node->m_neighbors.size();
+				for(int a = 0; a < count; a++)
+				{
+					Node *neighbor = node->m_neighbors[a];
+					float dist = node->m_neighborDistances[a] + distMap[node];
+					if(endDistMap.count(neighbor))
+						dist += endDistMap[neighbor];
+
+					if(pathMap.count(neighbor))
+					{
+						if(distMap[neighbor] > dist)
+						{
+							distMap[neighbor] = dist;
+							pathMap[neighbor] = node;
+						}
+					}
+					else
+					{
+						pathMap[neighbor] = node;
+						distMap[neighbor] = dist;
+
+						bool added = false;
+						vector<Node *>::iterator it;
+						for(it = queue.begin(); it != queue.end(); it++)
+							if(distMap[*it] > dist)
+								break;
+						queue.insert(it, neighbor);
+					}
+				}
+			}
+
+			Node *shortest = 0;
+			float shortestDist = 0.f;
+			for(vector<Node *>::iterator it = neighborsB.begin(); it != neighborsB.end(); it++)
+			{
+				Node *node = *it;
+				if(shortest)
+				{
+					if(shortestDist > distMap[node])
+					{
+						shortest = node;
+						shortestDist = distMap[node];
+					}
+				}
+				else
+				{
+					shortest = node;
+					shortestDist = distMap[node];
+				}
+			}
+
+			path.insert(path.begin(), posB);
+			if(pathMap.count(shortest))
+			{
+				Node *node = shortest;
+				while(node)
+				{
+					path.insert(path.begin(), node->m_position);
+					node = pathMap[node];
+				}
+			}
+			path.insert(path.begin(), posA);
+
+			return path;
+		}
+		vector<Vector2<float> > Graph::FindPath(Vector2<float> posA, Vector2<float> posB, unsigned int mask, Plane *plane, ZoneEntity *ignore)
+		{
+			vector<Vector2<float> > path;
+			vector<Node *> queue;
+			map<Node *, Node *> pathMap;
+			map<Node *, float> distMap, endDistMap;
+
+			vector<Node *> neighborsA, neighborsB;
+			for(vector<Node *>::iterator it = m_nodes.begin(); it != m_nodes.end(); it++)
+			{
+				Node *node = *it;
+				if(!plane->SegmentSearch(posA[0], posA[1], node->m_position[0], node->m_position[1], mask, ignore).size())
+				{
+					float dist = (posA - node->m_position).GetLength();
+					neighborsA.push_back(node);
+					pathMap[node] = 0;
+					distMap[node] = dist;
+
+					vector<Node *>::iterator itB;
+					for(itB = queue.begin(); itB != queue.end(); itB++)
+						if(distMap[*itB] > dist)
+							break;
+					queue.insert(itB, node);
+				}
+				if(!plane->SegmentSearch(posB[0], posB[1], node->m_position[0], node->m_position[1], mask, ignore).size())
+				{
+					neighborsB.push_back(node);
+					endDistMap[node] = (posB - node->m_position).GetLength();
+				}
+			}
+
+			int n = 0;
+			while(queue.size())
+			{
+				Node *node = queue[0];
+				queue.erase(queue.begin());
+				if(endDistMap.count(node))
+					n++;
+				if(n == endDistMap.size())
+					break;
+
+				int count = node->m_neighbors.size();
+				for(int a = 0; a < count; a++)
+				{
+					Node *neighbor = node->m_neighbors[a];
+					float dist = node->m_neighborDistances[a] + distMap[node];
+					if(endDistMap.count(neighbor))
+						dist += endDistMap[neighbor];
+
+					if(pathMap.count(neighbor))
+					{
+						if(distMap[neighbor] > dist)
+						{
+							distMap[neighbor] = dist;
+							pathMap[neighbor] = node;
+						}
+					}
+					else
+					{
+						pathMap[neighbor] = node;
+						distMap[neighbor] = dist;
+
+						bool added = false;
+						vector<Node *>::iterator it;
+						for(it = queue.begin(); it != queue.end(); it++)
+							if(distMap[*it] > dist)
+								break;
+						queue.insert(it, neighbor);
+					}
+				}
+			}
+
+			Node *shortest = 0;
+			float shortestDist = 0.f;
+			for(vector<Node *>::iterator it = neighborsB.begin(); it != neighborsB.end(); it++)
+			{
+				Node *node = *it;
+				if(shortest)
+				{
+					if(shortestDist > distMap[node])
+					{
+						shortest = node;
+						shortestDist = distMap[node];
+					}
+				}
+				else
+				{
+					shortest = node;
+					shortestDist = distMap[node];
+				}
+			}
+
+			path.insert(path.begin(), posB);
+			if(pathMap.count(shortest))
+			{
+				Node *node = shortest;
+				while(node)
+				{
+					path.insert(path.begin(), node->m_position);
+					node = pathMap[node];
+				}
+			}
+			path.insert(path.begin(), posA);
+
+			return path;
+		}
 
 		vector<Graph::Node *> Graph::Node::ms_cacheVectors[CE_GRAPHNODE_CACHESIZE];
 		void Graph::Node::ClearCache(unsigned int idx)

@@ -26,7 +26,7 @@ namespace ce
 			Color m_color;
 			unsigned int m_id;
 
-			static std::vector<ZoneEntity *> ms_cacheVectors[8];
+			static std::vector<ZoneEntity *> ms_cacheVectors[CE_ZONEENTITY_CACHESIZE];
 			static void ClearCache(unsigned int idx);
 			bool Cache(unsigned int idx);
 

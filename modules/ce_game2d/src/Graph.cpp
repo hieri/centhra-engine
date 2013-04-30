@@ -85,7 +85,6 @@ namespace ce
 					node = pathMap[node];
 				}
 			}
-			print("%f\n", distMap[nodeB]);
 
 			return path;
 		}

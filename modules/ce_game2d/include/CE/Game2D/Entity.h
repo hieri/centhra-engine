@@ -16,15 +16,18 @@ namespace ce
 
 		protected:
 			virtual void DoRender();
+			virtual void OnKill();
 
 		public:
 			static void DeleteDead();
 
 			Entity();
+			~Entity();
 
 			bool IsDead() const;
 			void Kill();
 			void Render();
+
 		};
 	}
 }

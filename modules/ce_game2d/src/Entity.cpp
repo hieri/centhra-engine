@@ -28,9 +28,17 @@ namespace ce
 		{
 			m_isDead = false;
 		}
+		Entity::~Entity()
+		{
+		}
 		void Entity::Kill()
 		{
-			m_isDead = true;
+			if(!m_isDead)
+			{
+				m_isDead = true;
+				ms_dead.push_back(this);
+				OnKill();
+			}
 		}
 		bool Entity::IsDead() const
 		{
@@ -43,6 +51,9 @@ namespace ce
 			glPopMatrix();
 		}
 		void Entity::DoRender()
+		{
+		}
+		void Entity::OnKill()
 		{
 		}
 	}

@@ -79,10 +79,11 @@ namespace ce
 							entity->Render();
 					}
 			ZoneEntity::ClearCache(0);
-
-//			for(int a = _minX; a <= _maxX; a++)
-//				for(int b = _minY; b <= _maxY; b++)
-//					m_zones[a][b]->Render();
+/*
+			for(int a = _minX; a <= _maxX; a++)
+				for(int b = _minY; b <= _maxY; b++)
+					m_zones[a][b]->Render();
+*/
 /*
 			for(int a = _minX; a <= _maxX; a++)
 				for(int b = _minY; b <= _maxY; b++)
@@ -414,43 +415,21 @@ namespace ce
 			ZoneEntity::ClearCache(1);
 
 			return found;
-		}
-		vector<ZoneEntity *> Plane::SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, ZoneEntity *ignore)
+		}		vector<ZoneEntity *> Plane::SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, ZoneEntity *ignore)
 		{
 			vector<ZoneEntity *> found;
 
-			if(startX > endX)
-			{
-				swap(startX, endX);
-				swap(startY, endY);
-			}
-
-			//- TODO: Handle vertical lines differently -
-			float slope = (endY - startY) / (endX - startX);
+			//- determine which zones intersect the line segment -
 			vector<Zone *> searchZones;
 
-			int MinX = (int)floor(startX / m_zoneSize);
-			int MaxX = (int)floor(endX / m_zoneSize);
-			
-			if(MinX < 0)
-				MinX = 0;
-			else if(MinX >= (int)m_width)
-				MinX = m_width - 1;
-			if(MaxX < 0)
-				MaxX = 0;
-			else if(MaxX >= (int)m_width)
-				MaxX = m_width - 1;
-
-			float originY = startY - (startX - MinX * m_zoneSize) * slope;
-
-			for(int a = MinX; a <= MaxX; a++)
+			//- handle the vertical line case -
+			if(!(endX - startX))
 			{
-				int MinY = (int)floor((a * m_zoneSize * slope + originY) / m_zoneSize);
-				int MaxY = (int)floor(((a + 1) * m_zoneSize * slope + originY - 0.001f) / m_zoneSize);
-
+				int X = (int)floor(startX / m_zoneSize);
+				int MinY = (int)floor(startY / m_zoneSize);
+				int MaxY = (int)floor(endY / m_zoneSize);
 				if(MinY > MaxY)
 					swap(MinY, MaxY);
-
 				if(MinY < 0)
 					MinY = 0;
 				else if(MinY >= (int)m_height)
@@ -459,11 +438,79 @@ namespace ce
 					MaxY = 0;
 				else if(MaxY >= (int)m_height)
 					MaxY = m_height - 1;
-
-				for(int b = MinY; b <= MaxY; b++)
-					searchZones.push_back(m_zones[a][b]);
+				for(int a = MinY; a <= MaxY; a++)
+					searchZones.push_back(m_zones[X][a]);
+			}
+			//- handle the horizonal line case -
+			else if(!(endY - startX))
+			{
+				int Y = (int)floor(startY / m_zoneSize);
+				int MinX = (int)floor(startX / m_zoneSize);
+				int MaxX = (int)floor(endX / m_zoneSize);
+				if(MinX > MaxX)
+					swap(MinX, MaxX);
+				if(MinX < 0)
+					MinX = 0;
+				else if(MinX >= (int)m_width)
+					MinX = m_width - 1;
+				if(MaxX < 0)
+					MaxX = 0;
+				else if(MaxX >= (int)m_width)
+					MaxX = m_width - 1;
+				for(int a = MinX; a <= MaxX; a++)
+					searchZones.push_back(m_zones[a][Y]);
+			}
+			//- handle the diagonal line case -
+			else
+			{
+				float slope = (endY - startY) / (endX - startX);
+				int MinX = (int)floor(startX / m_zoneSize);
+				int MaxX = (int)floor(endX / m_zoneSize);
+				if(MinX > MaxX)
+					swap(MinX, MaxX);
+				if(MinX < 0)
+					MinX = 0;
+				else if(MinX >= (int)m_width)
+					MinX = m_width - 1;
+				if(MaxX < 0)
+					MaxX = 0;
+				else if(MaxX >= (int)m_width)
+					MaxX = m_width - 1;
+				float originX = MinX * m_zoneSize;
+				float originY = startY - (startX - originX) * slope;
+				int MinY = (int)floor(startY / m_zoneSize);
+				int MaxY = (int)floor(endY / m_zoneSize);
+				if(MinY > MaxY)
+					swap(MinY, MaxY);
+				if(MinY < 0)
+					MinY = 0;
+				else if(MinY >= (int)m_height)
+					MinY = m_height - 1;
+				if(MaxY < 0)
+					MaxY = 0;
+				else if(MaxY >= (int)m_height)
+					MaxY = m_height - 1;
+				for(int a = MinX; a <= MaxX; a++)
+				{
+					int i = a - MinX;
+					int _MinY = (int)floor((i * m_zoneSize * slope + originY) / m_zoneSize);
+					int _MaxY = (int)floor(((i + 1) * m_zoneSize * slope + originY) / m_zoneSize);
+					if(_MinY > _MaxY)
+						swap(_MinY, _MaxY);
+					if(_MinY < MinY)
+						_MinY = MinY;
+					else if(_MinY > MaxY)
+						_MinY = MaxY;
+					if(_MaxY < MinY)
+						_MaxY = MinY;
+					else if(_MaxY >= MaxY)
+						_MaxY = MaxY;
+					for(int b = _MinY; b <= _MaxY; b++)
+						searchZones.push_back(m_zones[a][b]);
+				}
 			}
 
+			//- go through the zones and find which entities intersect the line segment -
 			for(vector<Zone *>::iterator itA = searchZones.begin(); itA != searchZones.end(); itA++)
 			{
 				vector<ZoneEntity *> localFound = (*itA)->SegmentSearch(startX, startY, endX, endY, mask, ignore);
@@ -475,7 +522,6 @@ namespace ce
 				}
 			}
 			ZoneEntity::ClearCache(1);
-
 			return found;
 		}
 	}

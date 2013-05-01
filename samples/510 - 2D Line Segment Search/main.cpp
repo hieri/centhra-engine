@@ -6,52 +6,53 @@
 #include <CE/Game2D/ZoneEntity.h>
 #include <CE/Game2D/ZoneCamera.h>
 #include <CE/UI/GameView2D.h>
-#include <CE/Thread.h>
 
 //- Standard Library -
 #include <stdlib.h>
 
+#define NUMRANDOMS 64
+
+#ifdef _WIN32
+	//- Windows -
+	#include <Windows.h>
+#endif
+
+//- OpenGL -
+#include <GL/gl.h>
+
 using namespace ce;
 
-#define NUMRANDOMS 1024
-
-void *physicsFunc(void *arg);
-
-//- Define your own implementation of the AppFrontend class. -
 class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
-	game2d::ZoneEntity *m_entity;
+	game2d::ZoneEntity *m_entity, **m_randoms;
 	game2d::ZoneCamera *m_camera;
 	ui::GameView2D *m_view;
+	Vector2<float> m_pointA, m_pointB;
 	bool w,a,s,d;
-	game2d::ZoneEntity **m_randoms;
 	unsigned long m_lastProcess;
+	unsigned int m_numFound;
 
 public:
-//	Thread* m_physicsThread;
 	game2d::Plane *m_plane;
 
 	AppTest()
 	{
 		m_canvas = 0;
 		m_plane = 0;
-		m_entity =0;
 		m_camera = 0;
 		m_view = 0;
+		m_entity = 0;
+		m_randoms = 0;
 		m_lastProcess = 0;
 		w = a = s = d = false;
-		m_randoms = 0;
-//		m_physicsThread = new Thread(&physicsFunc);
+		m_numFound = 0;
 	}
 	~AppTest()
 	{
-//		m_physicsThread->Join();
-//		delete m_physicsThread;
 	}
 
-	//- Define the virtual functions for the class. -
-	bool OnStart()
+	void OnStarted()
 	{
 		srand(GetRunTimeMS());
 		m_canvas = Canvas::Create(640, 480, "500 - 2D Collision");
@@ -63,10 +64,7 @@ public:
 		m_camera->SetFocus(m_entity);
 
 		m_view = new ui::GameView2D(Vector2<int>(0, 0), Vector2<int>(640, 480));
-//		m_view = new ui::GameView2D(Vector2<int>(0, 0), Vector2<int>(1366, 768));
 		m_view->SetCamera(m_camera);
-
-		m_entity->SetCollisionMask(0);
 
 		m_randoms = new game2d::ZoneEntity *[NUMRANDOMS];
 		bool randBuff[4096];
@@ -86,15 +84,9 @@ public:
 
 			m_randoms[a] = new game2d::ZoneEntity(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>(16.f, 16.f));
 			m_plane->Place(m_randoms[a]);
-
-			Vector2<float> dif = Vector2<float>((float)(rand() % 1024 - 512), (float)(rand() % 1024 - 512));
-			m_randoms[a]->SetVelocity(dif);
 		}
-
-//		m_physicsThread->Start(this);
-//		m_canvas->SetFullscreen(true);
-
-		return true;
+		m_pointA = Vector2<float>(256.f, 256.f);
+		m_pointB = Vector2<float>(768.f, 768.f);
 	}
 	bool OnProcess()
 	{
@@ -103,8 +95,38 @@ public:
 		{
 			float dt = (float)(t - m_lastProcess) / 1000.f;
 			m_lastProcess = t;
+			
+			Vector2<float> dif;
+			if(w)
+				dif[1] += 1.f;
+			if(a)
+				dif[0] -= 1.f;
+			if(s)
+				dif[1] -= 1.f;
+			if(d)
+				dif[0] += 1.f;
+			dif *= 256.f;
+			m_entity->SetVelocity(dif);
+
+			for(int a = 0; a < NUMRANDOMS; a++)
+			{
+				Vector2<float> pos = m_randoms[a]->GetPosition();
+				Vector2<float> vel = m_randoms[a]->GetVelocity();
+
+				if(pos[0] > 1008.f && vel[0] > 0)
+					vel[0] *= -1.f;
+				if(pos[0] < 0.f && vel[0] < 0)
+					vel[0] *= -1.f;
+				if(pos[1] > 1008.f && vel[1] > 0)
+					vel[1] *= -1.f;
+				if(pos[1] < 0.f && vel[1] < 0)
+					vel[1] *= -1.f;
+				m_randoms[a]->SetVelocity(vel);
+			}
 
 			m_plane->ProcessPhysics(dt);
+			m_numFound = m_plane->SegmentSearch(m_pointA[0], m_pointA[1], m_pointB[0], m_pointB[1]).size();
+
 			m_plane->RemoveDead();
 			game2d::Entity::DeleteDead();
 		}
@@ -118,26 +140,34 @@ public:
 		delete m_camera;
 		if(m_plane)
 			delete m_plane;
-		game2d::Entity::DeleteDead();
 		delete m_entity;
 		for(int a = 0; a < NUMRANDOMS; a++)
 			delete m_randoms[a];
 		delete [] m_randoms;
+		game2d::Entity::DeleteDead();
 		game2d::ZoneEntity::Cleanup();
 		delete m_canvas;
 	}
 
-	Vector2<float> origin;
 	bool OnEvent(Event &event)
 	{
-//		float x, y;
-		Vector2<float> dif;
+		Vector2<int> halfExtent;
+		Vector2<float> center;
 		switch(event.type)
 		{
-		case event::MouseMotion:
-//			x = (float)event.mouseMotion.x - (1366.f/2.f - m_entity->GetPosition()[0]);
-//			y = (768.f - (float)event.mouseMotion.y) - (768.f/2.f - m_entity->GetPosition()[1]);
-//			origin = Vector2<float>(x, y);
+		case event::MouseButtonDown:
+			halfExtent = m_view->GetExtent() / 2;
+			center = m_entity->GetPosition() + m_entity->GetExtent() / 2.f;
+
+			switch(event.mouseButton.button)
+			{
+			case 1:
+				m_pointA = Vector2<float>(center[0] - halfExtent[0] + (float)event.mouseButton.x, center[1] + halfExtent[1] - (float)event.mouseButton.y);
+				break;
+			case 2:
+				m_pointB = Vector2<float>(center[0] - halfExtent[0] + (float)event.mouseButton.x, center[1] + halfExtent[1] - (float)event.mouseButton.y);
+				break;
+			}
 			break;
 		case event::KeyDown:
 			switch(event.key.keyCode)
@@ -174,31 +204,21 @@ public:
 			}
 			break;
 		case event::PostRender:
-			origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
-//				origin = Vector2<float>(512.f, 512.f);
+			halfExtent = m_view->GetExtent() / 2;
+			center = m_entity->GetPosition() + m_entity->GetExtent() / 2.f;
 
-			for(int a = 0; a < NUMRANDOMS; a++)
-			{
-				Vector2<float> pos = m_randoms[a]->GetPosition();
-//				Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
-//				Vector2<float> vel = m_randoms[a]->GetVelocity();
-//				Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
-				Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
-//				vel /= vel.GetLength();
-//				vel *= 64.f;
-
-				if(pos[0] > 1008.f && vel[0] > 0)
-					vel[0] *= -1.f;
-				if(pos[0] < 0.f && vel[0] < 0)
-					vel[0] *= -1.f;
-				if(pos[1] > 1008.f && vel[1] > 0)
-					vel[1] *= -1.f;
-				if(pos[1] < 0.f && vel[1] < 0)
-					vel[1] *= -1.f;
-				m_randoms[a]->SetVelocity(vel);
-			}
-				
 			m_view->Render();
+			glPushMatrix();
+				if(m_numFound)
+					glColor4ub(0, 255, 0, 255);
+				glTranslatef((float)halfExtent[0], (float)halfExtent[1], 0.f);
+				glTranslatef(-center[0], -center[1], 0.f);
+				glBegin(GL_LINES);
+					glVertex2f(m_pointA[0], m_pointA[1]);
+					glVertex2f(m_pointB[0], m_pointB[1]);
+				glEnd();
+				glColor4ub(255, 255, 255, 255);
+			glPopMatrix();
 			break;
 		case event::WindowResize:
 			if(m_view)
@@ -209,32 +229,9 @@ public:
 	}
 };
 
-void *physicsFunc(void *arg)
-{
-	AppTest *app = (AppTest *)arg;
-	unsigned long lastProcess = app->GetRunTimeMS();
-
-	while(app->IsRunning())
-	{
-		unsigned long t = app->GetRunTimeMS();
-		if((t - lastProcess) > 15)
-		{
-			float dt = (float)(t - lastProcess) / 1000.f;
-			lastProcess = t;
-
-			app->m_plane->ProcessPhysics(dt);
-		}
-
-		sleepMS(1);
-	}
-
-	Thread::Exit(NULL);
-	return 0;
-}
-
 int main(int argc, char **argv)
 {
-	print("500 - 2D Collision | Centhra Engine v%s\n", getVersionString().c_str());
+	print("510 - 2D Line Segment Search | Centhra Engine v%s\n", getVersionString().c_str());
 
 	AppTest myApp;
 	myApp.Start();
@@ -243,6 +240,5 @@ int main(int argc, char **argv)
 	while(myApp.IsRunning())
 		myApp.Process();
 
-//	Thread::Exit(NULL);
 	return 0;
 }

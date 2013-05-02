@@ -415,7 +415,8 @@ namespace ce
 			ZoneEntity::ClearCache(1);
 
 			return found;
-		}		vector<ZoneEntity *> Plane::SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, ZoneEntity *ignore)
+		}
+		vector<ZoneEntity *> Plane::SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, ZoneEntity *ignore)
 		{
 			vector<ZoneEntity *> found;
 
@@ -427,7 +428,7 @@ namespace ce
 			{
 				int X = (int)floor(startX / m_zoneSize);
 				int MinY = (int)floor(startY / m_zoneSize);
-				int MaxY = (int)floor(endY / m_zoneSize);
+				int MaxY = (int)ceil(endY / m_zoneSize);
 				if(MinY > MaxY)
 					swap(MinY, MaxY);
 				if(MinY < 0)
@@ -442,11 +443,11 @@ namespace ce
 					searchZones.push_back(m_zones[X][a]);
 			}
 			//- handle the horizonal line case -
-			else if(!(endY - startX))
+			else if(!(endY - startY))
 			{
 				int Y = (int)floor(startY / m_zoneSize);
 				int MinX = (int)floor(startX / m_zoneSize);
-				int MaxX = (int)floor(endX / m_zoneSize);
+				int MaxX = (int)ceil(endX / m_zoneSize);
 				if(MinX > MaxX)
 					swap(MinX, MaxX);
 				if(MinX < 0)
@@ -465,7 +466,7 @@ namespace ce
 			{
 				float slope = (endY - startY) / (endX - startX);
 				int MinX = (int)floor(startX / m_zoneSize);
-				int MaxX = (int)floor(endX / m_zoneSize);
+				int MaxX = (int)ceil(endX / m_zoneSize);
 				if(MinX > MaxX)
 					swap(MinX, MaxX);
 				if(MinX < 0)

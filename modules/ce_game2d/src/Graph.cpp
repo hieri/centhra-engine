@@ -388,5 +388,13 @@ namespace ce
 			m_neighbors.clear();
 			m_neighborDistances.clear();
 		}
+		Vector2<float> Graph::Node::GetPosition() const
+		{
+			return m_position;
+		}
+		vector<Graph::Node *> Graph::Node::GetNeighbors() const
+		{
+			return m_neighbors;
+		}
 	}
 }

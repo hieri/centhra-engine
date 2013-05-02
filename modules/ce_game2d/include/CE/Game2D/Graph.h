@@ -36,7 +36,9 @@ namespace ce
 				void AddNeighbor(Node *node);
 				void RemoveNeighbor(Node *node);
 				bool IsNeighbor(Node *node) const;
+				std::vector<Node *> GetNeighbors() const;
 				void ClearNeighbors();
+				Vector2<float> GetPosition() const;
 
 				friend class Graph;
 			};

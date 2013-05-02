@@ -55,7 +55,7 @@ public:
 	void OnStarted()
 	{
 		srand(GetRunTimeMS());
-		m_canvas = Canvas::Create(640, 480, "500 - 2D Collision");
+		m_canvas = Canvas::Create(640, 480, "510 - 2D Line Segment Search");
 		m_plane = new game2d::Plane(16, 16, 64.f);
 		m_entity = new game2d::ZoneEntity(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
 		m_plane->Place(m_entity);

@@ -275,36 +275,84 @@ namespace ce
 		{
 			Vector2<float> _min(min(startX, endX), min(startY, endY)), _max(max(startX, endX), max(startY, endY));
 			vector<ZoneEntity *> found;
-			
-			if(startX > endX)
+
+			//- handle the vertical line case -
+			if(!(endX - startX))
 			{
-				swap(startX, endX);
-				swap(startY, endY);
+				for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+				{
+					ZoneEntity *entity = *it;
+					if(entity->m_collisionMask & mask)
+						if(entity != ignore)
+							if(entity->CollidesWith(_min, _max))
+							{
+								Vector2<float> position = entity->GetPosition();
+								Vector2<float> extent = entity->GetExtent();
+
+								float _startY = position[1];
+								float _endY = _startY + extent[1];
+
+								Vector2<float> rMin(_min[0], _startY), rMax(_max[0], _endY);
+
+								if(entity->CollidesWith(rMin, rMax))
+									found.push_back(entity);
+							}
+				}
 			}
-
-			//- TODO: Handle vertical lines differently -
-			float slope = (endY - startY) / (endX - startX);
-
-			for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+			//- handle the horizontal line case -
+			else if(!(endY - startY))
 			{
-				ZoneEntity *entity = *it;
-				if(entity->m_collisionMask & mask)
-					if(entity != ignore)
-						if(entity->CollidesWith(_min, _max))
-						{
-							Vector2<float> position = entity->GetPosition();
-							Vector2<float> extent = entity->GetExtent();
+				for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+				{
+					ZoneEntity *entity = *it;
+					if(entity->m_collisionMask & mask)
+						if(entity != ignore)
+							if(entity->CollidesWith(_min, _max))
+							{
+								Vector2<float> position = entity->GetPosition();
+								Vector2<float> extent = entity->GetExtent();
 
-							float _startX = position[0];
-							float _startY = startY + (_startX - startX) * slope;
-							float _endX = position[0] + extent[0];
-							float _endY = startY + (_endX - startX) * slope;
+								float _startX = position[0];
+								float _endX = _startX + extent[0];
 
-							Vector2<float> rMin(min(_startX, _endX), min(_startY, _endY)), rMax(max(_startX, _endX), max(_startY, _endY));
+								Vector2<float> rMin(_startX, _min[1]), rMax(_endX, _max[1]);
 
-							if(entity->CollidesWith(rMin, rMax))
-								found.push_back(entity);
-						}
+								if(entity->CollidesWith(rMin, rMax))
+									found.push_back(entity);
+							}
+				}
+			}
+			//- handle the diagonal line case -
+			else
+			{
+				if(startX > endX)
+				{
+					swap(startX, endX);
+					swap(startY, endY);
+				}
+
+				float slope = (endY - startY) / (endX - startX);
+				for(vector<ZoneEntity *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+				{
+					ZoneEntity *entity = *it;
+					if(entity->m_collisionMask & mask)
+						if(entity != ignore)
+							if(entity->CollidesWith(_min, _max))
+							{
+								Vector2<float> position = entity->GetPosition();
+								Vector2<float> extent = entity->GetExtent();
+
+								float _startX = position[0];
+								float _startY = startY + (_startX - startX) * slope;
+								float _endX = position[0] + extent[0];
+								float _endY = startY + (_endX - startX) * slope;
+
+								Vector2<float> rMin(min(_startX, _endX), min(_startY, _endY)), rMax(max(_startX, _endX), max(_startY, _endY));
+
+								if(entity->CollidesWith(rMin, rMax))
+									found.push_back(entity);
+							}
+				}
 			}
 
 			return found;

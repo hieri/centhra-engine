@@ -35,6 +35,8 @@ namespace ce
 				glScalef((float)m_extent[0], (float)m_extent[1], 0.f);
 				if(m_image)
 				{
+					glEnable(GL_BLEND);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 					glEnable(GL_TEXTURE_2D);
 						m_image->Bind();
 						glBegin(GL_QUADS);
@@ -51,6 +53,7 @@ namespace ce
 							glVertex2i(0, 1);
 						glEnd();
 					glDisable(GL_TEXTURE_2D);
+					glDisable(GL_BLEND);
 				}
 				glColor4ub(255, 255, 255, 255);
 			glPopMatrix();

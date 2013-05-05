@@ -1,3 +1,7 @@
+//- Standard Library -
+#include <stdarg.h>
+#include <string>
+
 //- Centhra Engine -
 #include <CE/UI/TextCtrl.h>
 #include <CE/Base.h>
@@ -7,10 +11,19 @@ using namespace std;
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
+	#define snprintf _snprintf_s
+	#define vsnprintf _vsnprintf_s
 #endif
 
 //- OpenGL -
 #include <GL/gl.h>
+
+string compileMessage(const char *format, va_list ap)
+{
+	char text[256];
+	vsnprintf(text, 256, format, ap);
+	return string(text);
+}
 
 namespace ce
 {
@@ -29,9 +42,12 @@ namespace ce
 		{
 			return m_font;
 		}
-		void TextCtrl::SetText(const char *text)
+		void TextCtrl::SetText(const char *format, ...)
 		{
-			m_text = string(text);
+			va_list	ap;
+			va_start(ap, format);
+			m_text  = compileMessage(format, ap);
+			va_end(ap);
 		}
 		const char *TextCtrl::GetText() const
 		{

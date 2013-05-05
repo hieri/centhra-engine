@@ -26,7 +26,7 @@ namespace ce
 			Font *GetFont() const;
 			void SetFont(Font *font);
 			const char *GetText() const;
-			void SetText(const char *text);
+			void SetText(const char *format, ...);
 		};
 	}
 }

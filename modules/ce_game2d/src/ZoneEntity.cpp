@@ -185,7 +185,7 @@ namespace ce
 		void ZoneEntity::DoRender()
 		{
 			glColor3ub(m_color[0], m_color[1], m_color[2]);
-			glTranslatef(m_position[0], m_position[1], 0.f);
+			glTranslatef(m_position[0], m_position[1], -m_position[1]);
 			glScalef(m_extent[0], m_extent[1], 1.f);
 			RenderSquare();
 			glColor3ub(255, 255, 255);

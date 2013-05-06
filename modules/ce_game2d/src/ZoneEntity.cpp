@@ -163,7 +163,7 @@ namespace ce
 			m_velocity = Vector2<float>(0.f, 0.f);
 			m_movePadding = Vector2<float>(1.f, 1.f);
 			m_canMove[0] = m_canMove[1] = true;
-			m_collisionMask |= 1;
+			m_collisionMask = 1;
 
 			for(int a = 0; a < CE_ZONEENTITY_CACHESIZE; a++)
 				m_cache[a] = false;

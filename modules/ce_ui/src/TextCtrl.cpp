@@ -1,12 +1,16 @@
 //- Standard Library -
 #include <stdarg.h>
+#include <stdio.h>
 #include <string>
 
 //- Centhra Engine -
 #include <CE/UI/TextCtrl.h>
 #include <CE/Base.h>
 
-using namespace std;
+#ifdef linux
+	//- Linux -
+	#include <unistd.h>
+#endif
 
 #ifdef _WIN32
 	//- Windows -
@@ -17,6 +21,8 @@ using namespace std;
 
 //- OpenGL -
 #include <GL/gl.h>
+
+using namespace std;
 
 string compileMessage(const char *format, va_list ap)
 {

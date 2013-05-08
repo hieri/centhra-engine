@@ -6,7 +6,7 @@
 
 namespace ce
 {
-	/**	@brief Image Data Structure Class
+	/**	@brief Font Data Structure Class
 	 */
 	class Font
 	{
@@ -27,14 +27,14 @@ namespace ce
 
 		/**	@brief File Constructor.
 		 *	@param file Path to font file.
-		 *	@return Image object or 0 if creation failed.
+		 *	@return Font object or 0 if creation failed.
 		 */
 		static Font *CreateFromFile(const char *file);
 
 		/**	@brief Memory Constructor.
 		 *	@param memory Address of font data.
 		 *	@param size Size of font data.
-		 *	@return Image object or 0 if creation failed.
+		 *	@return Font object or 0 if creation failed.
 		 */
 		static Font *CreateFromMemory(const unsigned char *memory, unsigned int size);
 
@@ -59,7 +59,6 @@ namespace ce
 		 *	@param verticalDpi The vertical dpi of a character.
 		 */
 		void SetCharSize(unsigned int width, unsigned int height, unsigned int horizontalDpi, unsigned int verticalDpi);
-
 
 		/**	@brief Returns the character height of the font.
 		 *	@return The character height of the Font.

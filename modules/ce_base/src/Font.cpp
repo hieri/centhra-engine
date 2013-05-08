@@ -22,7 +22,6 @@ FT_Library g_ftLibrary;
 
 namespace ce
 {
-	Font *Font::ms_default;
 	bool Font::Init()
 	{
 		if(!FT_Init_FreeType(&g_ftLibrary))

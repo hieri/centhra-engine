@@ -65,6 +65,14 @@ namespace ce
 		 */
 		bool Stop(bool force = false);
 
+		/**	@brief Called when the applicatio outputs an error message.
+		 */
+		virtual void OnError(const char *str);
+
+		/**	@brief Called when the applicatio outputs a message.
+		 */
+		virtual void OnPrint(const char *str);
+
 		/**	@brief Called when the application run cycle is processed.
 		 *	@return Whether or not the application should keep running.
 		 */
@@ -89,8 +97,8 @@ namespace ce
 		 */
 		virtual void OnStopped();
 
-		virtual void OnError(const char *str);
-		virtual void OnPrint(const char *str);
+		/**	@brief Called when the applicatio outputs a warning message.
+		 */
 		virtual void OnWarn(const char *str);
 	};
 }

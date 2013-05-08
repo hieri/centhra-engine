@@ -104,6 +104,43 @@ public:
 			float dt = (float)(t - m_lastProcess) / 1000.f;
 			m_lastProcess = t;
 
+			Vector2<float> dif;
+			if(w)
+				dif[1] += 1.f;
+			if(a)
+				dif[0] -= 1.f;
+			if(s)
+				dif[1] -= 1.f;
+			if(d)
+				dif[0] += 1.f;
+			dif *= 256.f;
+			m_entity->SetVelocity(dif);
+
+			
+			Vector2<float> origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
+//				origin = Vector2<float>(512.f, 512.f);
+
+			for(int a = 0; a < NUMRANDOMS; a++)
+			{
+				Vector2<float> pos = m_randoms[a]->GetPosition();
+//				Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
+//				Vector2<float> vel = m_randoms[a]->GetVelocity();
+//				Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
+				Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
+//				vel /= vel.GetLength();
+//				vel *= 64.f;
+
+				if(pos[0] > 1008.f && vel[0] > 0)
+					vel[0] *= -1.f;
+				if(pos[0] < 0.f && vel[0] < 0)
+					vel[0] *= -1.f;
+				if(pos[1] > 1008.f && vel[1] > 0)
+					vel[1] *= -1.f;
+				if(pos[1] < 0.f && vel[1] < 0)
+					vel[1] *= -1.f;
+				m_randoms[a]->SetVelocity(vel);
+			}
+
 			m_plane->ProcessPhysics(dt);
 			m_plane->RemoveDead();
 			game2d::Entity::DeleteDead();
@@ -127,7 +164,6 @@ public:
 		delete m_canvas;
 	}
 
-	Vector2<float> origin;
 	bool OnEvent(Event &event)
 	{
 //		float x, y;
@@ -174,30 +210,6 @@ public:
 			}
 			break;
 		case event::PostRender:
-			origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
-//				origin = Vector2<float>(512.f, 512.f);
-
-			for(int a = 0; a < NUMRANDOMS; a++)
-			{
-				Vector2<float> pos = m_randoms[a]->GetPosition();
-//				Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
-//				Vector2<float> vel = m_randoms[a]->GetVelocity();
-//				Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
-				Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
-//				vel /= vel.GetLength();
-//				vel *= 64.f;
-
-				if(pos[0] > 1008.f && vel[0] > 0)
-					vel[0] *= -1.f;
-				if(pos[0] < 0.f && vel[0] < 0)
-					vel[0] *= -1.f;
-				if(pos[1] > 1008.f && vel[1] > 0)
-					vel[1] *= -1.f;
-				if(pos[1] < 0.f && vel[1] < 0)
-					vel[1] *= -1.f;
-				m_randoms[a]->SetVelocity(vel);
-			}
-				
 			m_view->Render();
 			break;
 		case event::WindowResize:

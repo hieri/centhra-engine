@@ -313,7 +313,7 @@ namespace ce
 		Scan_O,
 		Scan_P,
 		Scan_BracketLeft,
-		Scan_BracketRight,-
+		Scan_BracketRight,
 		Scan_Return,
 		Scan_ControlLeft,
 		Scan_A,

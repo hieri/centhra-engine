@@ -213,15 +213,23 @@ namespace ce
 		{
 			m_extent = extent;
 			UpdatePosition();
+			OnSetExtent();
 		}
 		void Control::SetPosition(Vector2<int> position)
 		{
 			m_position = position;
 			UpdatePosition();
+			OnSetPosition();
 		}
 		bool Control::OnEvent(Event &event)
 		{
 			return true;
+		}
+		void Control::OnSetExtent()
+		{
+		}
+		void Control::OnSetPosition()
+		{
 		}
 	}
 }

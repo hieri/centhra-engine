@@ -26,8 +26,8 @@ using namespace std;
 
 string compileMessage(const char *format, va_list ap)
 {
-	char text[256];
-	vsnprintf(text, 256, format, ap);
+	char text[4096];
+	vsnprintf(text, 4096, format, ap);
 	return string(text);
 }
 

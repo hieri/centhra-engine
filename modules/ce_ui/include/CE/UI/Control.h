@@ -43,6 +43,8 @@ namespace ce
 			void SetPosition(Vector2<int> position);
 			void SetExtent(Vector2<int> extent);
 			virtual bool OnEvent(Event &event);
+			virtual void OnSetPosition();
+			virtual void OnSetExtent();
 		};
 	}
 }

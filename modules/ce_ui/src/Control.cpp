@@ -25,6 +25,82 @@ namespace ce
 			m_parent = 0;
 			m_position = position;
 			m_extent = extent;
+			UpdatePosition();
+		}
+		void Control::UpdatePosition()
+		{
+			m_absolutePosition = m_position;
+			if(m_parent)
+				m_absolutePosition += m_parent->m_absolutePosition;
+			
+			int cx = m_position[0];
+			int cy = m_position[1];
+			int cw = m_extent[0];
+			int ch = m_extent[1];
+			
+			if(m_parent)
+			{
+				cx = m_absolutePosition[0];
+				cy = m_absolutePosition[1];
+
+				if(cx > (m_parent->m_exposurePosition[0] + m_parent->m_exposureExtent[0]))
+					cx = m_parent->m_exposurePosition[0] + m_parent->m_exposureExtent[0];
+				if(cy > (m_parent->m_exposurePosition[1] + m_parent->m_exposureExtent[1]))
+					cy = m_parent->m_exposurePosition[1] + m_parent->m_exposureExtent[1];
+				if(cx < m_parent->m_exposurePosition[0])
+					cx = m_parent->m_exposurePosition[0];
+				if(cy < m_parent->m_exposurePosition[1])
+					cy = m_parent->m_exposurePosition[1];
+			}
+			
+		//	if(cx > game::windowWidth)
+		//		cx = game::windowWidth;
+		//	if(cy > game::windowHeight)
+		//		cy = game::windowWidth;
+			if(cx < 0)
+				cx = 0;
+			if(cy < 0)
+				cy = 0;
+			
+			if(m_parent)
+			{
+				cw = m_parent->m_exposurePosition[0] + m_parent->m_exposureExtent[0] - cx;
+				ch = m_parent->m_exposurePosition[1] + m_parent->m_exposureExtent[1] - cy;
+				
+				if(cw > m_extent[0])
+					cw = m_extent[0];
+				if(ch > m_extent[1])
+					ch = m_extent[1];
+				if((cx + cw) > (m_absolutePosition[0] + m_extent[0]))
+					cw = m_absolutePosition[0] + m_extent[0] - cx;
+				if((cy + ch) > (m_absolutePosition[1] + m_extent[1]))
+					ch = m_absolutePosition[1] + m_extent[1] - cy;
+			}
+			else
+			{
+				if(m_position[0] < 0)
+					cx += m_position[0];
+				if(m_position[1] < 0)
+					cy += m_position[1];
+			}
+		//	if((cx + _cw) > game::windowWidth)
+		//		cx = game::windowWidth - _cw;
+		//	if((cy + _ch) > game::windowHeight)
+		//		cy = game::windowHeight - _ch;
+			if(cx < 0)
+				cx = 0;
+			if(cy < 0)
+				cy = 0;
+			if(cx < 0)
+				cx = 0;
+			if(cy < 0)
+				cy = 0;
+
+			m_exposurePosition = Vector2<int>(cx, cy);
+			m_exposureExtent = Vector2<int>(cw, ch);
+			
+			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+				(*it)->UpdatePosition();
 		}
 		void Control::Add(Control *control)
 		{
@@ -36,6 +112,7 @@ namespace ce
 							control->m_parent->Remove(control);
 						m_children.push_back(control);
 						control->m_parent = this;
+						control->UpdatePosition();
 					}
 		}
 		bool Control::Contains(Control *control)
@@ -80,22 +157,30 @@ namespace ce
 				vector<Control *>::iterator it = find(m_children.begin(), m_children.end(), control);
 				if(it != m_children.end())
 				{
-					(*it)->m_parent = 0;
+					Control *control = *it;
+					control->m_parent = 0;
 					m_children.erase(it);
+					control->UpdatePosition();
 				}
 			}
 		}
 		void Control::Render()
 		{
+			bool noParent = !m_parent;
+			if(noParent)
+				glEnable(GL_SCISSOR_TEST);
 			if(m_isVisible)
 			{
 				glPushMatrix();
+				glScissor(m_exposurePosition[0], m_exposurePosition[1], m_exposureExtent[0], m_exposureExtent[1]);
 				glTranslatef((float)m_position[0], (float)m_position[1], 0);
 				DoRender();
 				for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 					(*it)->Render();
 				glPopMatrix();
 			}
+			if(noParent)
+				glDisable(GL_SCISSOR_TEST);
 		}
 		void Control::DoRender()
 		{
@@ -112,13 +197,27 @@ namespace ce
 		{
 			return m_position;
 		}
+		Vector2<int> Control::GetAbsolutePosition() const
+		{
+			return m_absolutePosition;
+		}
+		Vector2<int> Control::GetExposurePosition() const
+		{
+			return m_exposurePosition;
+		}
+		Vector2<int> Control::GetExposureExtent() const
+		{
+			return m_exposureExtent;
+		}
 		void Control::SetExtent(Vector2<int> extent)
 		{
 			m_extent = extent;
+			UpdatePosition();
 		}
 		void Control::SetPosition(Vector2<int> position)
 		{
 			m_position = position;
+			UpdatePosition();
 		}
 		bool Control::OnEvent(Event &event)
 		{

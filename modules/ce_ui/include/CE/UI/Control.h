@@ -18,8 +18,9 @@ namespace ce
 			bool m_isVisible;
 			Control *m_parent;
 			std::vector<Control *> m_children;
-			Vector2<int> m_position, m_extent;
+			Vector2<int> m_position, m_extent, m_absolutePosition, m_exposurePosition, m_exposureExtent;
 
+			void UpdatePosition();
 			virtual void DoRender();
 
 		public:
@@ -36,6 +37,9 @@ namespace ce
 			void SetVisible(bool isVisible);
 			Vector2<int> GetPosition() const;
 			Vector2<int> GetExtent() const;
+			Vector2<int> GetAbsolutePosition() const;
+			Vector2<int> GetExposurePosition() const;
+			Vector2<int> GetExposureExtent() const;
 			void SetPosition(Vector2<int> position);
 			void SetExtent(Vector2<int> extent);
 			virtual bool OnEvent(Event &event);

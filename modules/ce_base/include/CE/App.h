@@ -97,7 +97,7 @@ namespace ce
 		 */
 		virtual void OnStopped();
 
-		/**	@brief Called when the applicatio outputs a warning message.
+		/**	@brief Called when the application outputs a warning message.
 		 */
 		virtual void OnWarn(const char *str);
 	};

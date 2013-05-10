@@ -32,6 +32,8 @@ namespace ce
 		{
 			glPushMatrix();
 				glColor4ubv(&m_color[0]);
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				glScalef((float)m_extent[0], (float)m_extent[1], 0.f);
 				glBegin(GL_QUADS);
 					glVertex2i(0, 0);
@@ -39,6 +41,7 @@ namespace ce
 					glVertex2i(1, 1);
 					glVertex2i(0, 1);
 				glEnd();
+				glDisable(GL_BLEND);
 				glColor4ub(255, 255, 255, 255);
 			glPopMatrix();
 		}

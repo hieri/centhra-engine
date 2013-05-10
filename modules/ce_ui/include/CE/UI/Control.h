@@ -25,6 +25,7 @@ namespace ce
 
 		public:
 			Control(Vector2<int> position, Vector2<int> extent);
+			~Control();
 
 			void Add(Control *control);
 			void Remove(Control *control);

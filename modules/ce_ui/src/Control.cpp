@@ -27,6 +27,13 @@ namespace ce
 			m_extent = extent;
 			UpdatePosition();
 		}
+		Control::~Control()
+		{
+			if(m_parent)
+				m_parent->Remove(this);
+			while(m_children.size())
+				delete m_children.back();
+		}
 		void Control::UpdatePosition()
 		{
 			m_absolutePosition = m_position;

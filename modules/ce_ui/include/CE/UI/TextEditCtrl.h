@@ -10,13 +10,16 @@ namespace ce
 	{
 		class TextEditCtrl : public TextCtrl
 		{
-		protected:
+			//- Temp Vars - Will be removed with abstraction -
+			bool m_leftShift, m_rightShift;
 
+		protected:
 			virtual void DoRender();
 
 		public:
 			TextEditCtrl(Vector2<int> position, Vector2<int> extent, Font *font, const char *text = "", Color color = Color());
 
+			virtual bool OnEvent(Event &event);
 		};
 	}
 }

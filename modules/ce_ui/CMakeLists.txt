@@ -9,6 +9,7 @@ set(INC
 	${INC_DIR}/UI/ColorCtrl.h
 	${INC_DIR}/UI/ImageCtrl.h
 	${INC_DIR}/UI/TextCtrl.h
+	${INC_DIR}/UI/TextEditCtrl.h
 )
 
 set(SRC
@@ -17,6 +18,7 @@ set(SRC
 	${SRC_DIR}/ColorCtrl.cpp
 	${SRC_DIR}/ImageCtrl.cpp
 	${SRC_DIR}/TextCtrl.cpp
+	${SRC_DIR}/TextEditCtrl.cpp
 )
 
 configure_file(include/CE/ConfigUI.h.in include/CE/ConfigUI.h)

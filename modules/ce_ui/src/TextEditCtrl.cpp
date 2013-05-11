@@ -20,6 +20,8 @@ namespace ce
 	{
 		TextEditCtrl::TextEditCtrl(Vector2<int> position, Vector2<int> extent, Font *font, const char *text, Color color) : TextCtrl(position, extent, font, text, color)
 		{
+			m_leftShift = false;
+			m_rightShift = false;
 		}
 		void TextEditCtrl::DoRender()
 		{

@@ -47,6 +47,13 @@ namespace ce
 		 */
 		static Image *CreateFromPixels(char *pixels, unsigned char bytesPerPixel, Vector2<unsigned int> size);
 
+		/**	@brief Screenshot Constructor.
+		 *	@param start Start point of the screen.
+		 *	@param end End point of the screen.
+		 *	@return Image object or 0 if creation failed.
+		 */
+		static Image *CreateFromScreen(Vector2<unsigned int> start, Vector2<unsigned int> end);
+
 		/**	@brief Destructor.
 		 */
 		~Image();

@@ -10,7 +10,7 @@ namespace ce
 	{
 		class Entity
 		{
-			static std::vector<Entity *> ms_dead;
+			static std::vector<Entity *> ms_alive, ms_dead;
 
 			bool m_isDead;
 
@@ -20,6 +20,7 @@ namespace ce
 
 		public:
 			static void DeleteDead();
+			static void Process(float dt);
 
 			Entity();
 			~Entity();
@@ -28,6 +29,7 @@ namespace ce
 			void Kill();
 			void Render();
 
+			virtual void OnProcess(float dt);
 		};
 	}
 }

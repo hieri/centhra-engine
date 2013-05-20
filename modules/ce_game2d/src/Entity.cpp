@@ -1,3 +1,6 @@
+//- Standard Library -
+#include <algorithm>
+
 //- Centhra Engine -
 #include <CE/Game2D/Entity.h>
 #include <CE/Base.h>

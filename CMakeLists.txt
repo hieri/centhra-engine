@@ -11,7 +11,7 @@ set(CE_BASE_USEWINTHREAD 1)
 set(CE_BASE_USEWINSOCKET 1)
 set(CE_FRONTEND_USEWIN 1)
 
-project(ce)
+project(centhra-engine)
 
 if(${WIN32})
 	set(IL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../DevIL/include/IL)

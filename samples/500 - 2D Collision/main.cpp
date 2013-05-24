@@ -5,7 +5,7 @@
 #include <CE/Game2D/Plane.h>
 #include <CE/Game2D/ZoneEntity.h>
 #include <CE/Game2D/ZoneCamera.h>
-#include <CE/UI/GameView2D.h>
+#include <CE/UI/GameView2DCtrl.h>
 #include <CE/Thread.h>
 
 //- Standard Library -
@@ -23,7 +23,7 @@ class AppTest : public AppFrontend
 	Canvas *m_canvas;
 	game2d::ZoneEntity *m_entity;
 	game2d::ZoneCamera *m_camera;
-	ui::GameView2D *m_view;
+	ui::GameView2DCtrl *m_view;
 	bool w,a,s,d;
 	game2d::ZoneEntity **m_randoms;
 	unsigned long m_lastProcess;
@@ -62,8 +62,8 @@ public:
 		m_camera = new game2d::ZoneCamera();
 		m_camera->SetFocus(m_entity);
 
-		m_view = new ui::GameView2D(Vector2<int>(0, 0), Vector2<int>(640, 480));
-//		m_view = new ui::GameView2D(Vector2<int>(0, 0), Vector2<int>(1366, 768));
+		m_view = new ui::GameView2DCtrl(Vector2<int>(0, 0), Vector2<int>(640, 480));
+//		m_view = new ui::GameView2DCtrl(Vector2<int>(0, 0), Vector2<int>(1366, 768));
 		m_view->SetCamera(m_camera);
 
 		m_entity->SetCollisionMask(0);

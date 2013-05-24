@@ -1,5 +1,5 @@
-#ifndef _CE_UI_GAMEVIEW2D_H_
-#define _CE_UI_GAMEVIEW2D_H_
+#ifndef _CE_UI_GAMEVIEW2DCTRL_H_
+#define _CE_UI_GAMEVIEW2DCTRL_H_
 
 //- Centhra Engine -
 #include <CE/UI/Control.h>
@@ -9,7 +9,7 @@ namespace ce
 {
 	namespace ui
 	{
-		class GameView2D : public Control
+		class GameView2DCtrl : public Control
 		{
 			game2d::ZoneCamera *m_camera;
 			Vector2<float> m_viewScale;
@@ -18,11 +18,11 @@ namespace ce
 			virtual void DoRender();
 
 		public:
-			GameView2D(Vector2<int> position, Vector2<int> extent);
+			GameView2DCtrl(Vector2<int> position, Vector2<int> extent);
 
 			game2d::ZoneCamera *GetCamera() const;
-			void SetCamera(game2d::ZoneCamera *camera);
 			Vector2<float> GetViewScale() const;
+			void SetCamera(game2d::ZoneCamera *camera);
 			void SetViewScale(Vector2<float> viewScale);
 		};
 	}

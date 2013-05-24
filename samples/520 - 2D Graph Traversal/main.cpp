@@ -6,7 +6,7 @@
 #include <CE/Game2D/ZoneEntity.h>
 #include <CE/Game2D/ZoneCamera.h>
 #include <CE/Game2D/Graph.h>
-#include <CE/UI/GameView2D.h>
+#include <CE/UI/GameView2DCtrl.h>
 
 //- Standard Library -
 #include <stdlib.h>
@@ -70,7 +70,7 @@ class AppTest : public AppFrontend
 	Canvas *m_canvas;
 	game2d::ZoneEntity *m_entity, *m_walls[3];
 	game2d::ZoneCamera *m_camera;
-	ui::GameView2D *m_view;
+	ui::GameView2DCtrl *m_view;
 	Vector2<float> m_pointA, m_pointB;
 	std::vector<Vector2<float> > m_path;
 	NodeEntity *m_nodeEntities[10];
@@ -109,7 +109,7 @@ public:
 		m_camera = new game2d::ZoneCamera();
 		m_camera->SetFocus(m_entity);
 
-		m_view = new ui::GameView2D(Vector2<int>(0, 0), Vector2<int>(640, 480));
+		m_view = new ui::GameView2DCtrl(Vector2<int>(0, 0), Vector2<int>(640, 480));
 		m_view->SetCamera(m_camera);
 
 		m_nodes[0] = new game2d::Graph::Node(ce::Vector2<float>(128.f, 128.f));

@@ -1,5 +1,5 @@
 //- Centhra Engine -
-#include <CE/UI/GameView2D.h>
+#include <CE/UI/GameView2DCtrl.h>
 #include <CE/Game2D/Zone.h>
 #include <CE/Game2D/Plane.h>
 #include <CE/Base.h>
@@ -16,20 +16,20 @@ namespace ce
 {
 	namespace ui
 	{
-		GameView2D::GameView2D(Vector2<int> position, Vector2<int> extent) : Control(position, extent)
+		GameView2DCtrl::GameView2DCtrl(Vector2<int> position, Vector2<int> extent) : Control(position, extent)
 		{
 			m_camera = 0;
 			m_viewScale = Vector2<float>(1.f, 1.f);
 		}
-		game2d::ZoneCamera *GameView2D::GetCamera() const
+		game2d::ZoneCamera *GameView2DCtrl::GetCamera() const
 		{
 			return m_camera;
 		}
-		void GameView2D::SetCamera(game2d::ZoneCamera *camera)
+		void GameView2DCtrl::SetCamera(game2d::ZoneCamera *camera)
 		{
 			m_camera = camera;
 		}
-		void GameView2D::DoRender()
+		void GameView2DCtrl::DoRender()
 		{
 			if(m_camera)
 			{
@@ -60,11 +60,11 @@ namespace ce
 				}
 			}
 		}
-		Vector2<float> GameView2D::GetViewScale() const
+		Vector2<float> GameView2DCtrl::GetViewScale() const
 		{
 			return m_viewScale;
 		}
-		void GameView2D::SetViewScale(Vector2<float> viewScale)
+		void GameView2DCtrl::SetViewScale(Vector2<float> viewScale)
 		{
 			m_viewScale = viewScale;
 		}

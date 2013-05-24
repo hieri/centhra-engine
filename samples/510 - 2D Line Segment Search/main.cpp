@@ -5,7 +5,7 @@
 #include <CE/Game2D/Plane.h>
 #include <CE/Game2D/ZoneEntity.h>
 #include <CE/Game2D/ZoneCamera.h>
-#include <CE/UI/GameView2D.h>
+#include <CE/UI/GameView2DCtrl.h>
 
 //- Standard Library -
 #include <stdlib.h>
@@ -27,7 +27,7 @@ class AppTest : public AppFrontend
 	Canvas *m_canvas;
 	game2d::ZoneEntity *m_entity, **m_randoms;
 	game2d::ZoneCamera *m_camera;
-	ui::GameView2D *m_view;
+	ui::GameView2DCtrl *m_view;
 	Vector2<float> m_pointA, m_pointB;
 	bool w,a,s,d;
 	unsigned long m_lastProcess;
@@ -63,7 +63,7 @@ public:
 		m_camera = new game2d::ZoneCamera();
 		m_camera->SetFocus(m_entity);
 
-		m_view = new ui::GameView2D(Vector2<int>(0, 0), Vector2<int>(640, 480));
+		m_view = new ui::GameView2DCtrl(Vector2<int>(0, 0), Vector2<int>(640, 480));
 		m_view->SetCamera(m_camera);
 
 		m_randoms = new game2d::ZoneEntity *[NUMRANDOMS];

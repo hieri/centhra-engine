@@ -24,3 +24,4 @@ endif(${WIN32})
 
 add_subdirectory(modules)
 add_subdirectory(samples)
+add_subdirectory(plugins)

@@ -13,6 +13,8 @@ set(CE_FRONTEND_USEWIN 1)
 
 project(centhra-engine)
 
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
+
 if(${WIN32})
 	set(IL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../DevIL/include/IL)
 	set(IL_LIBRARIES ${PROJECT_SOURCE_DIR}/../DevIL/lib/DevIL.lib)
@@ -20,6 +22,8 @@ if(${WIN32})
 	set(ILUT_LIBRARIES ${PROJECT_SOURCE_DIR}/../DevIL/lib/ILUT.lib)
 	set(FREETYPE_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/../freetype2/include)
 	set(FREETYPE_LIBRARY ${PROJECT_SOURCE_DIR}/../freetype2/lib/freetype.lib)
+	set(BOX2D_LIBRARY ${PROJECT_SOURCE_DIR}/../Box2D/Build/vs2010/bin/Release/Box2D.lib)
+	set(BOX2D_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../Box2D)
 endif(${WIN32})
 
 add_subdirectory(modules)

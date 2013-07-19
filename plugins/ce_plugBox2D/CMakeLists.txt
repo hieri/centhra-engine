@@ -8,10 +8,15 @@ set(INC
 	${INC_DIR}/CE/Plugin/Box2D/Base.h
 )
 
+find_package(OpenGL REQUIRED)
+find_package(Box2D REQUIRED)
+
 set(INCLUDE
+	${CMAKE_CURRENT_SOURCE_DIR}/include
 	${PROJECT_SOURCE_DIR}/modules/ce_base/include
 	${PROJECT_SOURCE_DIR}/modules/ce_frontend/include
 	${PROJECT_SOURCE_DIR}/modules/ce_game2d/include
+	${BOX2D_INCLUDE_DIRS}
 )
 
 set(LIB
@@ -19,6 +24,7 @@ set(LIB
 	ce_frontend
 	ce_game2d
 	${OPENGL_LIBRARIES}
+	${BOX2D_LIBRARIES}
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")

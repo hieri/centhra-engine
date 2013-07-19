@@ -1,18 +1,25 @@
 #ifndef _CE_PLUGIN_BOX2D_BASE_H_
 #define _CE_PLUGIN_BOX2D_BASE_H_
 
+//- Centhra Engine -
+#include <CE/Plugin.h>
+
 namespace ce
 {
 	namespace plugin
 	{
-		class Box2D
+		class Box2D : public Plugin
 		{
 			static Box2D *ms_instance;
 
+		protected:
+			Box2D();
+
 		public:
 			static int Import();
-			static int Initialize();
-			static int Cleanup();
+
+			virtual int Initialize();
+			virtual int Cleanup();
 		};
 	}
 }

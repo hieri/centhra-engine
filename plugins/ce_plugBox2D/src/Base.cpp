@@ -9,18 +9,20 @@ namespace ce
 
 		Box2D::Box2D()
 		{
+			m_name = "Box2D";
+			m_type = Physics2D;
 		}
 		int Box2D::Import()
 		{
 			ms_instance = new Box2D();
-			RegisterPlugin(1, "Box2D", ms_instance);
+			Register(ms_instance);
 			return 0;
 		}
-		int Box2D::Initialize()
+		int Box2D::OnInitialize()
 		{
 			return 0;
 		}
-		int Box2D::Cleanup()
+		int Box2D::OnCleanup()
 		{
 			return 0;
 		}

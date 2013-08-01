@@ -18,8 +18,8 @@ namespace ce
 		public:
 			static int Import();
 
-			virtual int Initialize();
-			virtual int Cleanup();
+			virtual int OnInitialize();
+			virtual int OnCleanup();
 		};
 	}
 }

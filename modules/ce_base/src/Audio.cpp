@@ -1,5 +1,6 @@
 //- Centhra Engine -
 #include <CE/Audio.h>
+#include <CE/Plugin.h>
 
 #ifdef _WIN32
 	//- Windows -
@@ -19,6 +20,8 @@ namespace ce
 {
 	bool Audio::Init()
 	{
+		Plugin::InitializeByType(Plugin::Audio);
+
 		ALCdevice *alcDevice = alcOpenDevice(NULL);
 		if(!alcDevice)
 			return false;

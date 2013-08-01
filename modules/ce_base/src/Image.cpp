@@ -5,6 +5,7 @@
 //- Centhra Engine -
 #include <CE/Base.h>
 #include <CE/Image.h>
+#include <CE/Plugin.h>
 
 #ifdef _WIN32
 	//- Windows -
@@ -23,6 +24,8 @@ namespace ce
 {
 	bool Image::Init()
 	{
+		Plugin::InitializeByType(Plugin::Image);
+
 		ilInit();
 		iluInit();
 		return true;

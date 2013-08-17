@@ -36,18 +36,22 @@ namespace ce
 		{
 			m_physicsHandler = handler;
 			m_object = object;
+			object->m_objectHandle = this;
+			OnCreate();
 		}
 		PhysicsHandler::ObjectHandle::~ObjectHandle()
 		{
-		}
-		void PhysicsHandler::ObjectHandle::Attach(PhysicalObject *object)
-		{
-			object->m_objectHandle = this;
-		}
-		void PhysicsHandler::ObjectHandle::Detach()
-		{
+			OnDestroy();
 			if(m_object)
 				m_object->m_objectHandle = 0;
+		}
+		PhysicalObject *PhysicsHandler::ObjectHandle::GetObject() const
+		{
+			return m_object;
+		}
+		PhysicsHandler *PhysicsHandler::ObjectHandle::GetHandler() const
+		{
+			return m_physicsHandler;
 		}
 		void PhysicsHandler::ObjectHandle::OnCreate()
 		{

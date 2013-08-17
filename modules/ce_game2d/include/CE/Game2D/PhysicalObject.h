@@ -18,6 +18,7 @@ namespace ce
 			static unsigned int ms_lastID;
 
 			Vector2<float> m_position, m_extent, m_velocity;
+			float m_rotation;
 			Color m_color; //- TODO: Remove this after finished -
 			unsigned int m_id;
 			PhysicalGroup *m_parentGroup;
@@ -33,12 +34,14 @@ namespace ce
 			~PhysicalObject();
 
 			void Render();
+			float GetRotation() const;
 			Vector2<float> GetExtent() const;
 			Vector2<float> GetPosition() const;
 			Vector2<float> GetVelocity() const;
 			void SetExtent(Vector2<float> extent);
-			void SetPosition(Vector2<float> position);
+			void SetPosition(Vector2<float> position, bool updateHandle = true);
 			void SetVelocity(Vector2<float> velocity);
+			void SetRotation(float rotation);
 
 			PhysicsHandler::ObjectHandle *GetObjectHandle() const;
 			unsigned int GetCollisionMask() const;

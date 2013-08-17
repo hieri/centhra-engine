@@ -982,7 +982,6 @@ namespace ce
 				PhysicalObject *object = (PhysicalObject *)*it;
 
 				ObjectHandle *handle = new ObjectHandle(this, object);
-				handle->Attach(object);
 
 				m_plane->Place(handle);
 			}
@@ -1004,10 +1003,7 @@ namespace ce
 
 				ObjectHandle *handle = (ObjectHandle *)object->GetObjectHandle();
 				if(handle)
-				{
-					handle->Detach();
 					delete handle;
-				}
 			}
 
 			delete m_plane;

@@ -44,6 +44,9 @@ public:
 		case event::KeyDown:
 			print("Key Down: %d\n", event.key.keyCode);
 			break;
+		case event::KeyUp:
+			print("Key Up: %d\n", event.key.keyCode);
+			break;
 		case event::WindowResize:
 			print("Window Resize: %d %d\n", event.windowResize.width, event.windowResize.height);
 			break;

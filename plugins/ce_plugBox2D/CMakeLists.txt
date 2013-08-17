@@ -3,9 +3,11 @@ set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(SRC
 	${SRC_DIR}/Base.cpp
+	${SRC_DIR}/PhysicsHandler.cpp
 )
 set(INC
 	${INC_DIR}/CE/Plugin/Box2D/Base.h
+	${INC_DIR}/CE/Plugin/Box2D/PhysicsHandler.h
 )
 
 find_package(OpenGL REQUIRED)

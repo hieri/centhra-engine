@@ -38,8 +38,8 @@ namespace ce
 				virtual void OnSetVelocity();
 
 			public:
-				void Attach(PhysicalObject *object);
-				void Detach();
+				PhysicalObject *GetObject() const;
+				PhysicsHandler *GetHandler() const;
 
 				friend class PhysicalObject;
 			};

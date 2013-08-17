@@ -10,6 +10,10 @@
 	#include <Windows.h>
 #endif
 
+//- Standard Library -
+#include <stdlib.h>
+#include <time.h>
+
 //- Centhra Engine -
 #include <CE/Base.h>
 #include <CE/App.h>
@@ -79,6 +83,7 @@ namespace ce
 		if(m_isRunning)
 			return false;
 
+
 		SetCurrent();
 
 		m_isRunning = OnStart();
@@ -102,6 +107,9 @@ namespace ce
 				else
 					m_startTimeMS = GetTickCount();
 			#endif
+
+			//- TODO: Determine if this is bad to have by default -
+			srand(time(NULL));
 
 			OnStarted();
 		}

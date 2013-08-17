@@ -83,14 +83,6 @@ namespace ce
 			for(int a = _minX; a <= _maxX; a++)
 				for(int b = _minY; b <= _maxY; b++)
 					m_zones[a][b]->Render();
-*/
-/*
-			for(int a = _minX; a <= _maxX; a++)
-				for(int b = _minY; b <= _maxY; b++)
-					m_zones[a][b]->Render();
-			for(int a = _minX; a <= _maxX; a++)
-				for(int b = _minY; b <= _maxY; b++)
-					m_zones[a][b]->FinishRender();
 */		}
 		void Plane::Place(ZoneEntity *entity)
 		{

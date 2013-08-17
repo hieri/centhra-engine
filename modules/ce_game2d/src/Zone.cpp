@@ -191,14 +191,11 @@ namespace ce
 								if(!xCol && !yCol)
 									diagonals.push_back(entityB);
 								colCount++;
-
-								// TODO: Remove this temporary callback placement. It does not actually care if the entities truly collided.
-								entityA->OnCollision(entityB);
 							}
 						}
 					if((entityA->m_canMove[0] || entityA->m_canMove[1]) && diagonals.size())
 					{
-						//entityA->m_canMove[1] = false;
+//						entityA->m_canMove[1] = false;
 						entityA->m_canMove[0] = false;
 /*						for(vector<ZoneEntity *>::iterator itB = diagonals.begin(); itB != diagonals.end(); itB++)
 						{
@@ -220,21 +217,21 @@ namespace ce
 					entity->m_finishedPhysics = true;
 					Vector2<float> velocity = entity->GetVelocity();
 
-/*					if(!entity->m_canMove[0])
+					if(!entity->m_canMove[0])
 					{
-						if(entity->m_movePadding[0] > 0.1f)
+						if(entity->m_movePadding[0] > 0.05f)
 							entity->m_movePadding[0] /= 2.f;
 						else
 							entity->m_movePadding[0] = 0.1f;
 					}
 					if(!entity->m_canMove[1])
 					{
-						if(entity->m_movePadding[1] > 0.1f)
+						if(entity->m_movePadding[1] > 0.05f)
 							entity->m_movePadding[1] /= 2.f;
 						else
 							entity->m_movePadding[1] = 0.1f;
 					}
-*/
+
 					if(entity->m_canMove[0] || entity->m_canMove[1])
 					{
 						if(!entity->m_canMove[0])
@@ -244,16 +241,16 @@ namespace ce
 
 						entity->Move(entity->m_movement);
 
-/*						if(entity->m_canMove[0])
+						if(entity->m_canMove[0])
 							entity->m_movePadding[0] = 1.f;
 						if(entity->m_canMove[1])
 							entity->m_movePadding[1] = 1.f;
-*/					}
-	/*				if(!entity->m_canMove[0])
+					}
+					if(!entity->m_canMove[0])
 						entity->m_velocity[0] *= -1.f;
 					if(!entity->m_canMove[1])
 						entity->m_velocity[1] *= -1.f;
-	*/				entity->m_movement = Vector2<float>(0.f, 0.f);
+					entity->m_movement = Vector2<float>(0.f, 0.f);
 				}
 			}
 		}

@@ -4,11 +4,14 @@
 //- Standard Library -
 #include <vector>
 
+//- Centhra Engine -
+#include <CE/Group.h>
+
 namespace ce
 {
 	namespace game2d
 	{
-		class Entity
+		class Entity : public Group::Member
 		{
 			static std::vector<Entity *> ms_alive, ms_dead;
 

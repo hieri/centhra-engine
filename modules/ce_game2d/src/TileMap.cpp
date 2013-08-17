@@ -12,6 +12,8 @@
 
 using namespace std;
 
+//- TODO: Account for camera bounds during rendering -
+
 namespace ce
 {
 	namespace game2d

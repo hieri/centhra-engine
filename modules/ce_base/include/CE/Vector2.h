@@ -1,5 +1,5 @@
-#ifndef _CE_VECTOR2_H_
-#define _CE_VECTOR2_H_
+#ifndef _CE_BASE_VECTOR2_H_
+#define _CE_BASE_VECTOR2_H_
 
 //- Standard Library 
 #include <cassert>

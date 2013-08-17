@@ -1,5 +1,5 @@
-#ifndef _CE_THREAD_H_
-#define _CE_THREAD_H_
+#ifndef _CE_BASE_THREAD_H_
+#define _CE_BASE_THREAD_H_
 
 //- Standard Library -
 #include <stdlib.h>

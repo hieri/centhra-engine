@@ -11,6 +11,7 @@ set(INC
 	${INC_DIR}/Color.h
 	${INC_DIR}/ConfigBase.h
 	${INC_DIR}/Font.h
+	${INC_DIR}/Group.h
 	${INC_DIR}/Image.h
 	${INC_DIR}/Plugin.h
 	${INC_DIR}/Socket.h
@@ -23,6 +24,7 @@ set(SRC
 	${SRC_DIR}/Audio.cpp
 	${SRC_DIR}/Base.cpp
 	${SRC_DIR}/Font.cpp
+	${SRC_DIR}/Group.cpp
 	${SRC_DIR}/Image.cpp
 	${SRC_DIR}/Plugin.cpp
 	${SRC_DIR}/Socket.cpp

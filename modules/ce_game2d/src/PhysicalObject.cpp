@@ -1,8 +1,6 @@
-//- Centhra Engine -
-#include <CE/Game2D/Zone.h>
-#include <CE/Game2D/ZoneEntity.h>
-#include <CE/Game2D/Plane.h>
+//- Centhra Engine 
 #include <CE/Base.h>
+#include <CE/Game2D/PhysicalObject.h>
 
 //- Standard Library -
 #include <algorithm>
@@ -49,35 +47,9 @@ namespace ce
 {
 	namespace game2d
 	{
-		std::vector<ZoneEntity *> ZoneEntity::ms_cacheVectors[8];
-		void ZoneEntity::ClearCache(unsigned int idx)
-		{
-			std::vector<ZoneEntity *> &cacheVector = ms_cacheVectors[idx];
-			for(vector<ZoneEntity *>::iterator it = cacheVector.begin(); it != cacheVector.end(); it++)
-				(*it)->m_cache[idx] = false;
-			cacheVector.clear();
-		}
-
 		GLuint g_squareVBO = 0, g_squareEBO = 0;
-//		GLint g_squareList = 0;
 		void RenderSquare()
 		{
-/*
-			if(!g_squareList)
-			{
-				g_squareList = glGenLists(1);
-				glNewList(g_squareList, GL_COMPILE);
-					glBegin(GL_QUADS);
-						glVertex2f(0.f, 0.f);
-						glVertex2f(1.f, 0.f);
-						glVertex2f(1.f, 1.f);
-						glVertex2f(0.f, 1.f);
-					glEnd();
-				glEndList();
-			}
-			glCallLists(1, GL_UNSIGNED_BYTE, &g_squareList);
-*/
-
 			if(!g_squareVBO)
 			{
 				#ifdef _WIN32 // TODO: Remove this work around.
@@ -138,51 +110,37 @@ namespace ce
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 
 			glDisableClientState(GL_VERTEX_ARRAY);
-/*			
-			glBegin(GL_QUADS);
-				glVertex2f(0.f, 0.f);
-				glVertex2f(1.f, 0.f);
-				glVertex2f(1.f, 1.f);
-				glVertex2f(0.f, 1.f);
-			glEnd();
-*/		}
-		void ZoneEntity::Cleanup()
+		}
+		void PhysicalObject::Cleanup()
 		{
-//			glDeleteLists(g_squareList, 1);
 			glDeleteBuffers(1, &g_squareEBO);
 			glDeleteBuffers(1, &g_squareVBO);
 		}
 
-		unsigned int ZoneEntity::ms_lastID = -1;
-		ZoneEntity::ZoneEntity(Vector2<float> position, Vector2<float> extent)
+		unsigned int PhysicalObject::ms_lastID = -1;
+		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent)
 		{
 			m_position = position;
 			m_extent = extent;
-			m_startedPhysics = m_finishedPhysics = false;
 			m_color = Color(rand() % 256,  rand() % 256, rand() % 256);
 			m_velocity = Vector2<float>(0.f, 0.f);
-			m_movePadding = Vector2<float>(1.f, 1.f);
-			m_canMove[0] = m_canMove[1] = true;
 			m_collisionMask = 1;
-
-			for(int a = 0; a < CE_ZONEENTITY_CACHESIZE; a++)
-				m_cache[a] = false;
 
 			ms_lastID++;
 			m_id = ms_lastID;
+
+			m_parentGroup = 0;
 		}
-		ZoneEntity::~ZoneEntity()
+		PhysicalObject::~PhysicalObject()
 		{
-			for(vector<Zone *>::iterator it = m_zones.begin(); it != m_zones.end(); it++)
-				(*it)->Remove(this);
 		}
-		void ZoneEntity::Render()
+		void PhysicalObject::Render()
 		{
 			glPushMatrix();
 			DoRender();
 			glPopMatrix();
 		}
-		void ZoneEntity::DoRender()
+		void PhysicalObject::DoRender()
 		{
 			glColor3ub(m_color[0], m_color[1], m_color[2]);
 //			glTranslatef(m_position[0], m_position[1], -m_position[1]);
@@ -191,93 +149,40 @@ namespace ce
 			RenderSquare();
 			glColor3ub(255, 255, 255);
 		}
-		void ZoneEntity::AddZone(Zone *zone)
-		{
-			if(!ContainsZone(zone))
-				m_zones.push_back(zone);
-		}
-		bool ZoneEntity::ContainsZone(Zone *zone) const
-		{
-			return find(m_zones.begin(), m_zones.end(), zone) != m_zones.end();
-		}
-		void ZoneEntity::RemoveZone(Zone *zone)
-		{
-			vector<Zone *>::iterator it = find(m_zones.begin(), m_zones.end(), zone);
-			if(it != m_zones.end())
-				m_zones.erase(it);
-		}
-		Vector2<float> ZoneEntity::GetExtent() const
+		Vector2<float> PhysicalObject::GetExtent() const
 		{
 			return m_extent;
 		}
-		Vector2<float> ZoneEntity::GetPosition() const
+		Vector2<float> PhysicalObject::GetPosition() const
 		{
 			return m_position;
 		}
-		Vector2<float> ZoneEntity::GetVelocity() const
+		Vector2<float> PhysicalObject::GetVelocity() const
 		{
 			return m_velocity;
 		}
-		void ZoneEntity::SetExtent(Vector2<float> extent)
+		void PhysicalObject::SetExtent(Vector2<float> extent)
 		{
 			m_extent = extent;
 		}
-		void ZoneEntity::SetPosition(Vector2<float> position)
+		void PhysicalObject::SetPosition(Vector2<float> position)
 		{
 			m_position = position;
 		}
-		void ZoneEntity::SetVelocity(Vector2<float> velocity)
+		void PhysicalObject::SetVelocity(Vector2<float> velocity)
 		{
 			m_velocity = velocity;
 		}
-		vector<Zone *> &ZoneEntity::GetZones()
-		{
-			return m_zones;
-		}
-		void ZoneEntity::Move(Vector2<float> movement)
-		{
-			if(m_zones.size())
-				m_zones[0]->MoveEntity(this, movement);
-			else
-				m_position += movement;
-		}
-		bool ZoneEntity::CollidesWith(ZoneEntity *entity, Vector2<float> offsetA, Vector2<float> offsetB)
-		{
-			Vector2<float> aMin, aMax, bMin, bMax;
-			aMin = m_position + offsetA;
-			aMax = aMin + m_extent;
-			bMin = entity->m_position + offsetB;
-			bMax = bMin + entity->m_extent;
-
-			return aMin[0] < bMax[0] && aMin[1] < bMax[1] && bMin[0] < aMax[0] && bMin[1] < aMax[1];
-		}
-		bool ZoneEntity::CollidesWith(Vector2<float> boxMin, Vector2<float> boxMax, Vector2<float> offset)
-		{
-			Vector2<float> min, max;
-			min = m_position + offset;
-			max = min + m_extent;
-
-			return min[0] < boxMax[0] && min[1] < boxMax[1] && boxMin[0] < max[0] && boxMin[1] < max[1];
-		}
-		unsigned int ZoneEntity::GetCollisionMask() const
+		unsigned int PhysicalObject::GetCollisionMask() const
 		{
 			return m_collisionMask;
 		}
-		void ZoneEntity::SetCollisionMask(unsigned int mask)
+		void PhysicalObject::SetCollisionMask(unsigned int mask)
 		{
 			m_collisionMask = mask;
 		}
-		bool ZoneEntity::OnCollision(ZoneEntity *collider)
+		bool PhysicalObject::OnCollision(PhysicalObject *collider)
 		{
-			return true;
-		}
-		bool ZoneEntity::Cache(unsigned int idx)
-		{
-			if(m_cache[idx])
-				return false;
-
-			m_cache[idx] = true;
-			ms_cacheVectors[idx].push_back(this);
 			return true;
 		}
 	}

@@ -1,5 +1,5 @@
-#ifndef _CE_COLOR_H_
-#define _CE_COLOR_H_
+#ifndef _CE_BASE_COLOR_H_
+#define _CE_BASE_COLOR_H_
 
 //- Standard Library -
 #include <cassert>

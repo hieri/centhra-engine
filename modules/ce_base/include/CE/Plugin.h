@@ -1,5 +1,5 @@
-#ifndef _CE_PLUGIN_H_
-#define _CE_PLUGIN_H_
+#ifndef _CE_BASE_PLUGIN_H_
+#define _CE_BASE_PLUGIN_H_
 
 //- Standard Library -
 #include <string>

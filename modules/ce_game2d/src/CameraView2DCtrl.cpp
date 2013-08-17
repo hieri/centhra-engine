@@ -1,8 +1,7 @@
 //- Centhra Engine -
-#include <CE/UI/GameView2DCtrl.h>
-#include <CE/Game2D/Zone.h>
-#include <CE/Game2D/Plane.h>
 #include <CE/Base.h>
+#include <CE/UI/CameraView2DCtrl.h>
+#include <CE/Game2D/PhysicalGroup.h>
 
 #ifdef _WIN32
 	//- Windows -
@@ -16,24 +15,24 @@ namespace ce
 {
 	namespace ui
 	{
-		GameView2DCtrl::GameView2DCtrl(Vector2<int> position, Vector2<int> extent) : Control(position, extent)
+		CameraView2DCtrl::CameraView2DCtrl(Vector2<int> position, Vector2<int> extent) : Control(position, extent)
 		{
 			m_camera = 0;
 			m_viewScale = Vector2<float>(1.f, 1.f);
 		}
-		game2d::ZoneCamera *GameView2DCtrl::GetCamera() const
+		game2d::Camera *CameraView2DCtrl::GetCamera() const
 		{
 			return m_camera;
 		}
-		void GameView2DCtrl::SetCamera(game2d::ZoneCamera *camera)
+		void CameraView2DCtrl::SetCamera(game2d::Camera *camera)
 		{
 			m_camera = camera;
 		}
-		void GameView2DCtrl::DoRender()
+		void CameraView2DCtrl::DoRender()
 		{
 			if(m_camera)
 			{
-				game2d::ZoneEntity *focus = m_camera->GetFocus();
+				game2d::PhysicalObject *focus = m_camera->GetFocus();
 				if(focus)
 				{
 					Vector2<float> focusPosition = focus->GetPosition();
@@ -45,6 +44,9 @@ namespace ce
 						Vector2<float> focusHalf = focusExtent / 2.f;
 						glTranslatef(half[0] - m_viewScale[0] * (focusPosition[0] + focusHalf[0]), half[1] - m_viewScale[1] * (focusPosition[1] + focusHalf[1]), 0.f);
 						glScalef(m_viewScale[0], m_viewScale[1], 1.f);
+
+						((game2d::PhysicalGroup *)focus->GetParentGroup())->Render();
+/*
 						game2d::Zone *zone = focus->GetZones()[0];
 						if(zone)
 						{
@@ -54,17 +56,18 @@ namespace ce
 							else
 								zone->Render();
 						}
+*/
 					glPopMatrix();
 					glClear(GL_DEPTH_BUFFER_BIT);
 					glDisable(GL_DEPTH_TEST);
 				}
 			}
 		}
-		Vector2<float> GameView2DCtrl::GetViewScale() const
+		Vector2<float> CameraView2DCtrl::GetViewScale() const
 		{
 			return m_viewScale;
 		}
-		void GameView2DCtrl::SetViewScale(Vector2<float> viewScale)
+		void CameraView2DCtrl::SetViewScale(Vector2<float> viewScale)
 		{
 			m_viewScale = viewScale;
 		}

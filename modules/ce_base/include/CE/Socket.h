@@ -1,5 +1,5 @@
-#ifndef _CE_SOCKET_H_
-#define _CE_SOCKET_H_
+#ifndef _CE_BASE_SOCKET_H_
+#define _CE_BASE_SOCKET_H_
 
 namespace ce
 {

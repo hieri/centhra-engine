@@ -696,8 +696,8 @@ namespace ce
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-//		gluOrtho2D(0.f, (float)width, 0.f, (float)height);
-		glOrtho(0.f, (float)width, 0.f, (float)height, 0.f, 10000.f);
+		gluOrtho2D(0.f, (float)width, 0.f, (float)height);
+//		glOrtho(0.f, (float)width, 0.f, (float)height, 0.f, 10000.f);
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();

@@ -1,5 +1,5 @@
-#ifndef CE_FONT_H
-#define CE_FONT_H
+#ifndef _CE_BASEFONT_H_
+#define _CE_BASE_FONT_H_
 
 //- Standard Library -
 #include <map>

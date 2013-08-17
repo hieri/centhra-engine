@@ -1,5 +1,5 @@
-#ifndef _CE_IMAGE_H_
-#define _CE_IMAGE_H_
+#ifndef _CE_BASE_IMAGE_H_
+#define _CE_BASE_IMAGE_H_
 
 //- Standard Library -
 #include <map>

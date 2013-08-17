@@ -1,5 +1,5 @@
-#ifndef _CE_APP_H_
-#define _CE_APP_H_
+#ifndef _CE_BASE_APP_H_
+#define _CE_BASE_APP_H_
 
 //- Standard Library -
 #include <map>

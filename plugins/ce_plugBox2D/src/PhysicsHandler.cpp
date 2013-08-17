@@ -19,6 +19,50 @@ namespace ce
 	{
 		namespace box2d
 		{
+			class B2D_BoxSearchCallback : public b2QueryCallback
+			{
+				vector<game2d::PhysicalObject *> m_currentBoxSearch;
+
+			public:
+				/// Called for each fixture found in the query AABB.
+				/// @return false to terminate the query.
+				virtual bool ReportFixture(b2Fixture *fixture)
+				{
+					m_currentBoxSearch.push_back((game2d::PhysicalObject *)fixture->GetBody()->GetUserData());
+					return true;
+				}
+				vector<game2d::PhysicalObject *> GetResults()
+				{
+					return m_currentBoxSearch;
+				}
+			};
+			class B2D_SegmentSearchCallback : public b2RayCastCallback
+			{
+				vector<game2d::PhysicalObject *> m_currentSegmentSearch;
+
+			public:
+				/// Called for each fixture found in the query. You control how the ray cast
+				/// proceeds by returning a float:
+				/// return -1: ignore this fixture and continue
+				/// return 0: terminate the ray cast
+				/// return fraction: clip the ray to this point
+				/// return 1: don't clip the ray and continue
+				/// @param fixture the fixture hit by the ray
+				/// @param point the point of initial intersection
+				/// @param normal the normal vector at the point of intersection
+				/// @return -1 to filter, 0 to terminate, fraction to clip the ray for
+				/// closest hit, 1 to continue
+				virtual float32 ReportFixture(	b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction)
+				{
+					m_currentSegmentSearch.push_back((game2d::PhysicalObject *)fixture->GetBody()->GetUserData());
+					return -1.f;
+				}
+				vector<game2d::PhysicalObject *> GetResults()
+				{
+					return m_currentSegmentSearch;
+				}
+			};
+
 			class Box2DSystem
 			{
 			public:
@@ -180,6 +224,43 @@ namespace ce
 			void *bPhysicsHandler::GetBox2DSystem() const
 			{
 				return m_b2d_system;
+			}
+			vector<game2d::PhysicalObject *> bPhysicsHandler::BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask, game2d::PhysicalObject *ignore)
+			{
+				b2World *world = 0;
+				if(m_b2d_system)
+				{
+					world = ((Box2DSystem *)m_b2d_system)->m_b2d_world;
+					if(world)
+					{
+						b2AABB box;
+						box.lowerBound.x = minX;
+						box.lowerBound.y = minY;
+						box.upperBound.x = maxX;
+						box.upperBound.y = maxY;
+						B2D_BoxSearchCallback callback;
+						world->QueryAABB(&callback, box);
+						return callback.GetResults();
+					}
+				}
+				return vector<game2d::PhysicalObject *>();
+			}
+			vector<game2d::PhysicalObject *> bPhysicsHandler::SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, game2d::PhysicalObject *ignore)
+			{
+				b2World *world = 0;
+				if(m_b2d_system)
+				{
+					world = ((Box2DSystem *)m_b2d_system)->m_b2d_world;
+					if(world)
+					{
+						b2Vec2 point1(startX, startY);
+						b2Vec2 point2(endX, endY);
+						B2D_SegmentSearchCallback callback;
+						world->RayCast(&callback, point1, point2);
+						return callback.GetResults();
+					}
+				}
+				return vector<game2d::PhysicalObject *>();
 			}
 		}
 	}

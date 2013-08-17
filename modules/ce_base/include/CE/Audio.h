@@ -11,6 +11,7 @@ namespace ce
 		static bool Init();
 		static void Cleanup();
 
+		static Audio *CreateFromFile(const char *file);
 	};
 }
 

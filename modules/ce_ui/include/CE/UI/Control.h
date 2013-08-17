@@ -16,6 +16,7 @@ namespace ce
 		{
 		protected:
 			bool m_isVisible;
+			unsigned int m_type;
 			Control *m_parent;
 			std::vector<Control *> m_children;
 			Vector2<int> m_position, m_extent, m_absolutePosition, m_exposurePosition, m_exposureExtent;
@@ -34,8 +35,13 @@ namespace ce
 			bool IsVisible() const;
 			bool Contains(Control *control);
 			Control *GetParent() const;
+
+			Control *GetFromPosition(Vector2<int> position);
+
 			void Render();
+
 			void SetVisible(bool isVisible);
+
 			Vector2<int> GetPosition() const;
 			Vector2<int> GetExtent() const;
 			Vector2<int> GetAbsolutePosition() const;
@@ -43,6 +49,7 @@ namespace ce
 			Vector2<int> GetExposureExtent() const;
 			void SetPosition(Vector2<int> position);
 			void SetExtent(Vector2<int> extent);
+
 			virtual bool OnEvent(Event &event);
 			virtual void OnSetPosition();
 			virtual void OnSetExtent();

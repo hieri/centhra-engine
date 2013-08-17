@@ -6,6 +6,7 @@ set(INC
 	${INC_DIR}/ConfigUI.h
 	${INC_DIR}/UI.h
 	${INC_DIR}/UI/Control.h
+	${INC_DIR}/UI/ButtonCtrl.h
 	${INC_DIR}/UI/ColorCtrl.h
 	${INC_DIR}/UI/ImageCtrl.h
 	${INC_DIR}/UI/TextCtrl.h
@@ -15,6 +16,7 @@ set(INC
 set(SRC
 	${SRC_DIR}/UI.cpp
 	${SRC_DIR}/Control.cpp
+	${SRC_DIR}/ButtonCtrl.cpp
 	${SRC_DIR}/ColorCtrl.cpp
 	${SRC_DIR}/ImageCtrl.cpp
 	${SRC_DIR}/TextCtrl.cpp

@@ -21,6 +21,7 @@ namespace ce
 	{
 		Control::Control(Vector2<int> position, Vector2<int> extent)
 		{
+			m_type = 0;
 			m_isVisible = true;
 			m_parent = 0;
 			m_position = position;
@@ -237,6 +238,21 @@ namespace ce
 		}
 		void Control::OnSetPosition()
 		{
+		}
+		Control *Control::GetFromPosition(Vector2<int> position)
+		{
+			for(vector<Control *>::reverse_iterator it = m_children.rbegin(); it != m_children.rend(); it++)
+			{
+				Control *ctrl = *it;
+				
+				Vector2<int> expPos = ctrl->GetExposurePosition();
+				Vector2<int> expExt = ctrl->GetExposureExtent();
+				if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
+					continue;
+
+				return ctrl->GetFromPosition(position);
+			}
+			return this;
 		}
 	}
 }

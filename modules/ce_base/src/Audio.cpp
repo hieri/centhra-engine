@@ -40,7 +40,21 @@ namespace ce
 		alcCloseDevice(alcDevice);
 	}
 
+	Audio *Audio::CreateFromFile(const char *file)
+	{
+//		alListenerfv(AL_POSITION, pos);
+//		alListenerfv(AL_VELOCITY, pos);
+//		alListenerfv(AL_ORIENTATION, matr);
+
+
+//		alGenBuffers(
+
+//		alGetError() != AL_NO_ERROR
+		return 0;
+	}
+
 	Audio::Audio()
 	{
 	}
+
 }

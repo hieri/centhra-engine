@@ -50,5 +50,19 @@ namespace ce
 			if(m_physicsHandler)
 				m_physicsHandler->Cleanup();
 		}
+		vector<PhysicalObject *> PhysicalGroup::BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask, PhysicalObject *ignore)
+		{
+			vector<PhysicalObject *> ret;
+			if(m_physicsHandler)
+				ret = m_physicsHandler->BoxSearch(minX, minY, maxX, maxY, mask, ignore);
+			return ret;
+		}
+		vector<PhysicalObject *> PhysicalGroup::SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, PhysicalObject *ignore)
+		{
+			vector<PhysicalObject *> ret;
+			if(m_physicsHandler)
+				ret = m_physicsHandler->SegmentSearch(startX, startY, endX, endY, mask, ignore);
+			return ret;
+		}
 	}
 }

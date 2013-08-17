@@ -49,7 +49,7 @@ public:
 		srand(GetRunTimeMS());
 		m_canvas = Canvas::Create(640, 480, "000 - Test");
 		m_group = new game2d::PhysicalGroup();
-		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
+		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(64.f, 64.f));
 		m_group->Add(m_entity);
 
 		m_camera = new game2d::Camera();
@@ -76,7 +76,7 @@ public:
 			while(!randBuff[ry * 64 + rx]);
 			randBuff[ry * 64 + rx] = false;
 
-			m_randoms[a] = new game2d::PhysicalObject(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>((float)(rand() % 16 + 16), (float)(rand() % 32 + 32)));
+			m_randoms[a] = new game2d::PhysicalObject(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>((float)(rand() % 32 + 16), (float)(rand() % 32 + 16)));
 
 			Vector2<float> dif = Vector2<float>((float)(rand() % 1024 - 512), (float)(rand() % 1024 - 512));
 			m_randoms[a]->SetVelocity(dif);
@@ -94,7 +94,7 @@ public:
 	bool OnProcess()
 	{
 		unsigned long t = GetRunTimeMS();
-		if((t - m_lastProcess) > 15)
+		if((t - m_lastProcess) > 15) // 60-64 fps
 		{
 			float dt = (float)(t - m_lastProcess) / 1000.f;
 			m_lastProcess = t;
@@ -119,9 +119,9 @@ public:
 			{
 				Vector2<float> pos = m_randoms[a]->GetPosition();
 //				Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
-				Vector2<float> vel = m_randoms[a]->GetVelocity();
+//				Vector2<float> vel = m_randoms[a]->GetVelocity();
 //				Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
-//				Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
+				Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
 //				vel /= vel.GetLength();
 //				vel *= 64.f;
 

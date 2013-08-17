@@ -2,7 +2,7 @@
 #define _CE_GAME2D_TILEMAP_H_
 
 //- Centhra Engine -
-#include <CE/Game2D/ZoneEntity.h>
+#include <CE/Game2D/Entity.h>
 #include <CE/Image.h>
 #include <CE/Vector2.h>
 

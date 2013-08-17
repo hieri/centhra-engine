@@ -6,8 +6,7 @@
 
 //- Centhra Engine -
 #include <CE/Vector2.h>
-#include <CE/Game2D/Entity.h>
-#include <CE/Game2D/Plane.h>
+#include <CE/Game2D/PhysicalGroup.h>
 
 #define CE_GRAPHNODE_CACHESIZE 2
 
@@ -27,7 +26,6 @@ namespace ce
 				std::vector<float> m_neighborDistances;
 				Vector2<float> m_position;
 				bool m_cache[CE_GRAPHNODE_CACHESIZE];
-
 				bool Cache(unsigned int idx);
 
 			public:
@@ -48,10 +46,8 @@ namespace ce
 			bool IsMember(Node *node) const;
 			void ClearNodes();
 			std::vector<Node *> FindPath(Node *nodeA, Node *nodeB);
-			std::vector<Vector2<float> > FindPath(Vector2<float> posA, Vector2<float> posB, unsigned int mask, Zone *zone, ZoneEntity *ignore = 0);
-			std::vector<Vector2<float> > FindPath(Vector2<float> posA, Vector2<float> posB, unsigned int mask, Plane *plane, ZoneEntity *ignore = 0);
-			void GenerateNeighbors(Zone *zone, unsigned int mask);
-			void GenerateNeighbors(Plane *plane, unsigned int mask);
+			std::vector<Vector2<float> > FindPath(Vector2<float> posA, Vector2<float> posB, unsigned int mask, PhysicalGroup *group, PhysicalObject *ignore = 0);
+			void GenerateNeighbors(PhysicalGroup *group, unsigned int mask);
 
 		private:
 			std::vector<Node *> m_nodes;

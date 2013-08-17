@@ -27,6 +27,9 @@ namespace ce
 
 			void AttachHandler(PhysicsHandler *handler);
 			void CleanupHandler();
+
+			std::vector<PhysicalObject *> BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask = -1, PhysicalObject *ignore = 0);
+			std::vector<PhysicalObject *> SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, PhysicalObject *ignore = 0);
 		};
 	}
 }

@@ -3,7 +3,6 @@
 #include <CE/Base.h>
 #include <CE/Canvas.h>
 #include <CE/Thread.h>
-#include <CE/UI/CameraView2DCtrl.h>
 #include <CE/Game2D/Camera.h>
 #include <CE/Game2D/PhysicalObject.h>
 #include <CE/Game2D/PhysicalGroup.h>
@@ -24,13 +23,12 @@ class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
 	game2d::PhysicalGroup *m_group;
-	game2d::PhysicalObject *m_entity;
+	game2d::PhysicalObject *m_entity, **m_randoms;
 	game2d::Camera *m_camera;
 	ui::CameraView2DCtrl *m_view;
-	bool w,a,s,d;
-	game2d::PhysicalObject **m_randoms;
-	unsigned long m_lastProcess;
 	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
+	bool w,a,s,d;
+	unsigned long m_lastProcess;
 
 public:
 //	Thread* m_physicsThread;

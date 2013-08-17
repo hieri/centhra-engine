@@ -47,7 +47,7 @@ namespace ce
 						bPhysicsHandler::bObjectHandle *objectHandle = (bPhysicsHandler::bObjectHandle *)body->GetUserData();
 						b2Vec2 pos = body->GetPosition();
 						float rot = body->GetAngle();
-						game2d::PhysicalObject *pObj = objectHandle->GetObject();
+						game2d::PhysicalObject *pObj = objectHandle->GetReferenceObject();
 						pObj->SetPosition(Vector2<float>(pos.x, pos.y), false);
 						pObj->SetRotation(radToDeg * rot);
 						body = body->GetNext();

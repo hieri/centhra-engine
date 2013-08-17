@@ -88,7 +88,7 @@ namespace ce
 
 			return path;
 		}
-		vector<Vector2<float> > Graph::FindPath(Vector2<float> posA, Vector2<float> posB, unsigned int mask, Zone *zone, ZoneEntity *ignore)
+		vector<Vector2<float> > Graph::FindPath(Vector2<float> posA, Vector2<float> posB, unsigned int mask, PhysicalGroup *group, PhysicalObject *ignore)
 		{
 			vector<Vector2<float> > path;
 			vector<Node *> queue;
@@ -99,7 +99,7 @@ namespace ce
 			for(vector<Node *>::iterator it = m_nodes.begin(); it != m_nodes.end(); it++)
 			{
 				Node *node = *it;
-				if(!zone->SegmentSearch(posA[0], posA[1], node->m_position[0], node->m_position[1], mask, ignore).size())
+				if(!group->SegmentSearch(posA[0], posA[1], node->m_position[0], node->m_position[1], mask, ignore).size())
 				{
 					float dist = (posA - node->m_position).GetLength();
 					neighborsA.push_back(node);
@@ -112,7 +112,7 @@ namespace ce
 							break;
 					queue.insert(itB, node);
 				}
-				if(!zone->SegmentSearch(posB[0], posB[1], node->m_position[0], node->m_position[1], mask, ignore).size())
+				if(!group->SegmentSearch(posB[0], posB[1], node->m_position[0], node->m_position[1], mask, ignore).size())
 				{
 					neighborsB.push_back(node);
 					endDistMap[node] = (posB - node->m_position).GetLength();
@@ -194,113 +194,7 @@ namespace ce
 
 			return path;
 		}
-		vector<Vector2<float> > Graph::FindPath(Vector2<float> posA, Vector2<float> posB, unsigned int mask, Plane *plane, ZoneEntity *ignore)
-		{
-			vector<Vector2<float> > path;
-			vector<Node *> queue;
-			map<Node *, Node *> pathMap;
-			map<Node *, float> distMap, endDistMap;
-
-			vector<Node *> neighborsA, neighborsB;
-			for(vector<Node *>::iterator it = m_nodes.begin(); it != m_nodes.end(); it++)
-			{
-				Node *node = *it;
-				if(!plane->SegmentSearch(posA[0], posA[1], node->m_position[0], node->m_position[1], mask, ignore).size())
-				{
-					float dist = (posA - node->m_position).GetLength();
-					neighborsA.push_back(node);
-					pathMap[node] = 0;
-					distMap[node] = dist;
-
-					vector<Node *>::iterator itB;
-					for(itB = queue.begin(); itB != queue.end(); itB++)
-						if(distMap[*itB] > dist)
-							break;
-					queue.insert(itB, node);
-				}
-				if(!plane->SegmentSearch(posB[0], posB[1], node->m_position[0], node->m_position[1], mask, ignore).size())
-				{
-					neighborsB.push_back(node);
-					endDistMap[node] = (posB - node->m_position).GetLength();
-				}
-			}
-
-			int n = 0;
-			while(queue.size())
-			{
-				Node *node = queue[0];
-				queue.erase(queue.begin());
-				if(endDistMap.count(node))
-					n++;
-				if(n == endDistMap.size())
-					break;
-
-				int count = node->m_neighbors.size();
-				for(int a = 0; a < count; a++)
-				{
-					Node *neighbor = node->m_neighbors[a];
-					float dist = node->m_neighborDistances[a] + distMap[node];
-					if(endDistMap.count(neighbor))
-						dist += endDistMap[neighbor];
-
-					if(pathMap.count(neighbor))
-					{
-						if(distMap[neighbor] > dist)
-						{
-							distMap[neighbor] = dist;
-							pathMap[neighbor] = node;
-						}
-					}
-					else
-					{
-						pathMap[neighbor] = node;
-						distMap[neighbor] = dist;
-
-						bool added = false;
-						vector<Node *>::iterator it;
-						for(it = queue.begin(); it != queue.end(); it++)
-							if(distMap[*it] > dist)
-								break;
-						queue.insert(it, neighbor);
-					}
-				}
-			}
-
-			Node *shortest = 0;
-			float shortestDist = 0.f;
-			for(vector<Node *>::iterator it = neighborsB.begin(); it != neighborsB.end(); it++)
-			{
-				Node *node = *it;
-				if(shortest)
-				{
-					if(shortestDist > distMap[node])
-					{
-						shortest = node;
-						shortestDist = distMap[node];
-					}
-				}
-				else
-				{
-					shortest = node;
-					shortestDist = distMap[node];
-				}
-			}
-
-			path.insert(path.begin(), posB);
-			if(pathMap.count(shortest))
-			{
-				Node *node = shortest;
-				while(node)
-				{
-					path.insert(path.begin(), node->m_position);
-					node = pathMap[node];
-				}
-			}
-			path.insert(path.begin(), posA);
-
-			return path;
-		}
-		void Graph::GenerateNeighbors(Zone *zone, unsigned int mask)
+		void Graph::GenerateNeighbors(PhysicalGroup *group, unsigned int mask)
 		{
 			for(vector<Node *>::iterator it = m_nodes.begin(); it != m_nodes.end(); it++)
 				(*it)->ClearNeighbors();
@@ -313,28 +207,7 @@ namespace ce
 					Node *nodeB = *itB;
 					if(nodeA != nodeB)
 						if(!nodeA->IsNeighbor(nodeB))
-							if(!zone->SegmentSearch(nodeA->m_position[0], nodeA->m_position[1], nodeB->m_position[0], nodeB->m_position[1], mask).size())
-							{
-								nodeA->AddNeighbor(nodeB);
-								nodeB->AddNeighbor(nodeA);
-							}
-				}
-			}
-		}
-		void Graph::GenerateNeighbors(Plane *plane, unsigned int mask)
-		{
-			for(vector<Node *>::iterator it = m_nodes.begin(); it != m_nodes.end(); it++)
-				(*it)->ClearNeighbors();
-
-			for(vector<Node *>::iterator itA = m_nodes.begin(); itA != m_nodes.end(); itA++)
-			{
-				Node *nodeA = *itA;
-				for(vector<Node *>::iterator itB = m_nodes.begin(); itB != m_nodes.end(); itB++)
-				{
-					Node *nodeB = *itB;
-					if(nodeA != nodeB)
-						if(!nodeA->IsNeighbor(nodeB))
-							if(!plane->SegmentSearch(nodeA->m_position[0], nodeA->m_position[1], nodeB->m_position[0], nodeB->m_position[1], mask).size())
+							if(!group->SegmentSearch(nodeA->m_position[0], nodeA->m_position[1], nodeB->m_position[0], nodeB->m_position[1], mask).size())
 							{
 								nodeA->AddNeighbor(nodeB);
 								nodeB->AddNeighbor(nodeA);

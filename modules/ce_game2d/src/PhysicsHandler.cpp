@@ -2,6 +2,8 @@
 #include <CE/Game2D/PhysicalObject.h>
 #include <CE/Game2D/PhysicsHandler.h>
 
+using namespace std;
+
 namespace ce
 {
 	namespace game2d
@@ -31,6 +33,14 @@ namespace ce
 		void PhysicsHandler::Cleanup()
 		{
 		}
+		vector<PhysicalObject *> PhysicsHandler::BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask, PhysicalObject *ignore)
+		{
+			return vector<PhysicalObject *>();
+		}
+		vector<PhysicalObject *> PhysicsHandler::SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, PhysicalObject *ignore)
+		{
+			return vector<PhysicalObject *>();
+		}
 
 		PhysicsHandler::ObjectHandle::ObjectHandle(PhysicsHandler *handler, PhysicalObject *object)
 		{
@@ -45,7 +55,7 @@ namespace ce
 			if(m_object)
 				m_object->m_objectHandle = 0;
 		}
-		PhysicalObject *PhysicsHandler::ObjectHandle::GetObject() const
+		PhysicalObject *PhysicsHandler::ObjectHandle::GetReferenceObject() const
 		{
 			return m_object;
 		}

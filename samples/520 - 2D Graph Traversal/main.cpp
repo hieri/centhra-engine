@@ -2,11 +2,12 @@
 #include <CE/AppFrontend.h>
 #include <CE/Base.h>
 #include <CE/Canvas.h>
-#include <CE/Game2D/Plane.h>
-#include <CE/Game2D/ZoneEntity.h>
-#include <CE/Game2D/ZoneCamera.h>
 #include <CE/Game2D/Graph.h>
-#include <CE/UI/GameView2DCtrl.h>
+#include <CE/Game2D/Camera.h>
+#include <CE/Game2D/PhysicalObject.h>
+#include <CE/Game2D/PhysicalGroup.h>
+#include <CE/Game2D/DefaultPhysicsHandler.h>
+#include <CE/UI/CameraView2DCtrl.h>
 
 //- Standard Library -
 #include <stdlib.h>
@@ -23,7 +24,7 @@
 
 using namespace ce;
 
-class NodeEntity : public game2d::ZoneEntity
+class NodeEntity : public game2d::PhysicalObject
 {
 	game2d::Graph::Node *m_node;
 
@@ -58,7 +59,7 @@ protected:
 	}
 
 public:
-	NodeEntity(game2d::Graph::Node *node) : ZoneEntity(node->GetPosition() - Vector2<float>(8.f, 8.f), Vector2<float>(16.f, 16.f))
+	NodeEntity(game2d::Graph::Node *node) : PhysicalObject(node->GetPosition() - Vector2<float>(8.f, 8.f), Vector2<float>(16.f, 16.f))
 	{
 		m_node = node;
 		m_collisionMask = 0;
@@ -68,9 +69,11 @@ public:
 class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
-	game2d::ZoneEntity *m_entity, *m_walls[3];
-	game2d::ZoneCamera *m_camera;
-	ui::GameView2DCtrl *m_view;
+	game2d::PhysicalGroup *m_group;
+	game2d::PhysicalObject *m_entity, *m_walls[3];
+	game2d::Camera *m_camera;
+	ui::CameraView2DCtrl *m_view;
+	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 	Vector2<float> m_pointA, m_pointB;
 	std::vector<Vector2<float> > m_path;
 	NodeEntity *m_nodeEntities[10];
@@ -80,15 +83,15 @@ class AppTest : public AppFrontend
 	unsigned long m_lastProcess;
 
 public:
-	game2d::Plane *m_plane;
 
 	AppTest()
 	{
 		m_canvas = 0;
-		m_plane = 0;
 		m_camera = 0;
+		m_defaultPhysicsHandler = 0;
 		m_view = 0;
 		m_entity = 0;
+		m_group = 0;
 		m_lastProcess = 0;
 		w = a = s = d = false;
 		m_graph = 0;
@@ -101,15 +104,15 @@ public:
 	{
 		srand(GetRunTimeMS());
 		m_canvas = Canvas::Create(640, 480, "520 - 2D Graph Traversal");
-		m_plane = new game2d::Plane(16, 16, 64.f);
-		m_entity = new game2d::ZoneEntity(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
+		m_group = new game2d::PhysicalGroup();
+		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
 		m_entity->SetCollisionMask(0);
-		m_plane->Place(m_entity);
+		m_group->Add(m_entity);
 
-		m_camera = new game2d::ZoneCamera();
+		m_camera = new game2d::Camera();
 		m_camera->SetFocus(m_entity);
 
-		m_view = new ui::GameView2DCtrl(Vector2<int>(0, 0), Vector2<int>(640, 480));
+		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(640, 480));
 		m_view->SetCamera(m_camera);
 
 		m_nodes[0] = new game2d::Graph::Node(ce::Vector2<float>(128.f, 128.f));
@@ -127,26 +130,29 @@ public:
 		m_pointB = ce::Vector2<float>(256.f, 128.f);
 		m_pointA = ce::Vector2<float>(128.f, 256.f);
 
-		m_walls[0] = new game2d::ZoneEntity(ce::Vector2<float>(144.f, 144.f), ce::Vector2<float>(100.f, 100.f));
-		m_walls[1] = new game2d::ZoneEntity(ce::Vector2<float>(270.f, 144.f), ce::Vector2<float>(230.f, 100.f));
-		m_walls[2] = new game2d::ZoneEntity(ce::Vector2<float>(144.f, 270.f), ce::Vector2<float>(230.f, 225.f));
+		m_walls[0] = new game2d::PhysicalObject(ce::Vector2<float>(144.f, 144.f), ce::Vector2<float>(100.f, 100.f));
+		m_walls[1] = new game2d::PhysicalObject(ce::Vector2<float>(270.f, 144.f), ce::Vector2<float>(230.f, 100.f));
+		m_walls[2] = new game2d::PhysicalObject(ce::Vector2<float>(144.f, 270.f), ce::Vector2<float>(230.f, 225.f));
 
 		for(int a = 0; a < 10; a++)
 		{
 			m_nodeEntities[a] = new NodeEntity(m_nodes[a]);
-			m_plane->Place(m_nodeEntities[a]);
 			m_graph->Add(m_nodes[a]);
+			m_group->Add(m_nodeEntities[a]);
 		}
 		
 		for(int a = 0; a < 3; a++)
-			m_plane->Place(m_walls[a]);
+			m_group->Add(m_walls[a]);
 
-		m_graph->GenerateNeighbors(m_plane, 1);
+		m_graph->GenerateNeighbors(m_group, 1);
 
 		m_pointA = Vector2<float>(0.f, 0.f);
 		m_pointB = Vector2<float>(512.f, 512.f);
-		if(m_plane->SegmentSearch(m_pointA[0], m_pointA[1], m_pointB[0], m_pointB[1], 1).size())
-			m_path = m_graph->FindPath(m_pointA, m_pointB, 1, m_plane);
+		if(m_group->SegmentSearch(m_pointA[0], m_pointA[1], m_pointB[0], m_pointB[1], 1).size())
+			m_path = m_graph->FindPath(m_pointA, m_pointB, 1, m_group);
+		
+		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
+		m_group->AttachHandler(m_defaultPhysicsHandler);
 	}
 	bool OnProcess()
 	{
@@ -168,10 +174,10 @@ public:
 			dif *= 256.f;
 			m_entity->SetVelocity(dif);
 
-			m_plane->ProcessPhysics(dt);
+			m_group->ProcessPhysics(dt);
 
-			m_plane->RemoveDead();
-			game2d::Entity::DeleteDead();
+//			m_plane->RemoveDead();
+//			game2d::Entity::DeleteDead();
 		}
 
 		sleepMS(1);
@@ -179,6 +185,9 @@ public:
 	}
 	void OnStopped()
 	{
+		m_group->CleanupHandler();
+		delete m_defaultPhysicsHandler;
+
 		delete m_graph;
 		for(int a = 0; a < 10; a++)
 		{
@@ -187,13 +196,12 @@ public:
 		}
 		delete m_view;
 		delete m_camera;
-		if(m_plane)
-			delete m_plane;
 		for(int a = 0; a < 3; a++)
 			delete m_walls[a];
 		delete m_entity;
+		delete m_group;
 		game2d::Entity::DeleteDead();
-		game2d::ZoneEntity::Cleanup();
+//		game2d::ZoneEntity::Cleanup();
 		delete m_canvas;
 	}
 
@@ -212,14 +220,14 @@ public:
 			case 1:
 				m_pointA = Vector2<float>(center[0] - halfExtent[0] + (float)event.mouseButton.x, center[1] + halfExtent[1] - (float)event.mouseButton.y);
 				m_path.clear();
-				if(m_plane->SegmentSearch(m_pointA[0], m_pointA[1], m_pointB[0], m_pointB[1], 1).size())
-					m_path = m_graph->FindPath(m_pointA, m_pointB, 1, m_plane);
+				if(m_group->SegmentSearch(m_pointA[0], m_pointA[1], m_pointB[0], m_pointB[1], 1).size())
+					m_path = m_graph->FindPath(m_pointA, m_pointB, 1, m_group);
 				break;
 			case 2:
 				m_pointB = Vector2<float>(center[0] - halfExtent[0] + (float)event.mouseButton.x, center[1] + halfExtent[1] - (float)event.mouseButton.y);
 				m_path.clear();
-				if(m_plane->SegmentSearch(m_pointA[0], m_pointA[1], m_pointB[0], m_pointB[1], 1).size())
-					m_path = m_graph->FindPath(m_pointA, m_pointB, 1, m_plane);
+				if(m_group->SegmentSearch(m_pointA[0], m_pointA[1], m_pointB[0], m_pointB[1], 1).size())
+					m_path = m_graph->FindPath(m_pointA, m_pointB, 1, m_group);
 				break;
 			}
 			break;

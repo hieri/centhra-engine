@@ -1008,5 +1008,37 @@ namespace ce
 
 			delete m_plane;
 		}
+		vector<PhysicalObject *> DefaultPhysicsHandler::BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask, PhysicalObject *ignore)
+		{
+			if(m_plane)
+			{
+				ObjectHandle *ignoreHandle = 0;
+				if(ignore)
+					ignoreHandle = (ObjectHandle *)ignore->GetObjectHandle();
+				vector<PhysicalObject *> objects;
+				vector<ObjectHandle *> handles = m_plane->BoxSearch(minX, minY, maxX, maxY, mask, ignoreHandle);
+				for(vector<ObjectHandle *>::iterator it = handles.begin(); it != handles.end(); it++)
+					objects.push_back((*it)->GetReferenceObject());
+				return objects;
+			}
+
+			return vector<PhysicalObject *>();
+		}
+		vector<PhysicalObject *> DefaultPhysicsHandler::SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, PhysicalObject *ignore)
+		{
+			if(m_plane)
+			{
+				ObjectHandle *ignoreHandle = 0;
+				if(ignore)
+					ignoreHandle = (ObjectHandle *)ignore->GetObjectHandle();
+				vector<PhysicalObject *> objects;
+				vector<ObjectHandle *> handles = m_plane->SegmentSearch(startX, startY, endX, endY, mask, ignoreHandle);
+				for(vector<ObjectHandle *>::iterator it = handles.begin(); it != handles.end(); it++)
+					objects.push_back((*it)->GetReferenceObject());
+				return objects;
+			}
+
+			return vector<PhysicalObject *>();
+		}
 	}
 }

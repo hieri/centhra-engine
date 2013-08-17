@@ -23,7 +23,7 @@ namespace ce
 			PhysicalGroup();
 			
 			void Process(float dt);
-			void Render();
+			void Render(float minX, float minY, float maxX, float maxY);
 
 			void AttachHandler(PhysicsHandler *handler);
 			void CleanupHandler();

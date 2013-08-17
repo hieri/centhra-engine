@@ -1,4 +1,5 @@
 //- Centhra Engine -
+#include <CE/Game2D/PhysicalObject.h>
 #include <CE/Game2D/PhysicsHandler.h>
 
 namespace ce
@@ -14,7 +15,14 @@ namespace ce
 			if(m_referenceGroup)
 				Cleanup();
 		}
+		PhysicalGroup *PhysicsHandler::GetReferenceGroup() const
+		{
+			return m_referenceGroup;
+		}
 		void PhysicsHandler::Initialize()
+		{
+		}
+		void PhysicsHandler::Render(float minX, float minY, float maxX, float maxY)
 		{
 		}
 		void PhysicsHandler::Process(float dt)
@@ -32,6 +40,15 @@ namespace ce
 		PhysicsHandler::ObjectHandle::~ObjectHandle()
 		{
 		}
+		void PhysicsHandler::ObjectHandle::Attach(PhysicalObject *object)
+		{
+			object->m_objectHandle = this;
+		}
+		void PhysicsHandler::ObjectHandle::Detach()
+		{
+			if(m_object)
+				m_object->m_objectHandle = 0;
+		}
 		void PhysicsHandler::ObjectHandle::OnCreate()
 		{
 		}
@@ -39,6 +56,15 @@ namespace ce
 		{
 		}
 		void PhysicsHandler::ObjectHandle::OnDestroy()
+		{
+		}
+		void PhysicsHandler::ObjectHandle::OnSetPosition()
+		{
+		}
+		void PhysicsHandler::ObjectHandle::OnSetExtent()
+		{
+		}
+		void PhysicsHandler::ObjectHandle::OnSetVelocity()
 		{
 		}
 	}

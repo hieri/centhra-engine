@@ -21,12 +21,17 @@ namespace ce
 			if(m_physicsHandler)
 				m_physicsHandler->Process(dt);
 		}
-		void PhysicalGroup::Render()
+		void PhysicalGroup::Render(float minX, float minY, float maxX, float maxY)
 		{
-			for(vector<Group::Member *>::iterator it = m_members.begin(); it != m_members.end(); it++)
+			if(m_physicsHandler)
+				m_physicsHandler->Render(minX, minY, maxX, maxY);
+			else //- TODO: Determine if this is necessary -
 			{
-				PhysicalObject *object = (PhysicalObject *)*it;
-				object->Render();
+				for(vector<Group::Member *>::iterator it = m_members.begin(); it != m_members.end(); it++)
+				{
+					PhysicalObject *object = (PhysicalObject *)*it;
+					object->Render();
+				}
 			}
 		}
 		void PhysicalGroup::AttachHandler(PhysicsHandler *handler)

@@ -45,7 +45,8 @@ namespace ce
 						glTranslatef(half[0] - m_viewScale[0] * (focusPosition[0] + focusHalf[0]), half[1] - m_viewScale[1] * (focusPosition[1] + focusHalf[1]), 0.f);
 						glScalef(m_viewScale[0], m_viewScale[1], 1.f);
 
-						((game2d::PhysicalGroup *)focus->GetParentGroup())->Render();
+						((game2d::PhysicalGroup *)focus->GetParentGroup())->Render((focusPosition[0] + focusHalf[0]) - half[0] / m_viewScale[0], (focusPosition[1] + focusHalf[1]) - half[1] / m_viewScale[1], (focusPosition[0] + focusHalf[0]) + half[0] / m_viewScale[0], (focusPosition[1] + focusHalf[1]) + half[1] / m_viewScale[1]);
+
 /*
 						game2d::Zone *zone = focus->GetZones()[0];
 						if(zone)

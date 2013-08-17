@@ -15,26 +15,37 @@ namespace ce
 
 		protected:
 			virtual void Initialize();
+			virtual void Render(float minX, float minY, float maxX, float maxY);
 			virtual void Process(float dt);
 			virtual void Cleanup();
 
 		public:
-			PhysicsHandler();
-			~PhysicsHandler();
-
 			class ObjectHandle
 			{
+			protected:
 				ObjectHandle(PhysicsHandler *handler, PhysicalObject *object);
 				~ObjectHandle();
 
-			protected:
 				PhysicsHandler *m_physicsHandler;
 				PhysicalObject *m_object;
 
 				virtual void OnCreate();
 				virtual void OnRelocate(PhysicalGroup *oldGroup, PhysicalGroup *newGroup);
 				virtual void OnDestroy();
+				
+				virtual void OnSetPosition();
+				virtual void OnSetExtent();
+				virtual void OnSetVelocity();
+
+			public:
+				void Attach(PhysicalObject *object);
+				void Detach();
 			};
+			
+			PhysicsHandler();
+			~PhysicsHandler();
+
+			PhysicalGroup *GetReferenceGroup() const;
 
 			friend class PhysicalGroup;
 		};

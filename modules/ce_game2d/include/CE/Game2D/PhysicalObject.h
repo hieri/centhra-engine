@@ -49,6 +49,7 @@ namespace ce
 			static void Cleanup();
 
 			friend class PhysicalGroup;
+			friend class PhysicsHandler::ObjectHandle;
 		};
 	}
 }

@@ -16,7 +16,7 @@ namespace ce
 		{
 			m_physicsHandler = 0;
 		}
-		void PhysicalGroup::Process(float dt)
+		void PhysicalGroup::ProcessPhysics(float dt)
 		{
 			if(m_physicsHandler)
 				m_physicsHandler->Process(dt);

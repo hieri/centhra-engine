@@ -9,7 +9,7 @@
 #include <CE/Vector2.h>
 #include <CE/Game2D/PhysicsHandler.h>
 
-#define CE_ObjectHandle_CACHESIZE 8
+#define CE_OBJECTHANDLE_CACHESIZE 8
 
 namespace ce
 {
@@ -22,15 +22,14 @@ namespace ce
 			class ObjectHandle : public PhysicsHandler::ObjectHandle
 			{
 				Vector2<float> m_moveBoxMin, m_moveBoxMax, m_movement, m_movePadding;
-				bool m_canMove[2], m_startedPhysics, m_finishedPhysics, m_cache[CE_ObjectHandle_CACHESIZE];
+				bool m_canMove[2], m_startedPhysics, m_finishedPhysics, m_cache[CE_OBJECTHANDLE_CACHESIZE];
 
-				static std::vector<ObjectHandle *> ms_cacheVectors[CE_ObjectHandle_CACHESIZE];
+				static std::vector<ObjectHandle *> ms_cacheVectors[CE_OBJECTHANDLE_CACHESIZE];
 				static void ClearCache(unsigned int idx);
 				bool Cache(unsigned int idx);
 
 			protected:
 				std::vector<Zone *> m_zones;
-				unsigned int m_collisionMask;
 
 			public:
 				ObjectHandle(PhysicsHandler *handler, PhysicalObject *object);

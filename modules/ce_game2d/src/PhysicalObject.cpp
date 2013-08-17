@@ -166,14 +166,23 @@ namespace ce
 		void PhysicalObject::SetExtent(Vector2<float> extent)
 		{
 			m_extent = extent;
+			
+			if(m_objectHandle)
+				m_objectHandle->OnSetExtent();
 		}
 		void PhysicalObject::SetPosition(Vector2<float> position)
 		{
 			m_position = position;
+
+			if(m_objectHandle)
+				m_objectHandle->OnSetPosition();
 		}
 		void PhysicalObject::SetVelocity(Vector2<float> velocity)
 		{
 			m_velocity = velocity;
+			
+			if(m_objectHandle)
+				m_objectHandle->OnSetVelocity();
 		}
 		PhysicsHandler::ObjectHandle *PhysicalObject::GetObjectHandle() const
 		{

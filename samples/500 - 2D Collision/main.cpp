@@ -2,11 +2,13 @@
 #include <CE/AppFrontend.h>
 #include <CE/Base.h>
 #include <CE/Canvas.h>
-#include <CE/Game2D/Plane.h>
-#include <CE/Game2D/ZoneEntity.h>
-#include <CE/Game2D/ZoneCamera.h>
-#include <CE/UI/CameraView2DCtrl.h>
 #include <CE/Thread.h>
+#include <CE/UI/CameraView2DCtrl.h>
+#include <CE/Game2D/Camera.h>
+#include <CE/Game2D/PhysicalObject.h>
+#include <CE/Game2D/PhysicalGroup.h>
+#include <CE/Game2D/DefaultPhysicsHandler.h>
+#include <CE/UI/CameraView2DCtrl.h>
 
 //- Standard Library -
 #include <stdlib.h>
@@ -21,23 +23,25 @@ void *physicsFunc(void *arg);
 class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
-	game2d::ZoneEntity *m_entity;
-	game2d::ZoneCamera *m_camera;
+	game2d::PhysicalGroup *m_group;
+	game2d::PhysicalObject *m_entity;
+	game2d::Camera *m_camera;
 	ui::CameraView2DCtrl *m_view;
 	bool w,a,s,d;
-	game2d::ZoneEntity **m_randoms;
+	game2d::PhysicalObject **m_randoms;
 	unsigned long m_lastProcess;
+	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 
 public:
 //	Thread* m_physicsThread;
-	game2d::Plane *m_plane;
 
 	AppTest()
 	{
 		m_canvas = 0;
-		m_plane = 0;
-		m_entity =0;
+		m_defaultPhysicsHandler = 0;
+		m_entity = 0;
 		m_camera = 0;
+		m_group = 0;
 		m_view = 0;
 		m_lastProcess = 0;
 		w = a = s = d = false;
@@ -55,11 +59,11 @@ public:
 	{
 		srand(GetRunTimeMS());
 		m_canvas = Canvas::Create(640, 480, "500 - 2D Collision");
-		m_plane = new game2d::Plane(16, 16, 64.f);
-		m_entity = new game2d::ZoneEntity(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
-		m_plane->Place(m_entity);
+		m_group = new game2d::PhysicalGroup();
+		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
+		m_group->Add(m_entity);
 
-		m_camera = new game2d::ZoneCamera();
+		m_camera = new game2d::Camera();
 		m_camera->SetFocus(m_entity);
 
 		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(640, 480));
@@ -67,7 +71,7 @@ public:
 
 		m_entity->SetCollisionMask(0);
 
-		m_randoms = new game2d::ZoneEntity *[NUMRANDOMS];
+		m_randoms = new game2d::PhysicalObject *[NUMRANDOMS];
 		bool randBuff[4096];
 		for(unsigned int a = 0; a < 4096; a++)
 			randBuff[a] = true;
@@ -83,12 +87,15 @@ public:
 			while(!randBuff[ry * 64 + rx]);
 			randBuff[ry * 64 + rx] = false;
 
-			m_randoms[a] = new game2d::ZoneEntity(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>(16.f, 16.f));
-			m_plane->Place(m_randoms[a]);
+			m_randoms[a] = new game2d::PhysicalObject(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>(16.f, 16.f));
 
 			Vector2<float> dif = Vector2<float>((float)(rand() % 1024 - 512), (float)(rand() % 1024 - 512));
 			m_randoms[a]->SetVelocity(dif);
+			m_group->Add(m_randoms[a]);
 		}
+
+		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
+		m_group->AttachHandler(m_defaultPhysicsHandler);
 
 		return true;
 	}
@@ -137,9 +144,9 @@ public:
 				m_randoms[a]->SetVelocity(vel);
 			}
 
-			m_plane->ProcessPhysics(dt);
-			m_plane->RemoveDead();
-			game2d::Entity::DeleteDead();
+			m_group->ProcessPhysics(dt);
+//			m_plane->RemoveDead();
+//			game2d::Entity::DeleteDead();
 		}
 
 		sleepMS(1);
@@ -147,23 +154,23 @@ public:
 	}
 	void OnStopped()
 	{
+		m_group->CleanupHandler();
+		delete m_defaultPhysicsHandler;
+
 		delete m_view;
 		delete m_camera;
-		if(m_plane)
-			delete m_plane;
 		game2d::Entity::DeleteDead();
 		delete m_entity;
 		for(int a = 0; a < NUMRANDOMS; a++)
 			delete m_randoms[a];
 		delete [] m_randoms;
-		game2d::ZoneEntity::Cleanup();
+		delete m_group;
+//		game2d::ZoneEntity::Cleanup();
 		delete m_canvas;
 	}
 
 	bool OnEvent(Event &event)
 	{
-		float x, y;
-		Vector2<float> dif;
 		switch(event.type)
 		{
 		case event::KeyDown:
@@ -225,7 +232,7 @@ void *physicsFunc(void *arg)
 			float dt = (float)(t - lastProcess) / 1000.f;
 			lastProcess = t;
 
-			app->m_plane->ProcessPhysics(dt);
+//			app->m_plane->ProcessPhysics(dt);
 		}
 
 		sleepMS(1);

@@ -40,6 +40,8 @@ namespace ce
 			public:
 				void Attach(PhysicalObject *object);
 				void Detach();
+
+				friend class PhysicalObject;
 			};
 			
 			PhysicsHandler();

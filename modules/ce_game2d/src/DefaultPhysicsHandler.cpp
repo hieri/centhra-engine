@@ -11,10 +11,13 @@
 #include <GL/gl.h>
 
 //- Centhra Engine -
+#include <CE/Base.h>
 #include <CE/Game2D/DefaultPhysicsHandler.h>
 #include <CE/Game2D/PhysicalObject.h>
 
 using namespace std;
+
+//- TODO: Reimplement other features -
 
 namespace ce
 {
@@ -33,9 +36,8 @@ namespace ce
 			m_startedPhysics = m_finishedPhysics = false;
 			m_movePadding = Vector2<float>(1.f, 1.f);
 			m_canMove[0] = m_canMove[1] = true;
-			m_collisionMask = 1;
 
-			for(int a = 0; a < CE_ObjectHandle_CACHESIZE; a++)
+			for(int a = 0; a < CE_OBJECTHANDLE_CACHESIZE; a++)
 				m_cache[a] = false;
 		}
 		DefaultPhysicsHandler::ObjectHandle::~ObjectHandle()
@@ -113,7 +115,7 @@ namespace ce
 		}
 		unsigned int DefaultPhysicsHandler::ObjectHandle::GetCollisionMask() const
 		{
-			return m_collisionMask;
+			return m_object->GetCollisionMask();
 		}
 		bool DefaultPhysicsHandler::ObjectHandle::Cache(unsigned int idx)
 		{
@@ -266,7 +268,7 @@ namespace ce
 						if(itA != itB)
 						{
 							ObjectHandle *entityB = *itB;
-							if(!(entityA->m_collisionMask & entityB->m_collisionMask))
+							if(!(entityA->GetCollisionMask() & entityB->GetCollisionMask()))
 								continue;
 							Vector2<float> bMin, bMax, bOMin, bOMax;
 							bMin = entityB->m_moveBoxMin;
@@ -368,7 +370,7 @@ namespace ce
 			for(vector<ObjectHandle *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 			{
 				ObjectHandle *entity = *it;
-				if(entity->m_collisionMask & mask)
+				if(entity->GetCollisionMask() & mask)
 					if(entity != ignore)
 						if(entity->CollidesWith(_min, _max))
 							found.push_back(entity);
@@ -386,7 +388,7 @@ namespace ce
 				for(vector<ObjectHandle *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 				{
 					ObjectHandle *entity = *it;
-					if(entity->m_collisionMask & mask)
+					if(entity->GetCollisionMask() & mask)
 						if(entity != ignore)
 							if(entity->CollidesWith(_min, _max))
 							{
@@ -409,7 +411,7 @@ namespace ce
 				for(vector<ObjectHandle *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 				{
 					ObjectHandle *entity = *it;
-					if(entity->m_collisionMask & mask)
+					if(entity->GetCollisionMask() & mask)
 						if(entity != ignore)
 							if(entity->CollidesWith(_min, _max))
 							{
@@ -439,7 +441,7 @@ namespace ce
 				for(vector<ObjectHandle *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 				{
 					ObjectHandle *entity = *it;
-					if(entity->m_collisionMask & mask)
+					if(entity->GetCollisionMask() & mask)
 						if(entity != ignore)
 							if(entity->CollidesWith(_min, _max))
 							{
@@ -530,6 +532,7 @@ namespace ce
 							entity->m_object->Render();
 					}
 			ObjectHandle::ClearCache(0);
+
 /*
 			for(int a = _minX; a <= _maxX; a++)
 				for(int b = _minY; b <= _maxY; b++)
@@ -745,7 +748,7 @@ namespace ce
 						if(!entity->m_canMove[1])
 							entity->m_movement[1] = 0.f;
 
-						entity->GetPosition() += entity->m_movement;
+						entity->SetPosition(entity->GetPosition() + entity->m_movement);
 //						entity->Move(entity->m_movement);
 
 /*						if(entity->m_canMove[0])
@@ -977,8 +980,11 @@ namespace ce
 			for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
 			{
 				PhysicalObject *object = (PhysicalObject *)*it;
+
 				ObjectHandle *handle = new ObjectHandle(this, object);
 				handle->Attach(object);
+
+				m_plane->Place(handle);
 			}
 		}
 		void DefaultPhysicsHandler::Render(float minX, float minY, float maxX, float maxY)

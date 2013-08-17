@@ -126,6 +126,8 @@ namespace ce
 			m_velocity = Vector2<float>(0.f, 0.f);
 			m_collisionMask = 1;
 
+			m_objectHandle = 0;
+
 			ms_lastID++;
 			m_id = ms_lastID;
 
@@ -172,6 +174,10 @@ namespace ce
 		void PhysicalObject::SetVelocity(Vector2<float> velocity)
 		{
 			m_velocity = velocity;
+		}
+		PhysicsHandler::ObjectHandle *PhysicalObject::GetObjectHandle() const
+		{
+			return m_objectHandle;
 		}
 		unsigned int PhysicalObject::GetCollisionMask() const
 		{

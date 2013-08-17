@@ -5,12 +5,14 @@
 #include <CE/Color.h>
 #include <CE/Vector2.h>
 #include <CE/Game2D/Entity.h>
+#include <CE/Game2D/PhysicsHandler.h>
 
 namespace ce
 {
 	namespace game2d
 	{
 		class PhysicalGroup;
+
 		class PhysicalObject : public Entity
 		{
 			static unsigned int ms_lastID;
@@ -19,6 +21,7 @@ namespace ce
 			Color m_color; //- TODO: Remove this after finished -
 			unsigned int m_id;
 			PhysicalGroup *m_parentGroup;
+			PhysicsHandler::ObjectHandle *m_objectHandle;
 
 		protected:
 			unsigned int m_collisionMask;
@@ -37,6 +40,7 @@ namespace ce
 			void SetPosition(Vector2<float> position);
 			void SetVelocity(Vector2<float> velocity);
 
+			PhysicsHandler::ObjectHandle *GetObjectHandle() const;
 			unsigned int GetCollisionMask() const;
 			void SetCollisionMask(unsigned int mask);
 

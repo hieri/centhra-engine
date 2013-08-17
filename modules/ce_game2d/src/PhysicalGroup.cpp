@@ -16,6 +16,11 @@ namespace ce
 		{
 			m_physicsHandler = 0;
 		}
+		void PhysicalGroup::Process(float dt)
+		{
+			if(m_physicsHandler)
+				m_physicsHandler->Process(dt);
+		}
 		void PhysicalGroup::Render()
 		{
 			for(vector<Group::Member *>::iterator it = m_members.begin(); it != m_members.end(); it++)
@@ -24,15 +29,21 @@ namespace ce
 				object->Render();
 			}
 		}
-		void PhysicalGroup::SetHandler(PhysicsHandler *handler)
+		void PhysicalGroup::AttachHandler(PhysicsHandler *handler)
 		{
 			if(m_physicsHandler != handler)
 			{
+				CleanupHandler();
+
 				m_physicsHandler = handler;
+				handler->m_referenceGroup = this;
+				handler->Initialize();
 			}
 		}
 		void PhysicalGroup::CleanupHandler()
 		{
+			if(m_physicsHandler)
+				m_physicsHandler->Cleanup();
 		}
 	}
 }

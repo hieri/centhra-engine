@@ -21,10 +21,11 @@ namespace ce
 
 		public:
 			PhysicalGroup();
-
+			
+			void Process(float dt);
 			void Render();
 
-			void SetHandler(PhysicsHandler *handler);
+			void AttachHandler(PhysicsHandler *handler);
 			void CleanupHandler();
 		};
 	}

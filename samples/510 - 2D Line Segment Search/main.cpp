@@ -165,7 +165,7 @@ public:
 		{
 		case event::MouseButtonDown:
 			halfExtent = m_view->GetExtent() / 2;
-			center = m_entity->GetPosition() + m_entity->GetExtent() / 2.f;
+			center = m_entity->GetPosition();
 
 			switch(event.mouseButton.button)
 			{
@@ -213,7 +213,7 @@ public:
 			break;
 		case event::PostRender:
 			halfExtent = m_view->GetExtent() / 2;
-			center = m_entity->GetPosition() + m_entity->GetExtent() / 2.f;
+			center = m_entity->GetPosition();
 
 			m_view->Render();
 			glPushMatrix();

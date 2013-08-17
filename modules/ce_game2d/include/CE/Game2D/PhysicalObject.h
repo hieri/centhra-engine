@@ -38,10 +38,10 @@ namespace ce
 			Vector2<float> GetExtent() const;
 			Vector2<float> GetPosition() const;
 			Vector2<float> GetVelocity() const;
-			void SetExtent(Vector2<float> extent);
+			void SetExtent(Vector2<float> extent, bool updateHandle = true);
 			void SetPosition(Vector2<float> position, bool updateHandle = true);
-			void SetVelocity(Vector2<float> velocity);
-			void SetRotation(float rotation);
+			void SetVelocity(Vector2<float> velocity, bool updateHandle = true);
+			void SetRotation(float rotation, bool updateHandle = true);
 
 			PhysicsHandler::ObjectHandle *GetObjectHandle() const;
 			unsigned int GetCollisionMask() const;

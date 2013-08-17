@@ -10,11 +10,16 @@ namespace ce
 	{
 		class Camera : public Entity
 		{
+			static Camera *ms_current;
+
 			PhysicalObject *m_focus;
 
 		public:
+			static Camera *GetCurrent();
+
 			Camera();
 
+			void SetCurrent();
 			PhysicalObject *GetFocus() const;
 			void SetFocus(PhysicalObject *focus);
 		};

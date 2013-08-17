@@ -14,6 +14,8 @@
 //- OpenGL -
 #include <GL/gl.h>
 
+//- TODO: Add navigation via Mouse and Keyboard -
+
 namespace ce
 {
 	namespace ui

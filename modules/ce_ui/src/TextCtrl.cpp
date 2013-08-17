@@ -24,6 +24,7 @@
 
 using namespace std;
 
+// - TODO: Move this into a support snippet file, or Base.h -
 string compileMessage(const char *format, va_list ap)
 {
 	char text[4096];

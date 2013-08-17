@@ -14,7 +14,7 @@
 
 using namespace ce;
 
-#define NUMRANDOMS 1028
+#define NUMRANDOMS 1024
 
 void *physicsFunc(void *arg);
 

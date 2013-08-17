@@ -43,12 +43,17 @@ namespace ce
 			max[0] /= m_tileSize[0];
 			max[1] /= m_tileSize[1];
 
+			unsigned int minX, maxX, minY, maxY;
+			minX = minY = 0;
+			maxX = m_size[0];
+			maxY = m_size[1];
+
 			glEnable(GL_TEXTURE_2D);
 			m_tileSet->Bind();
 
 			glBegin(GL_QUADS);
-			for(unsigned int a = 0; a < m_size[0]; a++)
-				for(unsigned int b = 0; b < m_size[1]; b++)
+			for(unsigned int a = minX; a < maxX; a++)
+				for(unsigned int b = minY; b < maxY; b++)
 					if(m_tiles[a][b][0] < max[0] && m_tiles[a][b][1] < max[1])
 					{
 						unsigned int x, y, X, Y, _x, _y, _X, _Y;

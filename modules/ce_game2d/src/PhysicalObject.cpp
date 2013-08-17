@@ -170,12 +170,13 @@ namespace ce
 		{
 			return m_rotation;
 		}
-		void PhysicalObject::SetExtent(Vector2<float> extent)
+		void PhysicalObject::SetExtent(Vector2<float> extent, bool updateHandle)
 		{
 			m_extent = extent;
 			
-			if(m_objectHandle)
-				m_objectHandle->OnSetExtent();
+			if(updateHandle)
+				if(m_objectHandle)
+					m_objectHandle->OnSetExtent();
 		}
 		void PhysicalObject::SetPosition(Vector2<float> position, bool updateHandle)
 		{
@@ -185,19 +186,21 @@ namespace ce
 				if(m_objectHandle)
 					m_objectHandle->OnSetPosition();
 		}
-		void PhysicalObject::SetVelocity(Vector2<float> velocity)
+		void PhysicalObject::SetVelocity(Vector2<float> velocity, bool updateHandle)
 		{
 			m_velocity = velocity;
 			
-			if(m_objectHandle)
-				m_objectHandle->OnSetVelocity();
+			if(updateHandle)
+				if(m_objectHandle)
+					m_objectHandle->OnSetVelocity();
 		}
-		void PhysicalObject::SetRotation(float rotation)
+		void PhysicalObject::SetRotation(float rotation, bool updateHandle)
 		{
 			m_rotation = rotation;
 			
-//			if(m_objectHandle)
-//				m_objectHandle->OnSetVelocity();
+			if(updateHandle)
+				if(m_objectHandle)
+					m_objectHandle->OnSetRotation();
 		}
 		PhysicsHandler::ObjectHandle *PhysicalObject::GetObjectHandle() const
 		{

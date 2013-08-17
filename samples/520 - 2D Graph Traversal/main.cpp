@@ -130,9 +130,9 @@ public:
 		m_pointB = ce::Vector2<float>(256.f, 128.f);
 		m_pointA = ce::Vector2<float>(128.f, 256.f);
 
-		m_walls[0] = new game2d::PhysicalObject(ce::Vector2<float>(144.f, 144.f), ce::Vector2<float>(100.f, 100.f));
-		m_walls[1] = new game2d::PhysicalObject(ce::Vector2<float>(270.f, 144.f), ce::Vector2<float>(230.f, 100.f));
-		m_walls[2] = new game2d::PhysicalObject(ce::Vector2<float>(144.f, 270.f), ce::Vector2<float>(230.f, 225.f));
+		m_walls[0] = new game2d::PhysicalObject(ce::Vector2<float>(194.f, 194.f), ce::Vector2<float>(100.f, 100.f));
+		m_walls[1] = new game2d::PhysicalObject(ce::Vector2<float>(385.f, 194.f), ce::Vector2<float>(230.f, 100.f));
+		m_walls[2] = new game2d::PhysicalObject(ce::Vector2<float>(260.f, 380.f), ce::Vector2<float>(230.f, 220.f));
 
 		for(int a = 0; a < 10; a++)
 		{
@@ -143,6 +143,9 @@ public:
 		
 		for(int a = 0; a < 3; a++)
 			m_group->Add(m_walls[a]);
+		
+		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
+		m_group->AttachHandler(m_defaultPhysicsHandler);
 
 		m_graph->GenerateNeighbors(m_group, 1);
 
@@ -150,9 +153,6 @@ public:
 		m_pointB = Vector2<float>(512.f, 512.f);
 		if(m_group->SegmentSearch(m_pointA[0], m_pointA[1], m_pointB[0], m_pointB[1], 1).size())
 			m_path = m_graph->FindPath(m_pointA, m_pointB, 1, m_group);
-		
-		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
-		m_group->AttachHandler(m_defaultPhysicsHandler);
 	}
 	bool OnProcess()
 	{
@@ -213,7 +213,7 @@ public:
 		{
 		case event::MouseButtonDown:
 			halfExtent = m_view->GetExtent() / 2;
-			center = m_entity->GetPosition() + m_entity->GetExtent() / 2.f;
+			center = m_entity->GetPosition();
 
 			switch(event.mouseButton.button)
 			{
@@ -267,7 +267,7 @@ public:
 			break;
 		case event::PostRender:
 			halfExtent = m_view->GetExtent() / 2;
-			center = m_entity->GetPosition() + m_entity->GetExtent() / 2.f;
+			center = m_entity->GetPosition();
 
 			m_view->Render();
 			glPushMatrix();

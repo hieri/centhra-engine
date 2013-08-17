@@ -81,5 +81,8 @@ namespace ce
 		void PhysicsHandler::ObjectHandle::OnSetVelocity()
 		{
 		}
+		void PhysicsHandler::ObjectHandle::OnSetRotation()
+		{
+		}
 	}
 }

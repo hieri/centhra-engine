@@ -98,18 +98,24 @@ namespace ce
 		bool DefaultPhysicsHandler::ObjectHandle::CollidesWith(ObjectHandle *entity, Vector2<float> offsetA, Vector2<float> offsetB)
 		{
 			Vector2<float> aMin, aMax, bMin, bMax;
-			aMin = GetPosition() + offsetA;
-			aMax = aMin + GetExtent();
-			bMin = entity->GetPosition() + offsetB;
-			bMax = bMin + entity->GetExtent();
+			Vector2<float> extent = GetExtent();
+			Vector2<float> halfExtent = extent / 2.f;
+			aMin = GetPosition() + offsetA - halfExtent;
+			aMax = aMin + extent;
+			Vector2<float> entExtent = entity->GetExtent();
+			Vector2<float> entHalfExtent = entExtent / 2.f;
+			bMin = entity->GetPosition() + offsetB - entHalfExtent;
+			bMax = bMin + entExtent;
 
 			return aMin[0] < bMax[0] && aMin[1] < bMax[1] && bMin[0] < aMax[0] && bMin[1] < aMax[1];
 		}
 		bool DefaultPhysicsHandler::ObjectHandle::CollidesWith(Vector2<float> boxMin, Vector2<float> boxMax, Vector2<float> offset)
 		{
 			Vector2<float> min, max;
-			min = GetPosition() + offset;
-			max = min + GetExtent();
+			Vector2<float> extent = GetExtent();
+			Vector2<float> halfExtent = extent / 2.f;
+			min = GetPosition() + offset - halfExtent;
+			max = min + extent;
 
 			return min[0] < boxMax[0] && min[1] < boxMax[1] && boxMin[0] < max[0] && boxMin[1] < max[1];
 		}
@@ -234,13 +240,15 @@ namespace ce
 			{
 				ObjectHandle *entity = *it;
 				entity->m_movement = entity->GetVelocity() * entity->m_movePadding * dt;
+				Vector2<float> position = entity->GetPosition();
+				Vector2<float> halfExtent = entity->GetExtent() / 2.f;
 
 				for(int a = 0; a < 2; a++)
 				{
-					entity->m_moveBoxMin[a] = entity->GetPosition()[a];
+					entity->m_moveBoxMin[a] = position[a] - halfExtent[a];
 					if(entity->m_movement[a] < 0.f)
 						entity->m_moveBoxMin[a] += entity->m_movement[a];
-					entity->m_moveBoxMax[a] = entity->GetPosition()[a] + entity->GetExtent()[a];
+					entity->m_moveBoxMax[a] = position[a] + halfExtent[a];
 					if(entity->m_movement[a] > 0.f)
 						entity->m_moveBoxMax[a] += entity->m_movement[a];
 					entity->m_canMove[a] = true;
@@ -258,8 +266,10 @@ namespace ce
 					Vector2<float> aMin, aMax, aOMin, aOMax;
 					aMin = entityA->m_moveBoxMin;
 					aMax = entityA->m_moveBoxMax;
-					aOMin = entityA->GetPosition();
-					aOMax = aOMin + entityA->GetExtent();
+					Vector2<float> extentA = entityA->GetExtent();
+					Vector2<float> halfExtentA = extentA / 2.f;
+					aOMin = entityA->GetPosition() - halfExtentA;
+					aOMax = aOMin + extentA;
 
 					unsigned int colCount = 0;
 					vector<ObjectHandle *> diagonals;
@@ -273,8 +283,10 @@ namespace ce
 							Vector2<float> bMin, bMax, bOMin, bOMax;
 							bMin = entityB->m_moveBoxMin;
 							bMax = entityB->m_moveBoxMax;
-							bOMin = entityB->GetPosition();
-							bOMax = bOMin + entityB->GetExtent();
+							Vector2<float> extentB = entityB->GetExtent();
+							Vector2<float> halfExtentB = extentB / 2.f;
+							bOMin = entityB->GetPosition() - halfExtentB;
+							bOMax = bOMin + extentB;
 							if(aMin[0] < bMax[0] && aMin[1] < bMax[1] && bMin[0] < aMax[0] && bMin[1] < aMax[1])
 							{
 								bool xCol = aMin[0] < bMax[0] && bMin[0] < aMax[0] && aOMin[1] < bOMax[1] && bOMin[1] < aOMax[1];
@@ -394,9 +406,10 @@ namespace ce
 							{
 								Vector2<float> position = entity->GetPosition();
 								Vector2<float> extent = entity->GetExtent();
+								Vector2<float> halfExtent = extent / 2.f;
 
-								float _startY = position[1];
-								float _endY = _startY + extent[1];
+								float _startY = position[1] - halfExtent[1];
+								float _endY = position[1] + halfExtent[1];
 
 								Vector2<float> rMin(_min[0], _startY), rMax(_max[0], _endY);
 
@@ -417,9 +430,10 @@ namespace ce
 							{
 								Vector2<float> position = entity->GetPosition();
 								Vector2<float> extent = entity->GetExtent();
+								Vector2<float> halfExtent = extent / 2.f;
 
-								float _startX = position[0];
-								float _endX = _startX + extent[0];
+								float _startX = position[0] - halfExtent[0];
+								float _endX = position[0] + halfExtent[0];
 
 								Vector2<float> rMin(_startX, _min[1]), rMax(_endX, _max[1]);
 
@@ -447,10 +461,11 @@ namespace ce
 							{
 								Vector2<float> position = entity->GetPosition();
 								Vector2<float> extent = entity->GetExtent();
+								Vector2<float> halfExtent = extent / 2.f;
 
-								float _startX = position[0];
+								float _startX = position[0] - halfExtent[0];
 								float _startY = startY + (_startX - startX) * slope;
-								float _endX = position[0] + extent[0];
+								float _endX = position[0] + halfExtent[0];
 								float _endY = startY + (_endX - startX) * slope;
 
 								Vector2<float> rMin(min(_startX, _endX), min(_startY, _endY)), rMax(max(_startX, _endX), max(_startY, _endY));
@@ -540,12 +555,12 @@ namespace ce
 */		}
 		void DefaultPhysicsHandler::Plane::Place(ObjectHandle *entity)
 		{
-			Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent();
+			Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent(), halfExtent = extent / 2.f;
 			int _minX, _minY, _maxX, _maxY;
-			_minX = (int)floor(position[0] / m_zoneSize);
-			_minY = (int)floor(position[1] / m_zoneSize);
-			_maxX = (int)floor((position[0] + extent[0]) / m_zoneSize);
-			_maxY = (int)floor((position[1] + extent[1]) / m_zoneSize);
+			_minX = (int)floor((position[0] - halfExtent[0]) / m_zoneSize);
+			_minY = (int)floor((position[1] - halfExtent[1]) / m_zoneSize);
+			_maxX = (int)floor((position[0] + halfExtent[0]) / m_zoneSize);
+			_maxY = (int)floor((position[1] + halfExtent[1]) / m_zoneSize);
 
 			if(_minX < 0)
 				_minX = 0;
@@ -570,21 +585,21 @@ namespace ce
 		}
 		void DefaultPhysicsHandler::Plane::MoveEntity(game2d::DefaultPhysicsHandler::ObjectHandle *entity, Vector2<float> movement)
 		{
-			Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent();
+			Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent(), halfExtent = extent / 2.f;
 
 			int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
-			aMinX = (int)floor(position[0] / m_zoneSize);
-			aMinY = (int)floor(position[1] / m_zoneSize);
-			aMaxX = (int)floor((position[0] + extent[0]) / m_zoneSize);
-			aMaxY = (int)floor((position[1] + extent[1]) / m_zoneSize);
+			aMinX = (int)floor((position[0] - halfExtent[0]) / m_zoneSize);
+			aMinY = (int)floor((position[1] - halfExtent[1]) / m_zoneSize);
+			aMaxX = (int)floor((position[0] + halfExtent[0]) / m_zoneSize);
+			aMaxY = (int)floor((position[1] + halfExtent[1]) / m_zoneSize);
 
 			position += movement;
 			entity->SetPosition(position);
-
-			bMinX = (int)floor(position[0] / m_zoneSize);
-			bMinY = (int)floor(position[1] / m_zoneSize);
-			bMaxX = (int)floor((position[0] + extent[0]) / m_zoneSize);
-			bMaxY = (int)floor((position[1] + extent[1]) / m_zoneSize);
+			
+			bMinX = (int)floor((position[0] - halfExtent[0]) / m_zoneSize);
+			bMinY = (int)floor((position[1] - halfExtent[1]) / m_zoneSize);
+			bMaxX = (int)floor((position[0] + halfExtent[0]) / m_zoneSize);
+			bMaxY = (int)floor((position[1] + halfExtent[1]) / m_zoneSize);
 
 			if(aMinX < 0)
 				aMinX = 0;
@@ -649,12 +664,12 @@ namespace ce
 				ObjectHandle *entity = *it;
 				if(entity->m_startedPhysics)
 					continue;
-				Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent();
+				Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent(), halfExtent = extent / 2.f;
 				int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
-				aMinX = (int)floor(position[0] / m_zoneSize);
-				aMinY = (int)floor(position[1] / m_zoneSize);
-				aMaxX = (int)floor((position[0] + extent[0]) / m_zoneSize);
-				aMaxY = (int)floor((position[1] + extent[1]) / m_zoneSize);
+				aMinX = (int)floor((position[0] - halfExtent[0]) / m_zoneSize);
+				aMinY = (int)floor((position[1] - halfExtent[1]) / m_zoneSize);
+				aMaxX = (int)floor((position[0] + halfExtent[0]) / m_zoneSize);
+				aMaxY = (int)floor((position[1] + halfExtent[1]) / m_zoneSize);
 
 				bMinX = (int)floor(entity->m_moveBoxMin[0] / m_zoneSize);
 				bMinY = (int)floor(entity->m_moveBoxMin[1] / m_zoneSize);
@@ -757,11 +772,11 @@ namespace ce
 							entity->m_movePadding[1] = 1.f;
 */					}
 
-					Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent();
-					bMinX = (int)floor(position[0] / m_zoneSize);
-					bMinY = (int)floor(position[1] / m_zoneSize);
-					bMaxX = (int)floor((position[0] + extent[0]) / m_zoneSize);
-					bMaxY = (int)floor((position[1] + extent[1]) / m_zoneSize);
+					Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent(), halfExtent = extent / 2.f;
+					bMinX = (int)floor((position[0] - halfExtent[0]) / m_zoneSize);
+					bMinY = (int)floor((position[1] - halfExtent[1]) / m_zoneSize);
+					bMaxX = (int)floor((position[0] + halfExtent[0]) / m_zoneSize);
+					bMaxY = (int)floor((position[1] + halfExtent[1]) / m_zoneSize);
 					
 					 if(aMinX < 0)
 						aMinX = 0;

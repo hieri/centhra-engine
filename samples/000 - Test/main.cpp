@@ -54,6 +54,7 @@ public:
 
 		m_camera = new game2d::Camera();
 		m_camera->SetFocus(m_entity);
+		m_camera->SetCurrent();
 
 		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(640, 480));
 		m_view->SetCamera(m_camera);
@@ -83,10 +84,10 @@ public:
 			m_group->Add(m_randoms[a]);
 		}
 
-//		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
-//		m_group->AttachHandler(m_defaultPhysicsHandler);
-
+		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
 		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
+
+//		m_group->AttachHandler(m_defaultPhysicsHandler);
 		m_group->AttachHandler(m_box2dPhysicsHandler);
 
 		return true;
@@ -148,7 +149,7 @@ public:
 	{
 		m_group->CleanupHandler();
 		delete m_box2dPhysicsHandler;
-		//delete m_defaultPhysicsHandler;
+		delete m_defaultPhysicsHandler;
 
 		delete m_view;
 		delete m_camera;

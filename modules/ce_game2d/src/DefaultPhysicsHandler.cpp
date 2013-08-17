@@ -17,7 +17,7 @@
 
 using namespace std;
 
-//- TODO: Reimplement other features -
+//- TODO: Implement collision callback -
 
 namespace ce
 {

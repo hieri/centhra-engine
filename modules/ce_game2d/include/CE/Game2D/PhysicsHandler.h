@@ -36,6 +36,7 @@ namespace ce
 				virtual void OnRelocate(PhysicalGroup *oldGroup, PhysicalGroup *newGroup);
 				virtual void OnDestroy();
 				
+				virtual void OnSetCollisionMask();
 				virtual void OnSetPosition();
 				virtual void OnSetExtent();
 				virtual void OnSetVelocity();

@@ -12,7 +12,7 @@
 using namespace ce;
 using namespace std;
 
-#define NUMRANDOMS 256
+#define NUMRANDOMS 512
 
 //- Define your own implementation of the AppFrontend class. -
 class AppTest : public AppFrontend

@@ -84,5 +84,8 @@ namespace ce
 		void PhysicsHandler::ObjectHandle::OnSetRotation()
 		{
 		}
+		void PhysicsHandler::ObjectHandle::OnSetCollisionMask()
+		{
+		}
 	}
 }

@@ -213,6 +213,9 @@ namespace ce
 		void PhysicalObject::SetCollisionMask(unsigned int mask)
 		{
 			m_collisionMask = mask;
+
+			if(m_objectHandle)
+				m_objectHandle->OnSetCollisionMask();
 		}
 		bool PhysicalObject::OnCollision(PhysicalObject *collider)
 		{

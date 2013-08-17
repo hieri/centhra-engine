@@ -19,6 +19,52 @@ namespace ce
 	{
 		namespace box2d
 		{
+			//- TODO: Have recurrent calls to the collision callback during constant collision -
+			class B2D_ContactListener : public b2ContactListener
+			{
+			public:
+				/// Called when two fixtures begin to touch.
+				virtual void BeginContact(b2Contact* contact)
+				{
+					game2d::PhysicalObject *objA = ((bPhysicsHandler::bObjectHandle *)contact->GetFixtureA()->GetBody()->GetUserData())->GetReferenceObject();
+					game2d::PhysicalObject *objB = ((bPhysicsHandler::bObjectHandle *)contact->GetFixtureB()->GetBody()->GetUserData())->GetReferenceObject();
+
+					objA->OnCollision(objB);
+					objB->OnCollision(objA);
+				}
+
+				/// Called when two fixtures cease to touch.
+				virtual void EndContact(b2Contact* contact) { B2_NOT_USED(contact); }
+
+				/// This is called after a contact is updated. This allows you to inspect a
+				/// contact before it goes to the solver. If you are careful, you can modify the
+				/// contact manifold (e.g. disable contact).
+				/// A copy of the old manifold is provided so that you can detect changes.
+				/// Note: this is called only for awake bodies.
+				/// Note: this is called even when the number of contact points is zero.
+				/// Note: this is not called for sensors.
+				/// Note: if you set the number of contact points to zero, you will not
+				/// get an EndContact callback. However, you may get a BeginContact callback
+				/// the next step.
+				virtual void PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
+				{
+					B2_NOT_USED(contact);
+					B2_NOT_USED(oldManifold);
+				}
+
+				/// This lets you inspect a contact after the solver is finished. This is useful
+				/// for inspecting impulses.
+				/// Note: the contact manifold does not include time of impact impulses, which can be
+				/// arbitrarily large if the sub-step is small. Hence the impulse is provided explicitly
+				/// in a separate data structure.
+				/// Note: this is only called for contacts that are touching, solid, and awake.
+				virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
+				{
+					B2_NOT_USED(contact);
+					B2_NOT_USED(impulse);
+				}
+			};
+
 			class B2D_BoxSearchCallback : public b2QueryCallback
 			{
 				vector<game2d::PhysicalObject *> m_currentBoxSearch;
@@ -28,7 +74,7 @@ namespace ce
 				/// @return false to terminate the query.
 				virtual bool ReportFixture(b2Fixture *fixture)
 				{
-					m_currentBoxSearch.push_back((game2d::PhysicalObject *)fixture->GetBody()->GetUserData());
+					m_currentBoxSearch.push_back(((bPhysicsHandler::bObjectHandle *)fixture->GetBody()->GetUserData())->GetReferenceObject());
 					return true;
 				}
 				vector<game2d::PhysicalObject *> GetResults()
@@ -54,7 +100,7 @@ namespace ce
 				/// closest hit, 1 to continue
 				virtual float32 ReportFixture(	b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction)
 				{
-					m_currentSegmentSearch.push_back((game2d::PhysicalObject *)fixture->GetBody()->GetUserData());
+					m_currentSegmentSearch.push_back(((bPhysicsHandler::bObjectHandle *)fixture->GetBody()->GetUserData())->GetReferenceObject());
 					return -1.f;
 				}
 				vector<game2d::PhysicalObject *> GetResults()
@@ -67,6 +113,7 @@ namespace ce
 			{
 			public:
 				b2World *m_b2d_world;
+				B2D_ContactListener *m_contactListener;
 
 				Box2DSystem(Vector2<float> gravity)
 				{
@@ -74,10 +121,14 @@ namespace ce
 					b2d_gravity.Set(gravity[0], gravity[1]);
 					m_b2d_world = new b2World(b2d_gravity);
 					m_b2d_world->SetContinuousPhysics(true);
+
+					m_contactListener = new B2D_ContactListener();
+					m_b2d_world->SetContactListener(m_contactListener);
 				}
 				~Box2DSystem()
 				{
 					delete m_b2d_world;
+					delete m_contactListener;
 				}
 				void Process(float dt)
 				{
@@ -92,8 +143,10 @@ namespace ce
 						b2Vec2 pos = body->GetPosition();
 						float rot = body->GetAngle();
 						game2d::PhysicalObject *pObj = objectHandle->GetReferenceObject();
+						b2Vec2 vel = body->GetLinearVelocity();
+						pObj->SetVelocity(Vector2<float>(vel.x, vel.y), false);
 						pObj->SetPosition(Vector2<float>(pos.x, pos.y), false);
-						pObj->SetRotation(radToDeg * rot);
+						pObj->SetRotation(radToDeg * rot, false);
 						body = body->GetNext();
 					}
 				}
@@ -121,6 +174,7 @@ namespace ce
 				fd.shape = &shape;
 				fd.density = 1.0f;
 				fd.friction = 0.3f;
+				fd.filter.maskBits = object->GetCollisionMask();
 //				fd.filter.categoryBits = 0x0001;	// collision mask stuff?
 //				fd.filter.maskBits = 0xFFFF;// & ~0x0002; <- meant that floor didn't collide with ropes
 
@@ -165,6 +219,20 @@ namespace ce
 				b2Body *b2d_body = (b2Body *)m_b2d_body;
 				b2Vec2 vel(velocity[0], velocity[1]);
 				b2d_body->SetLinearVelocity(vel);
+			}
+			void bPhysicsHandler::bObjectHandle::OnSetCollisionMask()
+			{
+				b2Body *b2d_body = (b2Body *)m_b2d_body;
+				b2Fixture *fix = b2d_body->GetFixtureList();
+			
+				do
+				{
+					b2Filter filter = fix->GetFilterData();
+					filter.maskBits = m_object->GetCollisionMask();
+					fix->SetFilterData(filter);
+					fix = fix->GetNext();
+				}
+				while(fix);
 			}
 
 			bPhysicsHandler::bPhysicsHandler()

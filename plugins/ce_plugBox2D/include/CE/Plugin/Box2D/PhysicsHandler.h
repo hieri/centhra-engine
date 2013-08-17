@@ -39,6 +39,7 @@ namespace ce
 					virtual void OnSetPosition();
 					virtual void OnSetExtent();
 					virtual void OnSetVelocity();
+					virtual void OnSetCollisionMask();
 
 				public:
 					friend class bPhysicsHandler;

@@ -5,6 +5,9 @@
 #include <CE/UI/ButtonCtrl.h>
 #include <CE/UI/ColorCtrl.h>
 
+//- Standard Library -
+#include <stdlib.h>
+
 using namespace ce;
 using namespace std;
 

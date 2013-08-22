@@ -9,6 +9,7 @@ namespace ce
 	{
 		static int ms_count;
 
+		bool m_isBlocking;
 		int m_socket;
 
 		Socket();
@@ -38,7 +39,7 @@ namespace ce
 		 *	@param protocol Protocol of the Socket.
 		 *	@return Socket object or 0 if creation failed.
 		 */
-		static Socket *Create(Domain domain, Type type, Protocol protocol);
+		static Socket *Create(Domain domain, Type type, Protocol protocol, bool isBlocking = true);
 
 		/**	@brief Destructor.
 		 */
@@ -77,13 +78,15 @@ namespace ce
 		 *	@param buffer Buffer for storing the result of the read request.
 		 *	@param length Length of the read request.
 		 */
-		void Read(char *buffer, unsigned int length);
+		int Read(char *buffer, unsigned int length);
 
 		/**	@brief Writes data to the socket connection.
 		 *	@param buffer Buffer of the write request.
 		 *	@param length Length of the write request.
 		 */
-		void Write(char *buffer, unsigned int length);
+		int Write(char *buffer, unsigned int length);
+
+		bool SetBlocking(bool isBlocking);
 	};
 }
 

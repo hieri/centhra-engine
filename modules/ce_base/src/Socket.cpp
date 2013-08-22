@@ -13,6 +13,7 @@
 	#include <stdlib.h>
 	#include <string.h>
 	#include <unistd.h>
+	#include <fcntl.h>
 #endif
 
 #ifdef _WIN32
@@ -32,7 +33,7 @@ namespace ce
 		WSADATA g_wsaData;
 	#endif
 
-	Socket *Socket::Create(Domain domain, Type type, Protocol protocol)
+	Socket *Socket::Create(Domain domain, Type type, Protocol protocol, bool isBlocking)
 	{
 		int sDomain = -1, sType = -1, sProtocol = -1;
 
@@ -117,12 +118,15 @@ namespace ce
 
 		Socket *sock = new Socket();
 		sock->m_socket = sSocket;
+		if(!isBlocking)
+			sock->SetBlocking(isBlocking);
 		return sock;
 	}
 
 	Socket::Socket()
 	{
 		m_socket = 0;
+		m_isBlocking = true;
 		ms_count++;
 	}
 	Socket::~Socket()
@@ -147,7 +151,8 @@ namespace ce
 
 		if(ret == -1)
 		{
-			error("[Error] Socket::Accept - Unable to accept incomming connection.\n");
+			if(m_isBlocking)
+				error("[Error] Socket::Accept - Unable to accept incomming connection.\n");
 			return 0;
 		}
 
@@ -209,17 +214,19 @@ namespace ce
 
 		return true;
 	}
-	void Socket::Read(char *buffer, unsigned int length)
+	int Socket::Read(char *buffer, unsigned int length)
 	{
 		#if CE_BASE_USEPOSIXSOCKET
-			read(m_socket, buffer, length);
+			return read(m_socket, buffer, length);
 		#endif
 		#if CE_BASE_USEWINSOCKET
-			recv(m_socket, buffer, length, 0);
+			return recv(m_socket, buffer, length, 0);
 		#endif
 	}
 	bool Socket::Shutdown()
 	{
+		SetBlocking(true);
+
 		#if CE_BASE_USEPOSIXSOCKET
 			if(shutdown(m_socket, SHUT_RDWR) == -1)
 		#endif
@@ -233,8 +240,25 @@ namespace ce
 
 		return true;
 	}
-	void Socket::Write(char *buffer, unsigned int length)
+	int Socket::Write(char *buffer, unsigned int length)
 	{
-		send(m_socket, buffer, length, 0);
+		return send(m_socket, buffer, length, 0);
+	}
+	bool Socket::SetBlocking(bool isBlocking)
+	{
+		#if CE_BASE_USEPOSIXSOCKET
+			int flags = isBlocking ? 0 : SOCK_NONBLOCK;
+			fcntl(m_socket, F_SETFL, flags);
+		#endif
+
+		#if CE_BASE_USEWINSOCKET
+			unsigned long mode = isBlocking ? 0 : 1;
+			int res = ioctlsocket(m_socket, FIONBIO, &mode);
+			if(res != NO_ERROR)
+				error("[Error] Setting socket blocking mode failed. Code: %ld\n", res);
+		#endif
+
+		m_isBlocking = isBlocking;
+		return true;
 	}
 }

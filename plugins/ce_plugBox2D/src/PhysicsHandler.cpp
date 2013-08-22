@@ -242,7 +242,7 @@ namespace ce
 			bPhysicsHandler::~bPhysicsHandler()
 			{
 				if(m_b2d_system)
-					delete m_b2d_system;
+					delete (Box2DSystem *)m_b2d_system;
 			}
 			void bPhysicsHandler::Initialize()
 			{

@@ -109,7 +109,7 @@ namespace ce
 			#endif
 
 			//- TODO: Determine if this is bad to have by default -
-			srand(time(NULL));
+			srand((unsigned int)time(NULL));
 
 			OnStarted();
 		}

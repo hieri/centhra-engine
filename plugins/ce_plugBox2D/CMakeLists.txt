@@ -18,7 +18,7 @@ set(INCLUDE
 	${PROJECT_SOURCE_DIR}/modules/ce_base/include
 	${PROJECT_SOURCE_DIR}/modules/ce_frontend/include
 	${PROJECT_SOURCE_DIR}/modules/ce_game2d/include
-	${BOX2D_INCLUDE_DIRS}
+	${BOX2D_INCLUDE_DIR}
 )
 
 set(LIB

@@ -109,7 +109,20 @@ namespace ce
 						xcbWindow = cast->event;
 						if(m_canvasMap.count(xcbWindow))
 							event.base.canvas = m_canvasMap[xcbWindow];
-						event.mouseButton.button = cast->detail;
+						switch(cast->detail)
+						{
+						case 1:
+							event.mouseButton.button = event::MouseButtonLeft;
+							break;
+						case 2:
+							event.mouseButton.button = event::MouseButtonMiddle;
+							break;
+						case 3:
+							event.mouseButton.button = event::MouseButtonRight;
+							break;
+						default:
+							event.mouseButton.button = event::Unknown;
+						}
 						event.mouseButton.state = cast->state;
 						event.mouseButton.x = cast->event_x;
 						event.mouseButton.y = cast->event_y;
@@ -123,7 +136,20 @@ namespace ce
 						xcbWindow = cast->event;
 						if(m_canvasMap.count(xcbWindow))
 							event.base.canvas = m_canvasMap[xcbWindow];
-						event.mouseButton.button = cast->detail;
+						switch(cast->detail)
+						{
+						case 1:
+							event.mouseButton.button = event::MouseButtonLeft;
+							break;
+						case 2:
+							event.mouseButton.button = event::MouseButtonMiddle;
+							break;
+						case 3:
+							event.mouseButton.button = event::MouseButtonRight;
+							break;
+						default:
+							event.mouseButton.button = event::Unknown;
+						}
 						event.mouseButton.state = cast->state;
 						event.mouseButton.x = cast->event_x;
 						event.mouseButton.y = cast->event_y;
@@ -204,7 +230,20 @@ namespace ce
 						break;;
 					case ButtonPress:
 						event.mouseButton.type = event::MouseButtonDown;
-						event.mouseButton.button = xEvent.xbutton.button;
+						switch(xEvent.xbutton.button)
+						{
+						case 1:
+							event.mouseButton.button = event::MouseButtonLeft;
+							break;
+						case 2:
+							event.mouseButton.button = event::MouseButtonMiddle;
+							break;
+						case 3:
+							event.mouseButton.button = event::MouseButtonRight;
+							break;
+						default:
+							event.mouseButton.button = event::Unknown;
+						}
 						event.mouseButton.state = xEvent.xbutton.state;
 						event.mouseButton.x = xEvent.xbutton.x;
 						event.mouseButton.y = xEvent.xbutton.y;
@@ -212,7 +251,20 @@ namespace ce
 						break;
 					case ButtonRelease:
 						event.mouseButton.type = event::MouseButtonUp;
-						event.mouseButton.button = xEvent.xbutton.button;
+						switch(xEvent.xbutton.button)
+						{
+						case 1:
+							event.mouseButton.button = event::MouseButtonLeft;
+							break;
+						case 2:
+							event.mouseButton.button = event::MouseButtonMiddle;
+							break;
+						case 3:
+							event.mouseButton.button = event::MouseButtonRight;
+							break;
+						default:
+							event.mouseButton.button = event::Unknown;
+						}
 						event.mouseButton.state = xEvent.xbutton.state;
 						event.mouseButton.x = xEvent.xbutton.x;
 						event.mouseButton.y = xEvent.xbutton.y;

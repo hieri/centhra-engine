@@ -217,13 +217,13 @@ public:
 
 			switch(event.mouseButton.button)
 			{
-			case 1:
+			case event::MouseButtonLeft:
 				m_pointA = Vector2<float>(center[0] - halfExtent[0] + (float)event.mouseButton.x, center[1] + halfExtent[1] - (float)event.mouseButton.y);
 				m_path.clear();
 				if(m_group->SegmentSearch(m_pointA[0], m_pointA[1], m_pointB[0], m_pointB[1], 1).size())
 					m_path = m_graph->FindPath(m_pointA, m_pointB, 1, m_group);
 				break;
-			case 2:
+			case event::MouseButtonRight:
 				m_pointB = Vector2<float>(center[0] - halfExtent[0] + (float)event.mouseButton.x, center[1] + halfExtent[1] - (float)event.mouseButton.y);
 				m_path.clear();
 				if(m_group->SegmentSearch(m_pointA[0], m_pointA[1], m_pointB[0], m_pointB[1], 1).size())

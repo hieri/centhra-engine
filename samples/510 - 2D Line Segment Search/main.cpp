@@ -169,10 +169,10 @@ public:
 
 			switch(event.mouseButton.button)
 			{
-			case 1:
+			case event::MouseButtonLeft:
 				m_pointA = Vector2<float>(center[0] - halfExtent[0] + (float)event.mouseButton.x, center[1] + halfExtent[1] - (float)event.mouseButton.y);
 				break;
-			case 2:
+			case event::MouseButtonRight:
 				m_pointB = Vector2<float>(center[0] - halfExtent[0] + (float)event.mouseButton.x, center[1] + halfExtent[1] - (float)event.mouseButton.y);
 				break;
 			}

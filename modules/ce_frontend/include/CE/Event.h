@@ -26,6 +26,15 @@ namespace ce
 			MouseMotion,
 			WindowResize
 		} EventType;
+
+
+		typedef enum MouseButtonType
+		{
+			Unknown,
+			MouseButtonLeft,
+			MouseButtonRight,
+			MouseButtonMiddle
+		} MouseButtonType;
 	}
 
 	/**	@brief Default Event Data Structure Class

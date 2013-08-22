@@ -71,56 +71,58 @@ namespace ce
 				break;
 			case WM_LBUTTONDOWN:
 				event.type = event::MouseButtonDown;
-				event.mouseButton.button = MK_LBUTTON;
+				event.mouseButton.button = event::MouseButtonLeft;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
 			case WM_LBUTTONUP:
 				event.type = event::MouseButtonUp;
-				event.mouseButton.button = MK_LBUTTON;
+				event.mouseButton.button = event::MouseButtonLeft;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
 			case WM_RBUTTONDOWN:
 				event.type = event::MouseButtonDown;
-				event.mouseButton.button = MK_RBUTTON;
+				event.mouseButton.button = event::MouseButtonRight;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
 			case WM_RBUTTONUP:
 				event.type = event::MouseButtonUp;
-				event.mouseButton.button = MK_RBUTTON;
+				event.mouseButton.button = event::MouseButtonRight;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
 			case WM_MBUTTONDOWN:
 				event.type = event::MouseButtonDown;
-				event.mouseButton.button = MK_MBUTTON;
+				event.mouseButton.button = event::MouseButtonMiddle;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
 			case WM_MBUTTONUP:
 				event.type = event::MouseButtonUp;
-				event.mouseButton.button = MK_MBUTTON;
+				event.mouseButton.button = event::MouseButtonMiddle;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
 			case WM_XBUTTONDOWN:
 				event.type = event::MouseButtonDown;
-				event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
+//				event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
+				event.mouseButton.button = event::Unknown;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
 			case WM_XBUTTONUP:
 				event.type = event::MouseButtonUp;
-				event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
+//				event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
+				event.mouseButton.button = event::Unknown;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);

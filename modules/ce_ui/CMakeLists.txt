@@ -23,7 +23,7 @@ set(SRC
 	${SRC_DIR}/TextEditCtrl.cpp
 )
 
-configure_file(include/CE/ConfigUI.h.in include/CE/ConfigUI.h)
+configure_file(${INC_DIR}/ConfigUI.h.in ${INC_DIR}/ConfigUI.h)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/modules/ce_base/include ${PROJECT_SOURCE_DIR}/modules/ce_frontend/include ${PROJECT_SOURCE_DIR}/external/include)
 add_library(ce_ui STATIC ${SRC} ${INC} ${RES})

@@ -69,7 +69,7 @@ find_package(OpenAL REQUIRED)
 set(LIB ${LIB} ${OPENAL_LIBRARY})
 set(INCLUDE ${INCLUDE} ${OPENAL_INCLUDE_DIR})
 
-configure_file(include/CE/ConfigBase.h.in include/CE/ConfigBase.h)
+configure_file(${INC_DIR}/ConfigBase.h.in ${INC_DIR}/ConfigBase.h)
 
 include_directories(${INCLUDE})
 add_library(ce_base STATIC ${SRC} ${INC} ${RES})

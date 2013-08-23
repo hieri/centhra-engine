@@ -33,7 +33,7 @@ else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	set(FRONTEND_USEWIN "0")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
-configure_file(include/CE/ConfigFrontend.h.in include/CE/ConfigFrontend.h)
+configure_file(${INC_DIR}/ConfigFrontend.h.in ${INC_DIR}/ConfigFrontend.h)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/modules/ce_base/include ${PROJECT_SOURCE_DIR}/external/include)
 add_library(ce_frontend STATIC ${SRC} ${INC} ${RES})

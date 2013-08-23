@@ -31,7 +31,7 @@ set(SRC
 	${SRC_DIR}/Trigger.cpp
 )
 
-configure_file(include/CE/ConfigGame2D.h.in include/CE/ConfigGame2D.h)
+configure_file(${INC_DIR}/ConfigGame2D.h.in ${INC_DIR}/ConfigGame2D.h)
 
 set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/modules/ce_base/include ${PROJECT_SOURCE_DIR}/modules/ce_frontend/include  ${PROJECT_SOURCE_DIR}/modules/ce_ui/include)
 

@@ -4,6 +4,7 @@
 #include <iostream>
 
 //- Centhra Engine -
+#include <CE/App.h>
 #include <CE/Audio.h>
 #include <CE/Thread.h>
 #include <CE/Plugin.h>
@@ -60,6 +61,7 @@ namespace ce
 
 	void *Audio::Play2DProcess(void *data)
 	{
+		App *app = App::GetCurrent();
 		Play2DStruct *structData = (Play2DStruct *)data;
 		Audio *audio = structData->audio;
 		Thread *thread = structData->thread;
@@ -101,11 +103,19 @@ namespace ce
 			return 0;
 		}
 
-		unsigned int timeMS = (unsigned int)(timeS * 1000);
-		sleepMS(timeMS + 1000);
+		unsigned long timeMS = (unsigned long)(timeS * 1000);
+		unsigned long targetTime = app->GetRunTimeMS() + timeMS + 50;
+
+		while(app->IsRunning())
+		{
+			if(app->GetRunTimeMS() > targetTime)
+				break;
+			sleepMS(100);
+		}
+		//	sleepMS(timeMS + 50);
 
 		alDeleteSources(1, &source);
-		delete thread;
+		thread->End();
 		Thread::Exit(NULL);
 		return 0;
 	}
@@ -113,7 +123,11 @@ namespace ce
 	Audio *Audio::LoadWAV(const char *file)
 	{
 		FILE *fp = 0;
-		fp = fopen(file, "rb");
+		#ifdef _WIN32
+			fopen_s(&fp, file, "rb");
+		#else
+			fp = fopen(file, "rb");
+		#endif
 		if(!fp)
 		{
 			error("[Error] Audio::LoadWAV: Unable to open file <%s>.\n", file);

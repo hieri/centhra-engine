@@ -1,7 +1,10 @@
+//- Standard Library -
 #include <assert.h>
+#include <vector>
 
 //- Centhra Engine -
 #include <CE/ConfigBase.h>
+#include <CE/Base.h>
 #include <CE/Thread.h>
 
 #if CE_BASE_USEPOSIXTHREAD
@@ -13,8 +16,18 @@
 	#include <windows.h>
 #endif
 
+using namespace std;
+
 namespace ce
 {
+	vector<Thread *> g_deadThreads;
+
+	void Thread::DeleteDead()
+	{
+		for(vector<Thread *>::iterator it = g_deadThreads.begin(); it != g_deadThreads.end(); it++)
+			delete *it;
+		g_deadThreads.clear();
+	}
 	Thread::Thread(void *(*process)(void *))
 	{
 		m_process = process;
@@ -86,5 +99,9 @@ namespace ce
 		#endif
 
 		return false;
+	}
+	void Thread::End()
+	{
+		g_deadThreads.push_back(this);
 	}
 }

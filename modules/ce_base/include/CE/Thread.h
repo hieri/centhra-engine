@@ -25,6 +25,8 @@ namespace ce
 		 */
 		static void Exit(void *retVal = 0);
 
+		static void DeleteDead();
+
 		/**	@brief Constructor.
 		 *	@param process Thread function.
 		 */
@@ -49,6 +51,8 @@ namespace ce
 		 *	@return Whether or not the thraed is running.
 		 */
 		bool IsRunning() const;
+
+		void End();
 	};
 }
 

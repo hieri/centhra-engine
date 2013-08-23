@@ -127,6 +127,11 @@ namespace ce
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
+			case WM_MOUSEWHEEL:
+				event.type = event::MouseWheel;
+				event.mouseWheel.delta = GET_WHEEL_DELTA_WPARAM(wParam);
+				app->OnEvent(event);
+				break;
 			case WM_MOUSEMOVE:
 				event.type = event::MouseMotion;
 				event.mouseMotion.x = LOWORD(lParam);

@@ -49,7 +49,14 @@ namespace ce
 
 				bPhysicsHandler();
 				~bPhysicsHandler();
-			};
+
+/*
+				void AddPulleyJoint(game2d::PhysicalObject *objA, game2d::PhysicalObject *objB);
+				void AddDistanceJoint(game2d::PhysicalObject *objA, game2d::PhysicalObject *objB);
+				void AddRevoluteJoint(game2d::PhysicalObject *objA, game2d::PhysicalObject *objB);
+				void AddRopeJoint(game2d::PhysicalObject *objA, game2d::PhysicalObject *objB);
+*/			};
+
 		}
 	}
 }

@@ -24,6 +24,7 @@ namespace ce
 			MouseButtonDown,
 			MouseButtonUp,
 			MouseMotion,
+			MouseWheel,
 			WindowResize
 		} EventType;
 
@@ -87,6 +88,16 @@ namespace ce
 		int x, y;
 	} MouseMotionEvent;
 
+	/**	@brief Mouse Wheel Event Data Structure Class
+	 */
+	typedef struct MouseWheelEvent
+	{
+		int type;
+		unsigned long timeMS;
+		Canvas *canvas;
+		int delta;
+	} MouseWheelEvent;
+
 	/**	@brief Window Resize Event Data Structure Class
 	 */
 	typedef struct WindowResizeEvent
@@ -107,6 +118,7 @@ namespace ce
 		KeyEvent key;
 		MouseButtonEvent mouseButton;
 		MouseMotionEvent mouseMotion;
+		MouseWheelEvent mouseWheel;
 		WindowResizeEvent windowResize;
 		char padding[64];
 	} Event;

@@ -10,6 +10,7 @@
 
 //- Standard Library -
 #include <stdlib.h>
+#include <time.h>
 
 #define NUMRANDOMS 64
 
@@ -57,10 +58,11 @@ public:
 
 	void OnStarted()
 	{
-		srand(GetRunTimeMS());
+		srand((unsigned int)time(NULL));
 		m_canvas = Canvas::Create(640, 480, "510 - 2D Line Segment Search");
 		m_group = new game2d::PhysicalGroup();
 		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
+		m_entity->SetCollisionMask(2);
 		m_group->Add(m_entity);
 
 		m_camera = new game2d::Camera();

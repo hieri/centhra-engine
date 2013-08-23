@@ -101,7 +101,7 @@ namespace ce
 			return 0;
 		}
 
-		unsigned int timeMS = timeS * 1000;
+		unsigned int timeMS = (unsigned int)(timeS * 1000);
 		sleepMS(timeMS + 1000);
 
 		alDeleteSources(1, &source);

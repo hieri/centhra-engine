@@ -5,6 +5,11 @@ namespace ce
 {
 	class Audio
 	{
+		static void *Play2DProcess(void *data);
+		static Audio *LoadWAV(const char *file);
+
+		unsigned int m_buffer;
+
 		Audio();
 
 	public:
@@ -12,6 +17,10 @@ namespace ce
 		static void Cleanup();
 
 		static Audio *CreateFromFile(const char *file);
+
+		~Audio();
+
+		void Play2D(bool spawnThread = false);
 	};
 }
 

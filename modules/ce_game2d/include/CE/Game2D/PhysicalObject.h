@@ -47,7 +47,7 @@ namespace ce
 			unsigned int GetCollisionMask() const;
 			void SetCollisionMask(unsigned int mask);
 
-			virtual bool OnCollision(PhysicalObject *collider);
+			virtual bool OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact);
 
 			static void Cleanup();
 

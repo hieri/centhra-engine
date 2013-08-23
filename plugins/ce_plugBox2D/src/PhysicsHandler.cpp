@@ -29,8 +29,12 @@ namespace ce
 					game2d::PhysicalObject *objA = ((bPhysicsHandler::bObjectHandle *)contact->GetFixtureA()->GetBody()->GetUserData())->GetReferenceObject();
 					game2d::PhysicalObject *objB = ((bPhysicsHandler::bObjectHandle *)contact->GetFixtureB()->GetBody()->GetUserData())->GetReferenceObject();
 
-					objA->OnCollision(objB);
-					objB->OnCollision(objA);
+					b2WorldManifold worldManifold;
+					contact->GetWorldManifold(&worldManifold);
+
+					Vector2<float> pointOfContact(worldManifold.points[0].x, worldManifold.points[0].y);
+					objA->OnCollision(objB, pointOfContact);
+					objB->OnCollision(objA, pointOfContact);
 				}
 
 				/// Called when two fixtures cease to touch.

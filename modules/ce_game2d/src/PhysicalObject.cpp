@@ -217,7 +217,7 @@ namespace ce
 			if(m_objectHandle)
 				m_objectHandle->OnSetCollisionMask();
 		}
-		bool PhysicalObject::OnCollision(PhysicalObject *collider)
+		bool PhysicalObject::OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact)
 		{
 			return true;
 		}

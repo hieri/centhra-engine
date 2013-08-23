@@ -133,6 +133,7 @@ namespace ce
 			m_id = ms_lastID;
 
 			m_parentGroup = 0;
+			m_isTrigger = false;
 		}
 		PhysicalObject::~PhysicalObject()
 		{
@@ -145,7 +146,10 @@ namespace ce
 		}
 		void PhysicalObject::DoRender()
 		{
-			glColor3ub(m_color[0], m_color[1], m_color[2]);
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			glColor4ub(m_color[0], m_color[1], m_color[2], m_color[3]);
 //			glTranslatef(m_position[0], m_position[1], -m_position[1]);
 			glTranslatef(m_position[0], m_position[1], 0.f);
 			glRotatef(m_rotation, 0.f, 0.f, 1.f);
@@ -153,6 +157,8 @@ namespace ce
 			glTranslatef(-0.5f, -0.5f, 0.f);
 			RenderSquare();
 			glColor3ub(255, 255, 255);
+
+			glDisable(GL_BLEND);
 		}
 		Vector2<float> PhysicalObject::GetExtent() const
 		{
@@ -216,6 +222,10 @@ namespace ce
 
 			if(m_objectHandle)
 				m_objectHandle->OnSetCollisionMask();
+		}
+		bool PhysicalObject::IsTrigger() const
+		{
+			return m_isTrigger;
 		}
 		bool PhysicalObject::OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact)
 		{

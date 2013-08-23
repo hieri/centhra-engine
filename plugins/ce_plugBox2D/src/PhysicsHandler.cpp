@@ -5,6 +5,7 @@
 #include <CE/Base.h>
 #include <CE/Vector2.h>
 #include <CE/Game2D/PhysicalObject.h>
+#include <CE/Game2D/Trigger.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
 
 using namespace std;
@@ -29,16 +30,36 @@ namespace ce
 					game2d::PhysicalObject *objA = ((bPhysicsHandler::bObjectHandle *)contact->GetFixtureA()->GetBody()->GetUserData())->GetReferenceObject();
 					game2d::PhysicalObject *objB = ((bPhysicsHandler::bObjectHandle *)contact->GetFixtureB()->GetBody()->GetUserData())->GetReferenceObject();
 
-					b2WorldManifold worldManifold;
-					contact->GetWorldManifold(&worldManifold);
+					if(!objA->IsTrigger() && !objB->IsTrigger())
+					{
+						//- TODO: Average worldManifold points if necessary -
+						b2WorldManifold worldManifold;
+						contact->GetWorldManifold(&worldManifold);
 
-					Vector2<float> pointOfContact(worldManifold.points[0].x, worldManifold.points[0].y);
-					objA->OnCollision(objB, pointOfContact);
-					objB->OnCollision(objA, pointOfContact);
+						Vector2<float> pointOfContact(worldManifold.points[0].x, worldManifold.points[0].y);
+						objA->OnCollision(objB, pointOfContact);
+						objB->OnCollision(objA, pointOfContact);
+					}
+					else if(objA->IsTrigger())
+						((game2d::Trigger *)objA)->OnObjectEnter(objB);
+					else
+						((game2d::Trigger *)objB)->OnObjectEnter(objA);
 				}
 
 				/// Called when two fixtures cease to touch.
-				virtual void EndContact(b2Contact* contact) { B2_NOT_USED(contact); }
+				virtual void EndContact(b2Contact* contact)
+				{
+					game2d::PhysicalObject *objA = ((bPhysicsHandler::bObjectHandle *)contact->GetFixtureA()->GetBody()->GetUserData())->GetReferenceObject();
+					game2d::PhysicalObject *objB = ((bPhysicsHandler::bObjectHandle *)contact->GetFixtureB()->GetBody()->GetUserData())->GetReferenceObject();
+
+					if(!objA->IsTrigger() && !objB->IsTrigger())
+					{
+					}
+					else if(objA->IsTrigger())
+						((game2d::Trigger *)objA)->OnObjectLeave(objB);
+					else
+						((game2d::Trigger *)objB)->OnObjectLeave(objA);
+				}
 
 				/// This is called after a contact is updated. This allows you to inspect a
 				/// contact before it goes to the solver. If you are careful, you can modify the
@@ -176,18 +197,26 @@ namespace ce
 
 				b2FixtureDef fd;
 				fd.shape = &shape;
-				fd.density = 1.0f;
-				fd.friction = 0.3f;
 				fd.filter.maskBits = object->GetCollisionMask();
+		
 //				fd.filter.categoryBits = 0x0001;	// collision mask stuff?
 //				fd.filter.maskBits = 0xFFFF;// & ~0x0002; <- meant that floor didn't collide with ropes
 
 				b2BodyDef bd;
 				bd.type = b2_dynamicBody;
 				bd.position.Set(position[0], position[1]);
-
-//				fd.filter.categoryBits = 0x0002; <- was rope mask
 				bd.angularDamping = 0.7f;
+				
+				if(object->IsTrigger())
+				{
+					fd.isSensor = true;
+					bd.gravityScale = 0.f;
+				}
+				else
+				{
+					fd.density = 1.0f;
+					fd.friction = 0.3f;
+				}
 
 				b2Body *b2d_body = world->CreateBody(&bd);
 				b2d_body->CreateFixture(&fd);

@@ -13,6 +13,7 @@ set(INC
 	${INC_DIR}/Game2D/PhysicsHandler.h
 	${INC_DIR}/Game2D/Sprite.h
 	${INC_DIR}/Game2D/TileMap.h
+	${INC_DIR}/Game2D/Trigger.h
 )
 
 set(SRC
@@ -27,6 +28,7 @@ set(SRC
 	${SRC_DIR}/PhysicsHandler.cpp
 	${SRC_DIR}/Sprite.cpp
 	${SRC_DIR}/TileMap.cpp
+	${SRC_DIR}/Trigger.cpp
 )
 
 configure_file(include/CE/ConfigGame2D.h.in include/CE/ConfigGame2D.h)

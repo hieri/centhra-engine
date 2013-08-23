@@ -19,13 +19,14 @@ namespace ce
 
 			Vector2<float> m_position, m_extent, m_velocity;
 			float m_rotation;
-			Color m_color; //- TODO: Remove this after finished -
 			unsigned int m_id;
 			PhysicalGroup *m_parentGroup;
 			PhysicsHandler::ObjectHandle *m_objectHandle;
 
 		protected:
+			Color m_color; //- TODO: Remove this after finished -
 			unsigned int m_collisionMask;
+			bool m_isTrigger;
 
 			virtual void DoRender();
 
@@ -46,6 +47,7 @@ namespace ce
 			PhysicsHandler::ObjectHandle *GetObjectHandle() const;
 			unsigned int GetCollisionMask() const;
 			void SetCollisionMask(unsigned int mask);
+			bool IsTrigger() const;
 
 			virtual bool OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact);
 

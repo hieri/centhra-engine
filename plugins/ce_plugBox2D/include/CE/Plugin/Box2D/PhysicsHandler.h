@@ -37,6 +37,7 @@ namespace ce
 					virtual void OnRelocate(game2d::PhysicalGroup *oldGroup, game2d::PhysicalGroup *newGroup);
 					virtual void OnDestroy();
 				
+					virtual void OnSetStatic();
 					virtual void OnSetPosition();
 					virtual void OnSetExtent();
 					virtual void OnSetRotation();

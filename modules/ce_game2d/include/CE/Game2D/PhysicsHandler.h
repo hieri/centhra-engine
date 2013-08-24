@@ -37,6 +37,7 @@ namespace ce
 				virtual void OnDestroy();
 				
 				virtual void OnSetCollisionMask();
+				virtual void OnSetStatic();
 				virtual void OnSetPosition();
 				virtual void OnSetExtent();
 				virtual void OnSetVelocity();

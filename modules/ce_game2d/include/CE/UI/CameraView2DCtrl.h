@@ -11,10 +11,10 @@ namespace ce
 	{
 		class CameraView2DCtrl : public Control
 		{
+		protected:
 			game2d::Camera *m_camera;
 			Vector2<float> m_viewScale;
 
-		protected:
 			virtual void DoRender();
 
 		public:

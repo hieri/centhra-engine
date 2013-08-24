@@ -26,7 +26,7 @@ namespace ce
 		protected:
 			Color m_color; //- TODO: Remove this after finished -
 			unsigned int m_collisionMask;
-			bool m_isTrigger;
+			bool m_isTrigger, m_isStatic;
 
 			virtual void DoRender();
 
@@ -35,10 +35,12 @@ namespace ce
 			~PhysicalObject();
 
 			void Render();
+			bool IsStatic() const;
 			float GetRotation() const;
 			Vector2<float> GetExtent() const;
 			Vector2<float> GetPosition() const;
 			Vector2<float> GetVelocity() const;
+			void SetStatic(bool isStatic);
 			void SetExtent(Vector2<float> extent, bool updateHandle = true);
 			void SetPosition(Vector2<float> position, bool updateHandle = true);
 			void SetVelocity(Vector2<float> velocity, bool updateHandle = true);

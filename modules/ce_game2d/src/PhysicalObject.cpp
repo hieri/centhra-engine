@@ -133,7 +133,7 @@ namespace ce
 			m_id = ms_lastID;
 
 			m_parentGroup = 0;
-			m_isTrigger = false;
+			m_isTrigger = m_isStatic = false;
 		}
 		PhysicalObject::~PhysicalObject()
 		{
@@ -212,6 +212,10 @@ namespace ce
 		{
 			return m_objectHandle;
 		}
+		bool PhysicalObject::IsStatic() const
+		{
+			return m_isStatic;
+		}
 		unsigned int PhysicalObject::GetCollisionMask() const
 		{
 			return m_collisionMask;
@@ -230,6 +234,13 @@ namespace ce
 		bool PhysicalObject::OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact)
 		{
 			return true;
+		}
+		void PhysicalObject::SetStatic(bool isStatic)
+		{
+			m_isStatic = isStatic;
+
+			if(m_objectHandle)
+				m_objectHandle->OnSetStatic();
 		}
 	}
 }

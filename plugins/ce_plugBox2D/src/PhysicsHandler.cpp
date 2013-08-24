@@ -207,7 +207,10 @@ namespace ce
 //				fd.filter.maskBits = 0xFFFF;// & ~0x0002; <- meant that floor didn't collide with ropes
 
 				b2BodyDef bd;
-				bd.type = b2_dynamicBody;
+				if(object->IsStatic())
+					bd.type = b2_staticBody;
+				else
+					bd.type = b2_dynamicBody;
 				bd.position.Set(position[0], position[1]);
 				bd.linearVelocity.Set(velocity[0], velocity[1]);
 				bd.linearDamping = 0.f;
@@ -242,6 +245,14 @@ namespace ce
 			}
 			void bPhysicsHandler::bObjectHandle::OnDestroy()
 			{
+			}
+			void bPhysicsHandler::bObjectHandle::OnSetStatic()
+			{
+				b2Body *b2d_body = (b2Body *)m_b2d_body;
+				if(m_object->IsStatic())
+					b2d_body->SetType(b2_staticBody);
+				else
+					b2d_body->SetType(b2_dynamicBody);
 			}
 			void bPhysicsHandler::bObjectHandle::OnSetPosition()
 			{

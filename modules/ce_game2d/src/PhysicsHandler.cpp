@@ -72,6 +72,9 @@ namespace ce
 		void PhysicsHandler::ObjectHandle::OnDestroy()
 		{
 		}
+		void PhysicsHandler::ObjectHandle::OnSetStatic()
+		{
+		}
 		void PhysicsHandler::ObjectHandle::OnSetPosition()
 		{
 		}

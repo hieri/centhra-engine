@@ -41,6 +41,12 @@ namespace ce
 		{
 			return vector<PhysicalObject *>();
 		}
+		void PhysicsHandler::SetupObject(PhysicalObject *object)
+		{
+		}
+		void PhysicsHandler::CleanupObject(PhysicalObject *object)
+		{
+		}
 
 		PhysicsHandler::ObjectHandle::ObjectHandle(PhysicsHandler *handler, PhysicalObject *object)
 		{

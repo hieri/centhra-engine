@@ -236,6 +236,14 @@ namespace ce
 			}
 			bPhysicsHandler::bObjectHandle::~bObjectHandle()
 			{
+				b2Body *b2d_body = (b2Body *)m_b2d_body;
+				if(b2d_body)
+				{
+					bPhysicsHandler *bHandler = (bPhysicsHandler *)GetHandler();
+					Box2DSystem *system = (Box2DSystem *)bHandler->GetBox2DSystem();
+					b2World *world = system->m_b2d_world;
+					world->DestroyBody(b2d_body);
+				}
 			}
 			void bPhysicsHandler::bObjectHandle::OnCreate()
 			{
@@ -316,8 +324,7 @@ namespace ce
 				for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
 				{
 					game2d::PhysicalObject *object = (game2d::PhysicalObject *)*it;
-
-					bObjectHandle *handle = new bObjectHandle(this, object);
+					SetupObject(object);
 				}
 			}
 			void bPhysicsHandler::Render(float minX, float minY, float maxX, float maxY)
@@ -329,7 +336,8 @@ namespace ce
 					object->Render();
 				}
 
-				((Box2DSystem *)m_b2d_system)->Render();
+				if(m_b2d_system)
+					((Box2DSystem *)m_b2d_system)->Render();
 			}
 			void bPhysicsHandler::Process(float dt)
 			{
@@ -341,10 +349,7 @@ namespace ce
 				for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
 				{
 					game2d::PhysicalObject *object = (game2d::PhysicalObject *)*it;
-
-					bObjectHandle *handle = (bObjectHandle *)object->GetObjectHandle();
-					if(handle)
-						delete handle;
+					CleanupObject(object);
 				}
 			}
 			void bPhysicsHandler::SetGravity(Vector2<float> gravity)
@@ -392,6 +397,17 @@ namespace ce
 				}
 				return vector<game2d::PhysicalObject *>();
 			}
+			void bPhysicsHandler::SetupObject(game2d::PhysicalObject *object)
+			{
+				bObjectHandle *handle = new bObjectHandle(this, object);
+			}
+			void bPhysicsHandler::CleanupObject(game2d::PhysicalObject *object)
+			{
+				bObjectHandle *handle = (bObjectHandle *)object->GetObjectHandle();
+				if(handle)
+					delete handle;
+			}
+
 			void bPhysicsHandler::AddJoint(game2d::PhysicalObject *objA, game2d::PhysicalObject *objB, Vector2<float> offsetA, Vector2<float> offsetB)
 			{
 				b2World *world = 0;

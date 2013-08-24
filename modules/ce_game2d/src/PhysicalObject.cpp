@@ -137,6 +137,8 @@ namespace ce
 		}
 		PhysicalObject::~PhysicalObject()
 		{
+			if(m_parentGroup)
+				m_parentGroup->Remove(this);
 		}
 		void PhysicalObject::Render()
 		{

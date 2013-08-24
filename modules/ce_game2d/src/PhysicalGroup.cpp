@@ -38,17 +38,24 @@ namespace ce
 		{
 			if(m_physicsHandler != handler)
 			{
-				CleanupHandler();
+				DetatchHandler();
 
 				m_physicsHandler = handler;
 				handler->m_referenceGroup = this;
 				handler->Initialize();
 			}
 		}
-		void PhysicalGroup::CleanupHandler()
+		PhysicsHandler *PhysicalGroup::GetPhysicsHandler() const
+		{
+			return m_physicsHandler;
+		}
+		void PhysicalGroup::DetatchHandler()
 		{
 			if(m_physicsHandler)
+			{
 				m_physicsHandler->Cleanup();
+				m_physicsHandler = 0;
+			}
 		}
 		vector<PhysicalObject *> PhysicalGroup::BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask, PhysicalObject *ignore)
 		{
@@ -63,6 +70,16 @@ namespace ce
 			if(m_physicsHandler)
 				ret = m_physicsHandler->SegmentSearch(startX, startY, endX, endY, mask, ignore);
 			return ret;
+		}
+		void PhysicalGroup::OnMemberAdded(Member *entity)
+		{
+			if(m_physicsHandler)
+				m_physicsHandler->SetupObject((PhysicalObject *)entity);
+		}
+		void PhysicalGroup::OnMemberRemoved(Member *entity)
+		{
+			if(m_physicsHandler)
+				m_physicsHandler->CleanupObject((PhysicalObject *)entity);
 		}
 	}
 }

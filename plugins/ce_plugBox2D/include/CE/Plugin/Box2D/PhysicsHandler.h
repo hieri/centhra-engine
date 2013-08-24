@@ -20,6 +20,8 @@ namespace ce
 				virtual void Render(float minX, float minY, float maxX, float maxY);
 				virtual void Process(float dt);
 				virtual void Cleanup();
+				virtual void SetupObject(game2d::PhysicalObject *object);
+				virtual void CleanupObject(game2d::PhysicalObject *object);
 
 				virtual std::vector<game2d::PhysicalObject *> BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask = -1, game2d::PhysicalObject *ignore = 0);
 				virtual std::vector<game2d::PhysicalObject *> SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, game2d::PhysicalObject *ignore = 0);

@@ -26,10 +26,14 @@ namespace ce
 			void Render(float minX, float minY, float maxX, float maxY);
 
 			void AttachHandler(PhysicsHandler *handler);
-			void CleanupHandler();
+			void DetatchHandler();
+			PhysicsHandler *GetPhysicsHandler() const;
 
 			std::vector<PhysicalObject *> BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask = -1, PhysicalObject *ignore = 0);
 			std::vector<PhysicalObject *> SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, PhysicalObject *ignore = 0);
+
+			void OnMemberAdded(Member *entity);
+			void OnMemberRemoved(Member *entity);
 		};
 	}
 }

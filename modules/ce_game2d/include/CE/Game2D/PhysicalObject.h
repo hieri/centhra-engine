@@ -53,6 +53,13 @@ namespace ce
 
 			virtual bool OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact);
 
+			virtual void OnSetCollisionMask();
+			virtual void OnSetStatic();
+			virtual void OnSetPosition();
+			virtual void OnSetExtent();
+			virtual void OnSetVelocity();
+			virtual void OnSetRotation();
+
 			static void Cleanup();
 
 			friend class PhysicalGroup;

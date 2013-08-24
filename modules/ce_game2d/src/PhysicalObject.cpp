@@ -181,6 +181,7 @@ namespace ce
 		void PhysicalObject::SetExtent(Vector2<float> extent, bool updateHandle)
 		{
 			m_extent = extent;
+			OnSetExtent();
 			
 			if(updateHandle)
 				if(m_objectHandle)
@@ -189,6 +190,7 @@ namespace ce
 		void PhysicalObject::SetPosition(Vector2<float> position, bool updateHandle)
 		{
 			m_position = position;
+			OnSetPosition();
 
 			if(updateHandle)
 				if(m_objectHandle)
@@ -197,6 +199,7 @@ namespace ce
 		void PhysicalObject::SetVelocity(Vector2<float> velocity, bool updateHandle)
 		{
 			m_velocity = velocity;
+			OnSetVelocity();
 			
 			if(updateHandle)
 				if(m_objectHandle)
@@ -205,6 +208,7 @@ namespace ce
 		void PhysicalObject::SetRotation(float rotation, bool updateHandle)
 		{
 			m_rotation = rotation;
+			OnSetRotation();
 			
 			if(updateHandle)
 				if(m_objectHandle)
@@ -225,6 +229,7 @@ namespace ce
 		void PhysicalObject::SetCollisionMask(unsigned int mask)
 		{
 			m_collisionMask = mask;
+			OnSetCollisionMask();
 
 			if(m_objectHandle)
 				m_objectHandle->OnSetCollisionMask();
@@ -240,9 +245,28 @@ namespace ce
 		void PhysicalObject::SetStatic(bool isStatic)
 		{
 			m_isStatic = isStatic;
+			OnSetStatic();
 
 			if(m_objectHandle)
 				m_objectHandle->OnSetStatic();
+		}
+		void PhysicalObject::OnSetCollisionMask()
+		{
+		}
+		void PhysicalObject::OnSetStatic()
+		{
+		}
+		void PhysicalObject::OnSetPosition()
+		{
+		}
+		void PhysicalObject::OnSetExtent()
+		{
+		}
+		void PhysicalObject::OnSetVelocity()
+		{
+		}
+		void PhysicalObject::OnSetRotation()
+		{
 		}
 	}
 }

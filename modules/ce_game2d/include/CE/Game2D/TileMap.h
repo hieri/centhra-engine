@@ -27,6 +27,7 @@ namespace ce
 			Vector2<unsigned int> GetTileSize() const;
 			Vector2<unsigned char> GetTile(unsigned int x, unsigned int y) const;
 			void SetTile(unsigned int x, unsigned int y, Vector2<unsigned char> value);
+			void Render(unsigned int minX, unsigned int minY, unsigned int maxX, unsigned int maxY);
 		};
 	}
 }

@@ -26,9 +26,9 @@ set(LIB
 	ce_frontend
 	ce_game2d
 	${OPENGL_LIBRARIES}
-#	${BOX2D_LIBRARIES}
-	optimized ${BOX2D_LIBRARY_RELEASE}
-	debug ${BOX2D_LIBRARY_DEBUG}
+	${BOX2D_LIBRARIES}
+#	optimized ${BOX2D_LIBRARY_RELEASE}
+#	debug ${BOX2D_LIBRARY_DEBUG}
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")

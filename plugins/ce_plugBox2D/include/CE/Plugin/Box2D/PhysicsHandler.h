@@ -52,6 +52,7 @@ namespace ce
 				bPhysicsHandler();
 				~bPhysicsHandler();
 
+				void AddJoint(game2d::PhysicalObject *objA, game2d::PhysicalObject *objB, Vector2<float> offsetA, Vector2<float> offsetB);
 /*
 				void AddPulleyJoint(game2d::PhysicalObject *objA, game2d::PhysicalObject *objB);
 				void AddDistanceJoint(game2d::PhysicalObject *objA, game2d::PhysicalObject *objB);

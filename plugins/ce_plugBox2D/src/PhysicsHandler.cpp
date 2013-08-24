@@ -376,6 +376,28 @@ namespace ce
 				}
 				return vector<game2d::PhysicalObject *>();
 			}
+			void bPhysicsHandler::AddJoint(game2d::PhysicalObject *objA, game2d::PhysicalObject *objB, Vector2<float> offsetA, Vector2<float> offsetB)
+			{
+				b2World *world = 0;
+				if(m_b2d_system)
+				{
+					world = ((Box2DSystem *)m_b2d_system)->m_b2d_world;
+					if(world)
+					{
+//						b2DistanceJointDef jointDef;
+//						b2WeldJointDef jointDef;
+						b2RevoluteJointDef jointDef;
+						jointDef.bodyA = (b2Body *)((bPhysicsHandler::bObjectHandle *)objA->GetObjectHandle())->m_b2d_body;
+						jointDef.bodyB = (b2Body *)((bPhysicsHandler::bObjectHandle *)objB->GetObjectHandle())->m_b2d_body;
+						jointDef.collideConnected = false;
+						jointDef.localAnchorA.Set(offsetA[0], offsetA[1]);
+						jointDef.localAnchorB.Set(offsetB[0], offsetB[1]);
+//						jointDef.dampingRatio = 0;
+//						jointDef.length = 0;
+						world->CreateJoint(&jointDef);
+					}
+				}
+			}
 		}
 	}
 }

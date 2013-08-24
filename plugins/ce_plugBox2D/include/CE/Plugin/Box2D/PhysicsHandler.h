@@ -2,6 +2,7 @@
 #define _CE_PLUGIN_BOX2D_PHYSICSHANDLER_H_
 
 //- Centhra Engine -
+#include <CE/Vector2.h>
 #include <CE/Game2D/PhysicsHandler.h>
 
 namespace ce
@@ -46,6 +47,7 @@ namespace ce
 				};
 
 				void *GetBox2DSystem() const;
+				void SetGravity(Vector2<float> gravity);
 
 				bPhysicsHandler();
 				~bPhysicsHandler();

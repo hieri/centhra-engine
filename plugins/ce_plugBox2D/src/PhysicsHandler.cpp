@@ -143,7 +143,7 @@ namespace ce
 				Box2DSystem(Vector2<float> gravity)
 				{
 					b2Vec2 b2d_gravity;
-					b2d_gravity.Set(gravity[0], gravity[1]);
+					b2d_gravity.Set(gravity[0], -gravity[1]);
 					m_b2d_world = new b2World(b2d_gravity);
 					m_b2d_world->SetContinuousPhysics(true);
 
@@ -154,6 +154,11 @@ namespace ce
 				{
 					delete m_b2d_world;
 					delete m_contactListener;
+				}
+				void SetGravity(Vector2<float> gravity)
+				{
+					b2Vec2 grav(gravity[0], -gravity[1]);
+					m_b2d_world->SetGravity(grav);
 				}
 				void Process(float dt)
 				{
@@ -285,7 +290,7 @@ namespace ce
 				m_world->SetContactListener(this);
 				m_world->SetDebugDraw(&m_debugDraw);
 */
-				m_b2d_system = new Box2DSystem(Vector2<float>(0, -10.f));
+				m_b2d_system = new Box2DSystem(Vector2<float>(0, 0.f));
 
 				vector<Group::Member *> members = GetReferenceGroup()->GetMembers();
 				for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
@@ -321,6 +326,10 @@ namespace ce
 					if(handle)
 						delete handle;
 				}
+			}
+			void bPhysicsHandler::SetGravity(Vector2<float> gravity)
+			{
+				((Box2DSystem *)m_b2d_system)->SetGravity(gravity);
 			}
 			void *bPhysicsHandler::GetBox2DSystem() const
 			{

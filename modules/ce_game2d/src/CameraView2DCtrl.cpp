@@ -38,7 +38,7 @@ namespace ce
 					Vector2<float> focusPosition = focus->GetPosition();
 					Vector2<float> focusExtent = focus->GetExtent();
 
-					glEnable(GL_DEPTH_TEST);
+//					glEnable(GL_DEPTH_TEST);
 					glPushMatrix();
 						Vector2<float> half((float)m_extent[0] / 2.f, (float)m_extent[1] / 2.f);
 						Vector2<float> focusHalf = focusExtent / 2.f;
@@ -60,8 +60,8 @@ namespace ce
 						}
 */
 					glPopMatrix();
-					glClear(GL_DEPTH_BUFFER_BIT);
-					glDisable(GL_DEPTH_TEST);
+//					glClear(GL_DEPTH_BUFFER_BIT);
+//					glDisable(GL_DEPTH_TEST);
 				}
 			}
 		}

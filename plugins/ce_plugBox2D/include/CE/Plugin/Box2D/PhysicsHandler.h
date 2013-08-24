@@ -39,6 +39,7 @@ namespace ce
 				
 					virtual void OnSetPosition();
 					virtual void OnSetExtent();
+					virtual void OnSetRotation();
 					virtual void OnSetVelocity();
 					virtual void OnSetCollisionMask();
 

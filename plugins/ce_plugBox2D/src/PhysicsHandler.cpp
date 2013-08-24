@@ -10,9 +10,8 @@
 
 using namespace std;
 
-#define PI 3.14159
-
 const float radToDeg = 180.f / 3.14159f;
+const float degToRad = 3.14159f / 180.f;
 
 namespace ce
 {
@@ -254,6 +253,12 @@ namespace ce
 			void bPhysicsHandler::bObjectHandle::OnSetExtent()
 			{
 				
+			}
+			void bPhysicsHandler::bObjectHandle::OnSetRotation()
+			{
+				float rotation = m_object->GetRotation();
+				b2Body *b2d_body = (b2Body *)m_b2d_body;
+				b2d_body->SetTransform(b2d_body->GetPosition(), rotation * degToRad);
 			}
 			void bPhysicsHandler::bObjectHandle::OnSetVelocity()
 			{

@@ -146,8 +146,8 @@ namespace ce
 		}
 		void PhysicalObject::DoRender()
 		{
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			glColor4ub(m_color[0], m_color[1], m_color[2], m_color[3]);
 //			glTranslatef(m_position[0], m_position[1], -m_position[1]);

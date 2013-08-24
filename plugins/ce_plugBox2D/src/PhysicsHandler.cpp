@@ -210,8 +210,13 @@ namespace ce
 				b2BodyDef bd;
 				bd.type = b2_dynamicBody;
 				bd.position.Set(position[0], position[1]);
+				bd.linearVelocity.Set(velocity[0], velocity[1]);
+				bd.linearDamping = 0.f;
+				bd.awake = true;
+				bd.active = true;
 				bd.angularDamping = 0.7f;
-				
+				bd.userData = this;
+
 				if(object->IsTrigger())
 				{
 					fd.isSensor = true;
@@ -226,7 +231,6 @@ namespace ce
 				b2Body *b2d_body = world->CreateBody(&bd);
 				b2d_body->CreateFixture(&fd);
 				m_b2d_body = b2d_body;
-				b2d_body->SetUserData(this);
 			}
 			bPhysicsHandler::bObjectHandle::~bObjectHandle()
 			{

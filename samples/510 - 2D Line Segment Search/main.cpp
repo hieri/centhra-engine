@@ -144,7 +144,7 @@ public:
 	}
 	void OnStopped()
 	{
-		m_group->DetatchHandler();
+		m_group->DetachHandler();
 		delete m_defaultPhysicsHandler;
 
 		delete m_view;

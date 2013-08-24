@@ -38,7 +38,7 @@ namespace ce
 		{
 			if(m_physicsHandler != handler)
 			{
-				DetatchHandler();
+				DetachHandler();
 
 				m_physicsHandler = handler;
 				handler->m_referenceGroup = this;
@@ -49,7 +49,7 @@ namespace ce
 		{
 			return m_physicsHandler;
 		}
-		void PhysicalGroup::DetatchHandler()
+		void PhysicalGroup::DetachHandler()
 		{
 			if(m_physicsHandler)
 			{

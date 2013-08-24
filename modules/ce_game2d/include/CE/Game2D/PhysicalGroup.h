@@ -26,7 +26,7 @@ namespace ce
 			void Render(float minX, float minY, float maxX, float maxY);
 
 			void AttachHandler(PhysicsHandler *handler);
-			void DetatchHandler();
+			void DetachHandler();
 			PhysicsHandler *GetPhysicsHandler() const;
 
 			std::vector<PhysicalObject *> BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask = -1, PhysicalObject *ignore = 0);

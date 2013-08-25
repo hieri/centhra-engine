@@ -40,9 +40,17 @@ namespace ce
 						objB->OnCollision(objA, pointOfContact);
 					}
 					else if(objA->IsTrigger())
-						((game2d::Trigger *)objA)->OnObjectEnter(objB);
+					{
+						game2d::Trigger *trigger = (game2d::Trigger *)objA;
+						if(!trigger->IsDead())
+							trigger->OnObjectEnter(objB);
+					}
 					else
-						((game2d::Trigger *)objB)->OnObjectEnter(objA);
+					{
+						game2d::Trigger *trigger = (game2d::Trigger *)objB;
+						if(!trigger->IsDead())
+							trigger->OnObjectEnter(objB);
+					}
 				}
 
 				/// Called when two fixtures cease to touch.
@@ -430,7 +438,7 @@ namespace ce
 					}
 				}
 			}
-			void bPhysicsHandler::SetupAsPlayer(game2d::PhysicalObject *obj)
+			void bPhysicsHandler::ChangeToCircle(game2d::PhysicalObject *obj)
 			{
 				b2World *world = 0;
 				if(m_b2d_system)
@@ -449,7 +457,6 @@ namespace ce
 						b2FixtureDef fd;
 						fd.shape = &shape;
 						fd.filter = fixture->GetFilterData();
-						body->SetFixedRotation(true);
 
 						if(obj->IsTrigger())
 							fd.isSensor = true;
@@ -461,6 +468,20 @@ namespace ce
 
 						body->DestroyFixture(fixture);
 						body->CreateFixture(&fd);
+					}
+				}
+			}
+			void bPhysicsHandler::SetFixedRotation(game2d::PhysicalObject *obj, bool fixedRotation)
+			{
+				b2World *world = 0;
+				if(m_b2d_system)
+				{
+					world = ((Box2DSystem *)m_b2d_system)->m_b2d_world;
+					if(world)
+					{
+						bPhysicsHandler::bObjectHandle *handle = (bPhysicsHandler::bObjectHandle *)obj->GetObjectHandle();
+						b2Body *body = (b2Body *)handle->m_b2d_body;
+						body->SetFixedRotation(fixedRotation);
 					}
 				}
 			}

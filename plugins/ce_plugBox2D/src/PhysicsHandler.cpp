@@ -430,6 +430,40 @@ namespace ce
 					}
 				}
 			}
+			void bPhysicsHandler::SetupAsPlayer(game2d::PhysicalObject *obj)
+			{
+				b2World *world = 0;
+				if(m_b2d_system)
+				{
+					world = ((Box2DSystem *)m_b2d_system)->m_b2d_world;
+					if(world)
+					{
+						bPhysicsHandler::bObjectHandle *handle = (bPhysicsHandler::bObjectHandle *)obj->GetObjectHandle();
+						b2Body *body = (b2Body *)handle->m_b2d_body;
+
+						b2Fixture *fixture = body->GetFixtureList();
+
+						b2CircleShape shape;
+						shape.m_radius = obj->GetExtent()[0] / 2.f;
+
+						b2FixtureDef fd;
+						fd.shape = &shape;
+						fd.filter = fixture->GetFilterData();
+						body->SetFixedRotation(true);
+
+						if(obj->IsTrigger())
+							fd.isSensor = true;
+						else
+						{
+							fd.density = fixture->GetDensity();
+							fd.friction = fixture->GetFriction();
+						}
+
+						body->DestroyFixture(fixture);
+						body->CreateFixture(&fd);
+					}
+				}
+			}
 		}
 	}
 }

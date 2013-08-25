@@ -71,12 +71,12 @@ namespace ce
 				ret = m_physicsHandler->SegmentSearch(startX, startY, endX, endY, mask, ignore);
 			return ret;
 		}
-		void PhysicalGroup::OnMemberAdded(Member *entity)
+		void PhysicalGroup::OnMemberAdded(Group::Member *entity)
 		{
 			if(m_physicsHandler)
 				m_physicsHandler->SetupObject((PhysicalObject *)entity);
 		}
-		void PhysicalGroup::OnMemberRemoved(Member *entity)
+		void PhysicalGroup::OnMemberRemoved(Group::Member *entity)
 		{
 			if(m_physicsHandler)
 				m_physicsHandler->CleanupObject((PhysicalObject *)entity);

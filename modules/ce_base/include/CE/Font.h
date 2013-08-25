@@ -1,4 +1,4 @@
-#ifndef _CE_BASEFONT_H_
+#ifndef _CE_BASE_FONT_H_
 #define _CE_BASE_FONT_H_
 
 //- Standard Library -

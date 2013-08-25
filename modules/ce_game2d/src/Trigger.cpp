@@ -15,11 +15,9 @@ namespace ce
 		}
 		void Trigger::OnObjectEnter(PhysicalObject *object)
 		{
-			print("Enter: %d\n", object);
 		}
 		void Trigger::OnObjectLeave(PhysicalObject *object)
 		{
-			print("Leave: %d\n", object);
 		}
 	}
 }

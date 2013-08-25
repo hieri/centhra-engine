@@ -109,17 +109,18 @@ namespace ce
 
 			Vector2<unsigned int> size = m_tileSet->GetSize();
 			Vector2<unsigned int> max = size;
+			Vector2<unsigned int> mapSize = GetSize();
 			max[0] /= m_tileSize[0];
 			max[1] /= m_tileSize[1];
-
-			if(minX >= size[0])
-				minX = size[0] - 1;
-			if(minY >= size[1])
-				minY = size[1] - 1;
-			if(maxX >= size[0])
-				maxX = size[0] - 1;
-			if(maxY >= size[1])
-				maxY = size[1] - 1;
+			
+			if(minX >= mapSize[0])
+				minX = mapSize[0] - 1;
+			if(minY >= mapSize[1])
+				minY = mapSize[1] - 1;
+			if(maxX >= mapSize[0])
+				maxX = mapSize[0] - 1;
+			if(maxY >= mapSize[1])
+				maxY = mapSize[1] - 1;
 
 			glEnable(GL_TEXTURE_2D);
 			m_tileSet->Bind();

@@ -221,7 +221,7 @@ namespace ce
 					bd.type = b2_dynamicBody;
 				bd.position.Set(position[0], position[1]);
 				bd.linearVelocity.Set(velocity[0], velocity[1]);
-				bd.linearDamping = 0.f;
+				bd.linearDamping = 0.5f;
 				bd.awake = true;
 				bd.active = true;
 				bd.angularDamping = 0.7f;

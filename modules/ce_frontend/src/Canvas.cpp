@@ -119,7 +119,7 @@ namespace ce
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
-			case WM_XBUTTONUP:
+			case WM_XBUTTONUP: //- TODO: Handle this properly -
 				event.type = event::MouseButtonUp;
 //				event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
 				event.mouseButton.button = event::Unknown;
@@ -139,14 +139,12 @@ namespace ce
 				app->OnEvent(event);
 				break;
 			case WM_SIZE:
-			{
 				canvas->UpdateViewport(LOWORD(lParam), HIWORD(lParam));
 				event.type = event::WindowResize;
 				event.windowResize.width = LOWORD(lParam);
 				event.windowResize.height = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
-			}
 			}
 		}
 
@@ -160,7 +158,7 @@ namespace ce
 
 		if(!app)
 		{
-			error("[Error] Canvas::create - There are no Apps running.\n");
+			error("[Error] Canvas::Create - There are no Apps running.\n");
 			return 0;
 		}
 
@@ -212,14 +210,14 @@ namespace ce
 
 				if(!fbConfig || !fbNumConfig)
 				{
-					error("[Error] Canvas::create - glXChooseFBConfig failed.\n");
+					error("[Error] Canvas::Create - glXChooseFBConfig failed.\n");
 					return 0;
 				}
 
 				glxContext = glXCreateNewContext(xDisplay, fbConfig[0], GLX_RGBA_TYPE, 0, GL_TRUE);
 				if(!glxContext)
 				{
-					error("[Error] Window::create - glXCreateNewContext failed.\n");
+					error("[Error] Canvas::Create - glXCreateNewContext failed.\n");
 					return 0;
 				}
 
@@ -241,7 +239,7 @@ namespace ce
 					{
 						glXDestroyContext(xDisplay, glxContext);
 
-						error("[Error] Window::create - xcb_create_window failed.\n");
+						error("[Error] Canvas::Create - xcb_create_window failed.\n");
 						return 0;
 					}
 
@@ -256,7 +254,7 @@ namespace ce
 						xcb_destroy_window(xcbConnection, xcbWindow);
 						glXDestroyContext(xDisplay, glxContext);
 
-						error("[Error] Window::create - glXCreateWindow failed.\n");
+						error("[Error] Canvas::Create - glXCreateWindow failed.\n");
 						return 0;
 					}
 
@@ -265,7 +263,7 @@ namespace ce
 						xcb_destroy_window(xcbConnection, xcbWindow);
 						glXDestroyContext(xDisplay, glxContext);
 
-						error("[Error] Window::create - glXMakeContextCurrent failed.\n");
+						error("[Error] Canvas::Create - glXMakeContextCurrent failed.\n");
 						return 0;
 					}
 				#else
@@ -273,7 +271,7 @@ namespace ce
 
 					if(!xVisualInfo)
 					{
-						error("[Error] Window::create - glXGetVisualFromFBConfig failed.\n");
+						error("[Error] Canvas::Create - glXGetVisualFromFBConfig failed.\n");
 						return 0;
 					}
 
@@ -288,7 +286,7 @@ namespace ce
 					{
 						glXDestroyContext(xDisplay, glxContext);
 
-						error("[Error] Window::create - XCreateWindow failed.\n");
+						error("[Error] Canvas::Create - XCreateWindow failed.\n");
 						return 0;
 					}
 
@@ -301,7 +299,7 @@ namespace ce
 						XDestroyWindow(xDisplay, xWindow);
 						glXDestroyContext(xDisplay, glxContext);
 
-						error("[Error] Window::create - glXCreateWindow failed.\n");
+						error("[Error] Canvas::Create - glXCreateWindow failed.\n");
 						return 0;
 					}
 
@@ -310,7 +308,7 @@ namespace ce
 						XDestroyWindow(xDisplay, xWindow);
 						glXDestroyContext(xDisplay, glxContext);
 
-						error("[Error] Window::create - glXMakeContextCurrent failed.\n");
+						error("[Error] Canvas::Create - glXMakeContextCurrent failed.\n");
 						return 0;
 					}
 				#endif
@@ -331,7 +329,7 @@ namespace ce
 					if(!xcbVisualInfo)
 					{
 						//- TODO: fix this error message -
-						error("[Error] Window::create - xcb find visual failed.\n");
+						error("[Error] Canvas::Create - xcb find visual failed.\n");
 						return 0;
 					}
 
@@ -354,7 +352,7 @@ namespace ce
 					glxContext = glXCreateContext(xDisplay, &xVisualInfo, 0, GL_TRUE);
 					if(!glxContext)
 					{
-						error("[Error] Window::create - glXCreateNewContext failed.\n");
+						error("[Error] Canvas::Create - glXCreateNewContext failed.\n");
 						return 0;
 					}
 
@@ -369,7 +367,7 @@ namespace ce
 					{
 						glXDestroyContext(xDisplay, glxContext);
 
-						error("[Error] Window::create - xcb_create_window failed.\n");
+						error("[Error] Canvas::Create - xcb_create_window failed.\n");
 						return 0;
 					}
 
@@ -380,7 +378,7 @@ namespace ce
 						xcb_destroy_window(xcbConnection, xcbWindow);
 						glXDestroyContext(xDisplay, glxContext);
 
-						error("[Error] Window::create - glXMakeCurrent failed.\n");
+						error("[Error] Canvas::Create - glXMakeCurrent failed.\n");
 						return 0;
 					}
 				#else
@@ -391,14 +389,14 @@ namespace ce
 
 					if(!xVisualInfo)
 					{
-						error("[Error] Window::create - glXChooseVisual failed.\n");
+						error("[Error] Canvas::Create - glXChooseVisual failed.\n");
 						return 0;
 					}
 
 					glxContext = glXCreateContext(xDisplay, xVisualInfo, 0, GL_TRUE);
 					if(!glxContext)
 					{
-						error("[Error] Window::create - glXCreateNewContext failed.\n");
+						error("[Error] Canvas::Create - glXCreateNewContext failed.\n");
 						return 0;
 					}
 
@@ -415,7 +413,7 @@ namespace ce
 					{
 						glXDestroyContext(xDisplay, glxContext);
 
-						error("[Error] Window::create - glXCreateWindow failed.\n");
+						error("[Error] Canvas::Create - glXCreateWindow failed.\n");
 						return 0;
 					}
 
@@ -426,7 +424,7 @@ namespace ce
 						XDestroyWindow(xDisplay, xWindow);
 						glXDestroyContext(xDisplay, glxContext);
 
-						error("[Error] Window::create - glXMakeCurrent failed.\n");
+						error("[Error] Canvas::Create - glXMakeCurrent failed.\n");
 						return 0;
 					}
 				#endif
@@ -456,7 +454,7 @@ namespace ce
 			if(!RegisterClass(&windowClass))
 			{
 				delete canvas;
-				error("[Error] Window::create - RegisterClass failed\n");
+				error("[Error] Canvas::Create - RegisterClass failed\n");
 				return 0;
 			}
 
@@ -471,7 +469,7 @@ namespace ce
 			if(!hWnd)
 			{
 				delete canvas;
-				error("[Error] Window::create - CreateWindow failed\n");
+				error("[Error] Canvas::Create - CreateWindow failed\n");
 				return 0;
 			}
 

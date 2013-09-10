@@ -28,7 +28,6 @@ namespace ce
 			WindowResize
 		} EventType;
 
-
 		typedef enum MouseButtonType
 		{
 			Unknown,

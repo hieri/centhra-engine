@@ -15,89 +15,95 @@ namespace ce
 	 */
 	class App
 	{
+		/**	@brief Stores the current application instance
+		 */
 		static App *ms_current;
-
+		
+		/**	@brief Stores the number of milliseconds since the application started
+		 */
 		unsigned long m_startTimeMS;
 
 	protected:
+		/**	@brief Stores the application running status
+		 */
 		bool m_isRunning;
 
 	public:
-		/**	@brief Returns current application instance.
+		/**	@brief Returns current application instance
 		 */
 		static App *GetCurrent();
 
-		/**	@brief Default Constructor.
+		/**	@brief Default Constructor
 		 */
 		App();
 
-		/**	@brief Destructor.
+		/**	@brief Destructor
 		 */
 		~App();
 
-		/**	@brief Returns the time since the application was started in milliseconds.
-		 *	@return Time since the application was started in milliseconds.
+		/**	@brief Returns the time since the application was started in milliseconds
+		 *	@return Time since the application was started in milliseconds
 		 */
 		unsigned long GetRunTimeMS() const;
 
-		/**	@brief Returns true if the application is running.
-		 *	@return Whether or not the application is running.
+		/**	@brief Returns true if the application is running
+		 *	@return Whether or not the application is running
 		 */
 		bool IsRunning() const;
 
-		/**	@brief Processes the application run cycle.
-		 *	@return Whether or not the application is still running.
+		/**	@brief Processes the application run cycle
+		 *	@return Whether or not the application is still running
 		 */
 		bool Process();
 
-		/**	@brief Sets the application instance as the current focus.
+		/**	@brief Sets the application instance as the current focus
 		 */
 		void SetCurrent();
 
-		/**	@brief Attempts to start the application.
-		 *	@return Whether or not the application has started.
+		/**	@brief Attempts to start the application
+		 *	@return Whether or not the application has started
 		 */
 		bool Start();
 
-		/**	@brief Attempts to stop the application.
-		 *	@param force If true, the stop is considered a force stop.
-		 *	@return Whether or not the application has stopped.
+		/**	@brief Attempts to stop the application
+		 *	@param force If true, the stop is considered a force stop
+		 *	@return Whether or not the application has stopped
 		 */
 		bool Stop(bool force = false);
 
-		/**	@brief Called when the application outputs an error message.
+		/**	@brief Called when the application outputs an error message
 		 */
 		virtual void OnError(const char *str);
 
-		/**	@brief Called when the application outputs a message.
+		/**	@brief Called when the application outputs a message
 		 */
 		virtual void OnPrint(const char *str);
 
-		/**	@brief Called when the application run cycle is processed.
-		 *	@return Whether or not the application should keep running.
+		/**	@brief Called when the application run cycle is processed
+		 *	@return Whether or not the application should keep running
 		 */
 		virtual bool OnProcess();
 
-		/**	@brief Called when the application is asked to start.
-		 *	@return Whether or not the application should start.
+		/**	@brief Called when the application is asked to start
+		 *	@return Whether or not the application should start
 		 */
 		virtual bool OnStart();
 
-		/**	@brief Called when the application has started.
+		/**	@brief Called when the application has started
 		 */
 		virtual void OnStarted();
 
-		/**	@brief Called when the application is asked to stop.
-		 *	@param force If true, the stop is considered a force stop.
-		 *	@return Whether or not the application should stop.
+		/**	@brief Called when the application is asked to stop
+		 *	@param force If true, the stop is considered a force stop
+		 *	@return Whether or not the application should stop
 		 */
 		virtual bool OnStop(bool force = false);
 
-		/**	@brief Called when the application has stopped.
+		/**	@brief Called when the application has stopped
 		 */
 		virtual void OnStopped();
 
-		/**	@brief Called when the application outputs a warning message.
+		/**	@brief Called when the application outputs a warning message
 		 */
 		virtual void OnWarn(const char *str);
 	};

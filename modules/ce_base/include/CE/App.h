@@ -65,11 +65,11 @@ namespace ce
 		 */
 		bool Stop(bool force = false);
 
-		/**	@brief Called when the applicatio outputs an error message.
+		/**	@brief Called when the application outputs an error message.
 		 */
 		virtual void OnError(const char *str);
 
-		/**	@brief Called when the applicatio outputs a message.
+		/**	@brief Called when the application outputs a message.
 		 */
 		virtual void OnPrint(const char *str);
 

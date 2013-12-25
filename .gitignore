@@ -47,7 +47,7 @@ external/*
 # Compiled Engine files
 lib
 samples/bin
-docs
+docs/*
 
 # Generated Archived Files
 archive/include/CE/Config.h

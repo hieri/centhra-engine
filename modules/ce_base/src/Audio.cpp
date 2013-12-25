@@ -112,7 +112,6 @@ namespace ce
 				break;
 			sleepMS(100);
 		}
-		//	sleepMS(timeMS + 50);
 
 		alDeleteSources(1, &source);
 		thread->End();

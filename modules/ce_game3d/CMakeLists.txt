@@ -3,10 +3,20 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(INC
 	${INC_DIR}/Game3D.h
+	${INC_DIR}/Game3D/Entity.h
+	${INC_DIR}/Game3D/PhysicalGroup.h
+	${INC_DIR}/Game3D/PhysicalObject.h
+	${INC_DIR}/Game3D/PhysicsHandler.h
+	${INC_DIR}/Game3D/DefaultPhysicsHandler.h
 )
 
 set(SRC
 	${SRC_DIR}/Game3D.cpp
+	${SRC_DIR}/Entity.cpp
+	${SRC_DIR}/PhysicalGroup.cpp
+	${SRC_DIR}/PhysicalObject.cpp
+	${SRC_DIR}/PhysicsHandler.cpp
+	${SRC_DIR}/DefaultPhysicsHandler.cpp
 )
 
 configure_file(${INC_DIR}/ConfigGame3D.h.in ${INC_DIR}/ConfigGame3D.h)

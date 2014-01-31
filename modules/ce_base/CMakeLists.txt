@@ -13,10 +13,13 @@ set(INC
 	${INC_DIR}/Font.h
 	${INC_DIR}/Group.h
 	${INC_DIR}/Image.h
+	${INC_DIR}/Matrix4x4.h
 	${INC_DIR}/Plugin.h
+	${INC_DIR}/Quaternion.h
 	${INC_DIR}/Socket.h
 	${INC_DIR}/Thread.h
 	${INC_DIR}/Vector2.h
+	${INC_DIR}/Vector3.h
 )
 
 set(SRC

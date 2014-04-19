@@ -16,6 +16,9 @@ Implemented Modules
 	* Socket - Object Orientated Socketing
 	* Thread - Object Orientated Threading
 	* Vector2 - 2d Vector Data Structure
+	* Vector3
+	* Quaternion
+	* Matrix4x4
 * ce_frontend
 	* AppFrontend - OS Specific Frontend App
 	* Canvas - Frontend Window Object
@@ -52,10 +55,7 @@ TO-DO Features
 --------------
 
 * ce_base
-	* Vector3
-	* Quaternion
 	* Matrix3x3
-	* Matrix4x4
 * ce_gameBase
 	* AIController
 	* GameConnection

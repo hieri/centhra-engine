@@ -3,6 +3,7 @@
 #include <CE/Base.h>
 #include <CE/Canvas.h>
 #include <CE/Thread.h>
+#include <CE/Mutex.h>
 #include <CE/Game2D/Camera.h>
 #include <CE/Game2D/PhysicalObject.h>
 #include <CE/Game2D/PhysicalGroup.h>
@@ -18,6 +19,7 @@ using namespace ce;
 #define NUMRANDOMS 1024
 
 void *physicsFunc(void *arg);
+Mutex physicsMutex;
 
 //- Define your own implementation of the AppFrontend class. -
 class AppTest : public AppFrontend
@@ -32,7 +34,7 @@ class AppTest : public AppFrontend
 	unsigned long m_lastProcess;
 
 public:
-//	Thread* m_physicsThread;
+	Thread* m_physicsThread;
 
 	AppTest()
 	{
@@ -45,18 +47,19 @@ public:
 		m_lastProcess = 0;
 		w = a = s = d = false;
 		m_randoms = 0;
-//		m_physicsThread = new Thread(&physicsFunc);
+		m_physicsThread = new Thread(&physicsFunc);
 	}
 	~AppTest()
 	{
-//		m_physicsThread->Join();
-//		delete m_physicsThread;
+		m_physicsThread->Join();
+		delete m_physicsThread;
 	}
 
 	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
 		srand((unsigned int)time(NULL));
+
 		m_canvas = Canvas::Create(640, 480, "500 - 2D Collision");
 		m_group = new game2d::PhysicalGroup();
 		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
@@ -96,7 +99,52 @@ public:
 		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
 		m_group->AttachHandler(m_defaultPhysicsHandler);
 
+		physicsMutex.Init();
+		m_physicsThread->Start(this);
 		return true;
+	}
+	void ProcessPhysics(float dt)
+	{
+		Vector2<float> dif;
+		if(w)
+			dif[1] += 1.f;
+		if(a)
+			dif[0] -= 1.f;
+		if(s)
+			dif[1] -= 1.f;
+		if(d)
+			dif[0] += 1.f;
+		dif *= 256.f;
+		m_entity->SetVelocity(dif);
+
+		
+		Vector2<float> origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
+//		origin = Vector2<float>(512.f, 512.f);
+
+		for(int a = 0; a < NUMRANDOMS; a++)
+		{
+			Vector2<float> pos = m_randoms[a]->GetPosition();
+//			Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
+//			Vector2<float> vel = m_randoms[a]->GetVelocity();
+//			Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
+			Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
+//			vel /= vel.GetLength();
+//			vel *= 64.f;
+
+			if(pos[0] > 1008.f && vel[0] > 0)
+				vel[0] *= -1.f;
+			if(pos[0] < 0.f && vel[0] < 0)
+				vel[0] *= -1.f;
+			if(pos[1] > 1008.f && vel[1] > 0)
+				vel[1] *= -1.f;
+			if(pos[1] < 0.f && vel[1] < 0)
+				vel[1] *= -1.f;
+			m_randoms[a]->SetVelocity(vel);
+		}
+
+		m_group->ProcessPhysics(dt);
+//		m_plane->RemoveDead();
+//		game2d::Entity::DeleteDead();
 	}
 	bool OnProcess()
 	{
@@ -106,46 +154,7 @@ public:
 			float dt = (float)(t - m_lastProcess) / 1000.f;
 			m_lastProcess = t;
 
-			Vector2<float> dif;
-			if(w)
-				dif[1] += 1.f;
-			if(a)
-				dif[0] -= 1.f;
-			if(s)
-				dif[1] -= 1.f;
-			if(d)
-				dif[0] += 1.f;
-			dif *= 256.f;
-			m_entity->SetVelocity(dif);
-
-			
-			Vector2<float> origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
-//				origin = Vector2<float>(512.f, 512.f);
-
-			for(int a = 0; a < NUMRANDOMS; a++)
-			{
-				Vector2<float> pos = m_randoms[a]->GetPosition();
-//				Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
-//				Vector2<float> vel = m_randoms[a]->GetVelocity();
-//				Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
-				Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
-//				vel /= vel.GetLength();
-//				vel *= 64.f;
-
-				if(pos[0] > 1008.f && vel[0] > 0)
-					vel[0] *= -1.f;
-				if(pos[0] < 0.f && vel[0] < 0)
-					vel[0] *= -1.f;
-				if(pos[1] > 1008.f && vel[1] > 0)
-					vel[1] *= -1.f;
-				if(pos[1] < 0.f && vel[1] < 0)
-					vel[1] *= -1.f;
-				m_randoms[a]->SetVelocity(vel);
-			}
-
-			m_group->ProcessPhysics(dt);
-//			m_plane->RemoveDead();
-//			game2d::Entity::DeleteDead();
+		//	ProcessPhysics(dt);
 		}
 
 		sleepMS(1);
@@ -155,6 +164,8 @@ public:
 	{
 		m_group->DetachHandler();
 		delete m_defaultPhysicsHandler;
+
+		physicsMutex.Destroy();
 
 		delete m_view;
 		delete m_camera;
@@ -207,7 +218,9 @@ public:
 			}
 			break;
 		case event::PostRender:
+			physicsMutex.Lock();
 			m_view->Render();
+			physicsMutex.Unlock();
 			break;
 		case event::WindowResize:
 			if(m_view)
@@ -231,7 +244,9 @@ void *physicsFunc(void *arg)
 			float dt = (float)(t - lastProcess) / 1000.f;
 			lastProcess = t;
 
-//			app->m_plane->ProcessPhysics(dt);
+			physicsMutex.Lock();
+			app->ProcessPhysics(dt);
+			physicsMutex.Unlock();
 		}
 
 		sleepMS(1);
@@ -252,6 +267,6 @@ int main(int argc, char **argv)
 	while(myApp.IsRunning())
 		myApp.Process();
 
-//	Thread::Exit(NULL);
+	Thread::Exit(NULL);
 	return 0;
 }

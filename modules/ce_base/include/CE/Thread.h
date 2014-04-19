@@ -4,6 +4,9 @@
 //- Standard Library -
 #include <stdlib.h>
 
+//- Centhra Engine -
+#include <CE/ConfigBase.h>
+
 namespace ce
 {
 	/**	@brief Thread Data Structure Class

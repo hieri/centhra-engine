@@ -14,6 +14,7 @@ set(INC
 	${INC_DIR}/Group.h
 	${INC_DIR}/Image.h
 	${INC_DIR}/Matrix4x4.h
+	${INC_DIR}/Mutex.h
 	${INC_DIR}/Plugin.h
 	${INC_DIR}/Quaternion.h
 	${INC_DIR}/Socket.h
@@ -29,6 +30,7 @@ set(SRC
 	${SRC_DIR}/Font.cpp
 	${SRC_DIR}/Group.cpp
 	${SRC_DIR}/Image.cpp
+	${SRC_DIR}/Mutex.cpp
 	${SRC_DIR}/Plugin.cpp
 	${SRC_DIR}/Socket.cpp
 	${SRC_DIR}/Thread.cpp

@@ -87,6 +87,9 @@ namespace ce
 		int Write(char *buffer, unsigned int length);
 
 		bool SetBlocking(bool isBlocking);
+		void GetPeerIP4Info(unsigned long *addr, unsigned short *port);
+		bool Close();
+		bool HasRead();
 	};
 }
 

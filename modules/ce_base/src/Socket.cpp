@@ -9,9 +9,9 @@
 	#include <sys/socket.h>
 	#include <netinet/in.h>
 	#include <arpa/inet.h>
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <string.h>
+	#include <cstdio>
+	#include <cstdlib>
+	#include <cstring>
 	#include <unistd.h>
 	#include <fcntl.h>
 #endif
@@ -116,6 +116,13 @@ namespace ce
 			error("[Error] Socket::create - Failed to create Socket.\n");
 		}
 
+		int reuse = 1;
+		#ifdef linux
+			setsockopt(sSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+		#endif
+		#ifdef _WIN32
+			setsockopt(sSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(reuse));
+		#endif
 		Socket *sock = new Socket();
 		sock->m_socket = sSocket;
 		if(!isBlocking)
@@ -139,6 +146,7 @@ namespace ce
 		#endif
 
 		ms_count--;
+//		print("C: %d\n", ms_count);
 		
 		#if CE_BASE_USEWINSOCKET
 			if(!ms_count)
@@ -240,9 +248,57 @@ namespace ce
 
 		return true;
 	}
+	bool Socket::Close()
+	{
+		SetBlocking(true);
+
+		#if CE_BASE_USEPOSIXSOCKET
+			if(close(m_socket) == -1)
+		#endif
+		#if CE_BASE_USEWINSOCKET
+			if(closesocket(m_socket) != 0)
+		#endif
+			{
+				error("[Error] Socket::Listen - Unable to close socket.\n");
+				return false;
+			}
+
+		return true;
+	}
 	int Socket::Write(char *buffer, unsigned int length)
 	{
 		return send(m_socket, buffer, length, 0);
+	}
+	bool Socket::HasRead()
+	{
+		fd_set readFlags, writeFlags;
+		struct timeval waitd = {0, 0};
+		FD_ZERO(&readFlags);
+		FD_ZERO(&writeFlags);
+		FD_SET(m_socket, &readFlags);
+//		FD_SET(m_socket, &writeFlags);
+
+		//- TODO: Fix this to match the standard -
+		#ifdef _WIN32
+			FD_SET(0, &readFlags);
+			FD_SET(0, &writeFlags);
+		#endif
+	
+		//- TODO: Determine if this is necessary -
+/*		#ifdef linux
+			FD_SET(STDIN_FILENO, &readFlags);
+			FD_SET(STDIN_FILENO, &writeFlags);
+		#endif
+*/
+		int ret = select(m_socket + 1, &readFlags, &writeFlags, (fd_set *)0, &waitd);
+		
+		#ifdef _WIN32
+			return FD_ISSET(m_socket, &readFlags) != 0;
+		#endif
+
+		#ifdef linux
+			return FD_ISSET(m_socket, &readFlags);
+		#endif
 	}
 	bool Socket::SetBlocking(bool isBlocking)
 	{
@@ -260,5 +316,23 @@ namespace ce
 
 		m_isBlocking = isBlocking;
 		return true;
+	}
+	void Socket::GetPeerIP4Info(unsigned long *addr, unsigned short *port)
+	{
+		#if CE_BASE_USEPOSIXSOCKET
+			struct sockaddr_in Addr;
+			socklen_t AddrLen = sizeof(Addr);
+			getpeername(m_socket, (sockaddr *)&Addr, &AddrLen);
+			*addr = Addr.sin_addr.s_addr;
+			*port = Addr.sin_port;
+		#endif
+
+		#if CE_BASE_USEWINSOCKET
+			struct sockaddr_in Addr;
+			socklen_t AddrLen = sizeof(Addr);
+			getpeername(m_socket, (sockaddr *)&Addr, &AddrLen);
+			*addr = Addr.sin_addr.S_un.S_addr;
+			*port = Addr.sin_port;
+		#endif
 	}
 }

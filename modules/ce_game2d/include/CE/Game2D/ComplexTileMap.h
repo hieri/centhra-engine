@@ -22,7 +22,7 @@ namespace ce
 				TileSet *m_tileSet;
 				Vector2<unsigned char> m_value;
 
-				Tile(TileSet *tileSet, Vector2<unsigned char> value);
+				Tile(TileSet *tileSet = 0, Vector2<unsigned char> value = Vector2<unsigned char>(0, 0));
 			};
 
 			ComplexTileMap(Vector2<unsigned short> size, Vector2<unsigned short> tileSize);

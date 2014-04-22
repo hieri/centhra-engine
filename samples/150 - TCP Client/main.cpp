@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 
 	Socket *client = Socket::Create(Socket::IP4, Socket::Stream, Socket::TCP);
 
-	client->Connect("127.0.0.1", 1234);
+	client->Connect("127.0.0.1", 12345);
 
 	const char *msg = "Hello World!";
 	print("Sending Msg: %s\n", msg);

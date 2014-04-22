@@ -11,9 +11,9 @@ int main(int argc, char **argv)
 {
 	print("151 - TCP Server | Centhra Engine v%s\n", getVersionString().c_str());
 
-	Socket *server = Socket::Create(Socket::IP4, Socket::Stream, Socket::TCP, false);
+	Socket *server = Socket::Create(Socket::IP4, Socket::Stream, Socket::TCP, true);
 
-	server->Bind(1234);
+	server->Bind(12345);
 	server->Listen(16);
 
 	while(true)
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 			delete client;
 		}
 
-		sleepMS(1);
+		sleepMS(16);
 	}
 
 	delete server;

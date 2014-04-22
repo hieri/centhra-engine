@@ -16,7 +16,7 @@
 
 using namespace ce;
 
-#define NUMRANDOMS 1024
+#define NUMRANDOMS 256
 
 void *physicsFunc(void *arg);
 Mutex physicsMutex;

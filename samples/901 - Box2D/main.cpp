@@ -16,7 +16,7 @@
 
 using namespace ce;
 
-#define NUMRANDOMS 1024
+#define NUMRANDOMS 256 
 
 void *physicsFunc(void *arg);
 Mutex physicsMutex;
@@ -29,7 +29,6 @@ class AppTest : public AppFrontend
 	game2d::PhysicalObject *m_entity, **m_randoms;
 	game2d::Camera *m_camera;
 	ui::CameraView2DCtrl *m_view;
-//	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 	plugin::box2d::bPhysicsHandler *m_box2dPhysicsHandler;
 	bool w,a,s,d;
 	unsigned long m_lastProcess;
@@ -40,7 +39,6 @@ public:
 	AppTest()
 	{
 		m_canvas = 0;
-//		m_defaultPhysicsHandler = 0;
 		m_box2dPhysicsHandler = 0;
 		m_entity = 0;
 		m_camera = 0;
@@ -62,7 +60,7 @@ public:
 	{
 		srand((unsigned int)time(NULL));
 
-		m_canvas = Canvas::Create(640, 480, "500 - 2D Collision");
+		m_canvas = Canvas::Create(640, 480, "901 - Box2D");
 		m_group = new game2d::PhysicalGroup();
 		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
 		m_group->Add(m_entity);
@@ -98,8 +96,6 @@ public:
 			m_group->Add(m_randoms[a]);
 		}
 
-//		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
-//		m_group->AttachHandler(m_defaultPhysicsHandler);
 		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
 		m_group->AttachHandler(m_box2dPhysicsHandler);
 
@@ -167,7 +163,6 @@ public:
 	void OnStopped()
 	{
 		m_group->DetachHandler();
-//		delete m_defaultPhysicsHandler;
 		delete m_box2dPhysicsHandler;
 
 		physicsMutex.Destroy();

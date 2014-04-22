@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <string>
 #include <ctime>
+#include <cstring>
 
 using namespace ce;
 using namespace std;
@@ -25,12 +26,51 @@ void *physicsFunc(void *arg);
 void *connectionFunc(void *arg);
 Mutex g_physicsMutex;
 
+typedef enum PacketType
+{
+	Unknown,
+	Movement,
+	Update,
+	New,
+	Delete
+} PacketType;
+typedef struct NewPacket
+{
+	unsigned short type;
+	unsigned long objID;
+	float posX, posY;
+} NewPacket;
+typedef struct DeletePacket
+{
+	unsigned short type;
+	unsigned long objID;
+} DeletePacket;
+typedef struct MovementPacket
+{
+	unsigned short type;
+	unsigned long objID;
+	float velX, velY;
+} MovementPacket;
+typedef struct UpdatePacket
+{
+	unsigned short type;
+	unsigned long objID;
+	float posX, posY;
+} UpdatePacket;
+typedef union Packet
+{
+	unsigned short type;
+	MovementPacket movement;
+	UpdatePacket update;
+	DeletePacket del;
+	NewPacket n;
+	char padding[30];
+} Packet;
+
 //- Define your own implementation of the AppFrontend class. -
 class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
-	game2d::PhysicalGroup *m_group;
-	game2d::PhysicalObject *m_entity;
 	game2d::Camera *m_camera;
 	ui::CameraView2DCtrl *m_view;
 	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
@@ -38,13 +78,16 @@ class AppTest : public AppFrontend
 	unsigned long m_lastProcess;
 
 public:
+	game2d::PhysicalObject *m_entity, *m_dummy;
+	game2d::PhysicalGroup *m_group;
+	map<unsigned long, game2d::PhysicalObject *> m_entityMap; //- Totally not efficient, but lets do this -
 	Thread *m_physicsThread, *m_connectionThread;
 
 	AppTest()
 	{
 		m_canvas = 0;
 		m_defaultPhysicsHandler = 0;
-		m_entity = 0;
+		m_entity = m_dummy = 0;
 		m_camera = 0;
 		m_group = 0;
 		m_view = 0;
@@ -70,6 +113,9 @@ public:
 		m_group = new game2d::PhysicalGroup();
 		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
 		m_group->Add(m_entity);
+
+		m_dummy = new game2d::PhysicalObject(Vector2<float>(460.f, 512.f), Vector2<float>(32.f, 32.f));
+		m_group->Add(m_dummy);
 
 		m_camera = new game2d::Camera();
 		m_camera->SetFocus(m_entity);
@@ -124,6 +170,7 @@ public:
 
 		g_physicsMutex.Destroy();
 
+		delete m_dummy;
 		delete m_view;
 		delete m_camera;
 		game2d::Entity::DeleteDead();
@@ -188,27 +235,100 @@ public:
 void *connectionFunc(void *arg)
 {
 	AppTest *app = (AppTest *)arg;
-	unsigned long lastProcess = app->GetRunTimeMS();
+	unsigned long lastMovement, lastConnection = app->GetRunTimeMS();
 
 	Socket *client = Socket::Create(Socket::IP4, Socket::Stream, Socket::TCP);
 	string connectionMsg = "2dClient";
+	string packetPrefix = "P:";
+	unsigned short transSize = packetPrefix.length() + sizeof(Packet);
 
 	bool isConnected = false;
 
-
+	string readBuffer;
 	while(app->IsRunning())
 	{
 		unsigned long t = app->GetRunTimeMS();
-		if((t - lastProcess) > 32)
+		if(isConnected)
 		{
-//			float dt = (float)(t - lastProcess) / 1000.f;
-			lastProcess = t;
-
-			if(isConnected)
+			if((t - lastMovement) > 16)
 			{
+				lastMovement = t;
+				Vector2<float> velocity = app->m_entity->GetVelocity();
+				Packet movement;
+				movement.type = Movement;
+				movement.movement.velX = velocity[0];
+				movement.movement.velY = velocity[1];
+				client->Write((char *)packetPrefix.append((char *)&movement, sizeof(Packet)).c_str(), transSize);
 			}
-			else
+
+			while(client->HasRead())
 			{
+				char buffer[257];
+				memset(buffer, 0, 256);
+				unsigned short ret = client->Read(buffer, 256);
+				readBuffer.append(buffer, ret);
+			}
+
+			while(readBuffer.size() >= 32)
+			{
+				size_t fP = readBuffer.find_first_of("P:"); // wow
+				if(fP != 0)
+				{
+					if(fP == string::npos)
+						readBuffer.clear();
+					else
+						readBuffer = readBuffer.substr(fP);
+				}
+
+				if(readBuffer.size() < 32)
+					break;
+
+//				print("Packet: %s\n", readBuffer.c_str());
+				Packet response;
+				memcpy(&response, &readBuffer[2], 30);
+
+				g_physicsMutex.Lock();
+				if(response.type == Update)
+				{
+					if(response.update.objID == 0)
+						app->m_entity->SetPosition((Vector2<float>(response.update.posX, response.update.posY)));
+					else
+					{
+						if(app->m_entityMap.count(response.update.objID))
+						{
+							game2d::PhysicalObject *obj = app->m_entityMap[response.update.objID];
+							obj->SetPosition(Vector2<float>(response.update.posX, response.update.posY));
+						}
+					}
+				}
+				else if(response.type == New) //- Needs to handle multithreaded stdio properly, in order to debug this -
+				{
+//					print("NEW\n");
+//					print("NEW %d %f %f\n", response.n.objID, response.n.posY, response.n.posY);
+					game2d::PhysicalObject *obj = new game2d::PhysicalObject(Vector2<float>(response.n.posX, response.n.posY), Vector2<float>(32.f, 32.f));
+					app->m_group->Add(obj);
+					app->m_entityMap[response.n.objID] = obj;
+				}
+				else if(response.type == Delete)
+				{
+					print("DEL %d\n", response.del.objID);
+/*					if(app->m_entityMap.count(response.del.objID))
+					{
+						game2d::PhysicalObject *obj = app->m_entityMap[response.del.objID];
+						app->m_group->Remove(obj);
+						delete obj;
+					}*/
+				}
+				g_physicsMutex.Unlock();
+
+				readBuffer = readBuffer.substr(32);				
+			} 
+		}
+		else
+		{
+			if((t - lastConnection) > 16)
+			{
+				lastConnection = t;
 				if(client->Connect("127.0.0.1", 12346))
 				{
 					isConnected = true;

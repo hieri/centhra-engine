@@ -74,6 +74,7 @@ namespace ce
 
 			glEnable(GL_TEXTURE_2D);
 
+			Image *lastImage = 0;
 			glBegin(GL_QUADS);
 			for(unsigned int a = minX; a < maxX; a++)
 				for(unsigned int b = minY; b < maxY; b++)
@@ -107,7 +108,13 @@ namespace ce
 								tX = ((float)_X) / ((float)tileSetImageSize[0]);
 								tY = ((float)_Y) / ((float)tileSetImageSize[1]);
 
-								tileSetImage->Bind();
+								if(lastImage != tileSetImage)
+								{
+									glEnd();
+									tileSetImage->Bind();
+									glBegin(GL_QUADS);
+									lastImage = tileSetImage;
+								}
 
 								glTexCoord2f(tx, tY);
 								glVertex2i(x, y);

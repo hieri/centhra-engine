@@ -27,14 +27,19 @@ namespace ce
 			m_size = size;
 			m_tileSize = tileSize;
 
-			m_tiles = new Tile *[size[0]];
+			m_tiles = new vector<Tile *> *[size[0]];
 			for(unsigned short a = 0; a < size[0]; a++)
-				m_tiles[a] = new Tile[size[1]];
+				m_tiles[a] = new vector<Tile *>[size[1]];
 		}
 		ComplexTileMap::~ComplexTileMap()
 		{
 			for(unsigned short a = 0; a < m_size[0]; a++)
+			{
+				for(unsigned short b = 0; b < m_size[1]; b++)
+					for(vector<ComplexTileMap::Tile *>::iterator it = m_tiles[a][b].begin(); it != m_tiles[a][b].end(); it++)
+						delete *it;
 				delete [] m_tiles[a];
+			}
 			delete [] m_tiles;
 		}
 		Vector2<unsigned short> ComplexTileMap::GetSize() const
@@ -45,25 +50,18 @@ namespace ce
 		{
 			return m_tileSize;
 		}
-		ComplexTileMap::Tile *ComplexTileMap::GetTile(unsigned short x, unsigned short y) const
+		std::vector<ComplexTileMap::Tile *> *ComplexTileMap::GetTiles(unsigned short x, unsigned short y) const
 		{
 			return &m_tiles[x][y];
 		}
-		void ComplexTileMap::SetTile(unsigned short x, unsigned short y, TileSet *tileSet, Vector2<unsigned char> value)
+		void ComplexTileMap::AddTile(unsigned short x, unsigned short y, TileSet *tileSet, Vector2<unsigned char> value)
 		{
-			Tile *tile = &m_tiles[x][y];
-			tile->m_tileSet = tileSet;
-			tile->m_value = value;
+			Tile *tile = new Tile(tileSet, value);
+			m_tiles[x][y].push_back(tile);
 		}
 		void ComplexTileMap::Render(unsigned short minX, unsigned short minY, unsigned short maxX, unsigned short maxY)
 		{
 			glPushMatrix();
-
-/*			Vector2<unsigned int> size = m_tileSet->GetSize();
-			Vector2<unsigned int> max = size;
-			Vector2<unsigned int> mapSize = GetSize();
-			max[0] /= m_tileSize[0];
-			max[1] /= m_tileSize[1];*/
 			
 			if(minX >= m_size[0])
 				minX = m_size[0] - 1;
@@ -75,49 +73,51 @@ namespace ce
 				maxY = m_size[1] - 1;
 
 			glEnable(GL_TEXTURE_2D);
-//			m_tileSet->Bind();
 
 			glBegin(GL_QUADS);
 			for(unsigned int a = minX; a < maxX; a++)
 				for(unsigned int b = minY; b < maxY; b++)
 				{
-					Tile *tile = &m_tiles[a][b];
-					TileSet *tileSet = tile->m_tileSet;
-					if(tileSet)
+					for(vector<ComplexTileMap::Tile *>::iterator it = m_tiles[a][b].begin(); it != m_tiles[a][b].end(); it++)
 					{
-						Vector2<unsigned short> tileSetSize = tileSet->GetSize();
-						if(tile->m_value[0] < tileSetSize[0] && tile->m_value[1] < tileSetSize[1])
+						Tile *tile = *it;
+						TileSet *tileSet = tile->m_tileSet;
+						if(tileSet)
 						{
-							unsigned int x, y, X, Y, _x, _y, _X, _Y;
-							x = a * m_tileSize[0];
-							y = b * m_tileSize[1];
-							X = x + m_tileSize[0];
-							Y = y + m_tileSize[1];
+							Vector2<unsigned short> tileSetSize = tileSet->GetSize();
+							if(tile->m_value[0] < tileSetSize[0] && tile->m_value[1] < tileSetSize[1])
+							{
+								unsigned int x, y, X, Y, _x, _y, _X, _Y;
+								x = a * m_tileSize[0];
+								y = b * m_tileSize[1];
+								X = x + m_tileSize[0];
+								Y = y + m_tileSize[1];
 
-							_x = tile->m_value[0] * m_tileSize[0];
-							_y = tile->m_value[1] * m_tileSize[1];
-							_X = _x + m_tileSize[0];
-							_Y = _y + m_tileSize[1];
+								_x = tile->m_value[0] * m_tileSize[0];
+								_y = tile->m_value[1] * m_tileSize[1];
+								_X = _x + m_tileSize[0];
+								_Y = _y + m_tileSize[1];
 
-							Image *tileSetImage = tileSet->GetImage();
-							Vector2<unsigned int> tileSetImageSize = tileSetImage->GetSize();
+								Image *tileSetImage = tileSet->GetImage();
+								Vector2<unsigned int> tileSetImageSize = tileSetImage->GetSize();
 
-							float tx, ty, tX, tY;
-							tx = ((float)_x) / ((float)tileSetImageSize[0]);
-							ty = ((float)_y) / ((float)tileSetImageSize[1]);
-							tX = ((float)_X) / ((float)tileSetImageSize[0]);
-							tY = ((float)_Y) / ((float)tileSetImageSize[1]);
+								float tx, ty, tX, tY;
+								tx = ((float)_x) / ((float)tileSetImageSize[0]);
+								ty = ((float)_y) / ((float)tileSetImageSize[1]);
+								tX = ((float)_X) / ((float)tileSetImageSize[0]);
+								tY = ((float)_Y) / ((float)tileSetImageSize[1]);
 
-							tileSetImage->Bind();
+								tileSetImage->Bind();
 
-							glTexCoord2f(tx, tY);
-							glVertex2i(x, y);
-							glTexCoord2f(tX, tY);
-							glVertex2i(X, y);
-							glTexCoord2f(tX, ty);
-							glVertex2i(X, Y);
-							glTexCoord2f(tx, ty);
-							glVertex2i(x, Y);
+								glTexCoord2f(tx, tY);
+								glVertex2i(x, y);
+								glTexCoord2f(tX, tY);
+								glVertex2i(X, y);
+								glTexCoord2f(tX, ty);
+								glVertex2i(X, Y);
+								glTexCoord2f(tx, ty);
+								glVertex2i(x, Y);
+							}
 						}
 					}
 				}

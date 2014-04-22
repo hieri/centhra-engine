@@ -1,1 +1,1 @@
-add_subdirectory(ce_plugBox2D)
+add_subdirectory(ce_plugBox2d)

@@ -42,7 +42,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 include_directories(${INCLUDE})
 
-set(NAME "ce_plugBox2D")
+set(NAME "ce_plugBox2d")
 add_library(${NAME} STATIC ${SRC} ${INC} ${RES})
 set_target_properties(${NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set_target_properties(${NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/lib)

@@ -60,7 +60,7 @@ namespace ce
 						
 						TileMap *tileMap = it->first;
 						float scale = it->second;
-						Vector2<unsigned int> tileSize = tileMap->GetTileSize();
+						Vector2<unsigned short> tileSize = tileMap->GetTileSize();
 						int _minX, _minY, _maxX, _maxY;
 						_minX = (int)((minX / tileSize[0]) / scale) - 1;
 						_maxX = (int)((maxX / tileSize[0]) / scale) + 1;

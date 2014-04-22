@@ -2,6 +2,7 @@
 #define _CE_GAME2D_COMPLEXTILEMAP_H_
 
 //- Centhra Engine -
+#include <CE/Game2D/TileMap.h>
 #include <CE/Game2D/TileSet.h>
 
 //- Standard Library -
@@ -11,10 +12,8 @@ namespace ce
 {
 	namespace game2d
 	{
-		class ComplexTileMap : public Entity
+		class ComplexTileMap : public TileMap
 		{
-			Vector2<unsigned short> m_size, m_tileSize;
-
 		public:
 			class Tile
 			{
@@ -28,11 +27,10 @@ namespace ce
 			ComplexTileMap(Vector2<unsigned short> size, Vector2<unsigned short> tileSize);
 			~ComplexTileMap();
 
-			Vector2<unsigned short> GetSize() const;
-			Vector2<unsigned short> GetTileSize() const;
 			std::vector<Tile *> *GetTiles(unsigned short x, unsigned short y) const;
 			void AddTile(unsigned short x, unsigned short y, TileSet *tileSet, Vector2<unsigned char> value);
-			void Render(unsigned short minX, unsigned short minY, unsigned short maxX, unsigned short maxY);
+
+			virtual void Render(unsigned short minX, unsigned short minY, unsigned short maxX, unsigned short maxY);
 
 		private:
 			std::vector<Tile *> **m_tiles;

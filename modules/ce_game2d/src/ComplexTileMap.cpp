@@ -22,11 +22,8 @@ namespace ce
 			m_value = value;
 		}
 
-		ComplexTileMap::ComplexTileMap(Vector2<unsigned short> size, Vector2<unsigned short> tileSize)
+		ComplexTileMap::ComplexTileMap(Vector2<unsigned short> size, Vector2<unsigned short> tileSize) : TileMap(size, tileSize)
 		{
-			m_size = size;
-			m_tileSize = tileSize;
-
 			m_tiles = new vector<Tile *> *[size[0]];
 			for(unsigned short a = 0; a < size[0]; a++)
 				m_tiles[a] = new vector<Tile *>[size[1]];
@@ -41,14 +38,6 @@ namespace ce
 				delete [] m_tiles[a];
 			}
 			delete [] m_tiles;
-		}
-		Vector2<unsigned short> ComplexTileMap::GetSize() const
-		{
-			return m_size;
-		}
-		Vector2<unsigned short> ComplexTileMap::GetTileSize() const
-		{
-			return m_tileSize;
 		}
 		std::vector<ComplexTileMap::Tile *> *ComplexTileMap::GetTiles(unsigned short x, unsigned short y) const
 		{

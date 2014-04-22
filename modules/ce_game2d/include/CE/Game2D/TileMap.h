@@ -3,7 +3,6 @@
 
 //- Centhra Engine -
 #include <CE/Game2D/Entity.h>
-#include <CE/Image.h>
 #include <CE/Vector2.h>
 
 namespace ce
@@ -12,22 +11,16 @@ namespace ce
 	{
 		class TileMap : public Entity
 		{
-			Image *m_tileSet;
-			Vector2<unsigned int> m_size, m_tileSize;
-			Vector2<unsigned char> **m_tiles;
-
 		protected:
-			void DoRender();
+			Vector2<unsigned short> m_size, m_tileSize;
 
 		public:
-			TileMap(Vector2<unsigned int> size, Vector2<unsigned int> tileSize, Image *tileSet);
-			~TileMap();
+			TileMap(Vector2<unsigned short> size, Vector2<unsigned short> tileSize);
 
-			Vector2<unsigned int> GetSize() const;
-			Vector2<unsigned int> GetTileSize() const;
-			Vector2<unsigned char> GetTile(unsigned int x, unsigned int y) const;
-			void SetTile(unsigned int x, unsigned int y, Vector2<unsigned char> value);
-			void Render(unsigned int minX, unsigned int minY, unsigned int maxX, unsigned int maxY);
+			Vector2<unsigned short> GetSize() const;
+			Vector2<unsigned short> GetTileSize() const;
+
+			virtual void Render(unsigned short minX, unsigned short minY, unsigned short maxX, unsigned short maxY);
 		};
 	}
 }

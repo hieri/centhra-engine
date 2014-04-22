@@ -1,18 +1,23 @@
 //- Standard Library -
 #include <fstream>
 #include <iostream>
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 #include <string>
+#include <sstream>
+#include <ctime>
 
 #ifdef linux
 	//- Linux -
 	#include <unistd.h>
+	#include <sys/time.h>
+	#include <sys/stat.h>
 #endif
 
 #ifdef _WIN32
 	//- Windows Patches -
 	#include <Windows.h>
+	#include <direct.h>
 	#define snprintf _snprintf_s
 	#define vsnprintf _vsnprintf_s
 #endif
@@ -71,6 +76,10 @@ namespace ce
 		in.close();
 		return exists;
 	}
+	bool fileDelete(const char *file)
+	{
+		return remove(file) == 0;
+	}
 	string fileExt(const char *file)
 	{
 		string str(file);
@@ -95,6 +104,25 @@ namespace ce
 		while((idx = str.find("/./")) != string::npos)
 			str = str.replace(idx, 3, "/");
 		return str;
+	}
+	bool createFolder(const char *folder)
+	{
+		stringstream folderStream(folder);
+		string curr, final;
+		while(getline(folderStream, curr, '/'))
+		{
+			if(final.size())
+				final.push_back('/');
+			final.append(curr);
+			#ifdef linux
+				mkdir(final.c_str(), 0777);
+			#endif
+			#ifdef _WIN32
+				_mkdir(final.c_str());
+			#endif
+		}
+
+		return true;
 	}
 
 	void error(const char *format, ...)
@@ -155,5 +183,38 @@ namespace ce
 		#ifdef _WIN32
 			Sleep(timeMS);
 		#endif
+	}
+	unsigned long long g_startTimeMS = getRunTimeMS(); //- TODO: Verify if we can get away with doing this -
+	unsigned long long getStartTimeMS()
+	{
+		return g_startTimeMS;
+	}
+	unsigned long long getRealTimeMS()
+	{
+		unsigned long long currTimeMS;
+
+		#ifdef linux
+			struct timeval currTime;
+			gettimeofday(&currTime, 0);
+			currTimeMS = currTime.tv_sec * 1000 + currTime.tv_usec / 1000;
+		#endif
+
+		#ifdef _WIN32
+			LARGE_INTEGER frequency;
+			if(QueryPerformanceFrequency(&frequency))
+			{
+				LARGE_INTEGER count;
+				QueryPerformanceCounter(&count);
+				currTimeMS = (unsigned long long)((1000 * count.QuadPart) / frequency.QuadPart);
+			}
+			else
+				currTimeMS = (unsigned long long)GetTickCount();
+		#endif
+
+		return currTimeMS;
+	}
+	unsigned long long getRunTimeMS()
+	{
+		return getRealTimeMS() - g_startTimeMS;
 	}
 }

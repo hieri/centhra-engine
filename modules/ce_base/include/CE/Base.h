@@ -11,6 +11,9 @@ namespace ce
 {
 	//- Time -
 	void sleepMS(unsigned long timeMS);
+	unsigned long long getRunTimeMS();
+	unsigned long long getRealTimeMS();
+	unsigned long long getStartTimeMS();
 
 	//- Error Handling -
 	void clearError();
@@ -21,9 +24,13 @@ namespace ce
 
 	//- File IO -
 	bool fileExists(const char *file);
+	bool fileDelete(const char *file);
+	bool fileRename(const char *file, const char *target);
 	std::string fileExt(const char *file);
 	std::string filePath(const char *file);
 	std::string fileCompressPath(const char *file);
+	unsigned long fileSize(const char *file);
+	bool createFolder(const char *folder);
 
 	//- Messages -
 	void error(const char *format, ...);

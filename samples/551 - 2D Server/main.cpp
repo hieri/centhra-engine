@@ -206,7 +206,12 @@ void *clientFunc(void *arg)
 	connection.player = player;
 
 	for(map<unsigned long, ClientConnection *>::iterator it = app->m_clientConnectionMap.begin(); it != app->m_clientConnectionMap.end(); it++)
-		it->second->creationQueue.push(pair<unsigned long, game2d::PhysicalObject *>((unsigned long)id, player));
+	{
+		ClientConnection *con = it->second;
+		con->creationQueue.push(pair<unsigned long, game2d::PhysicalObject *>((unsigned long)id, player));
+		connection.creationQueue.push(pair<unsigned long, game2d::PhysicalObject *>(con->id, con->player));
+	}
+
 	app->m_clientConnectionMap[id] = &connection;
 	g_physicsMutex.Unlock();
 	print("New CL: %d\n", id);
@@ -247,7 +252,15 @@ void *clientFunc(void *arg)
 			memcpy(&response, &readBuffer[2], sizeof(Packet));
 
 			if(response.type == Movement)
+			{
+//				cout << "Movement: " << response.movement.velX << " " << response.movement.velY << endl;
+//					print("Movement: %f %f\n", response.movement.velX, response.movement.velY);
+				g_physicsMutex.Lock();
 				player->SetVelocity(Vector2<float>(response.movement.velX, response.movement.velY));
+				g_physicsMutex.Unlock();
+//				cout << "B " << player << endl;
+//				cout << "B " << player->GetPosition()[0] << " " << player->GetPosition()[1] << endl;
+			}
 
 			readBuffer = readBuffer.substr(32);
 		}
@@ -259,7 +272,7 @@ void *clientFunc(void *arg)
 			// objects need id's derp
 	//		vector<Group::Member *> &groupMembers = app->m_group->GetMembers();
 	//		for(vector<Group::Member *>::iterator it = groupMembers.begin(); it != groupMembers.end(); it++)
-		/*	for(map<unsigned long, ClientConnection *>::iterator it = app->m_clientConnectionMap.begin(); it != app->m_clientConnectionMap.end(); it++)
+			for(map<unsigned long, ClientConnection *>::iterator it = app->m_clientConnectionMap.begin(); it != app->m_clientConnectionMap.end(); it++)
 			{
 				ClientConnection *clientConnection = it->second;
 				game2d::PhysicalObject *obj = (game2d::PhysicalObject *)clientConnection->player;
@@ -273,9 +286,9 @@ void *clientFunc(void *arg)
 					update.update.objID = clientConnection->id;
 				update.update.posX = position[0];
 				update.update.posY = position[1];
-				client->Write((char *)packetPrefix.append((char *)&update, sizeof(Packet)).c_str(), transSize);
+				string tempPacket(packetPrefix);
+				client->Write((char *)tempPacket.append((char *)&update, sizeof(Packet)).c_str(), transSize);
 			}
-			*/
 		}
 
 		while(connection.creationQueue.size())
@@ -290,7 +303,9 @@ void *clientFunc(void *arg)
 			creation.n.objID = objData.first;
 			creation.n.posX = position[0];
 			creation.n.posY = position[1];
-			client->Write((char *)packetPrefix.append((char *)&creation, sizeof(Packet)).c_str(), transSize);
+
+			string tempPacket(packetPrefix);
+			client->Write((char *)tempPacket.append((char *)&creation, sizeof(Packet)).c_str(), transSize);
 			print("%d sending creation event for: %d %d\n", id, objData.first, creation.type);
 		}
 
@@ -300,7 +315,8 @@ void *clientFunc(void *arg)
 			deletion.type = Delete;
 			deletion.del.objID = connection.deletionQueue.front();
 			connection.deletionQueue.pop();
-			client->Write((char *)packetPrefix.append((char *)&deletion, sizeof(Packet)).c_str(), transSize);
+			string tempPacket(packetPrefix);
+			client->Write((char *)tempPacket.append((char *)&deletion, sizeof(Packet)).c_str(), transSize);
 		}
 
 		sleepMS(1);

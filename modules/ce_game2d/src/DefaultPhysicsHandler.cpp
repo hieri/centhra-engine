@@ -1,6 +1,7 @@
 //- Standard Library -
 #include <algorithm>
 #include <stdlib.h>
+#include <iostream>
 
 #ifdef _WIN32
 	//- Windows -
@@ -1000,6 +1001,16 @@ namespace ce
 
 				m_plane->Place(handle);
 			}
+		}
+		void DefaultPhysicsHandler::SetupObject(PhysicalObject *object)
+		{
+			ObjectHandle *handle = new ObjectHandle(this, object);
+			m_plane->Place(handle);
+		}
+		void DefaultPhysicsHandler::CleanupObject(PhysicalObject *object)
+		{
+			ObjectHandle *handle = (ObjectHandle *)object->GetObjectHandle();
+			delete handle;
 		}
 		void DefaultPhysicsHandler::Render(float minX, float minY, float maxX, float maxY)
 		{

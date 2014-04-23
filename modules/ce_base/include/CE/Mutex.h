@@ -8,6 +8,7 @@ namespace ce
 {
 	class Mutex
 	{
+		bool m_isAlive;
 		#if CE_BASE_USEPOSIXTHREAD
 			unsigned long m_pMutex;
 		#endif
@@ -20,6 +21,7 @@ namespace ce
 		void Destroy();
 		void Lock();
 		void Unlock();
+		bool IsAlive() const;
 	};
 }
 

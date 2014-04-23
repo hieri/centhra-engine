@@ -33,6 +33,8 @@ namespace ce
 	bool createFolder(const char *folder);
 
 	//- Messages -
+	void ioMutexInit();
+	void ioMutexDestroy();
 	void error(const char *format, ...);
 	void print(const char *format, ...);
 	void warn(const char *format, ...);

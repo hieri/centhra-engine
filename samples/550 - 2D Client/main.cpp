@@ -375,6 +375,7 @@ void *physicsFunc(void *arg)
 
 int main(int argc, char **argv)
 {
+	ioMutexInit();
 	print("550 - 2D Client | Centhra Engine v%s\n", getVersionString().c_str());
 
 	AppTest myApp;
@@ -384,6 +385,7 @@ int main(int argc, char **argv)
 	while(myApp.IsRunning())
 		myApp.Process();
 
+	ioMutexDestroy();
 	Thread::Exit(NULL);
 	return 0;
 }

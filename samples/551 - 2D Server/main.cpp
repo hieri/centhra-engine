@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <queue>
+#include <iostream>
 
 //- Centhra Engine -
 #include <CE/Base.h>
@@ -322,6 +323,7 @@ void *clientFunc(void *arg)
 
 int main(int argc, char **argv)
 {
+	ioMutexInit();
 	print("551 - 2D Server | Centhra Engine v%s\n", getVersionString().c_str());
 
 	AppTest myApp;
@@ -364,6 +366,7 @@ int main(int argc, char **argv)
 	g_physicsMutex.Destroy();
 	delete server;
 
+	ioMutexDestroy();
 	Thread::Exit();
 	return 0;
 }

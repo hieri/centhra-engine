@@ -25,6 +25,7 @@
 //- Centhra Engine -
 #include <CE/Base.h>
 #include <CE/App.h>
+#include <CE/Mutex.h>
 
 //- TODO: handle warn differently than print -
 
@@ -125,6 +126,15 @@ namespace ce
 		return true;
 	}
 
+	Mutex g_ioMutex;
+	void ioMutexInit()
+	{
+		g_ioMutex.Init();
+	}
+	void ioMutexDestroy()
+	{
+		g_ioMutex.Destroy();
+	}
 	void error(const char *format, ...)
 	{
 		va_list	ap;
@@ -133,7 +143,11 @@ namespace ce
 		App *current = App::GetCurrent();
 		if(current)
 			current->OnError(msg.c_str());
+		if(g_ioMutex.IsAlive())
+			g_ioMutex.Lock();
 		cerr << msg;
+		if(g_ioMutex.IsAlive())
+			g_ioMutex.Unlock();
 		va_end(ap);
 	}
 	void print(const char *format, ...)
@@ -144,7 +158,11 @@ namespace ce
 		App *current = App::GetCurrent();
 		if(current)
 			current->OnPrint(msg.c_str());
+		if(g_ioMutex.IsAlive())
+			g_ioMutex.Lock();
 		cout << msg;
+		if(g_ioMutex.IsAlive())
+			g_ioMutex.Unlock();
 		va_end(ap);
 	}
 	void warn(const char *format, ...)
@@ -155,7 +173,11 @@ namespace ce
 		App *current = App::GetCurrent();
 		if(current)
 			current->OnWarn(msg.c_str());
+		if(g_ioMutex.IsAlive())
+			g_ioMutex.Lock();
 		cout << msg;
+		if(g_ioMutex.IsAlive())
+			g_ioMutex.Unlock();
 		va_end(ap);
 	}
 

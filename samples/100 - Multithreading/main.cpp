@@ -26,6 +26,7 @@ void *threadFunc(void *arg)
 
 int main(int argc, char **argv)
 {
+	ioMutexInit();
 	print("100 - Multithreading | Centhra Engine v%s\n", getVersionString().c_str());
 
 	Thread threadA(&threadFunc), threadB(&threadFunc);
@@ -39,6 +40,7 @@ int main(int argc, char **argv)
 	threadB.Join();
 
 	print("o-> Main Ended\n");
+	ioMutexDestroy();
 	Thread::Exit(NULL);
 	return 0;
 }

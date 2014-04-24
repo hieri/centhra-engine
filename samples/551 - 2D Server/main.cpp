@@ -17,6 +17,7 @@
 #include <CE/Game2D/PhysicalGroup.h>
 #include <CE/Game2D/DefaultPhysicsHandler.h>
 #include <CE/UI/CameraView2DCtrl.h>
+#include <CE/Plugin/Box2D/PhysicsHandler.h>
 
 using namespace ce;
 using namespace std;
@@ -50,7 +51,7 @@ typedef struct UpdatePacket
 {
 	unsigned short type;
 	unsigned long objID;
-	float posX, posY;
+	float posX, posY, velX, velY, rot;
 } UpdatePacket;
 typedef union Packet
 {
@@ -59,7 +60,7 @@ typedef union Packet
 	UpdatePacket update;
 	DeletePacket del;
 	NewPacket n;
-	char padding[30];
+	char padding[60];
 } Packet;
 
 Mutex g_physicsMutex;
@@ -76,12 +77,14 @@ class AppTest : public AppFrontend
 public:
 	game2d::PhysicalGroup *m_group;
 	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
+	plugin::box2d::bPhysicsHandler *m_box2dPhysicsHandler;
 	map<unsigned long, ClientConnection *> m_clientConnectionMap;
 
 	AppTest()
 	{
 		m_group = 0;
 		m_defaultPhysicsHandler = 0;
+		m_box2dPhysicsHandler = 0;
 		m_canvas = 0;
 		m_camera = 0;
 		m_view = 0;
@@ -97,8 +100,11 @@ public:
 		m_canvas = Canvas::Create(640, 480, "551- 2D Server");
 
 		m_group = new game2d::PhysicalGroup();
-		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
-		m_group->AttachHandler(m_defaultPhysicsHandler);
+//		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
+//		m_group->AttachHandler(m_defaultPhysicsHandler);
+
+		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
+		m_group->AttachHandler(m_box2dPhysicsHandler);
 
 		m_camera = new game2d::Camera();
 
@@ -124,6 +130,7 @@ public:
 	{
 		m_group->DetachHandler();
 		delete m_defaultPhysicsHandler;
+		delete m_box2dPhysicsHandler;
 		delete m_group;
 
 		delete m_view;
@@ -164,6 +171,7 @@ void *physicsFunc(void *arg)
 			lastProcess = t;
 
 			g_physicsMutex.Lock();
+			game2d::Entity::DeleteDead();
 			app->m_group->ProcessPhysics(dt);
 			g_physicsMutex.Unlock();
 		}
@@ -186,6 +194,9 @@ public:
 
 // thinking of how to handle telling other clients about new's/delete's
 // update also needs to include velocity
+// detect when live connection fails
+// write a generalized class for keeping track of networked objects
+// get rid of need for a canvas with regards to the server
 void *clientFunc(void *arg)
 {
 	srand(time(NULL));
@@ -217,21 +228,31 @@ void *clientFunc(void *arg)
 	print("New CL: %d\n", id);
 
 	string packetPrefix = "P:";
-	unsigned short transSize = packetPrefix.length() + sizeof(Packet);
 	string readBuffer;
 
 	unsigned long lastPositionUpdate = app->GetRunTimeMS();
 
+	int hasRead = 0;
 	while(true)
 	{
 		unsigned long t = app->GetRunTimeMS();
 
-		while(client->HasRead())
+		hasRead = client->HasRead();
+		if(hasRead > 0)
 		{
-			char buffer[257];
-			memset(buffer, 0, 256);
-			unsigned short ret = client->Read(buffer, 256);
-			readBuffer.append(buffer, ret);
+			do
+			{
+				char buffer[257];
+				memset(buffer, 0, 256);
+				unsigned short ret = client->Read(buffer, 256);
+				readBuffer.append(buffer, ret);
+			}
+			while(client->HasRead() > 0);
+		}
+		else if(hasRead < 0)
+		{
+			cout << "Connection closed" << endl;
+			break;
 		}
 
 		while(readBuffer.size() >= 32)
@@ -254,12 +275,9 @@ void *clientFunc(void *arg)
 			if(response.type == Movement)
 			{
 //				cout << "Movement: " << response.movement.velX << " " << response.movement.velY << endl;
-//					print("Movement: %f %f\n", response.movement.velX, response.movement.velY);
 				g_physicsMutex.Lock();
 				player->SetVelocity(Vector2<float>(response.movement.velX, response.movement.velY));
 				g_physicsMutex.Unlock();
-//				cout << "B " << player << endl;
-//				cout << "B " << player->GetPosition()[0] << " " << player->GetPosition()[1] << endl;
 			}
 
 			readBuffer = readBuffer.substr(32);
@@ -278,6 +296,8 @@ void *clientFunc(void *arg)
 				game2d::PhysicalObject *obj = (game2d::PhysicalObject *)clientConnection->player;
 
 				Vector2<float> position = obj->GetPosition();
+				Vector2<float> velocity = obj->GetVelocity();
+				float rotation = obj->GetRotation();
 				Packet update;
 				update.type = Update;
 				if(obj == player)
@@ -286,8 +306,12 @@ void *clientFunc(void *arg)
 					update.update.objID = clientConnection->id;
 				update.update.posX = position[0];
 				update.update.posY = position[1];
+				update.update.velX = velocity[0];
+				update.update.velY = velocity[1];
+				update.update.rot = rotation;
 				string tempPacket(packetPrefix);
-				client->Write((char *)tempPacket.append((char *)&update, sizeof(Packet)).c_str(), transSize);
+				tempPacket.append((char *)&update, sizeof(Packet));
+				client->Write((char *)tempPacket.c_str(), tempPacket.size());
 			}
 		}
 
@@ -305,8 +329,9 @@ void *clientFunc(void *arg)
 			creation.n.posY = position[1];
 
 			string tempPacket(packetPrefix);
-			client->Write((char *)tempPacket.append((char *)&creation, sizeof(Packet)).c_str(), transSize);
-			print("%d sending creation event for: %d %d\n", id, objData.first, creation.type);
+			tempPacket.append((char *)&creation, sizeof(Packet));
+			client->Write((char *)tempPacket.c_str(), tempPacket.size());
+//			print("%d sending creation event for: %d %d\n", id, objData.first, creation.type);
 		}
 
 		while(connection.deletionQueue.size())
@@ -316,11 +341,14 @@ void *clientFunc(void *arg)
 			deletion.del.objID = connection.deletionQueue.front();
 			connection.deletionQueue.pop();
 			string tempPacket(packetPrefix);
-			client->Write((char *)tempPacket.append((char *)&deletion, sizeof(Packet)).c_str(), transSize);
+			tempPacket.append((char *)&deletion, sizeof(Packet));
+			client->Write((char *)tempPacket.c_str(), tempPacket.size());
 		}
 
 		sleepMS(1);
 	}
+
+	cout << "Client Quit" << endl;
 
 	app->m_clientConnectionMap.erase(id);
 	for(map<unsigned long, ClientConnection *>::iterator it = app->m_clientConnectionMap.begin(); it != app->m_clientConnectionMap.end(); it++)
@@ -328,7 +356,7 @@ void *clientFunc(void *arg)
 
 	g_physicsMutex.Lock();
 	app->m_group->Remove(player);
-	delete player;
+	player->Kill();
 	g_physicsMutex.Unlock();
 
 	delete client;

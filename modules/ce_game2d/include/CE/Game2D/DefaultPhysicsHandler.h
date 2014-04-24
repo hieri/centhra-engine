@@ -38,6 +38,7 @@ namespace ce
 				void AddZone(Zone *zone);
 				bool ContainsZone(Zone *zone) const;
 				void RemoveZone(Zone *zone);
+				void RemoveFromZones();
 				Vector2<float> GetExtent() const;
 				Vector2<float> GetPosition() const;
 				Vector2<float> GetVelocity() const;

@@ -89,7 +89,7 @@ namespace ce
 		bool SetBlocking(bool isBlocking);
 		void GetPeerIP4Info(unsigned long *addr, unsigned short *port);
 		bool Close();
-		bool HasRead();
+		int HasRead();
 	};
 }
 

@@ -142,9 +142,8 @@ public:
 			m_randoms[a]->SetVelocity(vel);
 		}
 
+		game2d::Entity::DeleteDead();
 		m_group->ProcessPhysics(dt);
-//		m_plane->RemoveDead();
-//		game2d::Entity::DeleteDead();
 	}
 	bool OnProcess()
 	{
@@ -175,7 +174,6 @@ public:
 			delete m_randoms[a];
 		delete [] m_randoms;
 		delete m_group;
-//		game2d::ZoneEntity::Cleanup();
 		delete m_canvas;
 	}
 

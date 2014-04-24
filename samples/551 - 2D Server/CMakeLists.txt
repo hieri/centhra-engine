@@ -9,6 +9,7 @@ set(INCLUDE
 	${PROJECT_SOURCE_DIR}/modules/ce_frontend/include
 	${PROJECT_SOURCE_DIR}/modules/ce_game2d/include
 	${PROJECT_SOURCE_DIR}/modules/ce_ui/include
+	${PROJECT_SOURCE_DIR}/plugins/ce_plugBox2d/include
 )
 
 find_package(OpenGL REQUIRED)
@@ -18,6 +19,7 @@ set(LIB
 	ce_base
 	ce_frontend
 	ce_ui
+	ce_plugBox2d
 	${OPENGL_LIBRARIES}
 )
 

@@ -10,6 +10,7 @@
 #include <CE/Game2D/PhysicalGroup.h>
 #include <CE/Game2D/DefaultPhysicsHandler.h>
 #include <CE/UI/CameraView2DCtrl.h>
+#include <CE/Plugin/Box2D/PhysicsHandler.h>
 
 //- Standard Library -
 #include <cstdlib>
@@ -56,7 +57,7 @@ typedef struct UpdatePacket
 {
 	unsigned short type;
 	unsigned long objID;
-	float posX, posY;
+	float posX, posY, velX, velY, rot;
 } UpdatePacket;
 typedef union Packet
 {
@@ -65,7 +66,7 @@ typedef union Packet
 	UpdatePacket update;
 	DeletePacket del;
 	NewPacket n;
-	char padding[30];
+	char padding[60];
 } Packet;
 
 //- Define your own implementation of the AppFrontend class. -
@@ -75,6 +76,7 @@ class AppTest : public AppFrontend
 	game2d::Camera *m_camera;
 	ui::CameraView2DCtrl *m_view;
 	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
+	plugin::box2d::bPhysicsHandler *m_box2dPhysicsHandler;
 	bool w,a,s,d;
 	unsigned long m_lastProcess;
 
@@ -89,6 +91,7 @@ public:
 	{
 		m_canvas = 0;
 		m_defaultPhysicsHandler = 0;
+		m_box2dPhysicsHandler = 0;
 		m_entity = m_dummy = 0;
 		m_camera = 0;
 		m_group = 0;
@@ -125,8 +128,11 @@ public:
 		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(640, 480));
 		m_view->SetCamera(m_camera);
 
-		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
-		m_group->AttachHandler(m_defaultPhysicsHandler);
+//		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
+//		m_group->AttachHandler(m_defaultPhysicsHandler);
+
+		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
+		m_group->AttachHandler(m_box2dPhysicsHandler);
 
 		g_physicsMutex.Init();
 		m_physicsThread->Start(this);
@@ -168,6 +174,7 @@ public:
 	void OnStopped()
 	{
 		m_group->DetachHandler();
+		delete m_box2dPhysicsHandler;
 		delete m_defaultPhysicsHandler;
 
 		g_physicsMutex.Destroy();
@@ -242,7 +249,6 @@ void *connectionFunc(void *arg)
 	Socket *client = Socket::Create(Socket::IP4, Socket::Stream, Socket::TCP);
 	string connectionMsg = "2dClient";
 	string packetPrefix = "P:";
-	unsigned short transSize = packetPrefix.length() + sizeof(Packet);
 
 	bool isConnected = false;
 
@@ -309,13 +315,19 @@ void *connectionFunc(void *arg)
 //					cout << "Update: " << response.update.posX << " " << response.update.posY << endl;
 					g_physicsMutex.Lock();
 					if(response.update.objID == 0)
+					{
 						app->m_entity->SetPosition((Vector2<float>(response.update.posX, response.update.posY)));
+						app->m_entity->SetVelocity((Vector2<float>(response.update.velX, response.update.velY)));
+						app->m_entity->SetRotation(response.update.rot);
+					}
 					else
 					{
 						if(app->m_entityMap.count(response.update.objID))
 						{
 							game2d::PhysicalObject *obj = app->m_entityMap[response.update.objID];
 							obj->SetPosition(Vector2<float>(response.update.posX, response.update.posY));
+							obj->SetVelocity((Vector2<float>(response.update.velX, response.update.velY)));
+							obj->SetRotation(response.update.rot);
 						}
 					}
 					g_physicsMutex.Unlock();
@@ -337,7 +349,7 @@ void *connectionFunc(void *arg)
 					{
 						game2d::PhysicalObject *obj = app->m_entityMap[response.del.objID];
 						app->m_group->Remove(obj);
-						delete obj;
+						obj->Kill();
 					}
 					g_physicsMutex.Unlock();
 				}
@@ -383,6 +395,7 @@ void *physicsFunc(void *arg)
 			lastProcess = t;
 
 			g_physicsMutex.Lock();
+			game2d::Entity::DeleteDead();
 			app->ProcessPhysics(dt);
 			g_physicsMutex.Unlock();
 		}

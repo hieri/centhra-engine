@@ -61,6 +61,11 @@ namespace ce
 			if(it != m_zones.end())
 				m_zones.erase(it);
 		}
+		void DefaultPhysicsHandler::ObjectHandle::RemoveFromZones()
+		{
+			while(m_zones.size())
+				m_zones.back()->Remove(this);
+		}
 		Vector2<float> DefaultPhysicsHandler::ObjectHandle::GetExtent() const
 		{
 			return m_object->GetExtent();
@@ -1010,6 +1015,7 @@ namespace ce
 		void DefaultPhysicsHandler::CleanupObject(PhysicalObject *object)
 		{
 			ObjectHandle *handle = (ObjectHandle *)object->GetObjectHandle();
+			handle->RemoveFromZones();
 			delete handle;
 		}
 		void DefaultPhysicsHandler::Render(float minX, float minY, float maxX, float maxY)
@@ -1018,6 +1024,7 @@ namespace ce
 		}
 		void DefaultPhysicsHandler::Process(float dt)
 		{
+			m_plane->RemoveDead();
 			m_plane->ProcessPhysics(dt);
 		}
 		void DefaultPhysicsHandler::Cleanup()

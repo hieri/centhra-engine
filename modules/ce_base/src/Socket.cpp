@@ -269,7 +269,7 @@ namespace ce
 	{
 		return send(m_socket, buffer, length, 0);
 	}
-	bool Socket::HasRead()
+	int Socket::HasRead()
 	{
 		fd_set readFlags, writeFlags;
 		struct timeval waitd = {0, 0};
@@ -292,13 +292,24 @@ namespace ce
 */
 		int ret = select(m_socket + 1, &readFlags, &writeFlags, (fd_set *)0, &waitd);
 		
+		int hasRead = 0;
 		#ifdef _WIN32
-			return FD_ISSET(m_socket, &readFlags) != 0;
+			hasRead = FD_ISSET(m_socket, &readFlags) != 0 ? 1 : 0;
+		#endif
+		#ifdef linux
+			hasRead = FD_ISSET(m_socket, &readFlags) ? 1 : 0;
 		#endif
 
-		#ifdef linux
-			return FD_ISSET(m_socket, &readFlags);
-		#endif
+		if(hasRead)
+		{
+			unsigned char c = 0;
+			ret = recv(m_socket, &c, 1, MSG_PEEK);
+
+			if(ret == 0) //- TODO: Verify this means client terminated connection -
+				hasRead = -1;
+		}
+
+		return hasRead;
 	}
 	bool Socket::SetBlocking(bool isBlocking)
 	{

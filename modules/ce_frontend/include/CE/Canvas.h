@@ -17,6 +17,7 @@ namespace ce
 	class Canvas
 	{
 		AppFrontend *m_app;
+		bool m_vsync;
 		unsigned long m_lastRenderTimeMS;
 		int m_width, m_height;
 
@@ -71,6 +72,7 @@ namespace ce
 		int GetWidth() const;
 		int GetHeight() const;
 		void UpdateViewport(int width, int height);
+		void SetVSync(bool vsync);
 	};
 }
 

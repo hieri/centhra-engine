@@ -529,6 +529,7 @@ namespace ce
 		m_lastRenderTimeMS = 0;
 		m_width = 0;
 		m_height = 0;
+		m_vsync = true;
 
 		#if CE_FRONTEND_USEXLIB
 			#if CE_FRONTEND_USEXCB
@@ -589,7 +590,7 @@ namespace ce
 		unsigned long time = m_app->GetRunTimeMS();
 
 		//- TODO: integrate togglable VSync -
-		if((time - m_lastRenderTimeMS) > 15)
+		if((time - m_lastRenderTimeMS) > 15 || !m_vsync)
 		{
 			glClear(GL_COLOR_BUFFER_BIT);
 			glClearColor(0.f, 0.f, 0.f, 1.f);
@@ -706,5 +707,9 @@ namespace ce
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+	}
+	void Canvas::SetVSync(bool vsync)
+	{
+		m_vsync = vsync;
 	}
 }

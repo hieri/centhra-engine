@@ -11,6 +11,7 @@ set(INC
 	${INC_DIR}/Game2D/Graph.h
 	${INC_DIR}/Game2D/PhysicalGroup.h
 	${INC_DIR}/Game2D/PhysicalObject.h
+	${INC_DIR}/Game2D/PhysicalText.h
 	${INC_DIR}/Game2D/PhysicsHandler.h
 	${INC_DIR}/Game2D/SimpleTileMap.h
 	${INC_DIR}/Game2D/Sprite.h
@@ -30,6 +31,7 @@ set(SRC
 	${SRC_DIR}/Graph.cpp
 	${SRC_DIR}/PhysicalGroup.cpp
 	${SRC_DIR}/PhysicalObject.cpp
+	${SRC_DIR}/PhysicalText.cpp
 	${SRC_DIR}/PhysicsHandler.cpp
 	${SRC_DIR}/SimpleTileMap.cpp
 	${SRC_DIR}/Sprite.cpp

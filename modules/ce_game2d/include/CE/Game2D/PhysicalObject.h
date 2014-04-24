@@ -17,13 +17,13 @@ namespace ce
 		{
 			static unsigned int ms_lastID;
 
-			Vector2<float> m_position, m_extent, m_velocity;
-			float m_rotation;
 			unsigned int m_id;
 			PhysicalGroup *m_parentGroup;
 			PhysicsHandler::ObjectHandle *m_objectHandle;
 
 		protected:
+			Vector2<float> m_position, m_extent, m_velocity;
+			float m_rotation;
 			Color m_color; //- TODO: Remove this after finished -
 			unsigned int m_collisionMask;
 			bool m_isTrigger, m_isStatic;

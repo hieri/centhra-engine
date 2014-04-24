@@ -143,6 +143,19 @@ namespace ce
 					viewCtrl->Render();
 			}
 
+			Loader::ImageLayer::ImageLayer() : Layer()
+			{
+				m_type = Image;
+			}
+			Loader::ImageLayer::~ImageLayer()
+			{
+			}
+			void Loader::ImageLayer::Render(ui::CameraView2DCtrl *viewCtrl)
+			{
+				if(m_renderView)
+					viewCtrl->Render();
+			}
+
 			Loader::ObjectDef::ObjectDef()
 			{
 				m_type = Unknown;
@@ -264,6 +277,12 @@ namespace ce
 							}
 							objectLayer->m_objectDefVec.push_back(objectDef);
 						}
+					}
+					else if(!name.compare("imagelayer"))
+					{
+						ImageLayer *imageLayer = new ImageLayer();
+						layer = imageLayer;
+						imageLayer->m_imageFile = xNode.child("image").attribute("source").as_string();
 					}
 
 					if(layer)

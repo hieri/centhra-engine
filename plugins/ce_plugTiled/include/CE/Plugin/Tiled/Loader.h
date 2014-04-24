@@ -33,7 +33,8 @@ namespace ce
 				{
 					Unknown,
 					Tile,
-					Object
+					Object,
+					Image
 				} LayerType;
 
 				class Layer
@@ -85,6 +86,17 @@ namespace ce
 
 					ObjectLayer();
 					~ObjectLayer();
+
+					virtual void Render(ui::CameraView2DCtrl *viewCtrl);
+				};
+
+				class ImageLayer : public Layer
+				{
+				public:
+					std::string m_imageFile;
+
+					ImageLayer();
+					~ImageLayer();
 
 					virtual void Render(ui::CameraView2DCtrl *viewCtrl);
 				};

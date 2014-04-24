@@ -60,7 +60,6 @@ typedef union Packet
 	UpdatePacket update;
 	DeletePacket del;
 	NewPacket n;
-	char padding[60];
 } Packet;
 
 Mutex g_physicsMutex;
@@ -203,6 +202,7 @@ void *clientFunc(void *arg)
 
 	unsigned long lastPositionUpdate = app->GetRunTimeMS();
 
+	unsigned short packetSize = sizeof(Packet);
 	int hasRead = 0;
 	while(true)
 	{
@@ -226,7 +226,7 @@ void *clientFunc(void *arg)
 			break;
 		}
 
-		while(readBuffer.size() >= 32)
+		while(readBuffer.size() >= packetSize)
 		{
 			size_t fP = readBuffer.find_first_of("P:");
 			if(fP != 0)
@@ -237,11 +237,11 @@ void *clientFunc(void *arg)
 					readBuffer = readBuffer.substr(fP);
 			}
 
-			if(readBuffer.size() < 32)
+			if(readBuffer.size() < packetSize)
 				break;
 
 			Packet response;
-			memcpy(&response, &readBuffer[2], sizeof(Packet));
+			memcpy(&response, &readBuffer[2], packetSize);
 
 			if(response.type == Movement)
 			{
@@ -281,7 +281,7 @@ void *clientFunc(void *arg)
 				update.update.velY = velocity[1];
 				update.update.rot = rotation;
 				string tempPacket(packetPrefix);
-				tempPacket.append((char *)&update, sizeof(Packet));
+				tempPacket.append((char *)&update, packetSize);
 				client->Write((char *)tempPacket.c_str(), tempPacket.size());
 			}
 		}
@@ -300,7 +300,7 @@ void *clientFunc(void *arg)
 			creation.n.posY = position[1];
 
 			string tempPacket(packetPrefix);
-			tempPacket.append((char *)&creation, sizeof(Packet));
+			tempPacket.append((char *)&creation, packetSize);
 			client->Write((char *)tempPacket.c_str(), tempPacket.size());
 //			print("%d sending creation event for: %d %d\n", id, objData.first, creation.type);
 		}
@@ -312,7 +312,7 @@ void *clientFunc(void *arg)
 			deletion.del.objID = connection.deletionQueue.front();
 			connection.deletionQueue.pop();
 			string tempPacket(packetPrefix);
-			tempPacket.append((char *)&deletion, sizeof(Packet));
+			tempPacket.append((char *)&deletion, packetSize);
 			client->Write((char *)tempPacket.c_str(), tempPacket.size());
 		}
 

@@ -66,7 +66,6 @@ typedef union Packet
 	UpdatePacket update;
 	DeletePacket del;
 	NewPacket n;
-	char padding[60];
 } Packet;
 
 //- Define your own implementation of the AppFrontend class. -
@@ -113,7 +112,8 @@ public:
 	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
-		m_canvas = Canvas::Create(640, 480, "550 - 2D Client");
+//		m_canvas = Canvas::Create(640, 480, "550 - 2D Client");
+		m_canvas = Canvas::Create(128, 128, "550 - 2D Client");
 
 		m_group = new game2d::PhysicalGroup();
 		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
@@ -125,7 +125,7 @@ public:
 		m_camera = new game2d::Camera();
 		m_camera->SetFocus(m_entity);
 
-		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(640, 480));
+		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(128, 128));
 		m_view->SetCamera(m_camera);
 
 //		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
@@ -253,7 +253,7 @@ void *connectionFunc(void *arg)
 	string packetPrefix = "P:";
 
 	bool isConnected = false;
-
+	unsigned short packetSize = sizeof(Packet);
 	string readBuffer;
 	while(app->IsRunning())
 	{
@@ -273,7 +273,7 @@ void *connectionFunc(void *arg)
 				movement.movement.velY = velocity[1];
 				g_physicsMutex.Unlock();
 				string tempPacket(packetPrefix);
-				tempPacket.append((char *)&movement, sizeof(Packet));
+				tempPacket.append((char *)&movement, packetSize);
 				client->Write((char *)tempPacket.c_str(), tempPacket.size());
 
 /*				Packet response;
@@ -290,7 +290,7 @@ void *connectionFunc(void *arg)
 				readBuffer.append(buffer, ret);
 			}
 
-			while(readBuffer.size() >= 32)
+			while(readBuffer.size() >= packetSize)
 			{
 				size_t fP = readBuffer.find_first_of("P:"); // wow
 				if(fP != 0)
@@ -301,12 +301,12 @@ void *connectionFunc(void *arg)
 						readBuffer = readBuffer.substr(fP);
 				}
 
-				if(readBuffer.size() < 32)
+				if(readBuffer.size() < packetSize)
 					break;
 
 //				print("Packet: %s\n", readBuffer.c_str());
 				Packet response;
-				memcpy(&response, &readBuffer[2], 30);
+				memcpy(&response, &readBuffer[2], packetSize);
 
 //				print("Packet: %d\n", response.type);
 	//			cout << "Packet: " << response.type << endl;
@@ -388,6 +388,7 @@ void *physicsFunc(void *arg)
 	AppTest *app = (AppTest *)arg;
 	unsigned long lastProcess = app->GetRunTimeMS();
 
+	cout << "Physics Func" << endl;
 	while(app->IsRunning())
 	{
 		unsigned long t = app->GetRunTimeMS();

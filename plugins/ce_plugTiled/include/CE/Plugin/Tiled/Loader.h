@@ -17,9 +17,6 @@ namespace ce
 		{
 			class Loader
 			{
-			protected:
-				Loader();
-
 			public:
 				typedef struct TileSet
 				{
@@ -43,6 +40,7 @@ namespace ce
 					std::string m_name;
 					bool m_renderView;
 					unsigned short m_type, m_width, m_height;
+					std::map<std::string, std::string> m_propertyMap;
 
 					Layer();
 
@@ -75,6 +73,8 @@ namespace ce
 
 					unsigned short m_type, m_width, m_height, m_gid;
 					short m_x, m_y;
+					std::string m_name;
+					std::map<std::string, std::string> m_propertyMap;
 
 					ObjectDef();
 				};
@@ -101,8 +101,9 @@ namespace ce
 					virtual void Render(ui::CameraView2DCtrl *viewCtrl);
 				};
 
-				static Loader *CreateFromFile(const char *file);
+				static Loader *CreateFromFile(const char *file, Loader *loader = 0);
 
+				Loader();
 				~Loader();
 
 				void Render(ui::CameraView2DCtrl *viewCtrl);

@@ -163,7 +163,7 @@ namespace ce
 				m_x = m_y = 0;
 			}
 
-			Loader *Loader::CreateFromFile(const char *file)
+			Loader *Loader::CreateFromFile(const char *file, Loader *loader)
 			{
 				xml_document doc;
 				xml_parse_result res = doc.load_file(file);
@@ -275,6 +275,16 @@ namespace ce
 								else
 									objectDef->m_type = ObjectDef::Rectangle;
 							}
+
+							xml_attribute name = object.attribute("name");
+							if(name)
+								objectDef->m_name = name.as_string();
+
+							xml_node properties = object.child("properties");
+							if(properties)
+								for(xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
+									objectDef->m_propertyMap[property.attribute("name").as_string()] = property.attribute("value").as_string();
+
 							objectLayer->m_objectDefVec.push_back(objectDef);
 						}
 					}
@@ -292,6 +302,7 @@ namespace ce
 							for(xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
 							{
 								string propertyName(property.attribute("name").as_string());
+								layer->m_propertyMap[propertyName] = property.attribute("value").as_string();
 								if(!propertyName.compare("renderView"))
 									layer->m_renderView = property.attribute("value").as_bool();
 							}
@@ -303,7 +314,8 @@ namespace ce
 					}
 				}
 
-				Loader *loader = new Loader();
+				if(!loader)
+					loader = new Loader();
 				loader->m_file = file;
 				loader->m_tileSetVec = tilesets;
 				loader->m_size = Vector2<unsigned short>(mapWidth, mapHeight);

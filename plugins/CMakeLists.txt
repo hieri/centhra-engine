@@ -1,1 +1,2 @@
 add_subdirectory(ce_plugBox2d)
+add_subdirectory(ce_plugTiled)

@@ -24,7 +24,8 @@ namespace ce
 			Audio,
 			Video,
 			Physics2D,
-			Physics3D
+			Physics3D,
+			Map
 		} PluginType;
 
 		static int Register(Plugin *plugin);

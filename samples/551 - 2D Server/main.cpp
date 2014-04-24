@@ -19,7 +19,7 @@
 #include <CE/UI/CameraView2DCtrl.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
 
-#define NUMRANDOMS 16 
+#define NUMRANDOMS 256 
 
 using namespace ce;
 using namespace std;
@@ -121,7 +121,7 @@ public:
 			while(!randBuff[ry * 64 + rx]);
 			randBuff[ry * 64 + rx] = false;
 
-			m_randoms[a] = new game2d::PhysicalObject(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>(16.f, 16.f));
+			m_randoms[a] = new game2d::PhysicalObject(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>(32.f, 32.f));
 
 			Vector2<float> dif = Vector2<float>((float)(rand() % 1024 - 512), (float)(rand() % 1024 - 512));
 			m_randoms[a]->SetVelocity(dif);
@@ -142,6 +142,10 @@ public:
 			Vector2<float> pos = m_randoms[a]->GetPosition();
 //			Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
 //			Vector2<float> vel = m_randoms[a]->GetVelocity();
+//			float length = vel.GetLength();
+//			if(length)
+//				vel /= length;
+//			vel *= 256.f;
 //			Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
 			Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
 //			vel /= vel.GetLength();

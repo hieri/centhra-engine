@@ -62,6 +62,17 @@ namespace ce
 				class ObjectDef
 				{
 				public:
+					typedef enum ObjectType
+					{
+						Unknown,
+						Tile,
+						Rectangle,
+						Ellipse,
+						Polygon,
+						Polyline
+					} ObjectType;
+
+					unsigned short m_type, m_width, m_height, m_gid;
 					short m_x, m_y;
 
 					ObjectDef();
@@ -70,7 +81,10 @@ namespace ce
 				class ObjectLayer : public Layer
 				{
 				public:
+					std::vector<ObjectDef *> m_objectDefVec;
+
 					ObjectLayer();
+					~ObjectLayer();
 
 					virtual void Render(ui::CameraView2DCtrl *viewCtrl);
 				};

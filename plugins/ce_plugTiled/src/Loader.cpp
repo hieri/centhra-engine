@@ -132,10 +132,22 @@ namespace ce
 			{
 				m_type = Object;
 			}
+			Loader::ObjectLayer::~ObjectLayer()
+			{
+				for(vector<ObjectDef *>::iterator it = m_objectDefVec.begin(); it != m_objectDefVec.end(); it++)
+					delete *it;
+			}
 			void Loader::ObjectLayer::Render(ui::CameraView2DCtrl *viewCtrl)
 			{
 				if(m_renderView)
 					viewCtrl->Render();
+			}
+
+			Loader::ObjectDef::ObjectDef()
+			{
+				m_type = Unknown;
+				m_width = m_height = m_gid = 0;
+				m_x = m_y = 0;
 			}
 
 			Loader *Loader::CreateFromFile(const char *file)
@@ -158,7 +170,7 @@ namespace ce
 				Vector2<unsigned short> tileSize(tileWidth, tileHeight);
 
 				vector<TileSet *> tilesets;
-				vector<Layer *> layerVec;	
+				vector<Layer *> layerVec;
 				for(xml_node xNode = xMap.first_child(); xNode; xNode = xNode.next_sibling())
 				{
 					Layer *layer = 0;
@@ -214,38 +226,43 @@ namespace ce
 
 						for(xml_node object = xNode.child("object"); object; object = object.next_sibling("object"))
 						{
-							short x = (short)object.attribute("x").as_int();
-							short y = (short)object.attribute("y").as_int();
+							ObjectDef *objectDef = new ObjectDef;
+							objectDef->m_x = (short)object.attribute("x").as_int();
+							objectDef->m_y = (short)object.attribute("y").as_int();
 
 							xml_attribute attrGID = object.attribute("gid");
-							if(attrGID) //- Object is a Tile -
+							if(attrGID)
 							{
-								unsigned short gid = attrGID.as_uint();
-		//						print("GID: %d\n", gid);
+								objectDef->m_type = ObjectDef::Tile;
+								objectDef->m_gid = attrGID.as_uint();
 							}
 
 							xml_node polyline = object.child("polyline");
-							if(polyline) //- Object is a Polyline -
+							if(polyline)
 							{
-		//						print("Polyline\n");
+								objectDef->m_type = ObjectDef::Polyline;
 							}
 
 							xml_node polygon = object.child("polygon");
-							if(polygon) //- Object is a Polygon -
+							if(polygon)
 							{
-		//						print("Polygon\n");
+								objectDef->m_type = ObjectDef::Polygon;
 							}
 
 							xml_attribute width = object.attribute("width");
 							xml_attribute height = object.attribute("height");
 							if(width)
 							{
+								objectDef->m_width = width.as_uint();
+								objectDef->m_height = height.as_uint();
+
 								xml_node ellipse = object.child("ellipse");
-		//						if(ellipse) //- Object is an Ellipse -
-		//							print("Ellipse\n");
-		//						else //- Object is a Rectangle -
-		//							print("Rectangle\n");
+								if(ellipse)
+									objectDef->m_type = ObjectDef::Ellipse;
+								else
+									objectDef->m_type = ObjectDef::Rectangle;
 							}
+							objectLayer->m_objectDefVec.push_back(objectDef);
 						}
 					}
 
@@ -272,6 +289,17 @@ namespace ce
 				loader->m_tileSetVec = tilesets;
 				loader->m_size = Vector2<unsigned short>(mapWidth, mapHeight);
 				loader->m_layerVec = layerVec;
+
+				for(vector<Layer *>::iterator it = layerVec.begin(); it != layerVec.end(); it++)
+				{
+					Layer *layer = *it;
+					if(layer->m_type == Object)
+					{
+						ObjectLayer *objectLayer = (ObjectLayer *)layer;
+						for(vector<ObjectDef *>::iterator itB = objectLayer->m_objectDefVec.begin(); itB != objectLayer->m_objectDefVec.end(); itB++)
+							loader->LoadObject(layer, *itB);
+					}
+				}
 				return loader;
 			}
 

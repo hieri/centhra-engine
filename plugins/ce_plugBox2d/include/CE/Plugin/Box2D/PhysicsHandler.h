@@ -45,6 +45,7 @@ namespace ce
 					virtual void OnSetRotation();
 					virtual void OnSetVelocity();
 					virtual void OnSetCollisionMask();
+					virtual void OnSetAngularVelocity();
 
 				public:
 					friend class bPhysicsHandler;

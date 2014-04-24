@@ -24,7 +24,7 @@ namespace ce
 
 		protected:
 			Vector2<float> m_position, m_extent, m_velocity;
-			float m_rotation;
+			float m_rotation, m_angularVelocity;
 			Color m_color; //- TODO: Remove this after finished -
 			unsigned int m_collisionMask;
 			bool m_isTrigger, m_isStatic;
@@ -41,6 +41,7 @@ namespace ce
 			void Render();
 			bool IsStatic() const;
 			float GetRotation() const;
+			float GetAngularVelocity() const;
 			Vector2<float> GetExtent() const;
 			Vector2<float> GetPosition() const;
 			Vector2<float> GetVelocity() const;
@@ -49,6 +50,7 @@ namespace ce
 			void SetPosition(Vector2<float> position, bool updateHandle = true);
 			void SetVelocity(Vector2<float> velocity, bool updateHandle = true);
 			void SetRotation(float rotation, bool updateHandle = true);
+			void SetAngularVelocity(float angularVelocity, bool updateHandle = true);
 
 			unsigned long long GetID() const;
 			unsigned long long GetNetID() const;
@@ -66,6 +68,7 @@ namespace ce
 			virtual void OnSetExtent();
 			virtual void OnSetVelocity();
 			virtual void OnSetRotation();
+			virtual void OnSetAngularVelocity();
 
 			friend class PhysicalGroup;
 			friend class PhysicsHandler::ObjectHandle;

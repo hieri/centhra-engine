@@ -179,11 +179,13 @@ namespace ce
 						bPhysicsHandler::bObjectHandle *objectHandle = (bPhysicsHandler::bObjectHandle *)body->GetUserData();
 						b2Vec2 pos = body->GetPosition();
 						float rot = body->GetAngle();
+						float angularVelocity = body->GetAngularVelocity();
 						game2d::PhysicalObject *pObj = objectHandle->GetReferenceObject();
 						b2Vec2 vel = body->GetLinearVelocity();
 						pObj->SetVelocity(Vector2<float>(vel.x, vel.y), false);
 						pObj->SetPosition(Vector2<float>(pos.x, pos.y), false);
 						pObj->SetRotation(radToDeg * rot, false);
+						pObj->SetAngularVelocity(angularVelocity, false);
 						body = body->GetNext();
 					}
 				}
@@ -307,6 +309,12 @@ namespace ce
 					fix = fix->GetNext();
 				}
 				while(fix);
+			}
+			void bPhysicsHandler::bObjectHandle::OnSetAngularVelocity()
+			{
+				float angularVelocity = m_object->GetAngularVelocity();
+				b2Body *b2d_body = (b2Body *)m_b2d_body;
+				b2d_body->SetAngularVelocity(angularVelocity);
 			}
 
 			bPhysicsHandler::bPhysicsHandler()

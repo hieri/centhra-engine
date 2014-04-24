@@ -40,7 +40,7 @@ namespace ce
 
 		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned long long id, unsigned long long netID)
 		{
-			m_rotation = 0.f;
+			m_rotation = m_angularVelocity = 0.f;
 			m_position = position;
 			m_extent = extent;
 			m_color = Color(rand() % 256,  rand() % 256, rand() % 256);
@@ -110,6 +110,10 @@ namespace ce
 		{
 			return m_rotation;
 		}
+		float PhysicalObject::GetAngularVelocity() const
+		{
+			return m_angularVelocity;
+		}
 		void PhysicalObject::SetExtent(Vector2<float> extent, bool updateHandle)
 		{
 			m_extent = extent;
@@ -145,6 +149,15 @@ namespace ce
 			if(updateHandle)
 				if(m_objectHandle)
 					m_objectHandle->OnSetRotation();
+		}
+		void PhysicalObject::SetAngularVelocity(float angularVelocity, bool updateHandle)
+		{
+			m_angularVelocity = angularVelocity;
+			OnSetAngularVelocity();
+			
+			if(updateHandle)
+				if(m_objectHandle)
+					m_objectHandle->OnSetAngularVelocity();
 		}
 		unsigned long long PhysicalObject::GetID() const
 		{
@@ -206,6 +219,9 @@ namespace ce
 		{
 		}
 		void PhysicalObject::OnSetRotation()
+		{
+		}
+		void PhysicalObject::OnSetAngularVelocity()
 		{
 		}
 	}

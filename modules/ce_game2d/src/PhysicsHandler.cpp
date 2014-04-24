@@ -96,5 +96,8 @@ namespace ce
 		void PhysicsHandler::ObjectHandle::OnSetCollisionMask()
 		{
 		}
+		void PhysicsHandler::ObjectHandle::OnSetAngularVelocity()
+		{
+		}
 	}
 }

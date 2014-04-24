@@ -312,8 +312,32 @@ void *clientFunc(void *arg)
 			if(readBuffer.size() < packetSize)
 				break;
 
+			unsigned short type = 0;
+			memcpy(&type, &readBuffer[2], sizeof(unsigned short));
+
+			unsigned short thisPacketSize = 0;
+
+			switch(type) //- TODO: Refer to array -
+			{
+			case Movement:
+				thisPacketSize = sizeof(MovementPacket);
+				break;
+			case Update:
+				thisPacketSize = sizeof(UpdatePacket);
+				break;
+			case New:
+				thisPacketSize = sizeof(NewPacket);
+				break;
+			case Delete:
+				thisPacketSize = sizeof(DeletePacket);
+				break;
+			case Control:
+				thisPacketSize = sizeof(ControlPacket);
+				break;
+			}
+
 			Packet response;
-			memcpy(&response, &readBuffer[2], packetSize);
+			memcpy(&response, &readBuffer[4], thisPacketSize);
 
 			if(response.type == Movement)
 			{
@@ -323,7 +347,7 @@ void *clientFunc(void *arg)
 				g_physicsMutex.Unlock();
 			}
 
-			readBuffer = readBuffer.substr(packetSize);
+			readBuffer = readBuffer.substr(thisPacketSize + 4);
 		}
 
 		if((t - lastPositionUpdate) >= 16)
@@ -351,7 +375,8 @@ void *clientFunc(void *arg)
 				update.update.velY = velocity[1];
 				update.update.rot = rotation;
 				string tempPacket(packetPrefix);
-				tempPacket.append((char *)&update, packetSize);
+				tempPacket.append((char *)&update.type, sizeof(unsigned short));
+				tempPacket.append((char *)&update, sizeof(UpdatePacket));
 				client->Write((char *)tempPacket.c_str(), tempPacket.size());
 			}
 		}
@@ -370,7 +395,8 @@ void *clientFunc(void *arg)
 			creation.n.posY = position[1];
 
 			string tempPacket(packetPrefix);
-			tempPacket.append((char *)&creation, packetSize);
+			tempPacket.append((char *)&creation.type, sizeof(unsigned short));
+			tempPacket.append((char *)&creation, sizeof(NewPacket));
 			client->Write((char *)tempPacket.c_str(), tempPacket.size());
 //			print("%d sending creation event for: %d %d\n", id, objData.first, creation.type);
 		}
@@ -382,7 +408,8 @@ void *clientFunc(void *arg)
 			deletion.del.objID = connection.deletionQueue.front();
 			connection.deletionQueue.pop();
 			string tempPacket(packetPrefix);
-			tempPacket.append((char *)&deletion, packetSize);
+			tempPacket.append((char *)&deletion.type, sizeof(unsigned short));
+			tempPacket.append((char *)&deletion, sizeof(DeletePacket));
 			client->Write((char *)tempPacket.c_str(), tempPacket.size());
 		}
 
@@ -393,7 +420,8 @@ void *clientFunc(void *arg)
 			control.control.objID = player->GetID();
 
 			string tempPacket(packetPrefix);
-			tempPacket.append((char *)&control, packetSize);
+			tempPacket.append((char *)&control.type, sizeof(unsigned short));
+			tempPacket.append((char *)&control, sizeof(ControlPacket));
 			client->Write((char *)tempPacket.c_str(), tempPacket.size());
 			takenControl = true;
 		}

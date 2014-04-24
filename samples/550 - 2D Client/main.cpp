@@ -280,7 +280,8 @@ void *connectionFunc(void *arg)
 				movement.movement.velY = velocity[1];
 				g_physicsMutex.Unlock();
 				string tempPacket(packetPrefix);
-				tempPacket.append((char *)&movement, packetSize);
+				tempPacket.append((char *)&movement.type, sizeof(unsigned short));
+				tempPacket.append((char *)&movement, sizeof(MovementPacket));
 				client->Write((char *)tempPacket.c_str(), tempPacket.size());
 
 /*				Packet response;
@@ -311,9 +312,33 @@ void *connectionFunc(void *arg)
 				if(readBuffer.size() < packetSize)
 					break;
 
-//				print("Packet: %s\n", readBuffer.c_str());
+				unsigned short type = 0;
+				memcpy(&type, &readBuffer[2], sizeof(unsigned short));
+
+				unsigned short thisPacketSize = 0;
+
+				switch(type) //- TODO: Refer to array -
+				{
+				case Movement:
+					thisPacketSize = sizeof(MovementPacket);
+					break;
+				case Update:
+					thisPacketSize = sizeof(UpdatePacket);
+					break;
+				case New:
+					thisPacketSize = sizeof(NewPacket);
+					break;
+				case Delete:
+					thisPacketSize = sizeof(DeletePacket);
+					break;
+				case Control:
+					thisPacketSize = sizeof(ControlPacket);
+					break;
+				}
+
 				Packet response;
-				memcpy(&response, &readBuffer[2], packetSize);
+				memcpy(&response, &readBuffer[4], thisPacketSize);
+//				print("Packet: %s\n", readBuffer.c_str());
 
 //				print("Packet: %d\n", response.type);
 	//			cout << "Packet: " << response.type << endl;
@@ -365,7 +390,7 @@ void *connectionFunc(void *arg)
 					g_physicsMutex.Unlock();
 				}
 
-				readBuffer = readBuffer.substr(32);				
+				readBuffer = readBuffer.substr(thisPacketSize + 4);				
 			} 
 		}
 		else

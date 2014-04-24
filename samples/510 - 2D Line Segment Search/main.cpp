@@ -98,7 +98,7 @@ public:
 	}
 	bool OnProcess()
 	{
-		unsigned long t = GetRunTimeMS();
+		unsigned long long t = GetRunTimeMS();
 		if((t - m_lastProcess) > 15)
 		{
 			float dt = (float)(t - m_lastProcess) / 1000.f;

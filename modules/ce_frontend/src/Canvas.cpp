@@ -587,7 +587,7 @@ namespace ce
 	}
 	void Canvas::Render()
 	{
-		unsigned long time = m_app->GetRunTimeMS();
+		unsigned long long time = m_app->GetRunTimeMS();
 
 		//- TODO: integrate togglable VSync -
 		if((time - m_lastRenderTimeMS) > 15 || !m_vsync)

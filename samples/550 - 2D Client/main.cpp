@@ -168,7 +168,7 @@ public:
 	}
 	bool OnProcess()
 	{
-		unsigned long t = GetRunTimeMS();
+		unsigned long long t = GetRunTimeMS();
 		if((t - m_lastProcess) > 15)
 		{
 			float dt = (float)(t - m_lastProcess) / 1000.f;
@@ -253,7 +253,7 @@ public:
 void *connectionFunc(void *arg)
 {
 	AppTest *app = (AppTest *)arg;
-	unsigned long lastMovement, lastConnection = app->GetRunTimeMS();
+	unsigned long long lastMovement, lastConnection = app->GetRunTimeMS();
 
 	Socket *client = Socket::Create(Socket::IP4, Socket::Stream, Socket::TCP);
 	string connectionMsg = "2dClient";
@@ -264,7 +264,7 @@ void *connectionFunc(void *arg)
 	string readBuffer;
 	while(app->IsRunning())
 	{
-		unsigned long t = app->GetRunTimeMS();
+		unsigned long long t = app->GetRunTimeMS();
 		if(isConnected)
 		{
 			if((t - lastMovement) > 16)
@@ -395,12 +395,12 @@ void *connectionFunc(void *arg)
 void *physicsFunc(void *arg)
 {
 	AppTest *app = (AppTest *)arg;
-	unsigned long lastProcess = app->GetRunTimeMS();
+	unsigned long long lastProcess = app->GetRunTimeMS();
 
 	cout << "Physics Func" << endl;
 	while(app->IsRunning())
 	{
-		unsigned long t = app->GetRunTimeMS();
+		unsigned long long t = app->GetRunTimeMS();
 		if((t - lastProcess) > 15)
 		{
 			float dt = (float)(t - lastProcess) / 1000.f;

@@ -21,7 +21,7 @@ namespace ce
 		
 		/**	@brief Stores the number of milliseconds since the application started
 		 */
-		unsigned long m_startTimeMS;
+		unsigned long long m_startTimeMS;
 
 	protected:
 		/**	@brief Stores the application running status
@@ -44,7 +44,7 @@ namespace ce
 		/**	@brief Returns the time since the application was started in milliseconds
 		 *	@return Time since the application was started in milliseconds
 		 */
-		unsigned long GetRunTimeMS() const;
+		unsigned long long GetRunTimeMS() const;
 
 		/**	@brief Returns true if the application is running
 		 *	@return Whether or not the application is running

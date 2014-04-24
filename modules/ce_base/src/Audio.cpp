@@ -108,8 +108,8 @@ namespace ce
 			return 0;
 		}
 
-		unsigned long timeMS = (unsigned long)(timeS * 1000);
-		unsigned long targetTime = app->GetRunTimeMS() + timeMS + 50;
+		unsigned long long timeMS = (unsigned long long)(timeS * 1000);
+		unsigned long long targetTime = app->GetRunTimeMS() + timeMS + 50;
 
 		while(app->IsRunning())
 		{

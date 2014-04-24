@@ -42,7 +42,7 @@ namespace ce
 	typedef struct DefaultEvent
 	{
 		int type;
-		unsigned long timeMS;
+		unsigned long long timeMS;
 		Canvas *canvas;
 	} DefaultEvent;
 
@@ -51,7 +51,7 @@ namespace ce
 	typedef struct RenderEvent
 	{
 		int type;
-		unsigned long timeMS;
+		unsigned long long timeMS;
 		Canvas *canvas;
 	} RenderEvent;
 
@@ -60,7 +60,7 @@ namespace ce
 	typedef struct KeyEvent
 	{
 		int type;
-		unsigned long timeMS;
+		unsigned long long timeMS;
 		Canvas *canvas;
 		unsigned char scanCode;
 		unsigned int keyCode, state;
@@ -71,7 +71,7 @@ namespace ce
 	typedef struct MouseButtonEvent
 	{
 		int type;
-		unsigned long timeMS;
+		unsigned long long timeMS;
 		Canvas *canvas;
 		int x, y;
 		unsigned int button, state;
@@ -82,7 +82,7 @@ namespace ce
 	typedef struct MouseMotionEvent
 	{
 		int type;
-		unsigned long timeMS;
+		unsigned long long timeMS;
 		Canvas *canvas;
 		int x, y;
 	} MouseMotionEvent;
@@ -92,7 +92,7 @@ namespace ce
 	typedef struct MouseWheelEvent
 	{
 		int type;
-		unsigned long timeMS;
+		unsigned long long timeMS;
 		Canvas *canvas;
 		int delta;
 	} MouseWheelEvent;
@@ -102,7 +102,7 @@ namespace ce
 	typedef struct WindowResizeEvent
 	{
 		int type;
-		unsigned long timeMS;
+		unsigned long long timeMS;
 		Canvas *canvas;
 		int width, height;
 	} WindowResizeEvent;

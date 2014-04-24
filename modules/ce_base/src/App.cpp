@@ -35,29 +35,9 @@ namespace ce
 	{
 		Stop(true);
 	}
-	unsigned long App::GetRunTimeMS() const
+	unsigned long long App::GetRunTimeMS() const
 	{
-		unsigned long currTimeMS;
-
-		#ifdef linux
-			struct timeval currTime;
-			gettimeofday(&currTime, 0);
-			currTimeMS = currTime.tv_sec * 1000 + currTime.tv_usec / 1000;
-		#endif
-
-		#ifdef _WIN32
-			LARGE_INTEGER frequency;
-			if(QueryPerformanceFrequency(&frequency))
-			{
-				LARGE_INTEGER count;
-				QueryPerformanceCounter(&count);
-				currTimeMS = (unsigned long)((1000 * count.QuadPart) / frequency.QuadPart);
-			}
-			else
-				currTimeMS = GetTickCount();
-		#endif
-
-		return currTimeMS - m_startTimeMS;
+		return getRunTimeMS() - m_startTimeMS;
 	}
 	bool App::IsRunning() const
 	{
@@ -83,30 +63,13 @@ namespace ce
 		if(m_isRunning)
 			return false;
 
-
 		SetCurrent();
 
 		m_isRunning = OnStart();
 
 		if(m_isRunning)
 		{
-			#ifdef linux
-				timeval currTime;
-				gettimeofday(&currTime, 0);
-				m_startTimeMS = currTime.tv_sec * 1000 + currTime.tv_usec / 1000;
-			#endif
-
-			#ifdef _WIN32
-				LARGE_INTEGER frequency;
-				if(QueryPerformanceFrequency(&frequency))
-				{
-					LARGE_INTEGER count;
-					QueryPerformanceCounter(&count);
-					m_startTimeMS = (unsigned long)((1000 * count.QuadPart) / frequency.QuadPart);
-				}
-				else
-					m_startTimeMS = GetTickCount();
-			#endif
+			m_startTimeMS = getRunTimeMS();
 
 			//- TODO: Determine if this is bad to have by default -
 			srand((unsigned int)time(NULL));

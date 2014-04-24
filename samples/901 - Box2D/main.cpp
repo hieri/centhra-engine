@@ -148,7 +148,7 @@ public:
 	}
 	bool OnProcess()
 	{
-		unsigned long t = GetRunTimeMS();
+		unsigned long long t = GetRunTimeMS();
 		if((t - m_lastProcess) > 15)
 		{
 			float dt = (float)(t - m_lastProcess) / 1000.f;
@@ -234,11 +234,11 @@ public:
 void *physicsFunc(void *arg)
 {
 	AppTest *app = (AppTest *)arg;
-	unsigned long lastProcess = app->GetRunTimeMS();
+	unsigned long long lastProcess = app->GetRunTimeMS();
 
 	while(app->IsRunning())
 	{
-		unsigned long t = app->GetRunTimeMS();
+		unsigned long long t = app->GetRunTimeMS();
 		if((t - lastProcess) > 15)
 		{
 			float dt = (float)(t - lastProcess) / 1000.f;

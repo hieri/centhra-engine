@@ -18,7 +18,7 @@ namespace ce
 	{
 		AppFrontend *m_app;
 		bool m_vsync;
-		unsigned long m_lastRenderTimeMS;
+		unsigned long long m_lastRenderTimeMS;
 		int m_width, m_height;
 
 		#if CE_FRONTEND_USEXLIB

@@ -69,9 +69,6 @@ class ClientConnection;
 
 class AppTest : public AppFrontend
 {
-	Canvas *m_canvas;
-	game2d::Camera *m_camera;
-	ui::CameraView2DCtrl *m_view;
 	unsigned long m_lastProcess;
 
 public:
@@ -85,9 +82,6 @@ public:
 		m_group = 0;
 		m_defaultPhysicsHandler = 0;
 		m_box2dPhysicsHandler = 0;
-		m_canvas = 0;
-		m_camera = 0;
-		m_view = 0;
 		m_lastProcess = 0;
 	}
 	~AppTest()
@@ -97,19 +91,12 @@ public:
 	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
-		m_canvas = Canvas::Create(640, 480, "551- 2D Server");
-
 		m_group = new game2d::PhysicalGroup();
 //		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
 //		m_group->AttachHandler(m_defaultPhysicsHandler);
 
 		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
 		m_group->AttachHandler(m_box2dPhysicsHandler);
-
-		m_camera = new game2d::Camera();
-
-		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(640, 480));
-		m_view->SetCamera(m_camera);
 		return true;
 	}
 	bool OnProcess()
@@ -132,26 +119,10 @@ public:
 		delete m_defaultPhysicsHandler;
 		delete m_box2dPhysicsHandler;
 		delete m_group;
-
-		delete m_view;
-		delete m_camera;
-		delete m_canvas;
 	}
 
 	bool OnEvent(Event &event)
 	{
-		switch(event.type)
-		{
-		case event::PostRender:
-//			g_physicsMutex.Lock();
-//			m_view->Render();
-//			g_physicsMutex.Unlock();
-			break;
-		case event::WindowResize:
-			if(m_view)
-				m_view->SetExtent(Vector2<int>(event.windowResize.width, event.windowResize.height));
-			break;
-		}
 		return true;
 	}
 };

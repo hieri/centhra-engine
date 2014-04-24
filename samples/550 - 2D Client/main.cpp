@@ -151,11 +151,13 @@ public:
 		if(d)
 			dif[0] += 1.f;
 		dif *= 256.f;
-		m_entity->SetVelocity(dif);
 		m_targetMotion = dif;
+
+		g_physicsMutex.Lock();
+		game2d::Entity::DeleteDead();
+		m_entity->SetVelocity(dif);
 		m_group->ProcessPhysics(dt);
-//		m_plane->RemoveDead();
-//		game2d::Entity::DeleteDead();
+		g_physicsMutex.Unlock();
 	}
 	bool OnProcess()
 	{
@@ -165,7 +167,7 @@ public:
 			float dt = (float)(t - m_lastProcess) / 1000.f;
 			m_lastProcess = t;
 
-		//	ProcessPhysics(dt);
+//			ProcessPhysics(dt);
 		}
 
 		sleepMS(1);
@@ -394,10 +396,7 @@ void *physicsFunc(void *arg)
 			float dt = (float)(t - lastProcess) / 1000.f;
 			lastProcess = t;
 
-			g_physicsMutex.Lock();
-			game2d::Entity::DeleteDead();
 			app->ProcessPhysics(dt);
-			g_physicsMutex.Unlock();
 		}
 
 		sleepMS(1);

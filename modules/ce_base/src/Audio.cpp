@@ -74,7 +74,12 @@ namespace ce
 		if(alGetError() != AL_NO_ERROR)
 		{
 			error("[Error] alGenSources: Unable to generate an audio source.\n");
-			Thread::Exit(NULL);
+
+			if(thread)
+			{
+				thread->End();
+				Thread::Exit(NULL);
+			}
 			return 0;
 		}
 
@@ -114,8 +119,11 @@ namespace ce
 		}
 
 		alDeleteSources(1, &source);
-		thread->End();
-		Thread::Exit(NULL);
+		if(thread)
+		{
+			thread->End();
+			Thread::Exit(NULL);
+		}
 		return 0;
 	}
 

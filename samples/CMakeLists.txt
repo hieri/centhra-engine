@@ -1,6 +1,7 @@
 add_subdirectory("000 - Test")
 add_subdirectory("001 - Hello World")
 add_subdirectory("100 - Multithreading")
+add_subdirectory("101 - Sound")
 add_subdirectory("150 - TCP Client")
 add_subdirectory("151 - TCP Server")
 add_subdirectory("200 - Frontend App")

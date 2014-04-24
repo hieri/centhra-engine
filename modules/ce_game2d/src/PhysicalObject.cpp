@@ -21,8 +21,24 @@ namespace ce
 {
 	namespace game2d
 	{
-		unsigned int PhysicalObject::ms_lastID = -1;
-		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent)
+		unsigned long long PhysicalObject::ms_lastID = -1;
+		vector<PhysicalObject *> PhysicalObject::ms_objects = vector<PhysicalObject *>(1024);
+		vector<PhysicalObject *> PhysicalObject::ms_netObjects = vector<PhysicalObject *>(1024);
+
+		PhysicalObject *PhysicalObject::GetObjectByID(unsigned long long id)
+		{
+			if(id >= ms_objects.size())
+				return 0;
+			return ms_objects[id];
+		}
+		PhysicalObject *PhysicalObject::GetNetObjectByID(unsigned long long id)
+		{
+			if(id >= ms_netObjects.size())
+				return 0;
+			return ms_netObjects[id];
+		}
+
+		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned long long id, unsigned long long netID)
 		{
 			m_rotation = 0.f;
 			m_position = position;
@@ -33,8 +49,20 @@ namespace ce
 
 			m_objectHandle = 0;
 
-			ms_lastID++;
-			m_id = ms_lastID;
+			if(id == -1)
+			{
+				ms_lastID++;
+				m_id = ms_lastID;
+			}
+			else
+				m_id = id;
+
+			//- TODO: Expand object vectors -
+			ms_objects[id] = this;
+
+			m_netID = netID;
+			if(netID != -1)
+				ms_netObjects[netID] = this;
 
 			m_parentGroup = 0;
 			m_isTrigger = m_isStatic = false;
@@ -117,6 +145,14 @@ namespace ce
 			if(updateHandle)
 				if(m_objectHandle)
 					m_objectHandle->OnSetRotation();
+		}
+		unsigned long long PhysicalObject::GetID() const
+		{
+			return m_id;
+		}
+		unsigned long long PhysicalObject::GetNetID() const
+		{
+			return m_netID;
 		}
 		PhysicsHandler::ObjectHandle *PhysicalObject::GetObjectHandle() const
 		{

@@ -34,31 +34,37 @@ typedef enum PacketType
 	Movement,
 	Update,
 	New,
-	Delete
+	Delete,
+	Control
 } PacketType;
 typedef struct NewPacket
 {
 	unsigned short type;
-	unsigned long objID;
+	unsigned long long objID;
 	float posX, posY;
 } NewPacket;
 typedef struct DeletePacket
 {
 	unsigned short type;
-	unsigned long objID;
+	unsigned long long objID;
 } DeletePacket;
 typedef struct MovementPacket
 {
 	unsigned short type;
-	unsigned long objID;
+	unsigned long long objID;
 	float velX, velY;
 } MovementPacket;
 typedef struct UpdatePacket
 {
 	unsigned short type;
-	unsigned long objID;
+	unsigned long long objID;
 	float posX, posY, velX, velY, rot;
 } UpdatePacket;
+typedef struct ControlPacket
+{
+	unsigned short type;
+	unsigned long long objID;
+} ControlPacket;
 typedef union Packet
 {
 	unsigned short type;
@@ -66,13 +72,13 @@ typedef union Packet
 	UpdatePacket update;
 	DeletePacket del;
 	NewPacket n;
+	ControlPacket control;
 } Packet;
 
 //- Define your own implementation of the AppFrontend class. -
 class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
-	game2d::Camera *m_camera;
 	ui::CameraView2DCtrl *m_view;
 	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 	plugin::box2d::bPhysicsHandler *m_box2dPhysicsHandler;
@@ -82,9 +88,9 @@ class AppTest : public AppFrontend
 public:
 	game2d::PhysicalObject *m_entity, *m_dummy;
 	game2d::PhysicalGroup *m_group;
-	map<unsigned long, game2d::PhysicalObject *> m_entityMap; //- Totally not efficient, but lets do this -
 	Thread *m_physicsThread, *m_connectionThread;
 	Vector2<float> m_targetMotion;
+	game2d::Camera *m_camera;
 
 	AppTest()
 	{
@@ -116,14 +122,14 @@ public:
 		m_canvas = Canvas::Create(128, 128, "550 - 2D Client");
 
 		m_group = new game2d::PhysicalGroup();
-		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
-		m_group->Add(m_entity);
+//		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
+//		m_group->Add(m_entity);
 
 		m_dummy = new game2d::PhysicalObject(Vector2<float>(460.f, 512.f), Vector2<float>(32.f, 32.f));
 		m_group->Add(m_dummy);
 
 		m_camera = new game2d::Camera();
-		m_camera->SetFocus(m_entity);
+//		m_camera->SetFocus(m_entity);
 
 		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(128, 128));
 		m_view->SetCamera(m_camera);
@@ -155,7 +161,8 @@ public:
 
 		g_physicsMutex.Lock();
 		game2d::Entity::DeleteDead();
-		m_entity->SetVelocity(dif);
+		if(m_entity)
+			m_entity->SetVelocity(dif);
 		m_group->ProcessPhysics(dt);
 		g_physicsMutex.Unlock();
 	}
@@ -316,21 +323,24 @@ void *connectionFunc(void *arg)
 //					print("Update: %f %f\n", response.update.posX, response.update.posY);
 //					cout << "Update: " << response.update.posX << " " << response.update.posY << endl;
 					g_physicsMutex.Lock();
-					if(response.update.objID == 0)
+					game2d::PhysicalObject *obj = game2d::PhysicalObject::GetNetObjectByID(response.update.objID);
+					if(obj)
 					{
-						app->m_entity->SetPosition((Vector2<float>(response.update.posX, response.update.posY)));
-						app->m_entity->SetVelocity((Vector2<float>(response.update.velX, response.update.velY)));
-						app->m_entity->SetRotation(response.update.rot);
+						obj->SetPosition(Vector2<float>(response.update.posX, response.update.posY));
+						obj->SetVelocity((Vector2<float>(response.update.velX, response.update.velY)));
+						obj->SetRotation(response.update.rot);
 					}
-					else
+					g_physicsMutex.Unlock();
+				}
+				else if(response.type == Control) //- Needs to handle multithreaded stdio properly, in order to debug this -
+				{
+					print("CONTROL %d\n", response.control.objID);
+					g_physicsMutex.Lock();
+					game2d::PhysicalObject *obj = game2d::PhysicalObject::GetNetObjectByID(response.control.objID);
+					if(obj)
 					{
-						if(app->m_entityMap.count(response.update.objID))
-						{
-							game2d::PhysicalObject *obj = app->m_entityMap[response.update.objID];
-							obj->SetPosition(Vector2<float>(response.update.posX, response.update.posY));
-							obj->SetVelocity((Vector2<float>(response.update.velX, response.update.velY)));
-							obj->SetRotation(response.update.rot);
-						}
+						app->m_entity = obj;
+						app->m_camera->SetFocus(obj);
 					}
 					g_physicsMutex.Unlock();
 				}
@@ -338,18 +348,17 @@ void *connectionFunc(void *arg)
 				{
 					print("NEW %d %f %f\n", response.n.objID, response.n.posY, response.n.posY);
 					g_physicsMutex.Lock();
-					game2d::PhysicalObject *obj = new game2d::PhysicalObject(Vector2<float>(response.n.posX, response.n.posY), Vector2<float>(32.f, 32.f));
+					game2d::PhysicalObject *obj = new game2d::PhysicalObject(Vector2<float>(response.n.posX, response.n.posY), Vector2<float>(32.f, 32.f), -1, response.n.objID);
 					app->m_group->Add(obj);
-					app->m_entityMap[response.n.objID] = obj;
 					g_physicsMutex.Unlock();
 				}
 				else if(response.type == Delete)
 				{
 					print("DEL %d\n", response.del.objID);
 					g_physicsMutex.Lock();
-					if(app->m_entityMap.count(response.del.objID))
+					game2d::PhysicalObject *obj = game2d::PhysicalObject::GetNetObjectByID(response.del.objID);
+					if(obj)
 					{
-						game2d::PhysicalObject *obj = app->m_entityMap[response.del.objID];
 						app->m_group->Remove(obj);
 						obj->Kill();
 					}

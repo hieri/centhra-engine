@@ -15,9 +15,10 @@ namespace ce
 
 		class PhysicalObject : public Entity
 		{
-			static unsigned int ms_lastID;
+			static unsigned long long ms_lastID;
+			static std::vector<PhysicalObject *> ms_objects, ms_netObjects;
 
-			unsigned int m_id;
+			unsigned long long m_id, m_netID;
 			PhysicalGroup *m_parentGroup;
 			PhysicsHandler::ObjectHandle *m_objectHandle;
 
@@ -31,7 +32,10 @@ namespace ce
 			virtual void DoRender();
 
 		public:
-			PhysicalObject(Vector2<float> position, Vector2<float> extent);
+			static PhysicalObject *GetObjectByID(unsigned long long id);
+			static PhysicalObject *GetNetObjectByID(unsigned long long id);
+
+			PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned long long id = -1, unsigned long long netID = -1);
 			~PhysicalObject();
 
 			void Render();
@@ -45,6 +49,9 @@ namespace ce
 			void SetPosition(Vector2<float> position, bool updateHandle = true);
 			void SetVelocity(Vector2<float> velocity, bool updateHandle = true);
 			void SetRotation(float rotation, bool updateHandle = true);
+
+			unsigned long long GetID() const;
+			unsigned long long GetNetID() const;
 
 			PhysicsHandler::ObjectHandle *GetObjectHandle() const;
 			unsigned int GetCollisionMask() const;

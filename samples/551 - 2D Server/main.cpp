@@ -28,31 +28,37 @@ typedef enum PacketType
 	Movement,
 	Update,
 	New,
-	Delete
+	Delete,
+	Control
 } PacketType;
 typedef struct NewPacket
 {
 	unsigned short type;
-	unsigned long objID;
+	unsigned long long objID;
 	float posX, posY;
 } NewPacket;
 typedef struct DeletePacket
 {
 	unsigned short type;
-	unsigned long objID;
+	unsigned long long objID;
 } DeletePacket;
 typedef struct MovementPacket
 {
 	unsigned short type;
-	unsigned long objID;
+	unsigned long long objID;
 	float velX, velY;
 } MovementPacket;
 typedef struct UpdatePacket
 {
 	unsigned short type;
-	unsigned long objID;
+	unsigned long long objID;
 	float posX, posY, velX, velY, rot;
 } UpdatePacket;
+typedef struct ControlPacket
+{
+	unsigned short type;
+	unsigned long long objID;
+} ControlPacket;
 typedef union Packet
 {
 	unsigned short type;
@@ -60,6 +66,7 @@ typedef union Packet
 	UpdatePacket update;
 	DeletePacket del;
 	NewPacket n;
+	ControlPacket control;
 } Packet;
 
 Mutex g_physicsMutex;
@@ -158,7 +165,7 @@ class ClientConnection
 public:
 	unsigned long id;
 	game2d::PhysicalObject *player;
-	queue<pair<unsigned long, game2d::PhysicalObject *> > creationQueue;
+	queue<game2d::PhysicalObject *> creationQueue;
 	queue<unsigned long> deletionQueue;
 };
 
@@ -186,11 +193,13 @@ void *clientFunc(void *arg)
 	connection.id = id;
 	connection.player = player;
 
+	bool takenControl = false;
+	connection.creationQueue.push(player);
 	for(map<unsigned long, ClientConnection *>::iterator it = app->m_clientConnectionMap.begin(); it != app->m_clientConnectionMap.end(); it++)
 	{
 		ClientConnection *con = it->second;
-		con->creationQueue.push(pair<unsigned long, game2d::PhysicalObject *>((unsigned long)id, player));
-		connection.creationQueue.push(pair<unsigned long, game2d::PhysicalObject *>(con->id, con->player));
+		con->creationQueue.push(player);
+		connection.creationQueue.push(con->player);
 	}
 
 	app->m_clientConnectionMap[id] = &connection;
@@ -259,22 +268,20 @@ void *clientFunc(void *arg)
 			lastPositionUpdate = t;
 
 			// objects need id's derp
-	//		vector<Group::Member *> &groupMembers = app->m_group->GetMembers();
-	//		for(vector<Group::Member *>::iterator it = groupMembers.begin(); it != groupMembers.end(); it++)
-			for(map<unsigned long, ClientConnection *>::iterator it = app->m_clientConnectionMap.begin(); it != app->m_clientConnectionMap.end(); it++)
+//			for(map<unsigned long, ClientConnection *>::iterator it = app->m_clientConnectionMap.begin(); it != app->m_clientConnectionMap.end(); it++)
+			vector<Group::Member *> &groupMembers = app->m_group->GetMembers();
+			for(vector<Group::Member *>::iterator it = groupMembers.begin(); it != groupMembers.end(); it++)
 			{
-				ClientConnection *clientConnection = it->second;
-				game2d::PhysicalObject *obj = (game2d::PhysicalObject *)clientConnection->player;
+//				ClientConnection *clientConnection = it->second;
+//				game2d::PhysicalObject *obj = (game2d::PhysicalObject *)clientConnection->player;
+				game2d::PhysicalObject *obj = (game2d::PhysicalObject *)*it;
 
 				Vector2<float> position = obj->GetPosition();
 				Vector2<float> velocity = obj->GetVelocity();
 				float rotation = obj->GetRotation();
 				Packet update;
 				update.type = Update;
-				if(obj == player)
-					update.update.objID = 0;
-				else
-					update.update.objID = clientConnection->id;
+				update.update.objID = obj->GetID();
 				update.update.posX = position[0];
 				update.update.posY = position[1];
 				update.update.velX = velocity[0];
@@ -288,14 +295,14 @@ void *clientFunc(void *arg)
 
 		while(connection.creationQueue.size())
 		{
-			pair<unsigned long, game2d::PhysicalObject *> objData = connection.creationQueue.front();
+			game2d::PhysicalObject *obj = connection.creationQueue.front();
 			connection.creationQueue.pop();
 
-			Vector2<float> position = objData.second->GetPosition();
+			Vector2<float> position = obj->GetPosition();
 
 			Packet creation;
 			creation.type = New;
-			creation.n.objID = objData.first;
+			creation.n.objID = obj->GetID();
 			creation.n.posX = position[0];
 			creation.n.posY = position[1];
 
@@ -316,6 +323,18 @@ void *clientFunc(void *arg)
 			client->Write((char *)tempPacket.c_str(), tempPacket.size());
 		}
 
+		if(!takenControl)
+		{
+			Packet control;
+			control.type = Control;
+			control.control.objID = player->GetID();
+
+			string tempPacket(packetPrefix);
+			tempPacket.append((char *)&control, packetSize);
+			client->Write((char *)tempPacket.c_str(), tempPacket.size());
+			takenControl = true;
+		}
+
 		sleepMS(1);
 	}
 
@@ -323,7 +342,7 @@ void *clientFunc(void *arg)
 
 	app->m_clientConnectionMap.erase(id);
 	for(map<unsigned long, ClientConnection *>::iterator it = app->m_clientConnectionMap.begin(); it != app->m_clientConnectionMap.end(); it++)
-		it->second->deletionQueue.push(id);	
+		it->second->deletionQueue.push(player->GetID());	
 
 	g_physicsMutex.Lock();
 	app->m_group->Remove(player);

@@ -119,7 +119,7 @@ public:
 	bool OnStart()
 	{
 //		m_canvas = Canvas::Create(640, 480, "550 - 2D Client");
-		m_canvas = Canvas::Create(128, 128, "550 - 2D Client");
+		m_canvas = Canvas::Create(256, 256, "550 - 2D Client");
 
 		m_group = new game2d::PhysicalGroup();
 //		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
@@ -131,7 +131,7 @@ public:
 		m_camera = new game2d::Camera();
 //		m_camera->SetFocus(m_entity);
 
-		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(128, 128));
+		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(256, 256));
 		m_view->SetCamera(m_camera);
 
 //		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
@@ -299,7 +299,7 @@ void *connectionFunc(void *arg)
 
 			while(readBuffer.size() >= packetSize)
 			{
-				size_t fP = readBuffer.find_first_of("P:"); // wow
+				size_t fP = readBuffer.find_first_of("P:");
 				if(fP != 0)
 				{
 					if(fP == string::npos)

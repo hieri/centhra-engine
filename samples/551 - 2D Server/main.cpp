@@ -19,6 +19,8 @@
 #include <CE/UI/CameraView2DCtrl.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
 
+#define NUMRANDOMS 16 
+
 using namespace ce;
 using namespace std;
 
@@ -76,6 +78,7 @@ class ClientConnection;
 class AppTest : public AppFrontend
 {
 	unsigned long m_lastProcess;
+	game2d::PhysicalObject **m_randoms;
 
 public:
 	game2d::PhysicalGroup *m_group;
@@ -89,6 +92,7 @@ public:
 		m_defaultPhysicsHandler = 0;
 		m_box2dPhysicsHandler = 0;
 		m_lastProcess = 0;
+		m_randoms = 0;
 	}
 	~AppTest()
 	{
@@ -101,9 +105,60 @@ public:
 //		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
 //		m_group->AttachHandler(m_defaultPhysicsHandler);
 
+		m_randoms = new game2d::PhysicalObject *[NUMRANDOMS];
+		bool randBuff[4096];
+		for(unsigned int a = 0; a < 4096; a++)
+			randBuff[a] = true;
+		randBuff[32 * 64 + 32] = false;
+		for(unsigned int a = 0; a < NUMRANDOMS; a++)
+		{
+			unsigned int rx, ry;
+			do
+			{
+				rx = rand() % 64;
+				ry = rand() % 64;
+			}
+			while(!randBuff[ry * 64 + rx]);
+			randBuff[ry * 64 + rx] = false;
+
+			m_randoms[a] = new game2d::PhysicalObject(Vector2<float>((float)rx * 16.f, (float)ry * 16.f), Vector2<float>(16.f, 16.f));
+
+			Vector2<float> dif = Vector2<float>((float)(rand() % 1024 - 512), (float)(rand() % 1024 - 512));
+			m_randoms[a]->SetVelocity(dif);
+			m_group->Add(m_randoms[a]);
+		}
+
 		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
 		m_group->AttachHandler(m_box2dPhysicsHandler);
 		return true;
+	}
+	void ProcessPhysics(float dt)
+	{
+		g_physicsMutex.Lock();
+		Vector2<float> origin = Vector2<float>(512.f, 512.f);
+		game2d::Entity::DeleteDead();
+		for(int a = 0; a < NUMRANDOMS; a++)
+		{
+			Vector2<float> pos = m_randoms[a]->GetPosition();
+//			Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
+//			Vector2<float> vel = m_randoms[a]->GetVelocity();
+//			Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
+			Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
+//			vel /= vel.GetLength();
+//			vel *= 64.f;
+
+			if(pos[0] > 1008.f && vel[0] > 0)
+				vel[0] *= -1.f;
+			if(pos[0] < 0.f && vel[0] < 0)
+				vel[0] *= -1.f;
+			if(pos[1] > 1008.f && vel[1] > 0)
+				vel[1] *= -1.f;
+			if(pos[1] < 0.f && vel[1] < 0)
+				vel[1] *= -1.f;
+			m_randoms[a]->SetVelocity(vel);
+		}
+		m_group->ProcessPhysics(dt);
+		g_physicsMutex.Unlock();
 	}
 	bool OnProcess()
 	{
@@ -125,6 +180,10 @@ public:
 		delete m_defaultPhysicsHandler;
 		delete m_box2dPhysicsHandler;
 		delete m_group;
+
+		for(int a = 0; a < NUMRANDOMS; a++)
+			delete m_randoms[a];
+		delete [] m_randoms;
 	}
 
 	bool OnEvent(Event &event)
@@ -147,10 +206,7 @@ void *physicsFunc(void *arg)
 			float dt = (float)(t - lastProcess) / 1000.f;
 			lastProcess = t;
 
-			g_physicsMutex.Lock();
-			game2d::Entity::DeleteDead();
-			app->m_group->ProcessPhysics(dt);
-			g_physicsMutex.Unlock();
+			app->ProcessPhysics(dt);
 		}
 
 		sleepMS(1);
@@ -171,7 +227,6 @@ public:
 
 // thinking of how to handle telling other clients about new's/delete's
 // update also needs to include velocity
-// detect when live connection fails
 // write a generalized class for keeping track of networked objects
 // get rid of need for a canvas with regards to the server
 void *clientFunc(void *arg)
@@ -194,12 +249,16 @@ void *clientFunc(void *arg)
 	connection.player = player;
 
 	bool takenControl = false;
-	connection.creationQueue.push(player);
+	vector<Group::Member *> &groupMembers = app->m_group->GetMembers();
+	for(vector<Group::Member *>::iterator it = groupMembers.begin(); it != groupMembers.end(); it++)
+	{
+		game2d::PhysicalObject *obj = (game2d::PhysicalObject *)*it;
+		connection.creationQueue.push(obj);
+	}
 	for(map<unsigned long, ClientConnection *>::iterator it = app->m_clientConnectionMap.begin(); it != app->m_clientConnectionMap.end(); it++)
 	{
 		ClientConnection *con = it->second;
 		con->creationQueue.push(player);
-		connection.creationQueue.push(con->player);
 	}
 
 	app->m_clientConnectionMap[id] = &connection;
@@ -260,10 +319,10 @@ void *clientFunc(void *arg)
 				g_physicsMutex.Unlock();
 			}
 
-			readBuffer = readBuffer.substr(32);
+			readBuffer = readBuffer.substr(packetSize);
 		}
 
-		if((t - lastPositionUpdate) >= 32)
+		if((t - lastPositionUpdate) >= 16)
 		{
 			lastPositionUpdate = t;
 

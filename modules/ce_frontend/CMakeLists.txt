@@ -9,6 +9,7 @@ set(INC
 	${INC_DIR}/Frontend.h
 	${INC_DIR}/Keyboard.h
 	${INC_DIR}/KeyCode.h
+	${INC_DIR}/RenderPrimitives.h
 	${INC_DIR}/ScanCode.h
 )
 
@@ -17,6 +18,7 @@ set(SRC
 	${SRC_DIR}/Canvas.cpp
 	${SRC_DIR}/Frontend.cpp
 	${SRC_DIR}/Keyboard.cpp
+	${SRC_DIR}/RenderPrimitives.cpp
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")

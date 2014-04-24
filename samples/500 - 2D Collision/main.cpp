@@ -4,6 +4,7 @@
 #include <CE/Canvas.h>
 #include <CE/Thread.h>
 #include <CE/Mutex.h>
+#include <CE/RenderPrimitives.h>
 #include <CE/Game2D/Camera.h>
 #include <CE/Game2D/PhysicalObject.h>
 #include <CE/Game2D/PhysicalGroup.h>
@@ -165,6 +166,8 @@ public:
 		delete m_defaultPhysicsHandler;
 
 		physicsMutex.Destroy();
+
+		RenderPrimitiveCleanup();
 
 		delete m_view;
 		delete m_camera;

@@ -60,8 +60,6 @@ namespace ce
 			virtual void OnSetVelocity();
 			virtual void OnSetRotation();
 
-			static void Cleanup();
-
 			friend class PhysicalGroup;
 			friend class PhysicsHandler::ObjectHandle;
 		};

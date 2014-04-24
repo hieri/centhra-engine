@@ -15,8 +15,8 @@ find_package(OpenGL REQUIRED)
 
 set(LIB
 	ce_base
-	ce_frontend
 	ce_game2d
+	ce_frontend
 	ce_ui
 	${OPENGL_LIBRARIES}
 )

@@ -15,8 +15,8 @@ set(INCLUDE
 find_package(OpenGL REQUIRED)
 
 set(LIB
-	ce_game2d
 	ce_base
+	ce_game2d
 	ce_frontend
 	ce_ui
 	ce_plugBox2d

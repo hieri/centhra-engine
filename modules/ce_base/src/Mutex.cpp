@@ -6,11 +6,22 @@
 	#include <pthread.h>
 #endif
 
+#if CE_BASE_USEWINTHREAD
+	//- WinAPI -
+	#include <Windows.h>
+#endif
+
 namespace ce
 {
 	Mutex::Mutex()
 	{
-		m_pMutex = 0;
+		#if CE_BASE_USEPOSIXTHREAD
+			m_pMutex = 0;
+		#endif
+
+		#if CE_BASE_USEWINTHREAD
+			m_mutexHandle = 0;
+		#endif
 		m_isAlive = false;
 	}
 	Mutex::~Mutex()
@@ -22,11 +33,19 @@ namespace ce
 		#if CE_BASE_USEPOSIXTHREAD
 			pthread_mutex_lock((pthread_mutex_t *)&m_pMutex);
 		#endif
+
+		#if CE_BASE_USEWINTHREAD
+			WaitForSingleObject(m_mutexHandle, INFINITE);
+		#endif
 	}
 	void Mutex::Unlock()
 	{
 		#if CE_BASE_USEPOSIXTHREAD
 			pthread_mutex_unlock((pthread_mutex_t *)&m_pMutex);
+		#endif
+
+		#if CE_BASE_USEWINTHREAD
+			ReleaseMutex(m_mutexHandle);
 		#endif
 	}
 	void Mutex::Init()
@@ -38,7 +57,9 @@ namespace ce
 			pthread_mutex_init((pthread_mutex_t *)&m_pMutex, 0);
 		#endif
 
-		//- Windows: OpenMutex -
+		#if CE_BASE_USEWINTHREAD
+			m_mutexHandle = CreateMutex(NULL, FALSE, NULL);
+		#endif
 
 		m_isAlive = true;
 	}
@@ -51,7 +72,9 @@ namespace ce
 			pthread_mutex_destroy((pthread_mutex_t *)&m_pMutex);
 		#endif
 
-		//- Windows: ReleaseMutex -
+		#if CE_BASE_USEWINTHREAD
+			CloseHandle(m_mutexHandle);
+		#endif
 
 		m_isAlive = false;
 	}

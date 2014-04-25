@@ -13,6 +13,10 @@ namespace ce
 			unsigned long m_pMutex;
 		#endif
 
+		#if CE_BASE_USEWINTHREAD
+			void *m_mutexHandle;
+		#endif
+
 	public:
 		Mutex();
 		~Mutex();

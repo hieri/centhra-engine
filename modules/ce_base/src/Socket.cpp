@@ -302,7 +302,7 @@ namespace ce
 
 		if(hasRead)
 		{
-			unsigned char c = 0;
+			char c = 0;
 			ret = recv(m_socket, &c, 1, MSG_PEEK);
 
 			if(ret == 0) //- TODO: Verify this means client terminated connection -

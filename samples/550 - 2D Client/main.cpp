@@ -83,7 +83,7 @@ class AppTest : public AppFrontend
 	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 	plugin::box2d::bPhysicsHandler *m_box2dPhysicsHandler;
 	bool w,a,s,d;
-	unsigned long m_lastProcess;
+	unsigned long long m_lastProcess;
 
 public:
 	game2d::PhysicalObject *m_entity, *m_dummy;

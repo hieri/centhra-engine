@@ -29,7 +29,7 @@ public:
 	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
-		srand(GetRunTimeMS());
+		srand((unsigned int)GetRunTimeMS());
 		m_canvas = Canvas::Create(640, 480, "000 - Test");
 
 		m_masterCtrl = new ui::Control(Vector2<int>(0, 0), Vector2<int>(640, 480));
@@ -48,7 +48,7 @@ public:
 	}
 	bool OnProcess()
 	{
-		unsigned long t = GetRunTimeMS();
+		unsigned long long t = GetRunTimeMS();
 		if((t - m_lastProcess) > 15) // 60-64 fps
 		{
 			float dt = (float)(t - m_lastProcess) / 1000.f;

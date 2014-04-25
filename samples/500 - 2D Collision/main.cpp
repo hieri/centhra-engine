@@ -32,7 +32,7 @@ class AppTest : public AppFrontend
 	ui::CameraView2DCtrl *m_view;
 	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 	bool w,a,s,d;
-	unsigned long m_lastProcess;
+	unsigned long long m_lastProcess;
 
 public:
 	Thread* m_physicsThread;

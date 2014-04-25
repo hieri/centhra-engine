@@ -31,7 +31,7 @@ class AppTest : public AppFrontend
 	ui::CameraView2DCtrl *m_view;
 	plugin::box2d::bPhysicsHandler *m_box2dPhysicsHandler;
 	bool w,a,s,d;
-	unsigned long m_lastProcess;
+	unsigned long long m_lastProcess;
 
 public:
 	Thread* m_physicsThread;

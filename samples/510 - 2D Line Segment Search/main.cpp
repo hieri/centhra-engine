@@ -33,7 +33,7 @@ class AppTest : public AppFrontend
 	ui::CameraView2DCtrl *m_view;
 	Vector2<float> m_pointA, m_pointB;
 	bool w,a,s,d;
-	unsigned long m_lastProcess;
+	unsigned long long m_lastProcess;
 	unsigned int m_numFound;
 	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 

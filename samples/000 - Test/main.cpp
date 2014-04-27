@@ -15,7 +15,7 @@ using namespace std;
 class AppTest : public AppFrontend
 {
 	Canvas *m_canvas;
-	unsigned long m_lastProcess;
+	unsigned long long m_lastProcess;
 	ui::Control *m_masterCtrl;
 
 public:

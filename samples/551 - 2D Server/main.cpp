@@ -35,14 +35,12 @@ typedef enum PacketType
 } PacketType;
 typedef struct NewPacket
 {
-	unsigned short type;
-	unsigned long long objID;
+	unsigned short type, objID;
 	float posX, posY;
 } NewPacket;
 typedef struct DeletePacket
 {
-	unsigned short type;
-	unsigned long long objID;
+	unsigned short type, objID;
 } DeletePacket;
 typedef struct MovementPacket
 {
@@ -52,14 +50,12 @@ typedef struct MovementPacket
 } MovementPacket;
 typedef struct UpdatePacket
 {
-	unsigned short type;
-	unsigned long long objID;
+	unsigned short type, objID;
 	float posX, posY, velX, velY, rot;
 } UpdatePacket;
 typedef struct ControlPacket
 {
-	unsigned short type;
-	unsigned long long objID;
+	unsigned short type, objID;
 } ControlPacket;
 typedef union Packet
 {
@@ -77,7 +73,7 @@ class ClientConnection;
 
 class AppTest : public AppFrontend
 {
-	unsigned long m_lastProcess;
+	unsigned long long m_lastProcess;
 	game2d::PhysicalObject **m_randoms;
 
 public:
@@ -226,7 +222,7 @@ public:
 	unsigned long id;
 	game2d::PhysicalObject *player;
 	queue<game2d::PhysicalObject *> creationQueue;
-	queue<unsigned long> deletionQueue;
+	queue<unsigned short> deletionQueue;
 };
 
 // thinking of how to handle telling other clients about new's/delete's
@@ -235,7 +231,7 @@ public:
 // get rid of need for a canvas with regards to the server
 void *clientFunc(void *arg)
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	pair<AppTest *, Socket *> *data = (pair<AppTest *, Socket *> *)arg;
 	Socket *client = data->second;
 	AppTest *app = data->first;

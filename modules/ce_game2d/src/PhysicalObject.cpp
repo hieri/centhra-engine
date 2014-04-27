@@ -21,24 +21,24 @@ namespace ce
 {
 	namespace game2d
 	{
-		unsigned long long PhysicalObject::ms_lastID = -1;
+		unsigned short PhysicalObject::ms_lastID = -1;
 		vector<PhysicalObject *> PhysicalObject::ms_objects = vector<PhysicalObject *>(1024);
 		vector<PhysicalObject *> PhysicalObject::ms_netObjects = vector<PhysicalObject *>(1024);
 
-		PhysicalObject *PhysicalObject::GetObjectByID(unsigned long long id)
+		PhysicalObject *PhysicalObject::GetObjectByID(unsigned short id)
 		{
 			if(id >= ms_objects.size())
 				return 0;
 			return ms_objects[id];
 		}
-		PhysicalObject *PhysicalObject::GetNetObjectByID(unsigned long long id)
+		PhysicalObject *PhysicalObject::GetNetObjectByID(unsigned short id)
 		{
 			if(id >= ms_netObjects.size())
 				return 0;
 			return ms_netObjects[id];
 		}
 
-		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned long long id, unsigned long long netID)
+		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id, unsigned short netID)
 		{
 			m_rotation = m_angularVelocity = 0.f;
 			m_position = position;
@@ -159,11 +159,11 @@ namespace ce
 				if(m_objectHandle)
 					m_objectHandle->OnSetAngularVelocity();
 		}
-		unsigned long long PhysicalObject::GetID() const
+		unsigned short PhysicalObject::GetID() const
 		{
 			return m_id;
 		}
-		unsigned long long PhysicalObject::GetNetID() const
+		unsigned short PhysicalObject::GetNetID() const
 		{
 			return m_netID;
 		}

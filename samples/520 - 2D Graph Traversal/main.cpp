@@ -81,7 +81,7 @@ class AppTest : public AppFrontend
 	game2d::Graph::Node *m_nodes[10];
 	game2d::Graph *m_graph;
 	bool w,a,s,d;
-	unsigned long m_lastProcess;
+	unsigned long long m_lastProcess;
 
 public:
 

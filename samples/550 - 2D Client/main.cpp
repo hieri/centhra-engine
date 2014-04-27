@@ -39,14 +39,12 @@ typedef enum PacketType
 } PacketType;
 typedef struct NewPacket
 {
-	unsigned short type;
-	unsigned long long objID;
+	unsigned short type, objID;
 	float posX, posY;
 } NewPacket;
 typedef struct DeletePacket
 {
-	unsigned short type;
-	unsigned long long objID;
+	unsigned short type, objID;
 } DeletePacket;
 typedef struct MovementPacket
 {
@@ -56,14 +54,12 @@ typedef struct MovementPacket
 } MovementPacket;
 typedef struct UpdatePacket
 {
-	unsigned short type;
-	unsigned long long objID;
+	unsigned short type, objID;
 	float posX, posY, velX, velY, rot;
 } UpdatePacket;
 typedef struct ControlPacket
 {
-	unsigned short type;
-	unsigned long long objID;
+	unsigned short type, objID;
 } ControlPacket;
 typedef union Packet
 {
@@ -253,7 +249,8 @@ public:
 void *connectionFunc(void *arg)
 {
 	AppTest *app = (AppTest *)arg;
-	unsigned long long lastMovement, lastConnection = app->GetRunTimeMS();
+	unsigned long long lastMovement, lastConnection;
+	lastMovement = lastConnection = app->GetRunTimeMS();
 
 	Socket *client = Socket::Create(Socket::IP4, Socket::Stream, Socket::TCP);
 	string connectionMsg = "2dClient";

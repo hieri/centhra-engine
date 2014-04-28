@@ -489,6 +489,5 @@ int main(int argc, char **argv)
 	delete server;
 
 	ioMutexDestroy();
-	Thread::Exit();
 	return 0;
 }

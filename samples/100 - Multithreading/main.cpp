@@ -41,6 +41,6 @@ int main(int argc, char **argv)
 
 	print("o-> Main Ended\n");
 	ioMutexDestroy();
-	Thread::Exit(NULL);
+
 	return 0;
 }

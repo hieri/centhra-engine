@@ -43,8 +43,7 @@ namespace ce
 		}
 		DefaultPhysicsHandler::ObjectHandle::~ObjectHandle()
 		{
-			for(vector<Zone *>::iterator it = m_zones.begin(); it != m_zones.end(); it++)
-				(*it)->Remove(this);
+			RemoveFromZones();
 		}
 		void DefaultPhysicsHandler::ObjectHandle::AddZone(Zone *zone)
 		{
@@ -1029,17 +1028,18 @@ namespace ce
 		}
 		void DefaultPhysicsHandler::Cleanup()
 		{
-			vector<Group::Member *> members = GetReferenceGroup()->GetMembers();
+			PhysicalGroup *group = GetReferenceGroup();
+			vector<Group::Member *> &members = group->GetMembers();
 			for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
 			{
 				PhysicalObject *object = (PhysicalObject *)*it;
-
 				ObjectHandle *handle = (ObjectHandle *)object->GetObjectHandle();
 				if(handle)
 					delete handle;
 			}
 
 			delete m_plane;
+			PhysicsHandler::Cleanup();
 		}
 		vector<PhysicalObject *> DefaultPhysicsHandler::BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask, PhysicalObject *ignore)
 		{

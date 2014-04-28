@@ -458,6 +458,5 @@ int main(int argc, char **argv)
 		myApp.Process();
 
 	ioMutexDestroy();
-	Thread::Exit(NULL);
 	return 0;
 }

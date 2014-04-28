@@ -32,6 +32,7 @@ namespace ce
 		}
 		void PhysicsHandler::Cleanup()
 		{
+			m_referenceGroup = 0;
 		}
 		vector<PhysicalObject *> PhysicsHandler::BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask, PhysicalObject *ignore)
 		{

@@ -164,7 +164,8 @@ public:
 	{
 		m_group->DetachHandler();
 		delete m_defaultPhysicsHandler;
-
+	
+		m_physicsThread->Join();
 		physicsMutex.Destroy();
 
 		RenderPrimitiveCleanup();
@@ -252,7 +253,7 @@ void *physicsFunc(void *arg)
 
 		sleepMS(1);
 	}
-
+	
 	Thread::Exit(NULL);
 	return 0;
 }
@@ -268,6 +269,5 @@ int main(int argc, char **argv)
 	while(myApp.IsRunning())
 		myApp.Process();
 
-	Thread::Exit(NULL);
 	return 0;
 }

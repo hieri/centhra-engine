@@ -51,7 +51,6 @@ public:
 	}
 	~AppTest()
 	{
-		m_physicsThread->Join();
 		delete m_physicsThread;
 	}
 
@@ -162,10 +161,12 @@ public:
 	}
 	void OnStopped()
 	{
+		m_physicsThread->Join();
+		physicsMutex.Destroy();
+
+		print("join\n");
 		m_group->DetachHandler();
 		delete m_box2dPhysicsHandler;
-
-		physicsMutex.Destroy();
 
 		delete m_view;
 		delete m_camera;
@@ -252,6 +253,8 @@ void *physicsFunc(void *arg)
 		sleepMS(1);
 	}
 
+
+	print("no physics\n");
 	Thread::Exit(NULL);
 	return 0;
 }

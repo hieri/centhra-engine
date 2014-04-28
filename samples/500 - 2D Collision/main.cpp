@@ -161,12 +161,12 @@ public:
 	}
 	void OnStopped()
 	{
-		m_group->DetachHandler();
-		delete m_defaultPhysicsHandler;
-	
 		m_physicsThread->Join();
 		physicsMutex.Destroy();
 
+		m_group->DetachHandler();
+		delete m_defaultPhysicsHandler;
+	
 		RenderPrimitiveCleanup();
 
 		delete m_view;

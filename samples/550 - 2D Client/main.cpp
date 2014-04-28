@@ -71,7 +71,7 @@ typedef union Packet
 } Packet;
 
 //- Define your own implementation of the AppFrontend class. -
-class AppTest : public AppFrontend
+class App2DClient : public AppFrontend
 {
 	Canvas *m_canvas;
 	ui::CameraView2DCtrl *m_view;
@@ -87,7 +87,7 @@ public:
 	Vector2<float> m_targetMotion;
 	game2d::Camera *m_camera;
 
-	AppTest()
+	App2DClient()
 	{
 		m_canvas = 0;
 		m_defaultPhysicsHandler = 0;
@@ -101,12 +101,9 @@ public:
 		m_physicsThread = new Thread(&physicsFunc);
 		m_connectionThread = new Thread(&connectionFunc);
 	}
-	~AppTest()
+	~App2DClient()
 	{
-		m_physicsThread->Join();
 		delete m_physicsThread;
-
-		m_connectionThread->Join();
 		delete m_connectionThread;
 	}
 
@@ -177,6 +174,9 @@ public:
 	}
 	void OnStopped()
 	{
+		m_physicsThread->Join();
+		m_connectionThread->Join();
+
 		m_group->DetachHandler();
 		delete m_box2dPhysicsHandler;
 		delete m_defaultPhysicsHandler;
@@ -247,7 +247,7 @@ public:
 
 void *connectionFunc(void *arg)
 {
-	AppTest *app = (AppTest *)arg;
+	App2DClient *app = (App2DClient *)arg;
 	unsigned long long lastMovement, lastConnection;
 	lastMovement = lastConnection = app->GetRunTimeMS();
 
@@ -413,7 +413,6 @@ void *connectionFunc(void *arg)
 
 		sleepMS(1);
 	}
-	cout << "NO" << endl;
 
 	delete client;
 
@@ -423,7 +422,7 @@ void *connectionFunc(void *arg)
 
 void *physicsFunc(void *arg)
 {
-	AppTest *app = (AppTest *)arg;
+	App2DClient *app = (App2DClient *)arg;
 	unsigned long long lastProcess = app->GetRunTimeMS();
 
 	cout << "Physics Func" << endl;
@@ -450,7 +449,7 @@ int main(int argc, char **argv)
 	ioMutexInit();
 	print("550 - 2D Client | Centhra Engine v%s\n", getVersionString().c_str());
 
-	AppTest myApp;
+	App2DClient myApp;
 	myApp.Start();
 
 	//- Run the App's main loop. -

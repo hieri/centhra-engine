@@ -252,6 +252,7 @@ namespace ce
 					bPhysicsHandler *bHandler = (bPhysicsHandler *)GetHandler();
 					Box2DSystem *system = (Box2DSystem *)bHandler->GetBox2DSystem();
 					b2World *world = system->m_b2d_world;
+					b2d_body->SetActive(false);
 					world->DestroyBody(b2d_body);
 				}
 			}
@@ -361,12 +362,21 @@ namespace ce
 			}
 			void bPhysicsHandler::Cleanup()
 			{
-				vector<Group::Member *> members = GetReferenceGroup()->GetMembers();
-				for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
+				b2World *world = 0;
+				if(m_b2d_system)
 				{
-					game2d::PhysicalObject *object = (game2d::PhysicalObject *)*it;
-					CleanupObject(object);
+					vector<Group::Member *> members = GetReferenceGroup()->GetMembers();
+					for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
+					{
+						game2d::PhysicalObject *object = (game2d::PhysicalObject *)*it;
+						CleanupObject(object);
+					}
 				}
+
+//				if(m_b2d_system)
+//					delete (Box2DSystem *)m_b2d_system;
+
+				PhysicsHandler::Cleanup();
 			}
 			void bPhysicsHandler::SetGravity(Vector2<float> gravity)
 			{

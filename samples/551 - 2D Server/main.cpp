@@ -70,7 +70,7 @@ Mutex g_physicsMutex;
 
 class ClientConnection;
 
-class AppTest : public AppFrontend
+class App2DServer : public AppFrontend
 {
 	unsigned long long m_lastProcess;
 	game2d::PhysicalObject **m_randoms;
@@ -81,7 +81,7 @@ public:
 	plugin::box2d::bPhysicsHandler *m_box2dPhysicsHandler;
 	map<unsigned long, ClientConnection *> m_clientConnectionMap;
 
-	AppTest()
+	App2DServer()
 	{
 		m_group = 0;
 		m_defaultPhysicsHandler = 0;
@@ -89,7 +89,7 @@ public:
 		m_lastProcess = 0;
 		m_randoms = 0;
 	}
-	~AppTest()
+	~App2DServer()
 	{
 	}
 
@@ -195,7 +195,7 @@ void *physicsFunc(void *arg)
 {
 	unsigned long long lastProcess = getRunTimeMS();
 
-	AppTest *app = (AppTest *)arg;
+	App2DServer *app = (App2DServer *)arg;
 
 	while(app->IsRunning())
 	{
@@ -231,9 +231,9 @@ public:
 void *clientFunc(void *arg)
 {
 	srand((unsigned int)time(NULL));
-	pair<AppTest *, Socket *> *data = (pair<AppTest *, Socket *> *)arg;
+	pair<App2DServer *, Socket *> *data = (pair<App2DServer *, Socket *> *)arg;
 	Socket *client = data->second;
-	AppTest *app = data->first;
+	App2DServer *app = data->first;
 	delete data;
 
 	g_physicsMutex.Lock();
@@ -448,7 +448,7 @@ int main(int argc, char **argv)
 	ioMutexInit();
 	print("551 - 2D Server | Centhra Engine v%s\n", getVersionString().c_str());
 
-	AppTest myApp;
+	App2DServer myApp;
 	myApp.Start();
 
 	g_physicsMutex.Init();
@@ -468,7 +468,7 @@ int main(int argc, char **argv)
 
 		if(client)
 		{
-			pair<AppTest *, Socket *> *data = new pair<AppTest *, Socket *>(&myApp, client);
+			pair<App2DServer *, Socket *> *data = new pair<App2DServer *, Socket *>(&myApp, client);
 			Thread *clientThread = new Thread(clientFunc);
 			clientThreads.push_back(clientThread);
 			clientThread->Start(data);

@@ -31,7 +31,7 @@ namespace ce
 	void Mutex::Lock()
 	{
 		#if CE_BASE_USEPOSIXTHREAD
-			pthread_mutex_lock((pthread_mutex_t *)&m_pMutex);
+			pthread_mutex_lock((pthread_mutex_t *)m_pMutex);
 		#endif
 
 		#if CE_BASE_USEWINTHREAD
@@ -41,7 +41,7 @@ namespace ce
 	void Mutex::Unlock()
 	{
 		#if CE_BASE_USEPOSIXTHREAD
-			pthread_mutex_unlock((pthread_mutex_t *)&m_pMutex);
+			pthread_mutex_unlock((pthread_mutex_t *)m_pMutex);
 		#endif
 
 		#if CE_BASE_USEWINTHREAD
@@ -54,7 +54,8 @@ namespace ce
 			return;
 
 		#if CE_BASE_USEPOSIXTHREAD
-			pthread_mutex_init((pthread_mutex_t *)&m_pMutex, 0);
+			m_pMutex = new pthread_mutex_t;
+			pthread_mutex_init((pthread_mutex_t *)m_pMutex, 0);
 		#endif
 
 		#if CE_BASE_USEWINTHREAD
@@ -69,7 +70,9 @@ namespace ce
 			return;
 
 		#if CE_BASE_USEPOSIXTHREAD
-			pthread_mutex_destroy((pthread_mutex_t *)&m_pMutex);
+			pthread_mutex_destroy((pthread_mutex_t *)m_pMutex);
+			delete (pthread_mutex_t *)m_pMutex;
+			m_pMutex = 0;
 		#endif
 
 		#if CE_BASE_USEWINTHREAD

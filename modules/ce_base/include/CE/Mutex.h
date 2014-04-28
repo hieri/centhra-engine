@@ -10,7 +10,7 @@ namespace ce
 	{
 		bool m_isAlive;
 		#if CE_BASE_USEPOSIXTHREAD
-			unsigned long m_pMutex;
+			void *m_pMutex;
 		#endif
 
 		#if CE_BASE_USEWINTHREAD

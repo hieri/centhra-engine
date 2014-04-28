@@ -52,7 +52,6 @@ public:
 	}
 	~AppTest()
 	{
-		m_physicsThread->Join();
 		delete m_physicsThread;
 	}
 

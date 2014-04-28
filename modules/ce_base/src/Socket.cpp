@@ -146,7 +146,6 @@ namespace ce
 		#endif
 
 		ms_count--;
-//		print("C: %d\n", ms_count);
 		
 		#if CE_BASE_USEWINSOCKET
 			if(!ms_count)
@@ -176,7 +175,7 @@ namespace ce
 		stSockAddr.sin_family = AF_INET;
 		stSockAddr.sin_port = htons(port);
 		stSockAddr.sin_addr.s_addr = INADDR_ANY;
-		if(bind(m_socket,(struct sockaddr *)&stSockAddr, sizeof(stSockAddr)) == -1)
+		if(bind(m_socket, (struct sockaddr *)&stSockAddr, sizeof(stSockAddr)) != 0)
 		{
 			error("[Error] Socket::Bind - Unable to bind to port %d.\n", port);
 			return false;
@@ -227,6 +226,7 @@ namespace ce
 		#if CE_BASE_USEPOSIXSOCKET
 			return read(m_socket, buffer, length);
 		#endif
+			
 		#if CE_BASE_USEWINSOCKET
 			return recv(m_socket, buffer, length, 0);
 		#endif
@@ -276,23 +276,8 @@ namespace ce
 		FD_ZERO(&readFlags);
 		FD_ZERO(&writeFlags);
 		FD_SET(m_socket, &readFlags);
-//		FD_SET(m_socket, &writeFlags);
 
-		//- TODO: Fix this to match the standard -
-		#ifdef _WIN32
-			FD_SET(0, &readFlags);
-			FD_SET(0, &writeFlags);
-		#endif
-	
-		//- TODO: Determine if this is necessary -
-/*		#ifdef linux
-			FD_SET(STDIN_FILENO, &readFlags);
-			FD_SET(STDIN_FILENO, &writeFlags);
-		#endif
-*/
-		print("SEL\n");
 		int ret = select(m_socket + 1, &readFlags, &writeFlags, (fd_set *)0, &waitd);
-		print("ECT\n");
 		
 		int hasRead = 0;
 		#ifdef _WIN32
@@ -302,16 +287,14 @@ namespace ce
 			hasRead = FD_ISSET(m_socket, &readFlags) ? 1 : 0;
 		#endif
 			
-		#ifdef linux
-			if(hasRead > 0)
-			{
-				char c = 0;
-				ret = recv(m_socket, &c, 1, MSG_PEEK);
+		if(hasRead > 0)
+		{
+			char c = 0;
+			ret = recv(m_socket, &c, 1, MSG_PEEK);
 
-				if(ret == 0) //- TODO: Verify this means client terminated connection -
-					hasRead = -1;
-			}
-		#endif
+			if(ret == 0) //- TODO: Verify this means client terminated connection -
+				hasRead = -1;
+		}
 
 		return hasRead;
 	}

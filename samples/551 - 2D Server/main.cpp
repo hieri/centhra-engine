@@ -275,7 +275,7 @@ void *clientFunc(void *arg)
 	{
 		unsigned long long t = app->GetRunTimeMS();
 
-/*		hasRead = client->HasRead();
+		hasRead = client->HasRead();
 		if(hasRead > 0)
 		{
 			do
@@ -283,10 +283,9 @@ void *clientFunc(void *arg)
 				char buffer[257];
 				memset(buffer, 0, 256);
 				int ret = client->Read(buffer, 256);
+
 				if(ret > 0)
 					readBuffer.append(buffer, ret);
-				else
-					break;
 			}
 			while(client->HasRead() > 0);
 		}
@@ -294,7 +293,7 @@ void *clientFunc(void *arg)
 		{
 			cout << "Connection closed" << endl;
 			break;
-		}*/
+		}
 
 		while(readBuffer.size() >= packetSize)
 		{
@@ -348,7 +347,7 @@ void *clientFunc(void *arg)
 			readBuffer = readBuffer.substr(thisPacketSize + 4);
 		}
 
-/*		if((t - lastPositionUpdate) >= 16)
+		if((t - lastPositionUpdate) >= 16)
 		{
 			lastPositionUpdate = t;
 
@@ -377,7 +376,7 @@ void *clientFunc(void *arg)
 				tempPacket.append((char *)&update, sizeof(UpdatePacket));
 				client->Write((char *)tempPacket.c_str(), tempPacket.size());
 			}
-		}*/
+		}
 
 		while(connection.creationQueue.size())
 		{
@@ -395,7 +394,7 @@ void *clientFunc(void *arg)
 			string tempPacket(packetPrefix);
 			tempPacket.append((char *)&creation.type, sizeof(unsigned short));
 			tempPacket.append((char *)&creation, sizeof(NewPacket));
-			cout << "Sending: " << client->Write((char *)tempPacket.c_str(), tempPacket.size()) << endl;
+			client->Write((char *)tempPacket.c_str(), tempPacket.size());
 //			print("%d sending creation event for: %d %d\n", id, objData.first, creation.type);
 		}
 

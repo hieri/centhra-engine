@@ -262,10 +262,9 @@ void *connectionFunc(void *arg)
 	while(app->IsRunning())
 	{
 		unsigned long long t = app->GetRunTimeMS();
-		cout << "What: " << t << endl;
 		if(isConnected)
 		{
-/*			if((t - lastMovement) > 16)
+			if((t - lastMovement) > 16)
 			{
 				lastMovement = t;
 
@@ -281,7 +280,7 @@ void *connectionFunc(void *arg)
 				tempPacket.append((char *)&movement.type, sizeof(unsigned short));
 				tempPacket.append((char *)&movement, sizeof(MovementPacket));
 				client->Write((char *)tempPacket.c_str(), tempPacket.size());
-			}*/
+			}
 
 			hasRead = client->HasRead();
 			if(hasRead > 0)
@@ -290,24 +289,16 @@ void *connectionFunc(void *arg)
 				{
 					char buffer[257];
 					memset(buffer, 0, 257);
-					cout << "GO" << endl;
 					int ret = client->Read(buffer, 256);
-					cout << "R: " << ret << endl;
 					if(ret > 0)
-					{
-						cout << "A" << endl;
 						readBuffer.append(buffer, ret);
-						cout << "B" << endl;
-					}
 				}
 				while(client->HasRead() > 0);
-				cout << "YE" << endl;
 			}
-
-			cout << "HM" << endl;
 
 			while(readBuffer.size() >= packetSize)
 			{
+//				cout << "READ" << endl;
 				size_t fP = readBuffer.find_first_of("P:");
 				if(fP != 0)
 				{
@@ -349,7 +340,7 @@ void *connectionFunc(void *arg)
 //				print("Packet: %s\n", readBuffer.c_str());
 
 //				print("Packet: %d\n", response.type);
-	//			cout << "Packet: " << response.type << endl;
+//				cout << "Packet: " << response.type << endl;
 
 				if(response.type == Update)
 				{

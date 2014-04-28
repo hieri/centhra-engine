@@ -290,7 +290,9 @@ namespace ce
 			FD_SET(STDIN_FILENO, &writeFlags);
 		#endif
 */
+		print("SEL\n");
 		int ret = select(m_socket + 1, &readFlags, &writeFlags, (fd_set *)0, &waitd);
+		print("ECT\n");
 		
 		int hasRead = 0;
 		#ifdef _WIN32
@@ -299,15 +301,17 @@ namespace ce
 		#ifdef linux
 			hasRead = FD_ISSET(m_socket, &readFlags) ? 1 : 0;
 		#endif
+			
+		#ifdef linux
+			if(hasRead > 0)
+			{
+				char c = 0;
+				ret = recv(m_socket, &c, 1, MSG_PEEK);
 
-		if(hasRead)
-		{
-			char c = 0;
-			ret = recv(m_socket, &c, 1, MSG_PEEK);
-
-			if(ret == 0) //- TODO: Verify this means client terminated connection -
-				hasRead = -1;
-		}
+				if(ret == 0) //- TODO: Verify this means client terminated connection -
+					hasRead = -1;
+			}
+		#endif
 
 		return hasRead;
 	}

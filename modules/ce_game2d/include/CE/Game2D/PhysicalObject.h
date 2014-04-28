@@ -32,10 +32,11 @@ namespace ce
 			virtual void DoRender();
 
 		public:
+			static unsigned short DEFAULT_ID;
 			static PhysicalObject *GetObjectByID(unsigned short id);
 			static PhysicalObject *GetNetObjectByID(unsigned short id);
 
-			PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id = -1, unsigned short netID = -1);
+			PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id = DEFAULT_ID, unsigned short netID = DEFAULT_ID);
 			~PhysicalObject();
 
 			void Render();

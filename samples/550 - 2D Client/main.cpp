@@ -48,8 +48,7 @@ typedef struct DeletePacket
 } DeletePacket;
 typedef struct MovementPacket
 {
-	unsigned short type;
-	unsigned long long objID;
+	unsigned short type, objID;
 	float velX, velY;
 } MovementPacket;
 typedef struct UpdatePacket
@@ -259,12 +258,14 @@ void *connectionFunc(void *arg)
 	bool isConnected = false;
 	unsigned short packetSize = sizeof(Packet);
 	string readBuffer;
+	int hasRead = 0;
 	while(app->IsRunning())
 	{
 		unsigned long long t = app->GetRunTimeMS();
+		cout << "What: " << t << endl;
 		if(isConnected)
 		{
-			if((t - lastMovement) > 16)
+/*			if((t - lastMovement) > 16)
 			{
 				lastMovement = t;
 
@@ -280,20 +281,30 @@ void *connectionFunc(void *arg)
 				tempPacket.append((char *)&movement.type, sizeof(unsigned short));
 				tempPacket.append((char *)&movement, sizeof(MovementPacket));
 				client->Write((char *)tempPacket.c_str(), tempPacket.size());
+			}*/
 
-/*				Packet response;
-				memcpy(&response, &tempPacket[2], sizeof(Packet));
-				cout << "P: " << response.movement.velX << " " << response.movement.velY << endl;
-*///				print("Vel: %f %f\n", velocity[0], velocity[1]);
-			}
-
-			while(client->HasRead())
+			hasRead = client->HasRead();
+			if(hasRead > 0)
 			{
-				char buffer[257];
-				memset(buffer, 0, 256);
-				unsigned short ret = client->Read(buffer, 256);
-				readBuffer.append(buffer, ret);
+				do
+				{
+					char buffer[257];
+					memset(buffer, 0, 257);
+					cout << "GO" << endl;
+					int ret = client->Read(buffer, 256);
+					cout << "R: " << ret << endl;
+					if(ret > 0)
+					{
+						cout << "A" << endl;
+						readBuffer.append(buffer, ret);
+						cout << "B" << endl;
+					}
+				}
+				while(client->HasRead() > 0);
+				cout << "YE" << endl;
 			}
+
+			cout << "HM" << endl;
 
 			while(readBuffer.size() >= packetSize)
 			{
@@ -370,7 +381,7 @@ void *connectionFunc(void *arg)
 				{
 					print("NEW %d %f %f\n", response.n.objID, response.n.posY, response.n.posY);
 					g_physicsMutex.Lock();
-					game2d::PhysicalObject *obj = new game2d::PhysicalObject(Vector2<float>(response.n.posX, response.n.posY), Vector2<float>(32.f, 32.f), -1, response.n.objID);
+					game2d::PhysicalObject *obj = new game2d::PhysicalObject(Vector2<float>(response.n.posX, response.n.posY), Vector2<float>(32.f, 32.f), game2d::PhysicalObject::DEFAULT_ID, response.n.objID);
 					app->m_group->Add(obj);
 					g_physicsMutex.Unlock();
 				}
@@ -399,14 +410,19 @@ void *connectionFunc(void *arg)
 				{
 					isConnected = true;
 					client->Write((char *)connectionMsg.c_str(), connectionMsg.length());
+					cout << "Connected" << endl;
 				}
 				else
+				{
+					cout << "Stopping..." << endl;
 					app->Stop(); //- TODO: Handle this better -
+				}
 			}
 		}
 
 		sleepMS(1);
 	}
+	cout << "NO" << endl;
 
 	delete client;
 

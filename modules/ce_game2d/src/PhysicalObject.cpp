@@ -21,7 +21,8 @@ namespace ce
 {
 	namespace game2d
 	{
-		unsigned short PhysicalObject::ms_lastID = -1;
+		unsigned short PhysicalObject::ms_lastID = 65535;
+		unsigned short PhysicalObject::DEFAULT_ID = 65535;
 		vector<PhysicalObject *> PhysicalObject::ms_objects = vector<PhysicalObject *>(1024);
 		vector<PhysicalObject *> PhysicalObject::ms_netObjects = vector<PhysicalObject *>(1024);
 
@@ -49,7 +50,7 @@ namespace ce
 
 			m_objectHandle = 0;
 
-			if(id == -1)
+			if(id == DEFAULT_ID)
 			{
 				ms_lastID++;
 				m_id = ms_lastID;
@@ -58,11 +59,11 @@ namespace ce
 				m_id = id;
 
 			//- TODO: Expand object vectors -
-			ms_objects[id] = this;
+			ms_objects[m_id] = this;
 
 			m_netID = netID;
-			if(netID != -1)
-				ms_netObjects[netID] = this;
+			if(netID != DEFAULT_ID)
+				ms_netObjects[m_netID] = this;
 
 			m_parentGroup = 0;
 			m_isTrigger = m_isStatic = false;

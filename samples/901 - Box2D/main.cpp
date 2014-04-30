@@ -164,7 +164,6 @@ public:
 		m_physicsThread->Join();
 		physicsMutex.Destroy();
 
-		print("join\n");
 		m_group->DetachHandler();
 		delete m_box2dPhysicsHandler;
 
@@ -253,8 +252,6 @@ void *physicsFunc(void *arg)
 		sleepMS(1);
 	}
 
-
-	print("no physics\n");
 	Thread::Exit(NULL);
 	return 0;
 }

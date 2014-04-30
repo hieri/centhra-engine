@@ -22,8 +22,6 @@
 using namespace ce;
 using namespace std;
 
-#define NUMRANDOMS 256
-
 void *physicsFunc(void *arg);
 void *connectionFunc(void *arg);
 Mutex g_physicsMutex;

@@ -19,7 +19,7 @@
 #include <CE/UI/CameraView2DCtrl.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
 
-#define NUMRANDOMS 256 
+#define NUMRANDOMS 128
 
 using namespace ce;
 using namespace std;

@@ -23,7 +23,7 @@ void *physicsFunc(void *arg);
 Mutex physicsMutex;
 
 //- Define your own implementation of the AppFrontend class. -
-class AppTest : public AppFrontend
+class App2DCollisionSample : public AppFrontend
 {
 	Canvas *m_canvas;
 	game2d::PhysicalGroup *m_group;
@@ -37,7 +37,7 @@ class AppTest : public AppFrontend
 public:
 	Thread* m_physicsThread;
 
-	AppTest()
+	App2DCollisionSample()
 	{
 		m_canvas = 0;
 		m_defaultPhysicsHandler = 0;
@@ -50,7 +50,7 @@ public:
 		m_randoms = 0;
 		m_physicsThread = new Thread(&physicsFunc);
 	}
-	~AppTest()
+	~App2DCollisionSample()
 	{
 		delete m_physicsThread;
 	}
@@ -234,7 +234,7 @@ public:
 
 void *physicsFunc(void *arg)
 {
-	AppTest *app = (AppTest *)arg;
+	App2DCollisionSample *app = (App2DCollisionSample *)arg;
 	unsigned long long lastProcess = app->GetRunTimeMS();
 
 	while(app->IsRunning())
@@ -261,7 +261,7 @@ int main(int argc, char **argv)
 {
 	print("500 - 2D Collision | Centhra Engine v%s\n", getVersionString().c_str());
 
-	AppTest myApp;
+	App2DCollisionSample myApp;
 	myApp.Start();
 
 	//- Run the App's main loop. -

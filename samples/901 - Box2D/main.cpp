@@ -22,7 +22,7 @@ void *physicsFunc(void *arg);
 Mutex physicsMutex;
 
 //- Define your own implementation of the AppFrontend class. -
-class AppTest : public AppFrontend
+class AppBox2DSample : public AppFrontend
 {
 	Canvas *m_canvas;
 	game2d::PhysicalGroup *m_group;
@@ -36,7 +36,7 @@ class AppTest : public AppFrontend
 public:
 	Thread* m_physicsThread;
 
-	AppTest()
+	AppBox2DSample()
 	{
 		m_canvas = 0;
 		m_box2dPhysicsHandler = 0;
@@ -49,7 +49,7 @@ public:
 		m_randoms = 0;
 		m_physicsThread = new Thread(&physicsFunc);
 	}
-	~AppTest()
+	~AppBox2DSample()
 	{
 		delete m_physicsThread;
 	}
@@ -233,7 +233,7 @@ public:
 
 void *physicsFunc(void *arg)
 {
-	AppTest *app = (AppTest *)arg;
+	AppBox2DSample *app = (AppBox2DSample *)arg;
 	unsigned long long lastProcess = app->GetRunTimeMS();
 
 	while(app->IsRunning())
@@ -260,7 +260,7 @@ int main(int argc, char **argv)
 {
 	print("901 - Box2D | Centhra Engine v%s\n", getVersionString().c_str());
 
-	AppTest myApp;
+	AppBox2DSample myApp;
 	myApp.Start();
 
 	//- Run the App's main loop. -

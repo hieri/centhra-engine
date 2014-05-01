@@ -15,13 +15,13 @@
 using namespace ce;
 
 //- Define your own implementation of the AppFrontend class. -
-class AppTest : public AppFrontend
+class AppImageRenderingSample : public AppFrontend
 {
 	Canvas *m_canvas;
 	Image *m_image;
 
 public:
-	AppTest()
+	AppImageRenderingSample()
 	{
 		m_canvas = 0;
 		m_image = 0;
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 {
 	print("201 - Image Rendering | Centhra Engine v%s\n", getVersionString().c_str());
 
-	AppTest myApp;
+	AppImageRenderingSample myApp;
 	myApp.Start();
 
 	//- Run the App's main loop. -

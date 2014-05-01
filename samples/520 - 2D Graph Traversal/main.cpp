@@ -67,7 +67,7 @@ public:
 	}
 };
 
-class AppTest : public AppFrontend
+class App2DGraphTraversalSample : public AppFrontend
 {
 	Canvas *m_canvas;
 	game2d::PhysicalGroup *m_group;
@@ -84,8 +84,7 @@ class AppTest : public AppFrontend
 	unsigned long long m_lastProcess;
 
 public:
-
-	AppTest()
+	App2DGraphTraversalSample()
 	{
 		m_canvas = 0;
 		m_camera = 0;
@@ -97,7 +96,7 @@ public:
 		w = a = s = d = false;
 		m_graph = 0;
 	}
-	~AppTest()
+	~App2DGraphTraversalSample()
 	{
 	}
 
@@ -202,7 +201,6 @@ public:
 		delete m_entity;
 		delete m_group;
 		game2d::Entity::DeleteDead();
-//		game2d::ZoneEntity::Cleanup();
 		delete m_canvas;
 	}
 
@@ -305,7 +303,7 @@ int main(int argc, char **argv)
 {
 	print("520 - 2D Graph Traversal | Centhra Engine v%s\n", getVersionString().c_str());
 
-	AppTest myApp;
+	App2DGraphTraversalSample myApp;
 	myApp.Start();
 
 	//- Run the App's main loop. -

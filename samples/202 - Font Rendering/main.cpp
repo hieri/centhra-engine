@@ -16,13 +16,13 @@
 using namespace ce;
 
 //- Define your own implementation of the AppFrontend class. -
-class AppTest : public AppFrontend
+class AppFontRenderingSample : public AppFrontend
 {
 	Canvas *m_canvas;
 	Font *m_font;
 
 public:
-	AppTest()
+	AppFontRenderingSample()
 	{
 		m_canvas = 0;
 		m_font = 0;
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 {
 	print("202 - Font Rendering | Centhra Engine v%s\n", getVersionString().c_str());
 
-	AppTest myApp;
+	AppFontRenderingSample myApp;
 	myApp.Start();
 
 	//- Run the App's main loop. -

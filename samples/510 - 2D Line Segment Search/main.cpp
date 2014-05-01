@@ -24,7 +24,7 @@
 
 using namespace ce;
 
-class AppTest : public AppFrontend
+class App2DLineSegmentSearchSample : public AppFrontend
 {
 	Canvas *m_canvas;
 	game2d::PhysicalGroup *m_group;
@@ -39,7 +39,7 @@ class AppTest : public AppFrontend
 
 public:
 
-	AppTest()
+	App2DLineSegmentSearchSample()
 	{
 		m_canvas = 0;
 		m_group = 0;
@@ -52,7 +52,7 @@ public:
 		m_numFound = 0;
 		m_defaultPhysicsHandler = 0;
 	}
-	~AppTest()
+	~App2DLineSegmentSearchSample()
 	{
 	}
 
@@ -243,7 +243,7 @@ int main(int argc, char **argv)
 {
 	print("510 - 2D Line Segment Search | Centhra Engine v%s\n", getVersionString().c_str());
 
-	AppTest myApp;
+	App2DLineSegmentSearchSample myApp;
 	myApp.Start();
 
 	//- Run the App's main loop. -

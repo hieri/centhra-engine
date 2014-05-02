@@ -21,7 +21,6 @@ using namespace ce;
 void *physicsFunc(void *arg);
 Mutex physicsMutex;
 
-//- Define your own implementation of the AppFrontend class. -
 class AppBox2DSample : public AppFrontend
 {
 	Canvas *m_canvas;
@@ -53,8 +52,6 @@ public:
 	{
 		delete m_physicsThread;
 	}
-
-	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
 		srand((unsigned int)time(NULL));
@@ -142,8 +139,6 @@ public:
 		}
 
 		m_group->ProcessPhysics(dt);
-//		m_plane->RemoveDead();
-//		game2d::Entity::DeleteDead();
 	}
 	bool OnProcess()
 	{
@@ -175,10 +170,8 @@ public:
 			delete m_randoms[a];
 		delete [] m_randoms;
 		delete m_group;
-//		game2d::ZoneEntity::Cleanup();
 		delete m_canvas;
 	}
-
 	bool OnEvent(Event &event)
 	{
 		switch(event.type)
@@ -263,7 +256,6 @@ int main(int argc, char **argv)
 	AppBox2DSample myApp;
 	myApp.Start();
 
-	//- Run the App's main loop. -
 	while(myApp.IsRunning())
 		myApp.Process();
 

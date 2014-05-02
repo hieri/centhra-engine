@@ -68,7 +68,6 @@ typedef union Packet
 	ControlPacket control;
 } Packet;
 
-//- Define your own implementation of the AppFrontend class. -
 class App2DClientSample : public AppFrontend
 {
 	Canvas *m_canvas;
@@ -104,22 +103,16 @@ public:
 		delete m_physicsThread;
 		delete m_connectionThread;
 	}
-
-	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
-//		m_canvas = Canvas::Create(640, 480, "550 - 2D Client");
-		m_canvas = Canvas::Create(256, 256, "550 - 2D Client");
+		m_canvas = Canvas::Create(320, 240, "550 - 2D Client");
 
 		m_group = new game2d::PhysicalGroup();
-//		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
-//		m_group->Add(m_entity);
 
 		m_dummy = new game2d::PhysicalObject(Vector2<float>(460.f, 512.f), Vector2<float>(32.f, 32.f));
 		m_group->Add(m_dummy);
 
 		m_camera = new game2d::Camera();
-//		m_camera->SetFocus(m_entity);
 
 		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(256, 256));
 		m_view->SetCamera(m_camera);
@@ -187,10 +180,8 @@ public:
 		game2d::Entity::DeleteDead();
 		delete m_entity;
 		delete m_group;
-//		game2d::ZoneEntity::Cleanup();
 		delete m_canvas;
 	}
-
 	bool OnEvent(Event &event)
 	{
 		switch(event.type)
@@ -267,7 +258,6 @@ void *connectionFunc(void *arg)
 				lastMovement = t;
 
 				g_physicsMutex.Lock();
-//				Vector2<float> velocity = app->m_entity->GetVelocity();
 				Vector2<float> velocity = app->m_targetMotion;
 				Packet movement;
 				movement.type = Movement;
@@ -450,7 +440,6 @@ int main(int argc, char **argv)
 	App2DClientSample myApp;
 	myApp.Start();
 
-	//- Run the App's main loop. -
 	while(myApp.IsRunning())
 		myApp.Process();
 

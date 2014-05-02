@@ -15,7 +15,6 @@
 
 using namespace ce;
 
-//- Define your own implementation of the AppFrontend class. -
 class AppFontRenderingSample : public AppFrontend
 {
 	Canvas *m_canvas;
@@ -27,8 +26,6 @@ public:
 		m_canvas = 0;
 		m_font = 0;
 	}
-
-	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
 		print("Initializing Font Library\n");
@@ -95,7 +92,6 @@ int main(int argc, char **argv)
 	AppFontRenderingSample myApp;
 	myApp.Start();
 
-	//- Run the App's main loop. -
 	while(myApp.IsRunning())
 		myApp.Process();
 

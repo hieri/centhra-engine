@@ -99,7 +99,6 @@ public:
 	~App2DGraphTraversalSample()
 	{
 	}
-
 	void OnStarted()
 	{
 		srand((unsigned int)time(NULL));
@@ -175,9 +174,6 @@ public:
 			m_entity->SetVelocity(dif);
 
 			m_group->ProcessPhysics(dt);
-
-//			m_plane->RemoveDead();
-//			game2d::Entity::DeleteDead();
 		}
 
 		sleepMS(1);
@@ -203,7 +199,6 @@ public:
 		game2d::Entity::DeleteDead();
 		delete m_canvas;
 	}
-
 	bool OnEvent(Event &event)
 	{
 		Vector2<int> halfExtent;
@@ -306,7 +301,6 @@ int main(int argc, char **argv)
 	App2DGraphTraversalSample myApp;
 	myApp.Start();
 
-	//- Run the App's main loop. -
 	while(myApp.IsRunning())
 		myApp.Process();
 

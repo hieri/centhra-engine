@@ -38,7 +38,6 @@ class App2DLineSegmentSearchSample : public AppFrontend
 	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 
 public:
-
 	App2DLineSegmentSearchSample()
 	{
 		m_canvas = 0;
@@ -55,7 +54,6 @@ public:
 	~App2DLineSegmentSearchSample()
 	{
 	}
-
 	void OnStarted()
 	{
 		srand((unsigned int)time(NULL));
@@ -134,9 +132,6 @@ public:
 			
 			m_group->ProcessPhysics(dt);
 			m_numFound = m_group->SegmentSearch(m_pointA[0], m_pointA[1], m_pointB[0], m_pointB[1]).size();
-
-//			m_plane->RemoveDead();
-//			game2d::Entity::DeleteDead();
 		}
 
 		sleepMS(1);
@@ -155,7 +150,6 @@ public:
 		delete [] m_randoms;
 		delete m_group;
 		game2d::Entity::DeleteDead();
-//		game2d::ZoneEntity::Cleanup();
 		delete m_canvas;
 	}
 
@@ -246,7 +240,6 @@ int main(int argc, char **argv)
 	App2DLineSegmentSearchSample myApp;
 	myApp.Start();
 
-	//- Run the App's main loop. -
 	while(myApp.IsRunning())
 		myApp.Process();
 

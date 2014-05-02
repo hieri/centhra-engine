@@ -22,7 +22,6 @@ using namespace ce;
 void *physicsFunc(void *arg);
 Mutex physicsMutex;
 
-//- Define your own implementation of the AppFrontend class. -
 class App2DCollisionSample : public AppFrontend
 {
 	Canvas *m_canvas;
@@ -54,8 +53,6 @@ public:
 	{
 		delete m_physicsThread;
 	}
-
-	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
 		srand((unsigned int)time(NULL));
@@ -179,7 +176,6 @@ public:
 		delete m_group;
 		delete m_canvas;
 	}
-
 	bool OnEvent(Event &event)
 	{
 		switch(event.type)
@@ -264,7 +260,6 @@ int main(int argc, char **argv)
 	App2DCollisionSample myApp;
 	myApp.Start();
 
-	//- Run the App's main loop. -
 	while(myApp.IsRunning())
 		myApp.Process();
 

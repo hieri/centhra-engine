@@ -92,8 +92,6 @@ public:
 	~App2DServerSample()
 	{
 	}
-
-	//- Define the virtual functions for the class. -
 	bool OnStart()
 	{
 		m_group = new game2d::PhysicalGroup();
@@ -183,11 +181,6 @@ public:
 		for(int a = 0; a < NUMRANDOMS; a++)
 			delete m_randoms[a];
 		delete [] m_randoms;
-	}
-
-	bool OnEvent(Event &event)
-	{
-		return true;
 	}
 };
 

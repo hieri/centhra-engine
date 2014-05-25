@@ -114,7 +114,7 @@ public:
 
 		m_camera = new game2d::Camera();
 
-		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(256, 256));
+		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(320, 240));
 		m_view->SetCamera(m_camera);
 
 //		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();

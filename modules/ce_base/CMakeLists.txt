@@ -62,7 +62,30 @@ else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	set(BASE_USEWINSOCKET "0")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
-find_package(DevIL REQUIRED)
+find_package(DevIL)
+if(NOT IL_FOUND)
+	if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+		message("Unable to find DevIL with default paths.")
+
+		set(MY_DOWNLOADED_FILE "${PROJECT_SOURCE_DIR}/external/DevIL-SDK-x86-1.7.8.zip")
+		if(NOT EXISTS ${MY_DOWNLOADED_FILE})
+			message("Downloading DevIL SDK...")
+			set(MY_URL "http://downloads.sourceforge.net/project/openil/DevIL%20Windows%20SDK/1.7.8/DevIL-SDK-x86-1.7.8.zip?r=&ts=1403819082&use_mirror=colocrossing")
+			set(MY_EXTRACT_PATH "${PROJECT_SOURCE_DIR}/external/DevIL")
+			file(DOWNLOAD "${MY_URL}" "${MY_DOWNLOADED_FILE}")
+		endif(NOT EXISTS ${MY_DOWNLOADED_FILE})
+
+		if(NOT EXISTS ${PROJECT_SOURCE_DIR}/external/DevIL/README)
+			message("Unzipping DevIL SDK...")
+			execute_process(COMMAND ${PROJECT_SOURCE_DIR}/external/unzip.bat ${MY_DOWNLOADED_FILE} ${MY_EXTRACT_PATH})
+		endif(NOT EXISTS ${PROJECT_SOURCE_DIR}/external/DevIL/README)
+
+		message("Adding DevIL external prefix.")
+		set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${PROJECT_SOURCE_DIR}/external/DevIL)
+		find_package(DevIL REQUIRED)
+	endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+endif(NOT IL_FOUND)
+
 set(LIB ${LIB} ${IL_LIBRARIES} ${ILU_LIBRARIES})
 set(INCLUDE ${INCLUDE} ${IL_INCLUDE_DIR}/..)
 

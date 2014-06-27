@@ -79,6 +79,10 @@ if(NOT IL_FOUND)
 			message("Unzipping DevIL SDK...")
 			set(T_IL_EXTRACT_PATH "${PROJECT_SOURCE_DIR}/external/DevIL")
 			execute_process(COMMAND ${PROJECT_SOURCE_DIR}/external/unzip.bat ${T_IL_DOWNLOAD_FILE} ${T_IL_EXTRACT_PATH})
+
+			execute_process(COMMAND cmake -E copy ${PROJECT_SOURCE_DIR}/external/DevIL/lib/DevIL.dll ${PROJECT_SOURCE_DIR}/samples/bin/DevIL.dll)
+			execute_process(COMMAND cmake -E copy ${PROJECT_SOURCE_DIR}/external/DevIL/lib/ILU.dll ${PROJECT_SOURCE_DIR}/samples/bin/ILU.dll)
+			execute_process(COMMAND cmake -E copy ${PROJECT_SOURCE_DIR}/external/DevIL/lib/ILUT.dll ${PROJECT_SOURCE_DIR}/samples/bin/ILUT.dll)
 		endif(NOT EXISTS ${PROJECT_SOURCE_DIR}/external/DevIL/README)
 
 		message("Adding DevIL external prefix.")

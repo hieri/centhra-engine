@@ -37,7 +37,24 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 configure_file(${INC_DIR}/ConfigFrontend.h.in ${INC_DIR}/ConfigFrontend.h)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/modules/ce_base/include ${PROJECT_SOURCE_DIR}/external/include)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	set(T_GLEXT_FILE "${PROJECT_SOURCE_DIR}/external/OpenGL/include/GL/glext.h")
+	set(T_WGLEXT_FILE "${PROJECT_SOURCE_DIR}/external/OpenGL/include/GL/wglext.h")
+
+	if(NOT EXISTS ${T_GLEXT_FILE})
+		message("Downloading glext.h...")
+		set(T_GLEXT_URL "http://www.opengl.org/registry/oldspecs/glext.h")
+		file(DOWNLOAD "${T_GLEXT_URL}" "${T_GLEXT_FILE}")
+	endif(NOT EXISTS ${T_GLEXT_FILE})
+
+	if(NOT EXISTS ${T_WGLEXT_FILE})
+		message("Downloading wglext.h...")
+		set(T_WGLEXT_URL "http://www.opengl.org/registry/oldspecs/wglext.h")
+		file(DOWNLOAD "${T_WGLEXT_URL}" "${T_WGLEXT_FILE}")
+	endif(NOT EXISTS ${T_WGLEXT_FILE})
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/modules/ce_base/include ${PROJECT_SOURCE_DIR}/external/OpenGL/include)
 set(NAME "ce_frontend")
 add_library(${NAME} STATIC ${SRC} ${INC} ${RES})
 set_target_properties(${NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)

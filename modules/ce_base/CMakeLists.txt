@@ -120,7 +120,7 @@ if(NOT FREETYPE_FOUND)
 			execute_process(COMMAND cmake -E copy ${PROJECT_SOURCE_DIR}/external/freetype/Release/freetype.lib ${PROJECT_SOURCE_DIR}/external/freetype/lib/freetype.lib)
 			execute_process(COMMAND cmake --build . --config Debug WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external/freetype)
 			execute_process(COMMAND cmake -E copy ${PROJECT_SOURCE_DIR}/external/freetype/Debug/freetype.lib ${PROJECT_SOURCE_DIR}/external/freetype/lib/freetype_D.lib)
-		endif(NOT EXISTS ${PROJECT_SOURCE_DIR}/external/freetype/freetype.sln)
+		endif(NOT EXISTS ${PROJECT_SOURCE_DIR}/external/freetype/lib/freetype.lib)
 
 		message("Adding FreeType external prefix.")
 		set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${PROJECT_SOURCE_DIR}/external/freetype)

@@ -11,7 +11,44 @@ set(INC
 )
 
 find_package(OpenGL REQUIRED)
-find_package(Box2D REQUIRED)
+find_package(Box2D)
+if(NOT BOX2D_FOUND)
+	if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+		message("Unable to find Box2D with default paths.")
+		set(T_BX_DOWNLOAD_FILE "${PROJECT_SOURCE_DIR}/external/Box2D_v2.2.1.zip")
+
+		if(NOT EXISTS ${T_BX_DOWNLOAD_FILE})
+			message("Downloading Box2D source...")
+			set(T_BX_URL "https://box2d.googlecode.com/files/Box2D_v2.2.1.zip")
+			file(DOWNLOAD "${T_BX_URL}" "${T_BX_DOWNLOAD_FILE}")
+		endif(NOT EXISTS ${T_BX_DOWNLOAD_FILE})
+
+		if(NOT EXISTS ${PROJECT_SOURCE_DIR}/external/Box2D/Readme.txt)
+			message("Unzipping Box2D source...")
+			set(T_BX_EXTRACT_PATH "${PROJECT_SOURCE_DIR}/external/Box2D")
+			execute_process(COMMAND ${PROJECT_SOURCE_DIR}/external/unzip.bat ${T_BX_DOWNLOAD_FILE} ${PROJECT_SOURCE_DIR}/external)
+			execute_process(COMMAND cmake -E rename ${PROJECT_SOURCE_DIR}/external/Box2D_v2.2.1 ${T_BX_EXTRACT_PATH})
+		endif(NOT EXISTS ${PROJECT_SOURCE_DIR}/external/Box2D/Readme.txt)
+
+		if(NOT EXISTS ${PROJECT_SOURCE_DIR}/external/Box2D/Box2D.sln)
+			message("Generating Box2D CMake files...")
+			execute_process(COMMAND cmake -G "${CMAKE_GENERATOR}" WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external/Box2D)
+		endif(NOT EXISTS ${PROJECT_SOURCE_DIR}/external/Box2D/Box2D.sln)
+
+		if(NOT EXISTS ${PROJECT_SOURCE_DIR}/external/Box2D/lib/Box2D.lib)
+			message("Building Box2D...")
+			execute_process(COMMAND cmake --build . --config Release WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external/Box2D)
+			execute_process(COMMAND cmake -E copy ${PROJECT_SOURCE_DIR}/external/Box2D/Box2D/Release/Box2D.lib ${PROJECT_SOURCE_DIR}/external/Box2D/lib/Box2D.lib)
+			execute_process(COMMAND cmake --build . --config Debug WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external/Box2D)
+			execute_process(COMMAND cmake -E copy ${PROJECT_SOURCE_DIR}/external/Box2D/Box2D/Debug/Box2D.lib ${PROJECT_SOURCE_DIR}/external/Box2D/lib/Box2D-d.lib)
+		endif(NOT EXISTS ${PROJECT_SOURCE_DIR}/external/Box2D/lib/Box2D.lib)
+
+		message("Adding Box2D external prefix.")
+		set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${PROJECT_SOURCE_DIR}/external/Box2D)
+		find_package(Box2D REQUIRED)
+	endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+endif(NOT BOX2D_FOUND)
+
 
 set(INCLUDE
 	${CMAKE_CURRENT_SOURCE_DIR}/include

@@ -17,18 +17,27 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#if CE_FRONTEND_USEXLIB
-	//- Xlib -
-	#include <X11/Xatom.h>
-	#include <X11/Xlib.h>
-	#include <GL/glx.h>
+#ifdef _WIN32
+	#include <GL/glext.h>
+	#include <GL/wglext.h>
+	#define glGetProcAddress wglGetProcAddress
+	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = NULL;
+#elif __linux__
+	#if CE_FRONTEND_USEXLIB
+		//- Xlib -
+		#include <X11/Xatom.h>
+		#include <X11/Xlib.h>
+		#include <GL/glx.h>
+		#define glGetProcAddress glXGetProcAddress
 
-	#if CE_FRONTEND_USEXCB
-		//- XCB -
-		#include <X11/Xlib-xcb.h>
-		#include <xcb/xcb.h>
+		#if CE_FRONTEND_USEXCB
+			//- XCB -
+			#include <X11/Xlib-xcb.h>
+			#include <xcb/xcb.h>
+		#endif
 	#endif
 #endif
+
 
 using namespace std;
 
@@ -519,6 +528,7 @@ namespace ce
 		#endif
 		
 		canvas->UpdateViewport(width, height);
+		canvas->SetVSync(canvas->m_vsync);
 
 		return canvas;
 	}
@@ -589,8 +599,9 @@ namespace ce
 	{
 		unsigned long long time = m_app->GetRunTimeMS();
 
+//		print("VS: %d\n", m_vsync);
 		//- TODO: integrate togglable VSync -
-		if((time - m_lastRenderTimeMS) > 15 || !m_vsync)
+//		if((time - m_lastRenderTimeMS) > 15 || !m_vsync)
 		{
 			glClear(GL_COLOR_BUFFER_BIT);
 			glClearColor(0.f, 0.f, 0.f, 1.f);
@@ -710,6 +721,12 @@ namespace ce
 	}
 	void Canvas::SetVSync(bool vsync)
 	{
+		#ifdef _WIN32
+			if(!wglSwapIntervalEXT)
+				wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+			wglSwapIntervalEXT(vsync ? 1 : 0);
+		#endif
+
 		m_vsync = vsync;
 	}
 }

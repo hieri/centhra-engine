@@ -79,10 +79,10 @@ namespace ce
 						_Y = _y + m_tileSize[1];
 
 						float tx, ty, tX, tY;
-						tx = ((float)_x) / ((float)size[0]);
-						ty = ((float)_y) / ((float)size[1]);
-						tX = ((float)_X) / ((float)size[0]);
-						tY = ((float)_Y) / ((float)size[1]);
+						tx = ((float)_x + 0.5f) / ((float)size[0]);
+						ty = ((float)_y + 0.5f) / ((float)size[1]);
+						tX = ((float)_X - 0.5f) / ((float)size[0]);
+						tY = ((float)_Y - 0.5f) / ((float)size[1]);
 
 						glTexCoord2f(tx, tY);
 						glVertex2i(x, y);

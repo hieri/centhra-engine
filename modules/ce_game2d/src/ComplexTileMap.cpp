@@ -92,10 +92,10 @@ namespace ce
 								Vector2<unsigned int> tileSetImageSize = tileSetImage->GetSize();
 
 								float tx, ty, tX, tY;
-								tx = ((float)_x) / ((float)tileSetImageSize[0]);
-								ty = ((float)_y) / ((float)tileSetImageSize[1]);
-								tX = ((float)_X) / ((float)tileSetImageSize[0]);
-								tY = ((float)_Y) / ((float)tileSetImageSize[1]);
+								tx = ((float)_x + 0.5f) / ((float)tileSetImageSize[0]);
+								ty = ((float)_y + 0.5f) / ((float)tileSetImageSize[1]);
+								tX = ((float)_X - 0.5f) / ((float)tileSetImageSize[0]);
+								tY = ((float)_Y - 0.5f) / ((float)tileSetImageSize[1]);
 
 								if(lastImage != tileSetImage)
 								{

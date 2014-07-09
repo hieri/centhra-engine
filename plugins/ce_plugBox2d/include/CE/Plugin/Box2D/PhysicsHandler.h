@@ -49,6 +49,8 @@ namespace ce
 
 				public:
 					friend class bPhysicsHandler;
+
+					void SetFixedRotation(bool fixedRotation);
 				};
 
 				void *GetBox2DSystem() const;
@@ -59,7 +61,6 @@ namespace ce
 
 				void AddJoint(game2d::PhysicalObject *objA, game2d::PhysicalObject *objB, Vector2<float> offsetA, Vector2<float> offsetB);
 				void ChangeToCircle(game2d::PhysicalObject *obj);
-				void SetFixedRotation(game2d::PhysicalObject *obj, bool fixedRotation);
 /*
 				void AddPulleyJoint(game2d::PhysicalObject *objA, game2d::PhysicalObject *objB);
 				void AddDistanceJoint(game2d::PhysicalObject *objA, game2d::PhysicalObject *objB);

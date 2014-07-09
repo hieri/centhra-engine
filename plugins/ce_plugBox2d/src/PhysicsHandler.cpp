@@ -317,6 +317,12 @@ namespace ce
 				b2Body *b2d_body = (b2Body *)m_b2d_body;
 				b2d_body->SetAngularVelocity(angularVelocity);
 			}
+			void bPhysicsHandler::bObjectHandle::SetFixedRotation(bool fixedRotation)
+			{
+				b2Body *b2d_body = (b2Body *)m_b2d_body;
+				if(b2d_body)
+					b2d_body->SetFixedRotation(fixedRotation);
+			}
 
 			bPhysicsHandler::bPhysicsHandler()
 			{
@@ -486,20 +492,6 @@ namespace ce
 
 						body->DestroyFixture(fixture);
 						body->CreateFixture(&fd);
-					}
-				}
-			}
-			void bPhysicsHandler::SetFixedRotation(game2d::PhysicalObject *obj, bool fixedRotation)
-			{
-				b2World *world = 0;
-				if(m_b2d_system)
-				{
-					world = ((Box2DSystem *)m_b2d_system)->m_b2d_world;
-					if(world)
-					{
-						bPhysicsHandler::bObjectHandle *handle = (bPhysicsHandler::bObjectHandle *)obj->GetObjectHandle();
-						b2Body *body = (b2Body *)handle->m_b2d_body;
-						body->SetFixedRotation(fixedRotation);
 					}
 				}
 			}

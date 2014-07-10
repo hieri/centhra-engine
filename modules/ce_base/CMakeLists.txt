@@ -94,7 +94,7 @@ set(LIB ${LIB} ${IL_LIBRARIES} ${ILU_LIBRARIES})
 set(INCLUDE ${INCLUDE} ${IL_INCLUDE_DIR}/..)
 
 # FreeType
-find_package(FreeType)
+find_package(Freetype)
 if(NOT FREETYPE_FOUND)
 	if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 		message("Unable to find FreeType with default paths.")
@@ -128,7 +128,7 @@ if(NOT FREETYPE_FOUND)
 
 		message("Adding FreeType external prefix.")
 		set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${PROJECT_SOURCE_DIR}/external/freetype)
-		find_package(FreeType REQUIRED)
+		find_package(Freetype REQUIRED)
 	endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif(NOT FREETYPE_FOUND)
 set(LIB ${LIB} ${FREETYPE_LIBRARIES})

@@ -2,8 +2,8 @@
 # Find the native Box2D includes and libraries
 #
 #  BOX2D_INCLUDE_DIR - where to find TmxParser/Config.hpp, etc.
-#  BOX2D_LIBRARIES   - List of libraries when using libTmxParser.
-#  BOX2D_FOUND       - True if libTmxParser found.
+#  BOX2D_LIBRARIES   - List of libraries when using Box2D.
+#  BOX2D_FOUND       - True if Box2D is found.
 
 if(BOX2D_INCLUDE_DIR)
   # Already in cache, be silent

@@ -177,7 +177,11 @@ if(NOT IL_FOUND)
 				set(ENV{LDFLAGS} "-L${PROJECT_SOURCE_DIR}/external/libjpeg/.libs -L${PROJECT_SOURCE_DIR}/external/libpng/.libs -L${PROJECT_SOURCE_DIR}/external/zlib")
 				set(ENV{CPPFLAGS} "-I${PROJECT_SOURCE_DIR}/external/libjpeg -I${PROJECT_SOURCE_DIR}/external/libpng -I${PROJECT_SOURCE_DIR}/external/zlib")
 				set(ENV{LIBS} "-lstdc++")
-				execute_process(COMMAND ./configure --disable-shared --enable-ILU=yes --enable-ILUT=yes --enable-zlib=yes WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external/devil)
+				execute_process(COMMAND ./configure 
+--disable-shared --enable-ILU=yes --enable-ILUT=yes --enable-zlib=yes 
+--enable-exr=no --enable-mng=no --enable-jp2=no --enable-tiff=no 
+WORKING_DIRECTORY 
+${PROJECT_SOURCE_DIR}/external/devil)
 				set(ENV{LDFLAGS})
 				set(ENV{CPPFLAGS})
 				set(ENV{LIBS})

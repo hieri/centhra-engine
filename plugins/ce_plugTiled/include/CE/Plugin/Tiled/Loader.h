@@ -115,6 +115,7 @@ namespace ce
 				Vector2<unsigned short> m_size;
 				std::vector<Layer *> m_layerVec;
 				std::vector<TileSet *> m_tileSetVec;
+				std::map<std::string, std::string> m_propertyMap;
 			};
 		}
 	}

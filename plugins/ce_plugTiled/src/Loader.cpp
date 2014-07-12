@@ -167,6 +167,9 @@ namespace ce
 			{
 				xml_document doc;
 				xml_parse_result res = doc.load_file(file);
+
+				string prefix = filePath(file);
+
 				if(!res)
 				{
 					error("Error parsing Tiled xml!\n    %s\n", res.description());
@@ -198,7 +201,9 @@ namespace ce
 						ts->tileHeight = tileHeight;
 						ts->imageWidth = xNode.child("image").attribute("width").as_uint();
 						ts->imageHeight = xNode.child("image").attribute("height").as_uint();
-						ts->image = Image::CreateFromFile(string("../assets/").append(ts->file).c_str());
+						string tilesetFile (prefix);
+						tilesetFile.append(ts->file);
+						ts->image = Image::CreateFromFile(tilesetFile.c_str());
 						ts->tileSet = new game2d::TileSet(ts->image, tileSize);
 						tilesets.push_back(ts);
 					}
@@ -321,6 +326,11 @@ namespace ce
 				loader->m_size = Vector2<unsigned short>(mapWidth, mapHeight);
 				loader->m_layerVec = layerVec;
 
+				xml_node properties = xMap.child("properties");
+				if(properties)
+				for(xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
+					loader->m_propertyMap[property.attribute("name").as_string()] = property.attribute("value").as_string();
+
 				for(vector<Layer *>::iterator it = layerVec.begin(); it != layerVec.end(); it++)
 				{
 					Layer *layer = *it;
@@ -331,6 +341,7 @@ namespace ce
 							loader->LoadObject(layer, *itB);
 					}
 				}
+
 				return loader;
 			}
 

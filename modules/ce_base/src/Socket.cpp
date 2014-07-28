@@ -333,4 +333,12 @@ namespace ce
 			*port = Addr.sin_port;
 		#endif
 	}
+	int Socket::RecvFrom(char *buffer, unsigned int buffSize, void *sockAddr, int *sockAddrLen)
+	{
+		return recvfrom(m_socket, buffer, buffSize, 0, (sockaddr *)sockAddr, sockAddrLen);
+	}
+	int Socket::SendTo(char *buffer, unsigned int buffSize, void *sockAddr, int sockAddrLen)
+	{
+		return sendto(m_socket, buffer, buffSize, 0, (sockaddr *)sockAddr, sockAddrLen);
+	}
 }

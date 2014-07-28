@@ -90,6 +90,9 @@ namespace ce
 		void GetPeerIP4Info(unsigned long *addr, unsigned short *port);
 		bool Close();
 		int HasRead();
+
+		int RecvFrom(char *buffer, unsigned int buffSize, void *sockAddr, int *sockAddrLen);
+		int SendTo(char *buffer, unsigned int buffSize, void *sockAddr, int sockAddrLen);
 	};
 }
 

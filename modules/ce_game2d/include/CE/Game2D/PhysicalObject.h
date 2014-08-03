@@ -55,6 +55,7 @@ namespace ce
 
 			unsigned short GetID() const;
 			unsigned short GetNetID() const;
+			void SetNetID(unsigned short id);
 
 			PhysicsHandler::ObjectHandle *GetObjectHandle() const;
 			unsigned int GetCollisionMask() const;

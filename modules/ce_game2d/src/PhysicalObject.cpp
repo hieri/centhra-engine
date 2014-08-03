@@ -168,6 +168,15 @@ namespace ce
 		{
 			return m_netID;
 		}
+		void PhysicalObject::SetNetID(unsigned short id)
+		{
+			if(m_netID != DEFAULT_ID)
+				ms_netObjects[m_netID] = 0;
+			if(id >= ms_netObjects.size())
+				ms_netObjects.reserve(id + 1);
+			ms_netObjects[id] = this;
+			m_netID = id;
+		}
 		PhysicsHandler::ObjectHandle *PhysicalObject::GetObjectHandle() const
 		{
 			return m_objectHandle;

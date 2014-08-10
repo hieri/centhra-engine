@@ -335,7 +335,13 @@ namespace ce
 	}
 	int Socket::RecvFrom(char *buffer, unsigned int buffSize, void *sockAddr, int *sockAddrLen)
 	{
-		return recvfrom(m_socket, buffer, buffSize, 0, (sockaddr *)sockAddr, sockAddrLen);
+		#if CE_BASE_USEWINSOCKET
+			return recvfrom(m_socket, buffer, buffSize, 0, (sockaddr *)sockAddr, sockAddrLen);
+		#endif
+
+		#if CE_BASE_USEPOSIXSOCKET
+			return recvfrom(m_socket, buffer, buffSize, 0, (sockaddr *)sockAddr, (socklen_t *)sockAddrLen);
+		#endif
 	}
 	int Socket::SendTo(char *buffer, unsigned int buffSize, void *sockAddr, int sockAddrLen)
 	{

@@ -120,7 +120,8 @@ namespace ce
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
-			case WM_XBUTTONDOWN:
+			//- TODO: Determine if this should be permanently removed -
+/*			case WM_XBUTTONDOWN:
 				event.type = event::MouseButtonDown;
 //				event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
 				event.mouseButton.button = event::Unknown;
@@ -136,7 +137,7 @@ namespace ce
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
-			case WM_MOUSEWHEEL:
+*/			case WM_MOUSEWHEEL:
 				event.type = event::MouseWheel;
 				event.mouseWheel.delta = GET_WHEEL_DELTA_WPARAM(wParam);
 				app->OnEvent(event);
@@ -454,7 +455,7 @@ namespace ce
 			windowClass.cbClsExtra = 0;
 			windowClass.cbWndExtra = 0;
 			windowClass.hInstance = hInstance;
-			windowClass.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
+			windowClass.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
 			windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 			windowClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 			windowClass.lpszMenuName = "";

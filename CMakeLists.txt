@@ -13,6 +13,12 @@ set(CE_FRONTEND_USEWIN 1)
 
 project(centhra-engine)
 
+if(WIN32)
+   set(CMAKE_FIND_LIBRARY_SUFFIXES .lib .a .dll.a .dll)
+else()
+   set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
+endif()
+
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 
 add_subdirectory(modules)

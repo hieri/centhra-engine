@@ -18,8 +18,11 @@
 	//- Windows Patches -
 	#include <Windows.h>
 	#include <direct.h>
-	#define snprintf _snprintf_s
-	#define vsnprintf _vsnprintf_s
+
+	#if _MSC_VER >= 1400
+		#define snprintf _snprintf_s
+		#define vsnprintf _vsnprintf_s
+	#endif
 #endif
 
 //- Centhra Engine -

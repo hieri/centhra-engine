@@ -1,6 +1,6 @@
 //- Standard Library -
 #include <string>
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 
 //- Centhra Engine -
@@ -13,10 +13,6 @@
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
-	typedef __int16 int16_t;
-	typedef unsigned __int16 uint16_t;
-	typedef __int32 int32_t;
-	typedef unsigned __int32 uint32_t;
 #endif
 
 #ifdef linux
@@ -130,7 +126,7 @@ namespace ce
 	Audio *Audio::LoadWAV(const char *file)
 	{
 		FILE *fp = 0;
-		#ifdef _WIN32
+		#if _MSC_VER >= 1400
 			fopen_s(&fp, file, "rb");
 		#else
 			fp = fopen(file, "rb");
@@ -142,11 +138,11 @@ namespace ce
 		}
 
 		char type[4];
-		uint32_t size, chunkSize;
-		uint16_t formatType, channels;
-		uint32_t sampleRate, avgBytesPerSec;
-		uint16_t bytesPerSample, bitsPerSample;
-		uint32_t dataSize;
+		unsigned long size, chunkSize;
+		unsigned short formatType, channels;
+		unsigned long sampleRate, avgBytesPerSec;
+		unsigned short bytesPerSample, bitsPerSample;
+		unsigned long dataSize;
 
 		fread(type, sizeof(char), 4, fp);
 		if(type[0] != 'R' || type[1] != 'I' || type[2] != 'F' || type[3] != 'F')
@@ -155,7 +151,7 @@ namespace ce
 			return 0;
 		}
 
-		fread(&size, sizeof(uint32_t), 1, fp);
+		fread(&size, sizeof(unsigned long), 1, fp);
 		fread(type, sizeof(char), 4, fp);
 		if(type[0] != 'W' || type[1] != 'A' || type[2] != 'V' || type[3] != 'E')
 		{
@@ -170,13 +166,13 @@ namespace ce
 			return 0;
 		}
 
-		fread(&chunkSize, sizeof(uint32_t), 1, fp);
-		fread(&formatType, sizeof(uint16_t), 1, fp);
-		fread(&channels, sizeof(uint16_t), 1, fp);
-		fread(&sampleRate, sizeof(uint32_t), 1, fp);
-		fread(&avgBytesPerSec, sizeof(uint32_t), 1, fp);
-		fread(&bytesPerSample, sizeof(uint16_t), 1, fp);
-		fread(&bitsPerSample, sizeof(uint16_t), 1, fp);
+		fread(&chunkSize, sizeof(unsigned long), 1, fp);
+		fread(&formatType, sizeof(unsigned short), 1, fp);
+		fread(&channels, sizeof(unsigned short), 1, fp);
+		fread(&sampleRate, sizeof(unsigned long), 1, fp);
+		fread(&avgBytesPerSec, sizeof(unsigned long), 1, fp);
+		fread(&bytesPerSample, sizeof(unsigned short), 1, fp);
+		fread(&bitsPerSample, sizeof(unsigned short), 1, fp);
 
 		fread(type, sizeof(char), 4, fp);
 		if(type[0] != 'd' || type[1] != 'a' || type[2] != 't' || type[3] != 'a')
@@ -185,7 +181,7 @@ namespace ce
 			return 0;
 		}
 
-		fread(&dataSize, sizeof(uint32_t), 1, fp);
+		fread(&dataSize, sizeof(unsigned long), 1, fp);
 
 		unsigned char *buffer = new unsigned char[dataSize];
 		fread(buffer, sizeof(char), dataSize, fp);

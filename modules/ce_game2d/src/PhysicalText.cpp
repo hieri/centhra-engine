@@ -18,8 +18,11 @@
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
-	#define snprintf _snprintf_s
-	#define vsnprintf _vsnprintf_s
+
+	#if _MSC_VER >= 1400
+		#define snprintf _snprintf_s
+		#define vsnprintf _vsnprintf_s
+	#endif
 #endif
 
 using namespace std;

@@ -24,6 +24,7 @@ namespace ce
 
 		ComplexTileMap::ComplexTileMap(Vector2<unsigned short> size, Vector2<unsigned short> tileSize) : TileMap(size, tileSize)
 		{
+			m_bleedLevel = 0.f;
 			m_tiles = new vector<Tile *> *[size[0]];
 			for(unsigned short a = 0; a < size[0]; a++)
 				m_tiles[a] = new vector<Tile *>[size[1]];
@@ -92,10 +93,10 @@ namespace ce
 								Vector2<unsigned int> tileSetImageSize = tileSetImage->GetSize();
 
 								float tx, ty, tX, tY;
-								tx = ((float)_x + 0.5f) / ((float)tileSetImageSize[0]);
-								ty = ((float)_y + 0.5f) / ((float)tileSetImageSize[1]);
-								tX = ((float)_X - 0.5f) / ((float)tileSetImageSize[0]);
-								tY = ((float)_Y - 0.5f) / ((float)tileSetImageSize[1]);
+								tx = ((float)_x + m_bleedLevel) / ((float)tileSetImageSize[0]);
+								ty = ((float)_y + m_bleedLevel) / ((float)tileSetImageSize[1]);
+								tX = ((float)_X - m_bleedLevel) / ((float)tileSetImageSize[0]);
+								tY = ((float)_Y - m_bleedLevel) / ((float)tileSetImageSize[1]);
 
 								if(lastImage != tileSetImage)
 								{
@@ -121,6 +122,14 @@ namespace ce
 
 			glDisable(GL_TEXTURE_2D);
 			glPopMatrix();
+		}
+		float ComplexTileMap::GetBleedLevel() const
+		{
+			return m_bleedLevel;
+		}
+		void ComplexTileMap::SetBleedLevel(float bleedLevel)
+		{
+			m_bleedLevel = bleedLevel;
 		}
 	}
 }

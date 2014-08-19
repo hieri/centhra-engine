@@ -17,9 +17,9 @@ namespace ce
 	class Canvas
 	{
 		AppFrontend *m_app;
-		bool m_vsync;
+		bool m_vsync, m_fullscreen;
 		unsigned long long m_lastRenderTimeMS;
-		int m_width, m_height;
+		int m_width, m_height, m_windowedWidth, m_windowedHeight;
 
 		#if CE_FRONTEND_USEXLIB
 			int m_glxWindow;
@@ -67,12 +67,14 @@ namespace ce
 		 */
 		virtual bool OnEvent(Event &event);
 
+		bool IsFullscreen() const;
 		void SetFullscreen(bool fullscreen);
 
 		int GetWidth() const;
 		int GetHeight() const;
 		void UpdateViewport(int width, int height);
 		void SetVSync(bool vsync);
+		void SetWindowedExtent(int width, int height);
 	};
 }
 

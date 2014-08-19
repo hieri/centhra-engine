@@ -14,6 +14,8 @@ namespace ce
 	{
 		class ComplexTileMap : public TileMap
 		{
+			float m_bleedLevel;
+
 		public:
 			class Tile
 			{
@@ -29,6 +31,8 @@ namespace ce
 
 			std::vector<Tile *> *GetTiles(unsigned short x, unsigned short y) const;
 			void AddTile(unsigned short x, unsigned short y, TileSet *tileSet, Vector2<unsigned char> value);
+			float GetBleedLevel() const;
+			void SetBleedLevel(float bleedLevel);
 
 			virtual void Render(unsigned short minX, unsigned short minY, unsigned short maxX, unsigned short maxY);
 

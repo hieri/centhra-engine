@@ -10,7 +10,7 @@
 #endif
 
 //- Standard Library -
-#include <string.h>
+#include <cstring>
 #include <string>
 
 //- OpenGL -
@@ -20,15 +20,16 @@
 #ifdef _WIN32
 	#include <GL/glext.h>
 	#include <GL/wglext.h>
-	#define glGetProcAddress wglGetProcAddress
-	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = NULL;
+	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXTFunc = 0;
 #elif __linux__
 	#if CE_FRONTEND_USEXLIB
 		//- Xlib -
+		#include <GL/glext.h>
 		#include <X11/Xatom.h>
 		#include <X11/Xlib.h>
 		#include <GL/glx.h>
-		#define glGetProcAddress glXGetProcAddress
+		PFNGLXSWAPINTERVALMESAPROC glXSwapIntervalMESAFunc = 0;
+		PFNGLXSWAPINTERVALSGIPROC glXSwapIntervalSGIFunc = 0;
 
 		#if CE_FRONTEND_USEXCB
 			//- XCB -
@@ -149,6 +150,8 @@ namespace ce
 				app->OnEvent(event);
 				break;
 			case WM_SIZE:
+				if(!canvas->IsFullscreen())
+					canvas->SetWindowedExtent(LOWORD(lParam), HIWORD(lParam));
 				canvas->UpdateViewport(LOWORD(lParam), HIWORD(lParam));
 				event.type = event::WindowResize;
 				event.windowResize.width = LOWORD(lParam);
@@ -209,7 +212,8 @@ namespace ce
 					| ButtonReleaseMask
 					| PointerMotionMask
 					| StructureNotifyMask
-					| SubstructureNotifyMask;
+					| SubstructureNotifyMask
+					| FocusChangeMask;
 			#endif
 
 			if(g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3)
@@ -445,6 +449,8 @@ namespace ce
 		canvas->m_app = app;
 		canvas->m_width = width;
 		canvas->m_height = height;
+		canvas->m_windowedWidth = width;
+		canvas->m_windowedHeight = height;
 
 		#if CE_FRONTEND_USEWIN
 			HINSTANCE hInstance = (HINSTANCE)app->GetHInstance();
@@ -540,7 +546,10 @@ namespace ce
 		m_lastRenderTimeMS = 0;
 		m_width = 0;
 		m_height = 0;
+		m_windowedWidth = 0;
+		m_windowedHeight = 0;
 		m_vsync = true;
+		m_fullscreen = false;
 
 		#if CE_FRONTEND_USEXLIB
 			#if CE_FRONTEND_USEXCB
@@ -584,7 +593,7 @@ namespace ce
 
 			wglMakeCurrent((HDC)m_deviceContextHandle, NULL);
 			wglDeleteContext((HGLRC)m_glRenderingContextHandle);
-            ReleaseDC((HWND)m_windowHandle, (HDC)m_deviceContextHandle);
+			ReleaseDC((HWND)m_windowHandle, (HDC)m_deviceContextHandle);
 
 			UnregisterClass(m_windowClass.c_str(), hInstance);
 
@@ -641,6 +650,10 @@ namespace ce
 	{
 		return true;
 	}
+	bool Canvas::IsFullscreen() const
+	{
+		return m_fullscreen;
+	}
 	void Canvas::SetFullscreen(bool fullscreen)
 	{
 		if(fullscreen)
@@ -662,15 +675,6 @@ namespace ce
 					xev.xclient.data.l[1] = fullscreen;
 					xev.xclient.data.l[2] = 0;
 					XSendEvent(xDisplay, DefaultRootWindow(xDisplay), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
-
-					glViewport(0, 0, 1366, 768);
-
-					glMatrixMode(GL_PROJECTION);
-					glLoadIdentity();
-					gluOrtho2D(0.f, (float)1366, 0.f, (float)768);
-
-					glMatrixMode(GL_MODELVIEW);
-					glLoadIdentity();
 				#endif
 			#endif
 
@@ -684,9 +688,9 @@ namespace ce
 					int fullscreenWidth = mi.rcMonitor.right - mi.rcMonitor.left, fullscreenHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
 
 					EnumDisplaySettings(NULL, 0, &fullscreenSettings);
-					fullscreenSettings.dmPelsWidth        = fullscreenWidth;
-					fullscreenSettings.dmPelsHeight       = fullscreenHeight;
-					fullscreenSettings.dmFields           = DM_PELSWIDTH | DM_PELSHEIGHT;
+					fullscreenSettings.dmPelsWidth = fullscreenWidth;
+					fullscreenSettings.dmPelsHeight = fullscreenHeight;
+					fullscreenSettings.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
 
 					SetWindowLongPtr(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
 					SetWindowLongPtr(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
@@ -696,6 +700,29 @@ namespace ce
 				}
 			#endif
 		}
+		else
+		{
+			#if CE_FRONTEND_USEXLIB
+				#if CE_FRONTEND_USEXCB
+				#else
+					Display *xDisplay = (Display *)m_app->GetXDisplay();
+					Atom wm_state = XInternAtom(xDisplay, "_NET_WM_STATE", False);
+					Atom fullscreen = XInternAtom(xDisplay, "_NET_WM_STATE_FULLSCREEN", False);
+
+					XEvent xev;
+					memset(&xev, 0, sizeof(xev));
+					xev.type = ClientMessage;
+					xev.xclient.window = m_xWindow;
+					xev.xclient.message_type = wm_state;
+					xev.xclient.format = 32;
+					xev.xclient.data.l[0] = 0;
+					xev.xclient.data.l[1] = fullscreen;
+					xev.xclient.data.l[2] = 0;
+					XSendEvent(xDisplay, DefaultRootWindow(xDisplay), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
+				#endif
+			#endif
+		}
+		m_fullscreen = fullscreen;
 	}
 	int Canvas::GetWidth() const
 	{
@@ -723,11 +750,33 @@ namespace ce
 	void Canvas::SetVSync(bool vsync)
 	{
 		#ifdef _WIN32
-			if(!wglSwapIntervalEXT)
-				wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-			wglSwapIntervalEXT(vsync ? 1 : 0);
+			if(!wglSwapIntervalEXTFunc)
+				wglSwapIntervalEXTFunc = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+			wglSwapIntervalEXTFunc(vsync ? 1 : 0);
+		#endif
+
+		#ifdef __linux__
+			const char *query = glXQueryExtensionsString((Display *)m_app->GetXDisplay(), 0);
+
+			if(strstr(query, "GLX_SGI_swap_control"))
+			{
+				glXSwapIntervalSGIFunc = (PFNGLXSWAPINTERVALSGIPROC)glXGetProcAddress((GLubyte *)"glXSwapIntervalSGI");
+				if(glXSwapIntervalSGIFunc)
+					glXSwapIntervalSGIFunc(vsync ? 1 : 0);
+			}
+			else if(strstr(query, "GLX_MESA_swap_control"))
+			{
+				glXSwapIntervalMESAFunc = (PFNGLXSWAPINTERVALMESAPROC)glXGetProcAddress((GLubyte *)"glXSwapIntervalMESA");
+				if(glXSwapIntervalMESAFunc)
+					glXSwapIntervalMESAFunc(vsync ? 1 : 0);
+			}
 		#endif
 
 		m_vsync = vsync;
+	}
+	void Canvas::SetWindowedExtent(int width, int height)
+	{
+		m_windowedWidth = width;
+		m_windowedHeight = height;
 	}
 }

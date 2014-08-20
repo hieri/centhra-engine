@@ -168,7 +168,6 @@ namespace ce
 				app->OnEvent(event);
 				break;
 			case WM_SIZE:
-				print("Size: %d %d\n", LOWORD(lParam), HIWORD(lParam));
 				if(!canvas->IsFullscreen())
 					canvas->SetWindowedExtent(LOWORD(lParam), HIWORD(lParam));
 				canvas->UpdateViewport(LOWORD(lParam), HIWORD(lParam));
@@ -500,7 +499,6 @@ namespace ce
 			extent.right = width;
 			extent.bottom = height;
 			AdjustWindowRect(&extent, style, FALSE);
-			print("START: %d %d | %d %d\n", width, height, extent.right, extent.bottom);
 
 			HWND hWnd = CreateWindow("ceApp", title, style, CW_USEDEFAULT, CW_USEDEFAULT, extent.right - extent.left, extent.bottom - extent.top, 0, 0, hInstance, 0);
 			if(!hWnd)

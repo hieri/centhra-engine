@@ -66,6 +66,7 @@ namespace ce
 				PostQuitMessage(0);
 				return app->Stop();
 			case WM_KEYDOWN:
+			case WM_SYSKEYDOWN:
 				event.type = event::KeyDown;
 				event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
 				event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
@@ -73,6 +74,7 @@ namespace ce
 				app->OnEvent(event);
 				break;
 			case WM_KEYUP:
+			case WM_SYSKEYUP:
 				event.type = event::KeyUp;
 				event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
 				event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
@@ -475,13 +477,14 @@ namespace ce
 			}
 
 			RECT extent;
+			UINT style = WS_OVERLAPPEDWINDOW & ~WS_SYSMENU;
 			extent.left = 0;
 			extent.top = 0;
 			extent.right = width;
 			extent.bottom = height;
-			AdjustWindowRect(&extent, WS_OVERLAPPEDWINDOW, FALSE);
+			AdjustWindowRect(&extent, style, FALSE);
 
-			HWND hWnd = CreateWindow("ceApp", title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, extent.right - extent.left, extent.bottom - extent.top, 0, 0, hInstance, 0);
+			HWND hWnd = CreateWindow("ceApp", title, style, CW_USEDEFAULT, CW_USEDEFAULT, extent.right - extent.left, extent.bottom - extent.top, 0, 0, hInstance, 0);
 			if(!hWnd)
 			{
 				delete canvas;

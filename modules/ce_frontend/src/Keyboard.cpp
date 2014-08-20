@@ -1,5 +1,6 @@
 //- Centhra Engine -
 #include <CE/Keyboard.h>
+#include <CE/Base.h>
 
 namespace ce
 {
@@ -527,8 +528,9 @@ namespace ce
 		Scan_Unknown,
 		Scan_Unknown,
 		Scan_NUS_Backslash,
-		Scan_F12,
+		Scan_F11,
 
+		Scan_F12,
 		Scan_Pause,
 		Scan_Unknown,
 		Scan_GUILeft,
@@ -536,16 +538,7 @@ namespace ce
 		Scan_Application,
 		Scan_Unknown,
 		Scan_Unknown,
-		Scan_Unknown,
 
-		Scan_Unknown,
-		Scan_Unknown,
-		Scan_Unknown,
-		Scan_Unknown,
-		Scan_Unknown,
-		Scan_Unknown,
-		Scan_Unknown,
-		
 		Scan_Unknown,
 		Scan_Unknown,
 		Scan_Unknown,
@@ -564,8 +557,17 @@ namespace ce
 		Scan_Unknown,
 		Scan_Unknown,
 		Scan_Unknown,
+		Scan_Unknown,
 
 		Scan_Unknown,
+		Scan_Unknown,
+		Scan_Unknown,
+		Scan_Unknown,
+		Scan_Unknown,
+		Scan_Unknown,
+		Scan_Unknown,
+		Scan_Unknown,
+
 		Scan_Unknown,
 		Scan_Unknown,
 		Scan_Unknown,

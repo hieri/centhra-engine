@@ -66,20 +66,36 @@ namespace ce
 				PostQuitMessage(0);
 				return app->Stop();
 			case WM_KEYDOWN:
-			case WM_SYSKEYDOWN:
 				event.type = event::KeyDown;
 				event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
 				event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 				event.key.state = 1;
 				app->OnEvent(event);
 				break;
+			case WM_SYSKEYDOWN:
+				event.type = event::KeyDown;
+				event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
+				event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
+				event.key.state = 1;
+				app->OnEvent(event);
+				if(event.key.keyCode == Key_F10 || event.key.keyCode == Key_AltLeft || event.key.keyCode == Key_AltRight)
+					return 0;
+				break;
 			case WM_KEYUP:
+				event.type = event::KeyUp;
+				event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
+				event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
+				event.key.state = 0;
+				app->OnEvent(event);
+				break;
 			case WM_SYSKEYUP:
 				event.type = event::KeyUp;
 				event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
 				event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 				event.key.state = 0;
 				app->OnEvent(event);
+				if(event.key.keyCode == Key_F10 || event.key.keyCode == Key_AltLeft || event.key.keyCode == Key_AltRight)
+					return 0;
 				break;
 			case WM_LBUTTONDOWN:
 				event.type = event::MouseButtonDown;
@@ -152,6 +168,7 @@ namespace ce
 				app->OnEvent(event);
 				break;
 			case WM_SIZE:
+				print("Size: %d %d\n", LOWORD(lParam), HIWORD(lParam));
 				if(!canvas->IsFullscreen())
 					canvas->SetWindowedExtent(LOWORD(lParam), HIWORD(lParam));
 				canvas->UpdateViewport(LOWORD(lParam), HIWORD(lParam));
@@ -477,12 +494,13 @@ namespace ce
 			}
 
 			RECT extent;
-			UINT style = WS_OVERLAPPEDWINDOW & ~WS_SYSMENU;
+			UINT style = WS_OVERLAPPEDWINDOW;
 			extent.left = 0;
 			extent.top = 0;
 			extent.right = width;
 			extent.bottom = height;
 			AdjustWindowRect(&extent, style, FALSE);
+			print("START: %d %d | %d %d\n", width, height, extent.right, extent.bottom);
 
 			HWND hWnd = CreateWindow("ceApp", title, style, CW_USEDEFAULT, CW_USEDEFAULT, extent.right - extent.left, extent.bottom - extent.top, 0, 0, hInstance, 0);
 			if(!hWnd)
@@ -661,6 +679,7 @@ namespace ce
 	{
 		if(fullscreen)
 		{
+			m_fullscreen = fullscreen;
 			#if CE_FRONTEND_USEXLIB
 				#if CE_FRONTEND_USEXCB
 				#else
@@ -687,18 +706,10 @@ namespace ce
 				MONITORINFO mi = { sizeof(mi) };
 				if(GetMonitorInfo(hmon, &mi))
 				{
-					DEVMODE fullscreenSettings;
-					int fullscreenWidth = mi.rcMonitor.right - mi.rcMonitor.left, fullscreenHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
-
-					EnumDisplaySettings(NULL, 0, &fullscreenSettings);
-					fullscreenSettings.dmPelsWidth = fullscreenWidth;
-					fullscreenSettings.dmPelsHeight = fullscreenHeight;
-					fullscreenSettings.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
-
+					//- TODO: Determine if this EXSTYLE is necessary -
 					SetWindowLongPtr(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
 					SetWindowLongPtr(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-					SetWindowPos(hwnd, 0, 0, 0, fullscreenWidth, fullscreenHeight, SWP_SHOWWINDOW);
-					bool success = ChangeDisplaySettings(&fullscreenSettings, CDS_FULLSCREEN) == DISP_CHANGE_SUCCESSFUL;
+					SetWindowPos(hwnd, HWND_NOTOPMOST, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_SHOWWINDOW);
 					ShowWindow(hwnd, SW_MAXIMIZE);
 				}
 			#endif
@@ -724,8 +735,29 @@ namespace ce
 					XSendEvent(xDisplay, DefaultRootWindow(xDisplay), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 				#endif
 			#endif
+
+			#if CE_FRONTEND_USEWIN
+				HWND hwnd = (HWND)m_windowHandle;
+				HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+				MONITORINFO mi = {sizeof(mi)};
+				if(GetMonitorInfo(hmon, &mi))
+				{
+					SetWindowLongPtr(hwnd, GWL_EXSTYLE, 0);
+					SetWindowLongPtr(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+					ShowWindow(hwnd, SW_RESTORE);
+
+					RECT client, window;
+					GetClientRect(hwnd, &client);
+					GetWindowRect(hwnd, &window);
+
+					int width = m_windowedWidth + window.right - window.left - client.right + client.left;
+					int height = m_windowedHeight + window.bottom - window.top - client.bottom + client.top;
+					//- TODO: Replace position with default window position instead of center -
+					SetWindowPos(hwnd, 0, mi.rcMonitor.left + (mi.rcMonitor.right - mi.rcMonitor.left - width) / 2, mi.rcMonitor.top + (mi.rcMonitor.bottom - mi.rcMonitor.top - height) / 2, width, height, SWP_SHOWWINDOW);
+				}
+			#endif
+			m_fullscreen = fullscreen;
 		}
-		m_fullscreen = fullscreen;
 	}
 	int Canvas::GetWidth() const
 	{

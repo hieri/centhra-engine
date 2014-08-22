@@ -40,7 +40,7 @@ namespace ce
 	}
 	bool Group::IsMember(Member *object) const
 	{
-		//- TODO: Confirm if this is safe to have missing -
+		//TODO: Confirm if this is safe to have missing
 //			return find(m_members.begin(), m_members.end(), object) != m_members.end();
 
 		return object->m_parentGroup == this;

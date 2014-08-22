@@ -19,7 +19,7 @@ namespace ce
 		public:
 			class Tile
 			{
-			public: //- TODO: Verify is this really matters -
+			public: //TODO: Verify is this really matters
 				TileSet *m_tileSet;
 				Vector2<unsigned char> m_value;
 

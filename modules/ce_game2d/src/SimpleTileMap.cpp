@@ -12,7 +12,7 @@
 
 using namespace std;
 
-//- TODO: Account for camera bounds during rendering -
+//TODO: Account for camera bounds during rendering
 
 namespace ce
 {

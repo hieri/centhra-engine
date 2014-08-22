@@ -25,7 +25,7 @@ namespace ce
 		{
 			if(m_physicsHandler)
 				m_physicsHandler->Render(minX, minY, maxX, maxY);
-			else //- TODO: Determine if this is necessary -
+			else //TODO: Determine if this is necessary
 			{
 				for(vector<Group::Member *>::iterator it = m_members.begin(); it != m_members.end(); it++)
 				{

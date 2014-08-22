@@ -259,7 +259,7 @@ namespace ce
 							if(polyline)
 							{
 								objectDef->m_type = ObjectDef::Polyline;
-								//- TODO: Give this property a legitimate member in the class -
+								//TODO: Give this property a legitimate member in the class
 								objectDef->m_propertyMap["points"] = polyline.attribute("points").as_string();
 							}
 

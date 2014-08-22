@@ -30,7 +30,7 @@
 #include <CE/App.h>
 #include <CE/Mutex.h>
 
-//- TODO: handle warn differently than print -
+//TODO: handle warn differently than print
 
 using namespace std;
 
@@ -209,7 +209,7 @@ namespace ce
 			Sleep(timeMS);
 		#endif
 	}
-	unsigned long long g_startTimeMS = getRunTimeMS(); //- TODO: Verify if we can get away with doing this -
+	unsigned long long g_startTimeMS = getRunTimeMS(); //TODO: Verify if we can get away with doing this
 	unsigned long long getStartTimeMS()
 	{
 		return g_startTimeMS;

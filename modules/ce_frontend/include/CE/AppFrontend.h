@@ -17,7 +17,7 @@ namespace ce
 	 */
 	class AppFrontend : public App
 	{
-		//- TODO: Find more efficient way of attaching user pointers to OS specific objects. -
+		//TODO: Find more efficient way of attaching user pointers to OS specific objects.
 		//-   Xlib: XAssocTable -
 		//-   Windows: [Set,Get]WindowLongPtr(hWnd, GWLP_USERDATA[, canvasPtr]); -
 

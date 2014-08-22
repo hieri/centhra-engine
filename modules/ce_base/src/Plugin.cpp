@@ -62,7 +62,7 @@ namespace ce
 	}
 	Plugin::~Plugin()
 	{
-		//- TODO: Add force cleanup? -
+		//TODO: Add force cleanup?
 		Cleanup();
 	}
 	bool Plugin::IsRunning() const

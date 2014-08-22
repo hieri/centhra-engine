@@ -58,7 +58,7 @@ namespace ce
 			else
 				m_id = id;
 
-			//- TODO: Expand object vectors -
+			//TODO: Expand object vectors
 			ms_objects[m_id] = this;
 
 			m_netID = netID;

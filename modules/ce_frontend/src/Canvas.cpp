@@ -42,8 +42,8 @@
 
 using namespace std;
 
-//- TODO: sync mouse button values for cross-platform -
-//- TODO: fix xcb opengl window creation
+//TODO: sync mouse button values for cross-platform
+//TODO: fix xcb opengl window creation
 
 namespace ce
 {
@@ -139,7 +139,7 @@ namespace ce
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
-			//- TODO: Determine if this should be permanently removed -
+			//TODO: Determine if this should be permanently removed
 /*			case WM_XBUTTONDOWN:
 				event.type = event::MouseButtonDown;
 //				event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
@@ -148,7 +148,7 @@ namespace ce
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
-			case WM_XBUTTONUP: //- TODO: Handle this properly -
+			case WM_XBUTTONUP: //TODO: Handle this properly
 				event.type = event::MouseButtonUp;
 //				event.mouseButton.button = GET_XBUTTON_WPARAM(wParam);
 				event.mouseButton.button = event::Unknown;
@@ -199,7 +199,7 @@ namespace ce
 			GLXContext glxContext;
 			GLXWindow glxWindow;
 
-			//- TODO: investigate why the Visual Info fails to be received when these int's aren't defined -
+			//TODO: investigate why the Visual Info fails to be received when these int's aren't defined
 			int glxVersionMajor = 0, glxVersionMinor = 0;
 			if(!glXQueryVersion(xDisplay, &g_glxVersionMajor, &g_glxVersionMinor))
 			{
@@ -360,12 +360,12 @@ namespace ce
 
 					if(!xcbVisualInfo)
 					{
-						//- TODO: fix this error message -
+						//TODO: fix this error message
 						error("[Error] Canvas::Create - xcb find visual failed.\n");
 						return 0;
 					}
 
-					//- TODO: investigate if this is bad practice -
+					//TODO: investigate if this is bad practice
 					XVisualInfo xVisualInfo;
 					xVisualInfo.bits_per_rgb = xcbVisualInfo->bits_per_rgb_value;
 					xVisualInfo.blue_mask = xcbVisualInfo->blue_mask;
@@ -629,7 +629,7 @@ namespace ce
 		unsigned long long time = m_app->GetRunTimeMS();
 
 //		print("VS: %d\n", m_vsync);
-		//- TODO: integrate togglable VSync -
+		//TODO: integrate togglable VSync
 //		if((time - m_lastRenderTimeMS) > 15 || !m_vsync)
 		{
 			glClear(GL_COLOR_BUFFER_BIT);
@@ -704,7 +704,7 @@ namespace ce
 				MONITORINFO mi = { sizeof(mi) };
 				if(GetMonitorInfo(hmon, &mi))
 				{
-					//- TODO: Determine if this EXSTYLE is necessary -
+					//TODO: Determine if this EXSTYLE is necessary
 					SetWindowLongPtr(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
 					SetWindowLongPtr(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
 					SetWindowPos(hwnd, HWND_NOTOPMOST, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_SHOWWINDOW);
@@ -750,7 +750,7 @@ namespace ce
 
 					int width = m_windowedWidth + window.right - window.left - client.right + client.left;
 					int height = m_windowedHeight + window.bottom - window.top - client.bottom + client.top;
-					//- TODO: Replace position with default window position instead of center -
+					//TODO: Replace position with default window position instead of center
 					SetWindowPos(hwnd, 0, mi.rcMonitor.left + (mi.rcMonitor.right - mi.rcMonitor.left - width) / 2, mi.rcMonitor.top + (mi.rcMonitor.bottom - mi.rcMonitor.top - height) / 2, width, height, SWP_SHOWWINDOW);
 				}
 			#endif

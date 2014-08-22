@@ -5,7 +5,7 @@
 #include <CE/Game2D/Entity.h>
 #include <CE/Image.h>
 
-//- TODO: Verify if get functions shouldn't produce copies -
+//TODO: Verify if get functions shouldn't produce copies
 
 namespace ce
 {

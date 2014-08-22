@@ -19,7 +19,7 @@ namespace ce
 	{
 		namespace box2d
 		{
-			//- TODO: Have recurrent calls to the collision callback during constant collision -
+			//TODO: Have recurrent calls to the collision callback during constant collision
 			class B2D_ContactListener : public b2ContactListener
 			{
 			public:
@@ -31,7 +31,7 @@ namespace ce
 
 					if(!objA->IsTrigger() && !objB->IsTrigger())
 					{
-						//- TODO: Average worldManifold points if necessary -
+						//TODO: Average worldManifold points if necessary
 						b2WorldManifold worldManifold;
 						contact->GetWorldManifold(&worldManifold);
 

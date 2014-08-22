@@ -8,7 +8,7 @@
 //- Standard Library -
 #include <vector>
 
-//- TODO: Generalize this -
+//TODO: Generalize this
 
 namespace ce
 {

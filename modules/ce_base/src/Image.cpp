@@ -15,8 +15,8 @@
 //- OpenGL -
 #include <GL/gl.h>
 
-//- TODO: create Image Loader abstraction -
-//- TODO: externalize DevIL support into a plugin (ce_plugDevIL) -
+//TODO: create Image Loader abstraction
+//TODO: externalize DevIL support into a plugin (ce_plugDevIL)
 
 using namespace std;
 

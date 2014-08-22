@@ -71,7 +71,7 @@ namespace ce
 		{
 			m_startTimeMS = getRunTimeMS();
 
-			//- TODO: Determine if this is bad to have by default -
+			//TODO: Determine if this is bad to have by default
 			srand((unsigned int)time(NULL));
 
 			OnStarted();

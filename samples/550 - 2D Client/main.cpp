@@ -304,7 +304,7 @@ void *connectionFunc(void *arg)
 
 				unsigned short thisPacketSize = 0;
 
-				switch(type) //- TODO: Refer to array -
+				switch(type) //TODO: Refer to array
 				{
 				case Movement:
 					thisPacketSize = sizeof(MovementPacket);
@@ -394,7 +394,7 @@ void *connectionFunc(void *arg)
 				else
 				{
 					cout << "Stopping..." << endl;
-					app->Stop(); //- TODO: Handle this better -
+					app->Stop(); //TODO: Handle this better
 				}
 			}
 		}

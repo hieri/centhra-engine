@@ -14,7 +14,7 @@
 //- OpenGL -
 #include <GL/gl.h>
 
-//- TODO: handle freetype errors on startup -
+//TODO: handle freetype errors on startup
 
 using namespace std;
 

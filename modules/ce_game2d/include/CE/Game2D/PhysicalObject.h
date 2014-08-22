@@ -25,7 +25,7 @@ namespace ce
 		protected:
 			Vector2<float> m_position, m_extent, m_velocity;
 			float m_rotation, m_angularVelocity;
-			Color m_color; //- TODO: Remove this after finished -
+			Color m_color; //TODO: Remove this after finished
 			unsigned int m_collisionMask;
 			bool m_isTrigger, m_isStatic;
 

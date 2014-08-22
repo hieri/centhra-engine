@@ -307,7 +307,7 @@ void *clientFunc(void *arg)
 
 			unsigned short thisPacketSize = 0;
 
-			switch(type) //- TODO: Refer to array -
+			switch(type) //TODO: Refer to array
 			{
 			case Movement:
 				thisPacketSize = sizeof(MovementPacket);

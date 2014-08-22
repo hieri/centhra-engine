@@ -27,7 +27,7 @@
 
 namespace ce
 {
-	//- TODO: Replace this with cleaner fix, source: http://stackoverflow.com/questions/15370033/how-to-use-inet-pton-with-the-mingw-compiler -
+	//TODO: Replace this with cleaner fix, source: http://stackoverflow.com/questions/15370033/how-to-use-inet-pton-with-the-mingw-compiler
 #ifdef __MINGW32__
 	#define NS_INADDRSZ  4
 	#define NS_IN6ADDRSZ 16
@@ -453,7 +453,7 @@ namespace ce
 			char c = 0;
 			ret = recv(m_socket, &c, 1, MSG_PEEK);
 
-			if(ret == 0) //- TODO: Verify this means client terminated connection -
+			if(ret == 0) //TODO: Verify this means client terminated connection
 				hasRead = -1;
 		}
 

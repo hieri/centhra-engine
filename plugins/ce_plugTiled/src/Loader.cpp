@@ -248,6 +248,9 @@ namespace ce
 							objectDef->m_x = (short)object.attribute("x").as_int();
 							objectDef->m_y = (short)object.attribute("y").as_int();
 
+							xml_attribute type = object.attribute("type");
+							objectDef->m_typeStr = type.as_string();
+
 							xml_attribute attrGID = object.attribute("gid");
 							if(attrGID)
 							{

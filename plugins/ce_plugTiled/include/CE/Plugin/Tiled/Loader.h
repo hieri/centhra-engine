@@ -73,7 +73,7 @@ namespace ce
 
 					unsigned short m_type, m_width, m_height, m_gid;
 					short m_x, m_y;
-					std::string m_name;
+					std::string m_name, m_typeStr;
 					std::map<std::string, std::string> m_propertyMap;
 
 					ObjectDef();

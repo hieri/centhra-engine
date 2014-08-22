@@ -812,4 +812,11 @@ namespace ce
 		m_windowedWidth = width;
 		m_windowedHeight = height;
 	}
+	void Canvas::SetTitle(const char *title)
+	{
+		#ifdef _WIN32
+			HWND hwnd = (HWND)m_windowHandle;
+			SetWindowText(hwnd, title);
+		#endif
+	}
 }

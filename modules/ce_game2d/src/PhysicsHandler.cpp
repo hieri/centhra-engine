@@ -46,6 +46,11 @@ namespace ce
 		{
 			return vector<pair<PhysicalObject *, Vector2<float> > >();
 		}
+		pair<PhysicalObject *, Vector2<float> > PhysicsHandler::RaycastSearch(float startX, float startY, float endX, float endY, unsigned int mask)
+		{
+			return pair<PhysicalObject *, Vector2<float> >();
+		}
+
 		void PhysicsHandler::SetupObject(PhysicalObject *object)
 		{
 		}

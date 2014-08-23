@@ -78,6 +78,14 @@ namespace ce
 				ret = m_physicsHandler->SpecialSegmentSearch(startX, startY, endX, endY, mask, ignore);
 			return ret;
 		}
+		pair<PhysicalObject *, Vector2<float> >  PhysicalGroup::RaycastSearch(float startX, float startY, float endX, float endY, unsigned int mask)
+		{
+			pair<PhysicalObject *, Vector2<float> > ret;
+			if(m_physicsHandler)
+				ret = m_physicsHandler->RaycastSearch(startX, startY, endX, endY, mask);
+			return ret;
+		}
+
 		void PhysicalGroup::OnMemberAdded(Group::Member *entity)
 		{
 			if(m_physicsHandler)

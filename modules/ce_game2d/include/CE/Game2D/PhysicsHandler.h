@@ -23,6 +23,7 @@ namespace ce
 			
 			virtual std::vector<PhysicalObject *> BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask = -1, PhysicalObject *ignore = 0);
 			virtual std::vector<PhysicalObject *> SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, PhysicalObject *ignore = 0);
+			virtual std::vector<std::pair<PhysicalObject *, Vector2<float> > > SpecialSegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, PhysicalObject *ignore = 0);
 
 		public:
 			class ObjectHandle

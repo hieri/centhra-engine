@@ -42,6 +42,10 @@ namespace ce
 		{
 			return vector<PhysicalObject *>();
 		}
+		vector<pair<PhysicalObject *, Vector2<float> > > PhysicsHandler::SpecialSegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, PhysicalObject *ignore)
+		{
+			return vector<pair<PhysicalObject *, Vector2<float> > >();
+		}
 		void PhysicsHandler::SetupObject(PhysicalObject *object)
 		{
 		}

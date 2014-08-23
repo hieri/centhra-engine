@@ -7,6 +7,7 @@
 //- Centhra Engine -
 #include <CE/Group.h>
 #include <CE/Game2D/Entity.h>
+#include <CE/Vector2.h>
 
 namespace ce
 {
@@ -31,6 +32,7 @@ namespace ce
 
 			std::vector<PhysicalObject *> BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask = -1, PhysicalObject *ignore = 0);
 			std::vector<PhysicalObject *> SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, PhysicalObject *ignore = 0);
+			std::vector<std::pair<PhysicalObject *, Vector2<float> > > SpecialSegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, PhysicalObject *ignore = 0);
 
 			virtual void OnMemberAdded(Group::Member *entity);
 			virtual void OnMemberRemoved(Group::Member *entity);

@@ -25,6 +25,7 @@ namespace ce
 
 				virtual std::vector<game2d::PhysicalObject *> BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask = -1, game2d::PhysicalObject *ignore = 0);
 				virtual std::vector<game2d::PhysicalObject *> SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, game2d::PhysicalObject *ignore = 0);
+				virtual std::vector<std::pair<game2d::PhysicalObject *, Vector2<float> > > SpecialSegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, game2d::PhysicalObject *ignore = 0);
 
 			public:
 				class bObjectHandle : public game2d::PhysicsHandler::ObjectHandle

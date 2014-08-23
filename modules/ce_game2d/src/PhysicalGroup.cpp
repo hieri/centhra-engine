@@ -71,6 +71,13 @@ namespace ce
 				ret = m_physicsHandler->SegmentSearch(startX, startY, endX, endY, mask, ignore);
 			return ret;
 		}
+		vector<pair<PhysicalObject *, Vector2<float> > > PhysicalGroup::SpecialSegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask, PhysicalObject *ignore)
+		{
+			vector<pair<PhysicalObject *, Vector2<float> > > ret;
+			if(m_physicsHandler)
+				ret = m_physicsHandler->SpecialSegmentSearch(startX, startY, endX, endY, mask, ignore);
+			return ret;
+		}
 		void PhysicalGroup::OnMemberAdded(Group::Member *entity)
 		{
 			if(m_physicsHandler)

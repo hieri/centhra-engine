@@ -66,8 +66,8 @@ namespace ce
 
 			Image *lastImage = 0;
 			glBegin(GL_QUADS);
-			for(unsigned int a = minX; a < maxX; a++)
-				for(unsigned int b = minY; b < maxY; b++)
+			for(unsigned int a = minX; a <= maxX; a++)
+				for(unsigned int b = minY; b <= maxY; b++)
 				{
 					for(vector<ComplexTileMap::Tile *>::iterator it = m_tiles[a][b].begin(); it != m_tiles[a][b].end(); it++)
 					{

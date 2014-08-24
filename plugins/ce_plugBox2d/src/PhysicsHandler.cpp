@@ -102,10 +102,14 @@ namespace ce
 				vector<game2d::PhysicalObject *> m_currentBoxSearch;
 
 			public:
+				unsigned int mask;
+
 				/// Called for each fixture found in the query AABB.
 				/// @return false to terminate the query.
 				virtual bool ReportFixture(b2Fixture *fixture)
 				{
+					if(!(fixture->GetFilterData().maskBits & mask))
+						return true;
 					m_currentBoxSearch.push_back(((bPhysicsHandler::bObjectHandle *)fixture->GetBody()->GetUserData())->GetReferenceObject());
 					return true;
 				}
@@ -119,6 +123,8 @@ namespace ce
 				vector<game2d::PhysicalObject *> m_currentSegmentSearch;
 
 			public:
+				unsigned int mask;
+
 				/// Called for each fixture found in the query. You control how the ray cast
 				/// proceeds by returning a float:
 				/// return -1: ignore this fixture and continue
@@ -132,6 +138,8 @@ namespace ce
 				/// closest hit, 1 to continue
 				virtual float32 ReportFixture(	b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction)
 				{
+					if(!(fixture->GetFilterData().maskBits & mask))
+						return -1.f;
 					m_currentSegmentSearch.push_back(((bPhysicsHandler::bObjectHandle *)fixture->GetBody()->GetUserData())->GetReferenceObject());
 					return -1.f;
 				}
@@ -145,8 +153,12 @@ namespace ce
 				vector<pair<game2d::PhysicalObject *, Vector2<float> > > m_currentSegmentSearch;
 
 			public:
+				unsigned int mask;
+
 				virtual float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction)
 				{
+					if(!(fixture->GetFilterData().maskBits & mask))
+						return -1.f;
 					m_currentSegmentSearch.push_back(pair<game2d::PhysicalObject *, Vector2<float> >(((bPhysicsHandler::bObjectHandle *)fixture->GetBody()->GetUserData())->GetReferenceObject(), Vector2<float>(point.x, point.y)));
 					return -1.f;
 				}
@@ -160,8 +172,12 @@ namespace ce
 				pair<game2d::PhysicalObject *, Vector2<float> > m_currentRaycastSearch;
 
 			public:
+				unsigned int mask;
+
 				virtual float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction)
 				{
+					if(!(fixture->GetFilterData().maskBits & mask))
+						return -1.f;
 					m_currentRaycastSearch = pair<game2d::PhysicalObject *, Vector2<float> >(((bPhysicsHandler::bObjectHandle *)fixture->GetBody()->GetUserData())->GetReferenceObject(), Vector2<float>(point.x, point.y));
 					return 0;
 				}
@@ -436,6 +452,7 @@ namespace ce
 						box.upperBound.x = maxX;
 						box.upperBound.y = maxY;
 						B2D_BoxSearchCallback callback;
+						callback.mask = mask;
 						world->QueryAABB(&callback, box);
 						return callback.GetResults();
 					}
@@ -453,6 +470,7 @@ namespace ce
 						b2Vec2 point1(startX, startY);
 						b2Vec2 point2(endX, endY);
 						B2D_SegmentSearchCallback callback;
+						callback.mask = mask;
 						world->RayCast(&callback, point1, point2);
 						return callback.GetResults();
 					}
@@ -470,6 +488,7 @@ namespace ce
 						b2Vec2 point1(startX, startY);
 						b2Vec2 point2(endX, endY);
 						B2D_SpecialSegmentSearchCallback callback;
+						callback.mask = mask;
 						world->RayCast(&callback, point1, point2);
 						return callback.GetResults();
 					}
@@ -487,6 +506,7 @@ namespace ce
 						b2Vec2 point1(startX, startY);
 						b2Vec2 point2(endX, endY);
 						B2D_RaycastSearchCallback callback;
+						callback.mask = mask;
 						world->RayCast(&callback, point1, point2);
 						return callback.GetResults();
 					}

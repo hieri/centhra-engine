@@ -20,6 +20,8 @@ namespace ce
 	namespace game2d
 	{
 		vector<Entity *> Entity::ms_alive, Entity::ms_dead;
+		bool g_doingProcess = false;
+		vector<Entity *>::iterator g_processIterator;
 		void Entity::DeleteDead()
 		{
 			for(vector<Entity *>::iterator it = ms_dead.begin(); it != ms_dead.end(); it++)
@@ -28,8 +30,10 @@ namespace ce
 		}
 		void Entity::Process(float dt)
 		{
-			for(vector<Entity *>::iterator it = ms_alive.begin(); it != ms_alive.end(); it++)
-				(*it)->OnProcess(dt);
+			g_doingProcess = true;
+			for(g_processIterator = ms_alive.begin(); g_processIterator != ms_alive.end(); g_processIterator++)
+				(*g_processIterator)->OnProcess(dt);
+			g_doingProcess = false;
 		}
 
 		Entity::Entity()
@@ -45,7 +49,14 @@ namespace ce
 			if(!m_isDead)
 			{
 				m_isDead = true;
-				ms_alive.erase(find(ms_alive.begin(), ms_alive.end(), this));
+				if(g_doingProcess)
+				{
+					g_processIterator = ms_alive.erase(g_processIterator);
+					if(g_processIterator != ms_alive.begin())
+						g_processIterator--;
+				}
+				else
+					ms_alive.erase(find(ms_alive.begin(), ms_alive.end(), this));
 				ms_dead.push_back(this);
 				OnKill();
 			}

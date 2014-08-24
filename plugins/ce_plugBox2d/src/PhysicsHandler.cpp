@@ -173,6 +173,11 @@ namespace ce
 
 			public:
 				unsigned int mask;
+				B2D_RaycastSearchCallback::B2D_RaycastSearchCallback()
+				{
+					mask = 0;
+					m_currentRaycastSearch.first = 0;
+				}
 
 				virtual float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction)
 				{

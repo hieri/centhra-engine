@@ -39,7 +39,7 @@ namespace ce
 			return ms_netObjects[id];
 		}
 
-		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id, unsigned short netID)
+		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id, unsigned short netID, bool noID)
 		{
 			m_rotation = m_angularVelocity = 0.f;
 			m_position = position;
@@ -50,20 +50,23 @@ namespace ce
 
 			m_objectHandle = 0;
 
-			if(id == DEFAULT_ID)
+			if(!noID)
 			{
-				ms_lastID++;
-				m_id = ms_lastID;
+				if(id == DEFAULT_ID)
+				{
+					ms_lastID++;
+					m_id = ms_lastID;
+				}
+				else
+					m_id = id;
+
+				//TODO: Expand object vectors
+				ms_objects[m_id] = this;
+
+				m_netID = netID;
+				if(netID != DEFAULT_ID)
+					ms_netObjects[m_netID] = this;
 			}
-			else
-				m_id = id;
-
-			//TODO: Expand object vectors
-			ms_objects[m_id] = this;
-
-			m_netID = netID;
-			if(netID != DEFAULT_ID)
-				ms_netObjects[m_netID] = this;
 
 			m_parentGroup = 0;
 			m_isTrigger = m_isStatic = false;

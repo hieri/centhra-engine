@@ -36,7 +36,7 @@ namespace ce
 			static PhysicalObject *GetObjectByID(unsigned short id);
 			static PhysicalObject *GetNetObjectByID(unsigned short id);
 
-			PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id = DEFAULT_ID, unsigned short netID = DEFAULT_ID);
+			PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id = DEFAULT_ID, unsigned short netID = DEFAULT_ID, bool noID = false);
 			~PhysicalObject();
 
 			void Render();

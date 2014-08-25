@@ -15,7 +15,7 @@ namespace ce
 
 		public:
 			Member();
-			~Member();
+			virtual ~Member();
 
 			Group *GetParentGroup() const;
 			virtual void OnAdded(Group *group);

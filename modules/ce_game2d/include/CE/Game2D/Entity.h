@@ -26,7 +26,7 @@ namespace ce
 			static void Process(float dt);
 
 			Entity();
-			~Entity();
+			virtual ~Entity();
 
 			bool IsDead() const;
 			void Kill();

@@ -13,7 +13,7 @@ namespace ce
 	{
 		class Entity : public Group::Member
 		{
-			static std::vector<Entity *> ms_alive, ms_dead;
+			static std::vector<Entity *> ms_alive, ms_dead, ms_pending;
 
 			bool m_isDead;
 

@@ -12,12 +12,13 @@ namespace ce
 		{
 			//- Temp Vars - Will be removed with abstraction -
 			bool m_leftShift, m_rightShift;
+			unsigned short m_maxSize;
 
 		protected:
 			virtual void DoRender();
 
 		public:
-			TextEditCtrl(Vector2<int> position, Vector2<int> extent, Font *font, const char *text = "", Color color = Color());
+			TextEditCtrl(Vector2<int> position, Vector2<int> extent, Font *font, unsigned short maxSize, const char *text = "", Color color = Color());
 
 			virtual bool OnEvent(Event &event);
 		};

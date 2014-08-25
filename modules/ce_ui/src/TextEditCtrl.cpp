@@ -20,10 +20,11 @@ namespace ce
 {
 	namespace ui
 	{
-		TextEditCtrl::TextEditCtrl(Vector2<int> position, Vector2<int> extent, Font *font, const char *text, Color color) : TextCtrl(position, extent, font, text, color)
+		TextEditCtrl::TextEditCtrl(Vector2<int> position, Vector2<int> extent, Font *font, unsigned short maxSize, const char *text, Color color) : TextCtrl(position, extent, font, text, color)
 		{
 			m_leftShift = false;
 			m_rightShift = false;
+			m_maxSize = maxSize;
 		}
 		void TextEditCtrl::DoRender()
 		{
@@ -44,14 +45,16 @@ namespace ce
 					if(m_text.size())
 						m_text.erase(m_text.end() - 1);
 				}
-				else if(event.key.keyCode == Key_Space)
-					m_text.push_back(' ');
-				else if(event.key.keyCode == Key_Return)
-					m_text.push_back('\n');
 				else if(event.key.keyCode == Key_ShiftLeft)
 					m_leftShift = true;
 				else if(event.key.keyCode == Key_ShiftRight)
 					m_rightShift = true;
+				else if(m_text.size() >= m_maxSize)
+					return true;
+				else if(event.key.keyCode == Key_Space)
+					m_text.push_back(' ');
+				else if(event.key.keyCode == Key_Return)
+					m_text.push_back('\n');
 				if(m_leftShift | m_rightShift)
 				{
 					if(event.key.keyCode >= Key_A && event.key.keyCode <= Key_Z)

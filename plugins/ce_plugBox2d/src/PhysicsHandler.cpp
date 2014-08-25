@@ -36,8 +36,16 @@ namespace ce
 						contact->GetWorldManifold(&worldManifold);
 
 						Vector2<float> pointOfContact(worldManifold.points[0].x, worldManifold.points[0].y);
-						objA->OnCollision(objB, pointOfContact);
-						objB->OnCollision(objA, pointOfContact);
+
+
+						//TODO: Move collision test to PreSolve if possible
+						if(!objA->OnCollisionTest(objB, pointOfContact) || !objB->OnCollisionTest(objA, pointOfContact))
+							contact->SetEnabled(false);
+						else
+						{
+							objA->OnCollision(objB, pointOfContact);
+							objB->OnCollision(objA, pointOfContact);
+						}
 					}
 					else if(objA->IsTrigger())
 					{

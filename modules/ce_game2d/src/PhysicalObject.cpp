@@ -204,7 +204,10 @@ namespace ce
 		{
 			return m_isTrigger;
 		}
-		bool PhysicalObject::OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact)
+		void PhysicalObject::OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact)
+		{
+		}
+		bool PhysicalObject::OnCollisionTest(PhysicalObject *collider, Vector2<float> pointOfContact)
 		{
 			return true;
 		}

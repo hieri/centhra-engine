@@ -181,7 +181,7 @@ namespace ce
 
 			public:
 				unsigned int mask;
-				B2D_RaycastSearchCallback::B2D_RaycastSearchCallback()
+				B2D_RaycastSearchCallback()
 				{
 					mask = 0;
 					m_currentRaycastSearch.first = 0;

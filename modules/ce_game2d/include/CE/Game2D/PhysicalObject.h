@@ -26,7 +26,7 @@ namespace ce
 			Vector2<float> m_position, m_extent, m_velocity;
 			float m_rotation, m_angularVelocity;
 			Color m_color; //TODO: Remove this after finished
-			unsigned int m_collisionMask;
+			unsigned int m_typeMask, m_collisionMask;
 			bool m_isTrigger, m_isStatic;
 
 			virtual void DoRender();
@@ -58,13 +58,16 @@ namespace ce
 			void SetNetID(unsigned short id);
 
 			PhysicsHandler::ObjectHandle *GetObjectHandle() const;
+			unsigned int GetTypeMask() const;
 			unsigned int GetCollisionMask() const;
+			void SetTypeMask(unsigned int mask);
 			void SetCollisionMask(unsigned int mask);
 			bool IsTrigger() const;
 
 			virtual void OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact);
 			virtual bool OnCollisionTest(PhysicalObject *collider, Vector2<float> pointOfContact);
 
+			virtual void OnSetTypeMask();
 			virtual void OnSetCollisionMask();
 			virtual void OnSetStatic();
 			virtual void OnSetPosition();

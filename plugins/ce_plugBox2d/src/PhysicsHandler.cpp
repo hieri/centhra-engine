@@ -116,7 +116,7 @@ namespace ce
 				/// @return false to terminate the query.
 				virtual bool ReportFixture(b2Fixture *fixture)
 				{
-					if(!(fixture->GetFilterData().maskBits & mask))
+					if(!(fixture->GetFilterData().categoryBits & mask))
 						return true;
 					m_currentBoxSearch.push_back(((bPhysicsHandler::bObjectHandle *)fixture->GetBody()->GetUserData())->GetReferenceObject());
 					return true;
@@ -146,7 +146,7 @@ namespace ce
 				/// closest hit, 1 to continue
 				virtual float32 ReportFixture(	b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction)
 				{
-					if(!(fixture->GetFilterData().maskBits & mask))
+					if(!(fixture->GetFilterData().categoryBits & mask))
 						return -1.f;
 					m_currentSegmentSearch.push_back(((bPhysicsHandler::bObjectHandle *)fixture->GetBody()->GetUserData())->GetReferenceObject());
 					return -1.f;
@@ -165,7 +165,7 @@ namespace ce
 
 				virtual float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction)
 				{
-					if(!(fixture->GetFilterData().maskBits & mask))
+					if(!(fixture->GetFilterData().categoryBits & mask))
 						return -1.f;
 					m_currentSegmentSearch.push_back(pair<game2d::PhysicalObject *, Vector2<float> >(((bPhysicsHandler::bObjectHandle *)fixture->GetBody()->GetUserData())->GetReferenceObject(), Vector2<float>(point.x, point.y)));
 					return -1.f;
@@ -189,7 +189,7 @@ namespace ce
 
 				virtual float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction)
 				{
-					if(!(fixture->GetFilterData().maskBits & mask))
+					if(!(fixture->GetFilterData().categoryBits & mask))
 						return -1.f;
 					m_currentRaycastSearch = pair<game2d::PhysicalObject *, Vector2<float> >(((bPhysicsHandler::bObjectHandle *)fixture->GetBody()->GetUserData())->GetReferenceObject(), Vector2<float>(point.x, point.y));
 					return 0;
@@ -270,8 +270,9 @@ namespace ce
 
 				b2FixtureDef fd;
 				fd.shape = &shape;
+				fd.filter.categoryBits = object->GetTypeMask();
 				fd.filter.maskBits = object->GetCollisionMask();
-		
+
 //				fd.filter.categoryBits = 0x0001;	// collision mask stuff?
 //				fd.filter.maskBits = 0xFFFF;// & ~0x0002; <- meant that floor didn't collide with ropes
 
@@ -356,11 +357,22 @@ namespace ce
 				b2Vec2 vel(velocity[0], velocity[1]);
 				b2d_body->SetLinearVelocity(vel);
 			}
+			void bPhysicsHandler::bObjectHandle::OnSetTypeMask()
+			{
+				b2Body *b2d_body = (b2Body *)m_b2d_body;
+				b2Fixture *fix = b2d_body->GetFixtureList();
+				do
+				{
+					b2Filter filter = fix->GetFilterData();
+					filter.categoryBits = m_object->GetTypeMask();
+					fix->SetFilterData(filter);
+					fix = fix->GetNext();
+				} while(fix);
+			}
 			void bPhysicsHandler::bObjectHandle::OnSetCollisionMask()
 			{
 				b2Body *b2d_body = (b2Body *)m_b2d_body;
 				b2Fixture *fix = b2d_body->GetFixtureList();
-			
 				do
 				{
 					b2Filter filter = fix->GetFilterData();

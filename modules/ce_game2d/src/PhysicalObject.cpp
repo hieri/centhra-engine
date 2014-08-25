@@ -46,7 +46,7 @@ namespace ce
 			m_extent = extent;
 			m_color = Color(rand() % 256,  rand() % 256, rand() % 256);
 			m_velocity = Vector2<float>(0.f, 0.f);
-			m_collisionMask = 1;
+			m_typeMask = m_collisionMask = 1;
 
 			m_objectHandle = 0;
 
@@ -188,6 +188,18 @@ namespace ce
 		{
 			return m_isStatic;
 		}
+		unsigned int PhysicalObject::GetTypeMask() const
+		{
+			return m_typeMask;
+		}
+		void PhysicalObject::SetTypeMask(unsigned int mask)
+		{
+			m_typeMask = mask;
+			OnSetTypeMask();
+
+			if(m_objectHandle)
+				m_objectHandle->OnSetTypeMask();
+		}
 		unsigned int PhysicalObject::GetCollisionMask() const
 		{
 			return m_collisionMask;
@@ -218,6 +230,9 @@ namespace ce
 
 			if(m_objectHandle)
 				m_objectHandle->OnSetStatic();
+		}
+		void PhysicalObject::OnSetTypeMask()
+		{
 		}
 		void PhysicalObject::OnSetCollisionMask()
 		{

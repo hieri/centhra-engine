@@ -36,6 +36,8 @@ namespace ce
 			std::map<void *, Canvas *> m_canvasMap;
 		#endif
 
+		bool m_consoleOnly;
+
 	public:
 		/**	@brief Default Constructor.
 		 */
@@ -53,7 +55,7 @@ namespace ce
 		/**	@brief Attempts to start the application.
 		 *	@return Whether or not the application has started.
 		 */
-		bool Start();
+		bool Start(bool consoleOnly = false);
 
 		/**	@brief Attempts to stop the application.
 		 *	@param force If true, the stop is considered a force stop.

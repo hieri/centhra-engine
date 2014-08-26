@@ -32,7 +32,10 @@ namespace ce
 	#define NS_INADDRSZ  4
 	#define NS_IN6ADDRSZ 16
 	#define NS_INT16SZ   2
-	int inet_pton4(const char *src, char *dst)
+	#define inet_pton4 sock_inet_pton4
+	#define inet_pton6 sock_inet_pton6
+	#define inet_pton sock_inet_pton
+	int sock_inet_pton4(const char *src, char *dst)
 	{
 		uint8_t tmp[NS_INADDRSZ], *tp;
 
@@ -78,7 +81,7 @@ namespace ce
 
 		return 1;
 	}
-	int inet_pton6(const char *src, char *dst)
+	int sock_inet_pton6(const char *src, char *dst)
 	{
 		static const char xdigits[] = "0123456789abcdef";
 		uint8_t tmp[NS_IN6ADDRSZ];
@@ -174,7 +177,7 @@ namespace ce
 		return 1;
 	}
 
-	int inet_pton(int af, const char *src, char *dst)
+	int sock_inet_pton(int af, const char *src, char *dst)
 	{
 		switch(af)
 		{

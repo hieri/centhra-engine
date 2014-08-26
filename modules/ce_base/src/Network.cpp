@@ -43,10 +43,13 @@ namespace ce
 {
 	//TODO: Replace this with cleaner fix, source: http://stackoverflow.com/questions/15370033/how-to-use-inet-pton-with-the-mingw-compiler
 #ifdef __MINGW32__
-#define NS_INADDRSZ  4
-#define NS_IN6ADDRSZ 16
-#define NS_INT16SZ   2
-	int inet_pton4(const char *src, char *dst)
+	#define NS_INADDRSZ  4
+	#define NS_IN6ADDRSZ 16
+	#define NS_INT16SZ   2
+	#define inet_pton4 net_inet_pton4
+	#define inet_pton6 net_inet_pton6
+	#define inet_pton net_inet_pton
+	int net_inet_pton4(const char *src, char *dst)
 	{
 		uint8_t tmp[NS_INADDRSZ], *tp;
 
@@ -92,7 +95,7 @@ namespace ce
 
 		return 1;
 	}
-	int inet_pton6(const char *src, char *dst)
+	int net_inet_pton6(const char *src, char *dst)
 	{
 		static const char xdigits [] = "0123456789abcdef";
 		uint8_t tmp[NS_IN6ADDRSZ];
@@ -188,7 +191,7 @@ namespace ce
 		return 1;
 	}
 
-	int inet_pton(int af, const char *src, char *dst)
+	int net_inet_pton(int af, const char *src, char *dst)
 	{
 		switch(af)
 		{

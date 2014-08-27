@@ -13,6 +13,9 @@ set(CE_FRONTEND_USEWIN 1)
 
 project(centhra-engine)
 
+set(VERSION_MAJOR 0)
+set(VERSION_MINOR 04)
+
 if(WIN32)
    set(CMAKE_FIND_LIBRARY_SUFFIXES .lib .a)
 else()

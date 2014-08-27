@@ -6,7 +6,6 @@ set(INC
 	${INC_DIR}/Canvas.h
 	${INC_DIR}/ConfigFrontend.h
 	${INC_DIR}/Event.h
-	${INC_DIR}/Frontend.h
 	${INC_DIR}/Keyboard.h
 	${INC_DIR}/KeyCode.h
 	${INC_DIR}/RenderPrimitives.h
@@ -16,7 +15,6 @@ set(INC
 set(SRC
 	${SRC_DIR}/AppFrontend.cpp
 	${SRC_DIR}/Canvas.cpp
-	${SRC_DIR}/Frontend.cpp
 	${SRC_DIR}/Keyboard.cpp
 	${SRC_DIR}/RenderPrimitives.cpp
 )

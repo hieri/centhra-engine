@@ -2,7 +2,6 @@ set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/CE)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(INC
-	${INC_DIR}/Game2D.h
 	${INC_DIR}/UI/CameraView2DCtrl.h
 	${INC_DIR}/Game2D/Camera.h
 	${INC_DIR}/Game2D/ComplexTileMap.h
@@ -22,7 +21,6 @@ set(INC
 )
 
 set(SRC
-	${SRC_DIR}/Game2D.cpp
 	${SRC_DIR}/CameraView2DCtrl.cpp
 	${SRC_DIR}/Camera.cpp
 	${SRC_DIR}/ComplexTileMap.cpp

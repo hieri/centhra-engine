@@ -2,7 +2,6 @@ set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/CE)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(INC
-	${INC_DIR}/Game3D.h
 	${INC_DIR}/Game3D/Entity.h
 	${INC_DIR}/Game3D/PhysicalGroup.h
 	${INC_DIR}/Game3D/PhysicalObject.h
@@ -11,7 +10,6 @@ set(INC
 )
 
 set(SRC
-	${SRC_DIR}/Game3D.cpp
 	${SRC_DIR}/Entity.cpp
 	${SRC_DIR}/PhysicalGroup.cpp
 	${SRC_DIR}/PhysicalObject.cpp

@@ -4,7 +4,6 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(INC
 	${INC_DIR}/ConfigUI.h
-	${INC_DIR}/UI.h
 	${INC_DIR}/UI/Control.h
 	${INC_DIR}/UI/ButtonCtrl.h
 	${INC_DIR}/UI/ColorCtrl.h
@@ -14,7 +13,6 @@ set(INC
 )
 
 set(SRC
-	${SRC_DIR}/UI.cpp
 	${SRC_DIR}/Control.cpp
 	${SRC_DIR}/ButtonCtrl.cpp
 	${SRC_DIR}/ColorCtrl.cpp

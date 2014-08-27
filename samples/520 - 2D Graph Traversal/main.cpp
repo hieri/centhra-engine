@@ -196,7 +196,7 @@ public:
 			delete m_walls[a];
 		delete m_entity;
 		delete m_group;
-		game2d::Entity::DeleteDead();
+		game2d::Entity::FinalizeDelete();
 		delete m_canvas;
 	}
 	bool OnEvent(Event &event)

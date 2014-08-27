@@ -204,7 +204,7 @@ namespace ce
 			vector<ObjectHandle *>::iterator it = m_children.begin();
 			while(it != m_children.end())
 			{
-				if((*it)->m_object->IsDead())
+				if((*it)->m_object->IsDeleted())
 				{
 					m_children.erase(it);
 					it = m_children.begin();

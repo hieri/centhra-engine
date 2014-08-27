@@ -359,7 +359,7 @@ namespace ce
 	void PacketHandler_ClientDisconnect::OnProcess(char *data, PacketBuffer *buffer, Socket *socket, void *sockAddr, int sockAddrLen, void *client)
 	{
 		if(client)
-			((Server::Client *)client)->Kill();
+			((Server::Client *)client)->Delete();
 	}
 
 	unsigned char PacketHandler_Ping::ms_type = 255;
@@ -487,7 +487,7 @@ namespace ce
 	{
 		return m_isAlive;
 	}
-	void Server::Client::Kill()
+	void Server::Client::Delete()
 	{
 		m_isAlive = false;
 	}
@@ -564,7 +564,7 @@ namespace ce
 				{
 					Server::Client *client = it->second;
 					if((t - client->m_lastCommTime) > 10000)
-						client->Kill();
+						client->Delete();
 				}
 				lastTimeoutCheck = t;
 			}
@@ -581,7 +581,7 @@ namespace ce
 		while(Server::ms_clients.size())
 		{
 			Server::Client *client = Server::ms_clients.back();
-			client->Kill();
+			client->Delete();
 			client->m_connectionThread->Join();
 		}
 

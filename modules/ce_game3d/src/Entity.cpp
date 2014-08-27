@@ -19,40 +19,40 @@ namespace ce
 {
 	namespace game3d
 	{
-		vector<Entity *> Entity::ms_alive, Entity::ms_dead;
-		void Entity::DeleteDead()
+		vector<Entity *> Entity::ms_active, Entity::ms_deleted;
+		void Entity::FinalizeDelete()
 		{
-			for(vector<Entity *>::iterator it = ms_dead.begin(); it != ms_dead.end(); it++)
+			for(vector<Entity *>::iterator it = ms_deleted.begin(); it != ms_deleted.end(); it++)
 				delete *it;
-			ms_dead.clear();
+			ms_deleted.clear();
 		}
 		void Entity::Process(float dt)
 		{
-			for(vector<Entity *>::iterator it = ms_alive.begin(); it != ms_alive.end(); it++)
+			for(vector<Entity *>::iterator it = ms_active.begin(); it != ms_active.end(); it++)
 				(*it)->OnProcess(dt);
 		}
 
 		Entity::Entity()
 		{
-			m_isDead = false;
-			ms_alive.push_back(this);
+			m_isDeleted = false;
+			ms_active.push_back(this);
 		}
 		Entity::~Entity()
 		{
 		}
-		void Entity::Kill()
+		void Entity::Delete()
 		{
-			if(!m_isDead)
+			if(!m_isDeleted)
 			{
-				m_isDead = true;
-				ms_alive.erase(find(ms_alive.begin(), ms_alive.end(), this));
-				ms_dead.push_back(this);
-				OnKill();
+				m_isDeleted = true;
+				ms_active.erase(find(ms_active.begin(), ms_active.end(), this));
+				ms_deleted.push_back(this);
+				OnDelete();
 			}
 		}
-		bool Entity::IsDead() const
+		bool Entity::IsDeleted() const
 		{
-			return m_isDead;
+			return m_isDeleted;
 		}
 		void Entity::Render()
 		{
@@ -63,7 +63,7 @@ namespace ce
 		void Entity::DoRender()
 		{
 		}
-		void Entity::OnKill()
+		void Entity::OnDelete()
 		{
 		}
 		void Entity::OnProcess(float dt)

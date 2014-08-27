@@ -22,7 +22,7 @@ namespace ce
 {
 	vector<Thread *> g_deadThreads;
 
-	void Thread::DeleteDead()
+	void Thread::FinalizeDelete()
 	{
 		for(vector<Thread *>::iterator it = g_deadThreads.begin(); it != g_deadThreads.end(); it++)
 			delete *it;

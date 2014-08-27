@@ -50,13 +50,13 @@ namespace ce
 					else if(objA->IsTrigger())
 					{
 						game2d::Trigger *trigger = (game2d::Trigger *)objA;
-						if(!trigger->IsDead())
+						if(!trigger->IsDeleted())
 							trigger->OnObjectEnter(objB);
 					}
 					else
 					{
 						game2d::Trigger *trigger = (game2d::Trigger *)objB;
-						if(!trigger->IsDead())
+						if(!trigger->IsDeleted())
 							trigger->OnObjectEnter(objB);
 					}
 				}

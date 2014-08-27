@@ -13,23 +13,23 @@ namespace ce
 	{
 		class Entity : public Group::Member
 		{
-			static std::vector<Entity *> ms_alive, ms_dead, ms_pending;
+			static std::vector<Entity *> ms_active, ms_deleted, ms_pending;
 
-			bool m_isDead;
+			bool m_isDeleted;
 
 		protected:
 			virtual void DoRender();
-			virtual void OnKill();
+			virtual void OnDelete();
 
 		public:
-			static void DeleteDead();
+			static void FinalizeDelete();
 			static void Process(float dt);
 
 			Entity();
 			virtual ~Entity();
 
-			bool IsDead() const;
-			void Kill();
+			bool IsDeleted() const;
+			void Delete();
 			void Render();
 
 			virtual void OnProcess(float dt);

@@ -143,7 +143,7 @@ public:
 		m_targetMotion = dif;
 
 		g_physicsMutex.Lock();
-		game2d::Entity::DeleteDead();
+		game2d::Entity::FinalizeDelete();
 		if(m_entity)
 			m_entity->SetVelocity(dif);
 		m_group->ProcessPhysics(dt);
@@ -177,7 +177,7 @@ public:
 		delete m_dummy;
 		delete m_view;
 		delete m_camera;
-		game2d::Entity::DeleteDead();
+		game2d::Entity::FinalizeDelete();
 		delete m_entity;
 		delete m_group;
 		delete m_canvas;
@@ -372,7 +372,7 @@ void *connectionFunc(void *arg)
 					if(obj)
 					{
 						app->m_group->Remove(obj);
-						obj->Kill();
+						obj->Delete();
 					}
 					g_physicsMutex.Unlock();
 				}

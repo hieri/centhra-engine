@@ -129,7 +129,7 @@ public:
 	{
 		g_physicsMutex.Lock();
 		Vector2<float> origin = Vector2<float>(512.f, 512.f);
-		game2d::Entity::DeleteDead();
+		game2d::Entity::FinalizeDelete();
 		for(int a = 0; a < NUMRANDOMS; a++)
 		{
 			Vector2<float> pos = m_randoms[a]->GetPosition();
@@ -427,7 +427,7 @@ void *clientFunc(void *arg)
 
 	g_physicsMutex.Lock();
 	app->m_group->Remove(player);
-	player->Kill();
+	player->Delete();
 	g_physicsMutex.Unlock();
 
 	delete client;

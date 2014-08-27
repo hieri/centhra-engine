@@ -132,7 +132,7 @@ namespace ce
 			~Client();
 
 			bool IsAlive() const;
-			void Kill();
+			void Delete();
 			void SetUserData(void *userData);
 			void *GetUserData() const;
 

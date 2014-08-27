@@ -164,7 +164,7 @@ public:
 
 		delete m_view;
 		delete m_camera;
-		game2d::Entity::DeleteDead();
+		game2d::Entity::FinalizeDelete();
 		delete m_entity;
 		for(int a = 0; a < NUMRANDOMS; a++)
 			delete m_randoms[a];

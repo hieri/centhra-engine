@@ -19,57 +19,57 @@ namespace ce
 {
 	namespace game2d
 	{
-		vector<Entity *> Entity::ms_alive, Entity::ms_dead, Entity::ms_pending;
+		vector<Entity *> Entity::ms_active, Entity::ms_deleted, Entity::ms_pending;
 		bool g_doingProcess = false;
 		vector<Entity *>::iterator g_processIterator;
-		void Entity::DeleteDead()
+		void Entity::FinalizeDelete()
 		{
-			for(vector<Entity *>::iterator it = ms_dead.begin(); it != ms_dead.end(); it++)
+			for(vector<Entity *>::iterator it = ms_deleted.begin(); it != ms_deleted.end(); it++)
 				delete *it;
-			ms_dead.clear();
+			ms_deleted.clear();
 		}
 		void Entity::Process(float dt)
 		{
 			g_doingProcess = true;
-			for(g_processIterator = ms_alive.begin(); g_processIterator != ms_alive.end(); g_processIterator++)
+			for(g_processIterator = ms_active.begin(); g_processIterator != ms_active.end(); g_processIterator++)
 				(*g_processIterator)->OnProcess(dt);
 			g_doingProcess = false;
 			for(vector<Entity *>::iterator it = ms_pending.begin(); it != ms_pending.end(); it++)
-				ms_alive.push_back(*it);
+				ms_active.push_back(*it);
 			ms_pending.clear();
 		}
 
 		Entity::Entity()
 		{
-			m_isDead = false;
+			m_isDeleted = false;
 			if(g_doingProcess)
 				ms_pending.push_back(this);
 			else
-				ms_alive.push_back(this);
+				ms_active.push_back(this);
 		}
 		Entity::~Entity()
 		{
 		}
-		void Entity::Kill()
+		void Entity::Delete()
 		{
-			if(!m_isDead)
+			if(!m_isDeleted)
 			{
-				m_isDead = true;
+				m_isDeleted = true;
 				if(g_doingProcess)
 				{
-					g_processIterator = ms_alive.erase(g_processIterator);
-					if(g_processIterator != ms_alive.begin())
+					g_processIterator = ms_active.erase(g_processIterator);
+					if(g_processIterator != ms_active.begin())
 						g_processIterator--;
 				}
 				else
-					ms_alive.erase(find(ms_alive.begin(), ms_alive.end(), this));
-				ms_dead.push_back(this);
-				OnKill();
+					ms_active.erase(find(ms_active.begin(), ms_active.end(), this));
+				ms_deleted.push_back(this);
+				OnDelete();
 			}
 		}
-		bool Entity::IsDead() const
+		bool Entity::IsDeleted() const
 		{
-			return m_isDead;
+			return m_isDeleted;
 		}
 		void Entity::Render()
 		{
@@ -80,7 +80,7 @@ namespace ce
 		void Entity::DoRender()
 		{
 		}
-		void Entity::OnKill()
+		void Entity::OnDelete()
 		{
 		}
 		void Entity::OnProcess(float dt)

@@ -28,7 +28,7 @@ namespace ce
 		 */
 		static void Exit(void *retVal = 0);
 
-		static void DeleteDead();
+		static void FinalizeDelete();
 
 		/**	@brief Constructor.
 		 *	@param process Thread function.

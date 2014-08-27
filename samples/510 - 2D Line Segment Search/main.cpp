@@ -149,7 +149,7 @@ public:
 			delete m_randoms[a];
 		delete [] m_randoms;
 		delete m_group;
-		game2d::Entity::DeleteDead();
+		game2d::Entity::FinalizeDelete();
 		delete m_canvas;
 	}
 

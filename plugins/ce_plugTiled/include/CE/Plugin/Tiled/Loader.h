@@ -65,6 +65,7 @@ namespace ce
 					{
 						Unknown,
 						Tile,
+						Point,
 						Rectangle,
 						Ellipse,
 						Polygon,

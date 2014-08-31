@@ -245,6 +245,7 @@ namespace ce
 						for(xml_node object = xNode.child("object"); object; object = object.next_sibling("object"))
 						{
 							ObjectDef *objectDef = new ObjectDef;
+							objectDef->m_type = ObjectDef::Unknown;
 							objectDef->m_x = (short)object.attribute("x").as_int();
 							objectDef->m_y = (short)object.attribute("y").as_int();
 
@@ -285,6 +286,8 @@ namespace ce
 								else
 									objectDef->m_type = ObjectDef::Rectangle;
 							}
+							else if(objectDef->m_type == ObjectDef::Unknown)
+								objectDef->m_type = ObjectDef::Point;
 
 							xml_attribute name = object.attribute("name");
 							if(name)

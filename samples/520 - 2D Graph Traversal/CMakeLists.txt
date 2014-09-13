@@ -23,11 +23,12 @@ set(LIB
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	find_package(X11 REQUIRED)
-	set(LIB ${LIB} ${X11_LIBRARIES})
+	find_package(XCB REQUIRED)
+	set(LIB ${LIB} ${X11_LIBRARIES} ${XCB_LIBRARY} ${XLIB_XCB_LIBRARY} dl Xau Xdmcp)
+	set(INCLUDE ${INCLUDE} ${X11_INCLUDE_DIR} ${XCB_INCLUDE_PATH} ${XLIB_XCB_INCLUDE_PATH})
 	if(CE_FRONTEND_USEXCB)
 		set(LIB ${LIB} ${PROJECT_SOURCE_DIR}/external/lib/libxcb.so ${PROJECT_SOURCE_DIR}/external/lib/libX11-xcb.so)
 	endif(CE_FRONTEND_USEXCB)
-	set(INCLUDE ${INCLUDE} ${X11_INCLUDE_DIR})
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 include_directories(${INCLUDE})

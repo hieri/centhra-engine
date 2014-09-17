@@ -675,9 +675,11 @@ namespace ce
 	}
 	void Canvas::SetFullscreen(bool fullscreen)
 	{
+		if(m_fullscreen == fullscreen)
+			return;
+		m_fullscreen = fullscreen;
 		if(fullscreen)
 		{
-			m_fullscreen = fullscreen;
 			#if CE_FRONTEND_USEXLIB
 				#if CE_FRONTEND_USEXCB
 				#else
@@ -718,16 +720,15 @@ namespace ce
 				#if CE_FRONTEND_USEXCB
 				#else
 					Display *xDisplay = (Display *)m_app->GetXDisplay();
-					Atom wm_state = XInternAtom(xDisplay, "_NET_WM_STATE", False);
 					Atom fullscreen = XInternAtom(xDisplay, "_NET_WM_STATE_FULLSCREEN", False);
 
 					XEvent xev;
 					memset(&xev, 0, sizeof(xev));
 					xev.type = ClientMessage;
 					xev.xclient.window = m_xWindow;
-					xev.xclient.message_type = wm_state;
+					xev.xclient.message_type = XInternAtom(xDisplay, "_NET_WM_STATE", False);
 					xev.xclient.format = 32;
-					xev.xclient.data.l[0] = 0;
+					xev.xclient.data.l[0] = 2;
 					xev.xclient.data.l[1] = fullscreen;
 					xev.xclient.data.l[2] = 0;
 					XSendEvent(xDisplay, DefaultRootWindow(xDisplay), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
@@ -754,7 +755,6 @@ namespace ce
 					SetWindowPos(hwnd, 0, mi.rcMonitor.left + (mi.rcMonitor.right - mi.rcMonitor.left - width) / 2, mi.rcMonitor.top + (mi.rcMonitor.bottom - mi.rcMonitor.top - height) / 2, width, height, SWP_SHOWWINDOW);
 				}
 			#endif
-			m_fullscreen = fullscreen;
 		}
 	}
 	int Canvas::GetWidth() const

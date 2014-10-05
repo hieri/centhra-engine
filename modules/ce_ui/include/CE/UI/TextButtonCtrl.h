@@ -9,13 +9,17 @@ namespace ce
 {
 	namespace ui
 	{
-		class TextButtonCtrl : public TextCtrl, ButtonCtrl
+		class TextButtonCtrl : public TextCtrl, public ButtonCtrl
 		{
 		protected:
+			Color m_backgroundColor;
+
 			virtual void DoRender();
 
 		public:
-			TextButtonCtrl(Vector2<int> position, Vector2<int> extent, Font *font, const char *text = "", Color color = Color());
+			TextButtonCtrl(Vector2<int> position, Vector2<int> extent, Font *font, const char *text = "", Color color = Color(), Color backgroundColor = Color());
+
+			void SetBackgroundColor(Color backgroundColor);
 		};
 	}
 }

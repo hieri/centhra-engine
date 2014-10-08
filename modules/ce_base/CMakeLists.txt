@@ -73,7 +73,7 @@ if(NOT IL_FOUND)
 
 			if(NOT EXISTS ${T_IL_DOWNLOAD_FILE})
 				message("Downloading DevIL SDK...")
-				set(T_IL_URL "http://downloads.sourceforge.net/project/openil/DevIL%20Windows%20SDK/1.7.8/DevIL-SDK-x86-1.7.8.zip?r=&ts=1403819082&use_mirror=colocrossing")
+				set(T_IL_URL "http://downloads.sourceforge.net/project/openil/DevIL%20Windows%20SDK/1.7.8/DevIL-SDK-x86-1.7.8.zip")
 				file(DOWNLOAD "${T_IL_URL}" "${T_IL_DOWNLOAD_FILE}")
 			endif(NOT EXISTS ${T_IL_DOWNLOAD_FILE})
 
@@ -100,7 +100,7 @@ if(NOT IL_FOUND)
 
 				if(NOT EXISTS ${T_IL_DOWNLOAD_FILE})
 					message("Downloading DevIL source...")
-					set(T_IL_URL "http://downloads.sourceforge.net/project/openil/DevIL/1.7.8/DevIL-1.7.8.tar.gz?r=&ts=1404971275&use_mirror=tcpdiag")
+					set(T_IL_URL "http://downloads.sourceforge.net/project/openil/DevIL/1.7.8/DevIL-1.7.8.tar.gz")
 					file(DOWNLOAD "${T_IL_URL}" "${T_IL_DOWNLOAD_FILE}")
 				endif(NOT EXISTS ${T_IL_DOWNLOAD_FILE})
 
@@ -136,7 +136,7 @@ if(NOT IL_FOUND)
 
 				if(NOT EXISTS ${T_PNG_DOWNLOAD_FILE})
 					message("Downloading libpng source...")
-					set(T_PNG_URL "http://downloads.sourceforge.net/project/libpng/libpng12/1.2.51/libpng-1.2.51.tar.gz?r=&ts=1405025045&use_mirror=iweb")
+					set(T_PNG_URL "http://downloads.sourceforge.net/project/libpng/libpng12/1.2.51/libpng-1.2.51.tar.gz")
 					file(DOWNLOAD "${T_PNG_URL}" "${T_PNG_DOWNLOAD_FILE}")
 				endif(NOT EXISTS ${T_PNG_DOWNLOAD_FILE})
 
@@ -178,11 +178,7 @@ if(NOT IL_FOUND)
 				set(ENV{LDFLAGS} "-L${PROJECT_SOURCE_DIR}/external/libjpeg/.libs -L${PROJECT_SOURCE_DIR}/external/libpng/.libs -L${PROJECT_SOURCE_DIR}/external/zlib")
 				set(ENV{CPPFLAGS} "-I${PROJECT_SOURCE_DIR}/external/libjpeg -I${PROJECT_SOURCE_DIR}/external/libpng -I${PROJECT_SOURCE_DIR}/external/zlib")
 				set(ENV{LIBS} "-lstdc++")
-				execute_process(COMMAND ./configure 
---disable-shared --enable-ILU=yes --enable-ILUT=yes --enable-zlib=yes 
---enable-exr=no --enable-mng=no --enable-jp2=no --enable-tiff=no 
-WORKING_DIRECTORY 
-${PROJECT_SOURCE_DIR}/external/devil)
+				execute_process(COMMAND ./configure --disable-shared --enable-ILU=yes --enable-ILUT=yes --enable-zlib=yes --enable-exr=no --enable-mng=no --enable-jp2=no --enable-tiff=no WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external/devil)
 				set(ENV{LDFLAGS})
 				set(ENV{CPPFLAGS})
 				set(ENV{LIBS})
@@ -215,7 +211,7 @@ if(NOT FREETYPE_FOUND)
 
 			if(NOT EXISTS ${T_FT_DOWNLOAD_FILE})
 				message("Downloading FreeType source...")
-				set(T_FT_URL "http://downloads.sourceforge.net/project/freetype/freetype2/2.5.3/freetype-2.5.3.tar.bz2?ts=1403827588&use_mirror=softlayer-dal")
+				set(T_FT_URL "http://downloads.sourceforge.net/project/freetype/freetype2/2.5.3/freetype-2.5.3.tar.bz2")
 				file(DOWNLOAD "${T_FT_URL}" "${T_FT_DOWNLOAD_FILE}")
 			endif(NOT EXISTS ${T_FT_DOWNLOAD_FILE})
 
@@ -262,7 +258,7 @@ if(NOT FREETYPE_FOUND)
 
 			if(NOT EXISTS ${T_FT_DOWNLOAD_FILE})
 				message("Downloading FreeType source...")
-				set(T_FT_URL "http://downloads.sourceforge.net/project/freetype/freetype2/2.5.3/freetype-2.5.3.tar.bz2?ts=1403827588&use_mirror=softlayer-dal")
+				set(T_FT_URL "http://downloads.sourceforge.net/project/freetype/freetype2/2.5.3/freetype-2.5.3.tar.bz2")
 				file(DOWNLOAD "${T_FT_URL}" "${T_FT_DOWNLOAD_FILE}")
 			endif(NOT EXISTS ${T_FT_DOWNLOAD_FILE})
 

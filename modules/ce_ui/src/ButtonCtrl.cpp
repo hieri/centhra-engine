@@ -69,11 +69,11 @@ namespace ce
 		{
 			return m_isEnabled;
 		}
-		void ButtonCtrl::SetOnButtonDown(void (*callback)(ButtonCtrl *))
+		void ButtonCtrl::SetOnButtonDown(bool (*callback)(ButtonCtrl *))
 		{
 			m_OnButtonDown = callback;
 		}
-		void ButtonCtrl::SetOnButtonUp(void (*callback)(ButtonCtrl *))
+		void ButtonCtrl::SetOnButtonUp(bool(*callback)(ButtonCtrl *))
 		{
 			m_OnButtonUp = callback;
 		}
@@ -115,11 +115,11 @@ namespace ce
 			{
 			case event::MouseButtonDown:
 				if(m_OnButtonDown)
-					(*m_OnButtonDown)(this);
+					return (*m_OnButtonDown)(this);
 				break;
 			case event::MouseButtonUp:
 				if(m_OnButtonUp)
-					(*m_OnButtonUp)(this);
+					return (*m_OnButtonUp)(this);
 				break;
 			}
 			return true;

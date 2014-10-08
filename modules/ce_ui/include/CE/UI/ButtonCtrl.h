@@ -24,8 +24,8 @@ namespace ce
 			bool m_isEnabled;
 			int m_group;
 
-			void (*m_OnButtonDown)(ButtonCtrl *ctrl);
-			void (*m_OnButtonUp)(ButtonCtrl *ctrl);
+			bool (*m_OnButtonDown)(ButtonCtrl *ctrl);
+			bool(*m_OnButtonUp)(ButtonCtrl *ctrl);
 
 		protected:
 			virtual void DoRender();
@@ -36,8 +36,8 @@ namespace ce
 
 			int GetGroup() const;
 			bool IsEnabled() const;
-			void SetOnButtonDown(void (*callback)(ButtonCtrl *));
-			void SetOnButtonUp(void (*callback)(ButtonCtrl *));
+			void SetOnButtonDown(bool (*callback)(ButtonCtrl *));
+			void SetOnButtonUp(bool (*callback)(ButtonCtrl *));
 			void SetEnabled(bool enabled);
 			void SetGroup(int group);
 

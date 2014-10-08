@@ -26,6 +26,7 @@ namespace ce
 			m_parent = 0;
 			m_position = position;
 			m_extent = extent;
+			m_children = vector<Control *>();
 			UpdatePosition();
 		}
 		Control::~Control()

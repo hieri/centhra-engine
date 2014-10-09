@@ -183,7 +183,7 @@ namespace ce
 	}
 #endif
 
-	Canvas *Canvas::Create(int width, int height, const char *title)
+	Canvas *Canvas::Create(int_canvas width, int_canvas height, const char *title)
 	{
 		AppFrontend *app = (AppFrontend *)App::GetCurrent();
 
@@ -757,15 +757,15 @@ namespace ce
 			#endif
 		}
 	}
-	int Canvas::GetWidth() const
+	int_canvas Canvas::GetWidth() const
 	{
 		return m_width;
 	}
-	int Canvas::GetHeight() const
+	int_canvas Canvas::GetHeight() const
 	{
 		return m_height;
 	}
-	void Canvas::UpdateViewport(int width, int height)
+	void Canvas::UpdateViewport(int_canvas width, int_canvas height)
 	{
 		m_width = width;
 		m_height = height;
@@ -807,7 +807,7 @@ namespace ce
 
 		m_vsync = vsync;
 	}
-	void Canvas::SetWindowedExtent(int width, int height)
+	void Canvas::SetWindowedExtent(int_canvas width, int_canvas height)
 	{
 		m_windowedWidth = width;
 		m_windowedHeight = height;

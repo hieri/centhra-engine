@@ -20,7 +20,7 @@ namespace ce
 			virtual void DoRender();
 
 		public:
-			ColorCtrl(Vector2<int> position, Vector2<int> extent, Color color = Color());
+			ColorCtrl(Vector2<short> position, Vector2<short> extent, Color color = Color());
 			
 			Color GetColor() const;
 			void SetColor(Color color);

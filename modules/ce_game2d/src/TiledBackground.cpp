@@ -39,7 +39,7 @@ namespace ce
 					Vector2<float> focusExtent = focus->GetExtent();
 
 					Vector2<float> viewScale = m_viewCtrl->GetViewScale();
-					Vector2<int> viewExtent = m_viewCtrl->GetExtent();
+					Vector2<int_canvas> viewExtent = m_viewCtrl->GetExtent();
 
 					glPushMatrix();
 					Vector2<float> half((float)viewExtent[0] / 2.f, (float)viewExtent[1] / 2.f);

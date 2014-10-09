@@ -19,7 +19,7 @@ namespace ce
 {
 	namespace ui
 	{
-		Control::Control(Vector2<int> position, Vector2<int> extent)
+		Control::Control(Vector2<short> position, Vector2<short> extent)
 		{
 			m_type = 0;
 			m_isVisible = true;
@@ -42,10 +42,10 @@ namespace ce
 			if(m_parent)
 				m_absolutePosition += m_parent->m_absolutePosition;
 			
-			int cx = m_position[0];
-			int cy = m_position[1];
-			int cw = m_extent[0];
-			int ch = m_extent[1];
+			short cx = m_position[0];
+			short cy = m_position[1];
+			short cw = m_extent[0];
+			short ch = m_extent[1];
 			
 			if(m_parent)
 			{
@@ -105,8 +105,8 @@ namespace ce
 			if(cy < 0)
 				cy = 0;
 
-			m_exposurePosition = Vector2<int>(cx, cy);
-			m_exposureExtent = Vector2<int>(cw, ch);
+			m_exposurePosition = Vector2<short>(cx, cy);
+			m_exposureExtent = Vector2<short>(cw, ch);
 			
 			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 				(*it)->UpdatePosition();
@@ -198,33 +198,33 @@ namespace ce
 		{
 			m_isVisible = isVisible;
 		}
-		Vector2<int> Control::GetExtent() const
+		Vector2<short> Control::GetExtent() const
 		{
 			return m_extent;
 		}
-		Vector2<int> Control::GetPosition() const
+		Vector2<short> Control::GetPosition() const
 		{
 			return m_position;
 		}
-		Vector2<int> Control::GetAbsolutePosition() const
+		Vector2<short> Control::GetAbsolutePosition() const
 		{
 			return m_absolutePosition;
 		}
-		Vector2<int> Control::GetExposurePosition() const
+		Vector2<short> Control::GetExposurePosition() const
 		{
 			return m_exposurePosition;
 		}
-		Vector2<int> Control::GetExposureExtent() const
+		Vector2<short> Control::GetExposureExtent() const
 		{
 			return m_exposureExtent;
 		}
-		void Control::SetExtent(Vector2<int> extent)
+		void Control::SetExtent(Vector2<short> extent)
 		{
 			m_extent = extent;
 			UpdatePosition();
 			OnSetExtent();
 		}
-		void Control::SetPosition(Vector2<int> position)
+		void Control::SetPosition(Vector2<short> position)
 		{
 			m_position = position;
 			UpdatePosition();
@@ -240,14 +240,14 @@ namespace ce
 		void Control::OnSetPosition()
 		{
 		}
-		Control *Control::GetFromPosition(Vector2<int> position)
+		Control *Control::GetFromPosition(Vector2<short> position)
 		{
 			for(vector<Control *>::reverse_iterator it = m_children.rbegin(); it != m_children.rend(); it++)
 			{
 				Control *ctrl = *it;
 				
-				Vector2<int> expPos = ctrl->GetExposurePosition();
-				Vector2<int> expExt = ctrl->GetExposureExtent();
+				Vector2<short> expPos = ctrl->GetExposurePosition();
+				Vector2<short> expExt = ctrl->GetExposureExtent();
 				if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
 					continue;
 

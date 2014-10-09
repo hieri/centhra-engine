@@ -1,7 +1,6 @@
 //- Centhra Engine -
-#include <CE/AppFrontend.h>
 #include <CE/Base.h>
-#include <CE/Canvas.h>
+#include <CE/Frontend.h>
 
 using namespace ce;
 

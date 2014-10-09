@@ -1,23 +1,19 @@
-//- Centhra Engine -
-#include <CE/AppFrontend.h>
-#include <CE/Base.h>
-#include <CE/Canvas.h>
-#include <CE/Thread.h>
-#include <CE/Mutex.h>
-#include <CE/Socket.h>
-#include <CE/Game2D/Camera.h>
-#include <CE/Game2D/PhysicalObject.h>
-#include <CE/Game2D/PhysicalGroup.h>
-#include <CE/Game2D/DefaultPhysicsHandler.h>
-#include <CE/UI/CameraView2DCtrl.h>
-#include <CE/Plugin/Box2D/PhysicsHandler.h>
-
 //- Standard Library -
 #include <cstdlib>
 #include <string>
 #include <ctime>
 #include <cstring>
 #include <iostream>
+
+//- Centhra Engine -
+#include <CE/Base.h>
+#include <CE/Thread.h>
+#include <CE/Mutex.h>
+#include <CE/Socket.h>
+#include <CE/Frontend.h>
+#include <CE/Game2D.h>
+#include <CE/Game2D/DefaultPhysicsHandler.h>
+#include <CE/Plugin/Box2D/PhysicsHandler.h>
 
 using namespace ce;
 using namespace std;
@@ -114,7 +110,7 @@ public:
 
 		m_camera = new game2d::Camera();
 
-		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(320, 240));
+		m_view = new ui::CameraView2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(320, 240));
 		m_view->SetCamera(m_camera);
 
 //		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
@@ -227,7 +223,7 @@ public:
 			break;
 		case event::WindowResize:
 			if(m_view)
-				m_view->SetExtent(Vector2<int>(event.windowResize.width, event.windowResize.height));
+				m_view->SetExtent(Vector2<int_canvas>(event.windowResize.width, event.windowResize.height));
 			break;
 		}
 		return true;

@@ -17,7 +17,7 @@ namespace ce
 			virtual void DoRender();
 
 		public:
-			TextButtonCtrl(Vector2<int> position, Vector2<int> extent, Font *font, const char *text = "", Color color = Color(), Color backgroundColor = Color());
+			TextButtonCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, const char *text = "", Color color = Color(), Color backgroundColor = Color());
 
 			void SetBackgroundColor(Color backgroundColor);
 		};

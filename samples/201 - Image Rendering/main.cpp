@@ -1,9 +1,3 @@
-//- Centhra Engine -
-#include <CE/AppFrontend.h>
-#include <CE/Base.h>
-#include <CE/Canvas.h>
-#include <CE/Image.h>
-
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
@@ -11,6 +5,11 @@
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- Centhra Engine -
+#include <CE/Base.h>
+#include <CE/Image.h>
+#include <CE/Frontend.h>
 
 using namespace ce;
 

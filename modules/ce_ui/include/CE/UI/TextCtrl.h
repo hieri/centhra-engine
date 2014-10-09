@@ -21,7 +21,7 @@ namespace ce
 			virtual void DoRender();
 
 		public:
-			TextCtrl(Vector2<int> position, Vector2<int> extent, Font *font, const char *text = "", Color color = Color());
+			TextCtrl(Vector2<short> position, Vector2<short> extent, Font *font, const char *text = "", Color color = Color());
 			
 			Font *GetFont() const;
 			void SetFont(Font *font);

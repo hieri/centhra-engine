@@ -32,16 +32,16 @@ public:
 		srand((unsigned int)GetRunTimeMS());
 		m_canvas = Canvas::Create(640, 480, "000 - Test");
 
-		m_masterCtrl = new ui::Control(Vector2<int>(0, 0), Vector2<int>(640, 480));
+		m_masterCtrl = new ui::Control(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(640, 480));
 
-		ui::ColorCtrl *color1 = new ui::ColorCtrl(Vector2<int>(16, 16), Vector2<int>(64, 64), Color(255, 0, 0, 255));
-		ui::ColorCtrl *color2 = new ui::ColorCtrl(Vector2<int>(32, 32), Vector2<int>(64, 64), Color(0, 255, 0, 255));
-		ui::ColorCtrl *color3 = new ui::ColorCtrl(Vector2<int>(48, 48), Vector2<int>(64, 64), Color(0, 0, 255, 255));
+		ui::ColorCtrl *color1 = new ui::ColorCtrl(Vector2<int_canvas>(16, 16), Vector2<int_canvas>(64, 64), Color(255, 0, 0, 255));
+		ui::ColorCtrl *color2 = new ui::ColorCtrl(Vector2<int_canvas>(32, 32), Vector2<int_canvas>(64, 64), Color(0, 255, 0, 255));
+		ui::ColorCtrl *color3 = new ui::ColorCtrl(Vector2<int_canvas>(48, 48), Vector2<int_canvas>(64, 64), Color(0, 0, 255, 255));
 		m_masterCtrl->Add(color1);
 		m_masterCtrl->Add(color2);
 		m_masterCtrl->Add(color3);
 
-		ui::ButtonCtrl *button1 = new ui::ButtonCtrl(Vector2<int>(32, 128), Vector2<int>(64, 64));
+		ui::ButtonCtrl *button1 = new ui::ButtonCtrl(Vector2<int_canvas>(32, 128), Vector2<int_canvas>(64, 64));
 		m_masterCtrl->Add(button1);
 
 		return true;
@@ -68,7 +68,7 @@ public:
 		switch(event.type)
 		{
 		case event::MouseButtonDown:
-			click = m_masterCtrl->GetFromPosition(Vector2<int>(event.mouseButton.x, 480 - event.mouseButton.y));
+			click = m_masterCtrl->GetFromPosition(Vector2<int_canvas>(event.mouseButton.x, 480 - event.mouseButton.y));
 			print("%d\t%d\t%d\n", event.mouseButton.x, 480 - event.mouseButton.y, click);
 			click->OnEvent(event);
 			break;

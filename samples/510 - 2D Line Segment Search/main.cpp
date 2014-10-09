@@ -1,18 +1,6 @@
-//- Centhra Engine -
-#include <CE/AppFrontend.h>
-#include <CE/Base.h>
-#include <CE/Canvas.h>
-#include <CE/Game2D/Camera.h>
-#include <CE/Game2D/PhysicalObject.h>
-#include <CE/Game2D/PhysicalGroup.h>
-#include <CE/Game2D/DefaultPhysicsHandler.h>
-#include <CE/UI/CameraView2DCtrl.h>
-
 //- Standard Library -
-#include <stdlib.h>
-#include <time.h>
-
-#define NUMRANDOMS 64
+#include <cstdlib>
+#include <ctime>
 
 #ifdef _WIN32
 	//- Windows -
@@ -21,6 +9,14 @@
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- Centhra Engine -
+#include <CE/Base.h>
+#include <CE/Frontend.h>
+#include <CE/Game2D.h>
+#include <CE/Game2D/DefaultPhysicsHandler.h>
+
+#define NUMRANDOMS 64
 
 using namespace ce;
 
@@ -66,7 +62,7 @@ public:
 		m_camera = new game2d::Camera();
 		m_camera->SetFocus(m_entity);
 
-		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(640, 480));
+		m_view = new ui::CameraView2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(640, 480));
 		m_view->SetCamera(m_camera);
 
 		m_randoms = new game2d::PhysicalObject *[NUMRANDOMS];
@@ -155,7 +151,7 @@ public:
 
 	bool OnEvent(Event &event)
 	{
-		Vector2<int> halfExtent;
+		Vector2<int_canvas> halfExtent;
 		Vector2<float> center;
 		switch(event.type)
 		{
@@ -226,7 +222,7 @@ public:
 			break;
 		case event::WindowResize:
 			if(m_view)
-				m_view->SetExtent(Vector2<int>(event.windowResize.width, event.windowResize.height));
+				m_view->SetExtent(Vector2<int_canvas>(event.windowResize.width, event.windowResize.height));
 			break;
 		}
 		return true;

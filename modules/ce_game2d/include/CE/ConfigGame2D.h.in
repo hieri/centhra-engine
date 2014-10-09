@@ -1,0 +1,6 @@
+#ifndef _CE_CONFIG_GAME2D_H_
+#define _CE_CONFIG_GAME2D_H_
+
+#include <CE/ConfigFrontend.h>
+
+#endif

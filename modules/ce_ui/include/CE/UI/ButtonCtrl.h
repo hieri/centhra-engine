@@ -31,7 +31,7 @@ namespace ce
 			virtual void DoRender();
 
 		public:
-			ButtonCtrl(Vector2<int> position, Vector2<int> extent);
+			ButtonCtrl(Vector2<short> position, Vector2<short> extent);
 			~ButtonCtrl();
 
 			int GetGroup() const;

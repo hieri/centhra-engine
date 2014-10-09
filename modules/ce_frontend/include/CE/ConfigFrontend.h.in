@@ -5,4 +5,9 @@
 #define CE_FRONTEND_USEXCB @FRONTEND_USEXCB@
 #define CE_FRONTEND_USEWIN @FRONTEND_USEWIN@
 
+namespace ce
+{
+	typedef short int_canvas;
+}
+
 #endif

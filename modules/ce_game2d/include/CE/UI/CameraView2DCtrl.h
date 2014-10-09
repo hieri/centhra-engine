@@ -18,7 +18,7 @@ namespace ce
 			virtual void DoRender();
 
 		public:
-			CameraView2DCtrl(Vector2<int> position, Vector2<int> extent);
+			CameraView2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent);
 
 			game2d::Camera *GetCamera() const;
 			Vector2<float> GetViewScale() const;

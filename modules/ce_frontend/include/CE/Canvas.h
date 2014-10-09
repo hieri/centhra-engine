@@ -19,7 +19,7 @@ namespace ce
 		AppFrontend *m_app;
 		bool m_vsync, m_fullscreen;
 		unsigned long long m_lastRenderTimeMS;
-		int m_width, m_height, m_windowedWidth, m_windowedHeight;
+		int_canvas m_width, m_height, m_windowedWidth, m_windowedHeight;
 
 		#if CE_FRONTEND_USEXLIB
 			int m_glxWindow;
@@ -46,7 +46,7 @@ namespace ce
 		 *	@param title Title of the canvas.
 		 *	@return Canvas object or 0 if creation failed.
 		 */
-		static Canvas *Create(int width = 64, int height = 64, const char *title = "");
+		static Canvas *Create(int_canvas width = 64, int_canvas height = 64, const char *title = "");
 
 		/**	@brief Destructor.
 		 */
@@ -70,11 +70,11 @@ namespace ce
 		bool IsFullscreen() const;
 		void SetFullscreen(bool fullscreen);
 
-		int GetWidth() const;
-		int GetHeight() const;
-		void UpdateViewport(int width, int height);
+		int_canvas GetWidth() const;
+		int_canvas GetHeight() const;
+		void UpdateViewport(int_canvas width, int_canvas height);
 		void SetVSync(bool vsync);
-		void SetWindowedExtent(int width, int height);
+		void SetWindowedExtent(int_canvas width, int_canvas height);
 
 		void SetTitle(const char *title);
 	};

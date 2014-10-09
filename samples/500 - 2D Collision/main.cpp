@@ -1,19 +1,14 @@
+//- Standard Library -
+#include <cstdlib>
+#include <ctime>
+
 //- Centhra Engine -
-#include <CE/AppFrontend.h>
 #include <CE/Base.h>
-#include <CE/Canvas.h>
 #include <CE/Thread.h>
 #include <CE/Mutex.h>
-#include <CE/RenderPrimitives.h>
-#include <CE/Game2D/Camera.h>
-#include <CE/Game2D/PhysicalObject.h>
-#include <CE/Game2D/PhysicalGroup.h>
+#include <CE/Frontend.h>
+#include <CE/Game2D.h>
 #include <CE/Game2D/DefaultPhysicsHandler.h>
-#include <CE/UI/CameraView2DCtrl.h>
-
-//- Standard Library -
-#include <stdlib.h>
-#include <time.h>
 
 using namespace ce;
 
@@ -65,7 +60,7 @@ public:
 		m_camera = new game2d::Camera();
 		m_camera->SetFocus(m_entity);
 
-		m_view = new ui::CameraView2DCtrl(Vector2<int>(0, 0), Vector2<int>(640, 480));
+		m_view = new ui::CameraView2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(640, 480));
 		m_view->SetCamera(m_camera);
 
 		m_entity->SetCollisionMask(0);
@@ -221,7 +216,7 @@ public:
 			break;
 		case event::WindowResize:
 			if(m_view)
-				m_view->SetExtent(Vector2<int>(event.windowResize.width, event.windowResize.height));
+				m_view->SetExtent(Vector2<int_canvas>(event.windowResize.width, event.windowResize.height));
 			break;
 		}
 		return true;

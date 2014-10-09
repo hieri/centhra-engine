@@ -6,6 +6,7 @@ set(INC
 	${INC_DIR}/Canvas.h
 	${INC_DIR}/ConfigFrontend.h
 	${INC_DIR}/Event.h
+	${INC_DIR}/Frontend.h
 	${INC_DIR}/Keyboard.h
 	${INC_DIR}/KeyCode.h
 	${INC_DIR}/RenderPrimitives.h

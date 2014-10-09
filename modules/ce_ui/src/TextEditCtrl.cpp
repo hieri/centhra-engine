@@ -20,7 +20,7 @@ namespace ce
 {
 	namespace ui
 	{
-		TextEditCtrl::TextEditCtrl(Vector2<int> position, Vector2<int> extent, Font *font, unsigned short maxSize, const char *text, Color color) : TextCtrl(position, extent, font, text, color)
+		TextEditCtrl::TextEditCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, unsigned short maxSize, const char *text, Color color) : TextCtrl(position, extent, font, text, color)
 		{
 			m_leftShift = false;
 			m_rightShift = false;

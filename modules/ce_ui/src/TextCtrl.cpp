@@ -39,7 +39,7 @@ namespace ce
 {
 	namespace ui
 	{
-		TextCtrl::TextCtrl(Vector2<int> position, Vector2<int> extent, Font *font, const char *text, Color color) : ColorCtrl(position, extent, color)
+		TextCtrl::TextCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, const char *text, Color color) : ColorCtrl(position, extent, color)
 		{
 			m_font = font;
 			m_text = string(text);

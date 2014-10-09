@@ -16,7 +16,7 @@ namespace ce
 {
 	namespace ui
 	{
-		ImageCtrl::ImageCtrl(Vector2<int> position, Vector2<int> extent, Image *image, Color color) : ColorCtrl(position, extent, color)
+		ImageCtrl::ImageCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Image *image, Color color) : ColorCtrl(position, extent, color)
 		{
 			m_image = image;
 		}

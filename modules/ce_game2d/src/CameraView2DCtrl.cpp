@@ -15,7 +15,7 @@ namespace ce
 {
 	namespace ui
 	{
-		CameraView2DCtrl::CameraView2DCtrl(Vector2<int> position, Vector2<int> extent) : Control(position, extent)
+		CameraView2DCtrl::CameraView2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent) : Control(position, extent)
 		{
 			m_camera = 0;
 			m_viewScale = Vector2<float>(1.f, 1.f);

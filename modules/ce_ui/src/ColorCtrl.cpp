@@ -16,7 +16,7 @@ namespace ce
 {
 	namespace ui
 	{
-		ColorCtrl::ColorCtrl(Vector2<int> position, Vector2<int> extent, Color color) : Control(position, extent)
+		ColorCtrl::ColorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Color color) : Control(position, extent)
 		{
 			m_color = color;
 		}

@@ -21,7 +21,7 @@ namespace ce
 	{
 		map<int, vector<ButtonCtrl *> *> ButtonCtrl::ms_buttonGroupMap;
 
-		ButtonCtrl::ButtonCtrl(Vector2<int> position, Vector2<int> extent) : Control(position, extent)
+		ButtonCtrl::ButtonCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent) : Control(position, extent)
 		{
 			m_isEnabled = true;
 			m_group = -1;

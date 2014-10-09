@@ -1,5 +1,5 @@
 //- Standard Library -
-#include <string.h>
+#include <cstring>
 
 //- Centhra Engine -
 #include <CE/Base.h>

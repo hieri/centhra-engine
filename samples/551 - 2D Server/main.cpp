@@ -10,13 +10,9 @@
 #include <CE/Socket.h>
 #include <CE/Thread.h>
 #include <CE/Mutex.h>
-#include <CE/AppFrontend.h>
-#include <CE/Canvas.h>
-#include <CE/Game2D/Camera.h>
-#include <CE/Game2D/PhysicalObject.h>
-#include <CE/Game2D/PhysicalGroup.h>
+#include <CE/Frontend.h>
+#include <CE/Game2D.h>
 #include <CE/Game2D/DefaultPhysicsHandler.h>
-#include <CE/UI/CameraView2DCtrl.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
 
 #define NUMRANDOMS 128

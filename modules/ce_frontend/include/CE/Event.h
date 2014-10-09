@@ -73,7 +73,7 @@ namespace ce
 		int type;
 		unsigned long long timeMS;
 		Canvas *canvas;
-		int x, y;
+		int_canvas x, y;
 		unsigned int button, state;
 	} MouseButtonEvent;
 
@@ -84,7 +84,7 @@ namespace ce
 		int type;
 		unsigned long long timeMS;
 		Canvas *canvas;
-		int x, y;
+		int_canvas x, y;
 	} MouseMotionEvent;
 
 	/**	@brief Mouse Wheel Event Data Structure Class
@@ -104,7 +104,7 @@ namespace ce
 		int type;
 		unsigned long long timeMS;
 		Canvas *canvas;
-		int width, height;
+		int_canvas width, height;
 	} WindowResizeEvent;
 
 	/**	@brief Event Union Data Structure Class

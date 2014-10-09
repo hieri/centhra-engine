@@ -1,21 +1,21 @@
-//- Centhra Engine -
-#include <CE/Base.h>
-#include <CE/AppFrontend.h>
-#include <CE/Canvas.h>
-#include <CE/Keyboard.h>
+//- Standard Library -
+#include <cstring>
+#include <string>
 
 #ifdef _WIN32
 	//- Windows -
 	#include <windows.h>
 #endif
 
-//- Standard Library -
-#include <cstring>
-#include <string>
-
 //- OpenGL -
 #include <GL/gl.h>
 #include <GL/glu.h>
+
+//- Centhra Engine -
+#include <CE/Base.h>
+#include <CE/AppFrontend.h>
+#include <CE/Canvas.h>
+#include <CE/Keyboard.h>
 
 #ifdef _WIN32
 	#include <GL/glext.h>
@@ -38,7 +38,6 @@
 		#endif
 	#endif
 #endif
-
 
 using namespace std;
 

@@ -1,3 +1,11 @@
+#ifdef _WIN32
+	//- Windows -
+	#include <Windows.h>
+#endif
+
+//- OpenGL -
+#include <GL/gl.h>
+
 //- DevIL -
 #include <IL/il.h>
 #include <IL/ilu.h>
@@ -6,14 +14,6 @@
 #include <CE/Base.h>
 #include <CE/Image.h>
 #include <CE/Plugin.h>
-
-#ifdef _WIN32
-	//- Windows -
-	#include <Windows.h>
-#endif
-
-//- OpenGL -
-#include <GL/gl.h>
 
 //TODO: create Image Loader abstraction
 //TODO: externalize DevIL support into a plugin (ce_plugDevIL)

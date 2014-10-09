@@ -1,6 +1,3 @@
-//- Centhra Engine -
-#include <CE/Game2D/TiledBackground.h>
-
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
@@ -8,6 +5,9 @@
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- Centhra Engine -
+#include <CE/Game2D/TiledBackground.h>
 
 using namespace std;
 

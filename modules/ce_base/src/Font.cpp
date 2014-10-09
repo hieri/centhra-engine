@@ -1,11 +1,3 @@
-//- FreeType 2-
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
-//- Centhra Engine -
-#include <CE/Base.h>
-#include <CE/Font.h>
-
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
@@ -13,6 +5,14 @@
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- FreeType 2-
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+//- Centhra Engine -
+#include <CE/Base.h>
+#include <CE/Font.h>
 
 //TODO: handle freetype errors on startup
 

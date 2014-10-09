@@ -3,13 +3,6 @@
 #include <cstdio>
 #include <iostream>
 
-//- Centhra Engine -
-#include <CE/App.h>
-#include <CE/Audio.h>
-#include <CE/Thread.h>
-#include <CE/Plugin.h>
-#include <CE/Base.h>
-
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
@@ -24,6 +17,13 @@
 //- OpenAL -
 #include <al.h>
 #include <alc.h>
+
+//- Centhra Engine -
+#include <CE/App.h>
+#include <CE/Audio.h>
+#include <CE/Thread.h>
+#include <CE/Plugin.h>
+#include <CE/Base.h>
 
 using namespace std;
 

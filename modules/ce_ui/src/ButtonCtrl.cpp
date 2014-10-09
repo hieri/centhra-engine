@@ -1,12 +1,6 @@
 //- Standard Library -
 #include <algorithm>
 
-//- Centhra Engine -
-#include <CE/Base.h>
-#include <CE/UI/ButtonCtrl.h>
-
-using namespace std;
-
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
@@ -14,6 +8,12 @@ using namespace std;
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- Centhra Engine -
+#include <CE/Base.h>
+#include <CE/UI/ButtonCtrl.h>
+
+using namespace std;
 
 namespace ce
 {

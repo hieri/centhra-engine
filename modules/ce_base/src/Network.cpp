@@ -481,6 +481,7 @@ namespace ce
 	{
 		if(m_sockAddr)
 			delete (struct sockaddr_in *)m_sockAddr;
+		//TODO: Give UserData a class and virtual destructor
 		delete m_userData;
 	}
 	bool Server::Client::IsAlive() const

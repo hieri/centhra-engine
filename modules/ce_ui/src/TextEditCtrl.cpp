@@ -1,6 +1,3 @@
-//- Centhra Engine -
-#include <CE/UI/TextEditCtrl.h>
-
 #ifdef linux
 	//- Linux -
 	#include <unistd.h>
@@ -13,6 +10,9 @@
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- Centhra Engine -
+#include <CE/UI/TextEditCtrl.h>
 
 //TODO: Add navigation via Mouse and Keyboard
 

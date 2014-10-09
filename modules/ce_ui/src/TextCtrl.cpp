@@ -3,10 +3,6 @@
 #include <stdio.h>
 #include <string>
 
-//- Centhra Engine -
-#include <CE/UI/TextCtrl.h>
-#include <CE/Base.h>
-
 #ifdef linux
 	//- Linux -
 	#include <unistd.h>
@@ -24,6 +20,10 @@
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- Centhra Engine -
+#include <CE/UI/TextCtrl.h>
+#include <CE/Base.h>
 
 using namespace std;
 

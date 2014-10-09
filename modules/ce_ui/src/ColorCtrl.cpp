@@ -1,9 +1,3 @@
-//- Centhra Engine -
-#include <CE/UI/ColorCtrl.h>
-#include <CE/Base.h>
-
-using namespace std;
-
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
@@ -11,6 +5,12 @@ using namespace std;
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- Centhra Engine -
+#include <CE/UI/ColorCtrl.h>
+#include <CE/Base.h>
+
+using namespace std;
 
 namespace ce
 {

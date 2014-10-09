@@ -1,7 +1,3 @@
-//- Centhra Engine -
-#include <CE/UI/Control.h>
-#include <CE/Base.h>
-
 //- Standard Library -
 #include <algorithm>
 
@@ -12,6 +8,10 @@
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- Centhra Engine -
+#include <CE/UI/Control.h>
+#include <CE/Base.h>
 
 using namespace std;
 

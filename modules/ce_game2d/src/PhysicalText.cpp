@@ -1,10 +1,6 @@
-//- Centhra Engine 
-#include <CE/Base.h>
-#include <CE/Game2D/PhysicalText.h>
-
 //- Standard Library -
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 #include <string>
 
 #ifdef _WIN32
@@ -24,6 +20,10 @@
 		#define vsnprintf _vsnprintf_s
 	#endif
 #endif
+
+//- Centhra Engine 
+#include <CE/Base.h>
+#include <CE/Game2D/PhysicalText.h>
 
 using namespace std;
 

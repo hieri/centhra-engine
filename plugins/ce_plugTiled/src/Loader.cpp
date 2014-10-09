@@ -1,7 +1,3 @@
-//- Centhra Engine -
-#include <CE/Base.h>
-#include <CE/Plugin/Tiled/Loader.h>
-
 //- PugiXML -
 #include <pugixml.hpp>
 
@@ -12,6 +8,10 @@
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- Centhra Engine -
+#include <CE/Base.h>
+#include <CE/Plugin/Tiled/Loader.h>
 
 using namespace std;
 using namespace pugi;

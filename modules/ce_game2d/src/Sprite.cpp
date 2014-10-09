@@ -1,7 +1,3 @@
-//- Centhra Engine -
-#include <CE/Game2D/Sprite.h>
-#include <CE/Base.h>
-
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
@@ -9,6 +5,10 @@
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- Centhra Engine -
+#include <CE/Game2D/Sprite.h>
+#include <CE/Base.h>
 
 using namespace std;
 

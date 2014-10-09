@@ -1,15 +1,15 @@
-//- Centhra Engine 
-#include <CE/Base.h>
-#include <CE/RenderPrimitives.h>
-
 //- Standard Library -
 #include <algorithm>
-#include <stdlib.h>
+#include <cstdlib>
 
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
 #endif
+
+//- Centhra Engine 
+#include <CE/Base.h>
+#include <CE/RenderPrimitives.h>
 
 //- OpenGL -
 #include <GL/gl.h>

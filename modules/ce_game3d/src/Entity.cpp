@@ -1,10 +1,6 @@
 //- Standard Library -
 #include <algorithm>
 
-//- Centhra Engine -
-#include <CE/Base.h>
-#include <CE/Game3D/Entity.h>
-
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
@@ -12,6 +8,10 @@
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- Centhra Engine -
+#include <CE/Base.h>
+#include <CE/Game3D/Entity.h>
 
 using namespace std;
 

@@ -1,6 +1,14 @@
 //- Standard Library -
 #include <stdlib.h>
 
+#ifdef _WIN32
+	//- Windows -
+	#include <Windows.h>
+#endif
+
+//- OpenGL -
+#include <GL/gl.h>
+
 //- Centhra Engine -
 #include <CE/Base.h>
 #include <CE/AppFrontend.h>
@@ -18,14 +26,6 @@
 		#include <xcb/xcb.h>
 	#endif
 #endif
-
-#ifdef _WIN32
-	//- Windows -
-	#include <Windows.h>
-#endif
-
-//- OpenGL -
-#include <GL/gl.h>
 
 using namespace std;
 

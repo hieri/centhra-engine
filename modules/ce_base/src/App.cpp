@@ -1,3 +1,7 @@
+//- Standard Library -
+#include <cstdlib>
+#include <ctime>
+
 #ifdef linux
 	//- Linux -
 	#include <sys/time.h>
@@ -9,10 +13,6 @@
 	//- Windows -
 	#include <Windows.h>
 #endif
-
-//- Standard Library -
-#include <stdlib.h>
-#include <time.h>
 
 //- Centhra Engine -
 #include <CE/Base.h>

@@ -1,6 +1,6 @@
 //- Standard Library -
 #include <algorithm>
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 
 #ifdef _WIN32

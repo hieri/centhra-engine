@@ -1,11 +1,6 @@
-//- Centhra Engine 
-#include <CE/Base.h>
-#include <CE/RenderPrimitives.h>
-#include <CE/Game2D/PhysicalObject.h>
-
 //- Standard Library -
 #include <algorithm>
-#include <stdlib.h>
+#include <cstdlib>
 
 #ifdef _WIN32
 	//- Windows -
@@ -14,6 +9,11 @@
 
 //- OpenGL -
 #include <GL/gl.h>
+
+//- Centhra Engine 
+#include <CE/Base.h>
+#include <CE/RenderPrimitives.h>
+#include <CE/Game2D/PhysicalObject.h>
 
 using namespace std;
 

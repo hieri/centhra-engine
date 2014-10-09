@@ -2,6 +2,10 @@
 #include <assert.h>
 #include <vector>
 
+#ifdef _WIN32
+	#include <windows.h>
+#endif
+
 //- Centhra Engine -
 #include <CE/ConfigBase.h>
 #include <CE/Base.h>
@@ -10,10 +14,6 @@
 #if CE_BASE_USEPOSIXTHREAD
 	//- POSIX -
 	#include <pthread.h>
-#endif
-
-#ifdef _WIN32
-	#include <windows.h>
 #endif
 
 using namespace std;

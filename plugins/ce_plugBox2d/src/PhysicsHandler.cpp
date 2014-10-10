@@ -338,7 +338,7 @@ namespace ce
 				Vector2<float> position = m_object->GetPosition();
 				b2Body *b2d_body = (b2Body *)m_b2d_body;
 				b2Vec2 pos(position[0], position[1]);
-				b2d_body->SetTransform(pos, 0.f);
+				b2d_body->SetTransform(pos, b2d_body->GetAngle());
 			}
 			void bPhysicsHandler::bObjectHandle::OnSetExtent()
 			{

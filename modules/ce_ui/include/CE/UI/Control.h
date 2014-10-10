@@ -37,7 +37,7 @@ namespace ce
 			bool Contains(Control *control);
 			Control *GetParent() const;
 
-			Control *GetFromPosition(Vector2<int_canvas> position);
+			Control *GetFromPosition(Vector2<int_canvas> position, bool recurse = false);
 
 			void Render();
 

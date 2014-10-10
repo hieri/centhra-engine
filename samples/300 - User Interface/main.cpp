@@ -26,7 +26,7 @@ public:
 	}
 	bool OnStart()
 	{
-		m_canvas = Canvas::Create(300, 300, "300 - User Interface");
+		m_canvas = Canvas::Create(1280, 720, "300 - User Interface");
 
 		return true;
 	}

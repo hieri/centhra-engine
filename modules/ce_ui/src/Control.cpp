@@ -240,7 +240,7 @@ namespace ce
 		void Control::OnSetPosition()
 		{
 		}
-		Control *Control::GetFromPosition(Vector2<short> position)
+		Control *Control::GetFromPosition(Vector2<short> position, bool recurse)
 		{
 			for(vector<Control *>::reverse_iterator it = m_children.rbegin(); it != m_children.rend(); it++)
 			{
@@ -251,7 +251,9 @@ namespace ce
 				if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
 					continue;
 
-				return ctrl->GetFromPosition(position);
+				if(recurse)
+					return ctrl->GetFromPosition(position, recurse);
+				return ctrl;
 			}
 			return this;
 		}

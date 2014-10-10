@@ -231,6 +231,12 @@ namespace ce
 			if(m_objectHandle)
 				m_objectHandle->OnSetStatic();
 		}
+		bool PhysicalObject::CollidesWith(Vector2<float> pt)
+		{
+			if(m_objectHandle)
+				return m_objectHandle->CollidesWith(pt);
+			return false;
+		}
 		void PhysicalObject::OnSetTypeMask()
 		{
 		}

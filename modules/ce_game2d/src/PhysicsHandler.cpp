@@ -79,6 +79,10 @@ namespace ce
 		{
 			return m_physicsHandler;
 		}
+		bool PhysicsHandler::ObjectHandle::CollidesWith(Vector2<float> pt)
+		{
+			return false;
+		}
 		void PhysicsHandler::ObjectHandle::OnCreate()
 		{
 		}

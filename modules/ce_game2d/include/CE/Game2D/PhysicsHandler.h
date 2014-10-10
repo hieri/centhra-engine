@@ -53,6 +53,8 @@ namespace ce
 				PhysicalObject *GetReferenceObject() const;
 				PhysicsHandler *GetHandler() const;
 
+				virtual bool CollidesWith(Vector2<float> pt);
+
 				friend class PhysicalObject;
 			};
 			

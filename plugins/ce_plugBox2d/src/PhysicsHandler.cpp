@@ -394,6 +394,13 @@ namespace ce
 				if(b2d_body)
 					b2d_body->SetFixedRotation(fixedRotation);
 			}
+			bool bPhysicsHandler::bObjectHandle::CollidesWith(Vector2<float> pt)
+			{
+				b2Body *body = (b2Body *)m_b2d_body;
+				b2Fixture *fixture = body->GetFixtureList();
+				b2Vec2 p(pt[0], pt[1]);
+				return fixture->TestPoint(p);
+			}
 
 			bPhysicsHandler::bPhysicsHandler()
 			{

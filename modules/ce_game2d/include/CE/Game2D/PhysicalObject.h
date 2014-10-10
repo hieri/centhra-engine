@@ -64,6 +64,8 @@ namespace ce
 			void SetCollisionMask(unsigned int mask);
 			bool IsTrigger() const;
 
+			bool CollidesWith(Vector2<float> pt);
+
 			virtual void OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact);
 			virtual bool OnCollisionTest(PhysicalObject *collider, Vector2<float> pointOfContact);
 

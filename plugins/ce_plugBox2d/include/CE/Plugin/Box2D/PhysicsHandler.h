@@ -54,6 +54,7 @@ namespace ce
 					friend class bPhysicsHandler;
 
 					void SetFixedRotation(bool fixedRotation);
+					virtual bool CollidesWith(Vector2<float> pt);
 				};
 
 				void *GetBox2DSystem() const;

@@ -16,10 +16,8 @@ namespace ce
 {
 	namespace game2d
 	{
-		ComplexTileMap::Tile::Tile(TileSet *tileSet, Vector2<unsigned char> value)
+		ComplexTileMap::Tile::Tile(unsigned short layerIdx, unsigned short gid, TileSet *tileSet, Vector2<unsigned char> value) : m_layerIdx(layerIdx), m_tileSet(tileSet), m_value(value), m_gid(gid)
 		{
-			m_tileSet = tileSet;
-			m_value = value;
 		}
 
 		ComplexTileMap::ComplexTileMap(Vector2<unsigned short> size, Vector2<unsigned short> tileSize) : TileMap(size, tileSize)
@@ -44,9 +42,9 @@ namespace ce
 		{
 			return &m_tiles[x][y];
 		}
-		void ComplexTileMap::AddTile(unsigned short x, unsigned short y, TileSet *tileSet, Vector2<unsigned char> value)
+		void ComplexTileMap::AddTile(unsigned short layerIdx, unsigned short gid, unsigned short x, unsigned short y, TileSet *tileSet, Vector2<unsigned char> value)
 		{
-			Tile *tile = new Tile(tileSet, value);
+			Tile *tile = new Tile(layerIdx, gid, tileSet, value);
 			m_tiles[x][y].push_back(tile);
 		}
 		void ComplexTileMap::Render(unsigned short minX, unsigned short minY, unsigned short maxX, unsigned short maxY)

@@ -1,5 +1,5 @@
-#ifndef _CE_PLUGIN_TILED_LOADER_H_
-#define _CE_PLUGIN_TILED_LOADER_H_
+#ifndef _CE_PLUGIN_TILED_TMX_H_
+#define _CE_PLUGIN_TILED_TMX_H_
 
 //- Standard Library -
 #include <string>
@@ -15,7 +15,7 @@ namespace ce
 	{
 		namespace tiled
 		{
-			class Loader
+			class TMX
 			{
 			public:
 				typedef struct TileSet
@@ -28,10 +28,10 @@ namespace ce
 
 				typedef enum LayerType
 				{
-					Unknown,
-					Tile,
-					Object,
-					Image
+					Layer_Unknown,
+					Layer_Tile,
+					Layer_Object,
+					Layer_Image
 				} LayerType;
 
 				class Layer
@@ -39,7 +39,7 @@ namespace ce
 				public:
 					std::string m_name;
 					bool m_renderView;
-					unsigned short m_type, m_width, m_height;
+					unsigned short m_type, m_width, m_height, m_idx;
 					std::map<std::string, std::string> m_propertyMap;
 
 					Layer();
@@ -63,13 +63,13 @@ namespace ce
 				public:
 					typedef enum ObjectType
 					{
-						Unknown,
-						Tile,
-						Point,
-						Rectangle,
-						Ellipse,
-						Polygon,
-						Polyline
+						Object_Unknown,
+						Object_Tile,
+						Object_Point,
+						Object_Rectangle,
+						Object_Ellipse,
+						Object_Polygon,
+						Object_Polyline
 					} ObjectType;
 
 					unsigned short m_type, m_width, m_height, m_gid;
@@ -102,18 +102,21 @@ namespace ce
 					virtual void Render(ui::CameraView2DCtrl *viewCtrl);
 				};
 
-				static Loader *CreateFromFile(const char *file, Loader *loader = 0);
+				static TMX *CreateFromFile(const char *file, TMX *tmx = 0);
 
-				Loader();
-				~Loader();
+				TMX();
+				~TMX();
 
 				void Render(ui::CameraView2DCtrl *viewCtrl);
+				void SaveToFile(const char *file);
 
 				virtual void LoadObject(Layer *layer, ObjectDef *object);
 
+				virtual void SaveObjects(void *groupLayer);
+
 			protected:
-				std::string m_file;
-				Vector2<unsigned short> m_size;
+				std::string m_file, m_orientation, m_version;
+				Vector2<unsigned short> m_size, m_tileSize;
 				std::vector<Layer *> m_layerVec;
 				std::vector<TileSet *> m_tileSetVec;
 				std::map<std::string, std::string> m_propertyMap;

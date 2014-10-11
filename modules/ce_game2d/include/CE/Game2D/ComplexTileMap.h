@@ -22,15 +22,16 @@ namespace ce
 			public: //TODO: Verify is this really matters
 				TileSet *m_tileSet;
 				Vector2<unsigned char> m_value;
+				unsigned short m_layerIdx, m_gid;
 
-				Tile(TileSet *tileSet = 0, Vector2<unsigned char> value = Vector2<unsigned char>(0, 0));
+				Tile(unsigned short layerIdx, unsigned short gid, TileSet *tileSet = 0, Vector2<unsigned char> value = Vector2<unsigned char>(0, 0));
 			};
 
 			ComplexTileMap(Vector2<unsigned short> size, Vector2<unsigned short> tileSize);
 			~ComplexTileMap();
 
 			std::vector<Tile *> *GetTiles(unsigned short x, unsigned short y) const;
-			void AddTile(unsigned short x, unsigned short y, TileSet *tileSet, Vector2<unsigned char> value);
+			void AddTile(unsigned short layerIdx, unsigned short gid, unsigned short x, unsigned short y, TileSet *tileSet, Vector2<unsigned char> value);
 			float GetBleedLevel() const;
 			void SetBleedLevel(float bleedLevel);
 

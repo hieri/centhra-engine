@@ -3,12 +3,12 @@ set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(SRC
 	${SRC_DIR}/Base.cpp
-	${SRC_DIR}/Loader.cpp
+	${SRC_DIR}/TMX.cpp
 	${SRC_DIR}/pugixml.cpp
 )
 set(INC
 	${INC_DIR}/CE/Plugin/Tiled/Base.h
-	${INC_DIR}/CE/Plugin/Tiled/Loader.h
+	${INC_DIR}/CE/Plugin/Tiled/TMX.h
 	${INC_DIR}/pugiconfig.hpp
 	${INC_DIR}/pugixml.hpp
 )

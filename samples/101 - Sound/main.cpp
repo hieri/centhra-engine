@@ -21,7 +21,7 @@ public:
 	{
 		Audio::Init();
 
-		m_sample = Audio::CreateFromFile("../101 - Sound/res/sample.wav");
+		m_sample = Audio::CreateFromFile("../res/sample.wav");
 
 		return true;
 	}

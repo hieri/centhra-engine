@@ -32,8 +32,8 @@ public:
 
 		m_canvas = Canvas::Create(300, 300, "202 - Font Rendering");
 
-		print("Loading <../202 - Font Rendering/res/FreeMono.ttf>\n");
-		m_font = Font::CreateFromFile("../202 - Font Rendering/res/FreeMono.ttf");
+		print("Loading <../res/FreeMono.ttf>\n");
+		m_font = Font::CreateFromFile("../res/FreeMono.ttf");
 		if(m_font)
 			m_font->SetCharSize(0, 14*64, 96, 96);
 		else

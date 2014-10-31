@@ -31,8 +31,8 @@ public:
 
 		m_canvas = Canvas::Create(300, 300, "201 - Image Rendering");
 
-		print("Loading <../201 - Image Rendering/centhra.png>\n");
-		m_image = Image::CreateFromFile("../201 - Image Rendering/centhra.png");
+		print("Loading <../res/centhra.png>\n");
+		m_image = Image::CreateFromFile("../res/centhra.png");
 
 		if(m_image)
 		{

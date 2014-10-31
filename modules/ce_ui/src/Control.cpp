@@ -33,8 +33,8 @@ namespace ce
 		{
 			if(m_parent)
 				m_parent->Remove(this);
-			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-				delete *it;
+			while(m_children.size())
+				delete m_children.back();
 		}
 		void Control::UpdatePosition()
 		{

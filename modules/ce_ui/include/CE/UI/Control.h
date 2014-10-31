@@ -27,7 +27,7 @@ namespace ce
 
 		public:
 			Control(Vector2<int_canvas> position, Vector2<int_canvas> extent);
-			~Control();
+			virtual ~Control();
 
 			void Add(Control *control);
 			void Remove(Control *control);

@@ -218,7 +218,7 @@ public:
 			break;
 		case event::PostRender:
 			g_physicsMutex.Lock();
-			m_view->Render();
+			m_view->Render(m_canvas);
 			g_physicsMutex.Unlock();
 			break;
 		case event::WindowResize:

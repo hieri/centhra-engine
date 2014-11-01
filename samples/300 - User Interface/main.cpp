@@ -18,15 +18,32 @@ using namespace ce;
 class AppUserInterfaceSample : public AppFrontend
 {
 	Canvas *m_canvas;
+	ui::Control *m_rootCtrl;
+	Font *m_font;
 
 public:
 	AppUserInterfaceSample()
 	{
 		m_canvas = 0;
+		m_rootCtrl = 0;
+		m_font = 0;
 	}
 	bool OnStart()
 	{
 		m_canvas = Canvas::Create(1280, 720, "300 - User Interface");
+
+		Font::Init();
+		m_font = Font::CreateFromFile("../res/FreeMono.ttf");
+		if(m_font)
+			m_font->SetCharSize(0, 14 * 64, 96, 96);
+
+		m_rootCtrl = new ui::Control(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(1280, 720));
+
+		{
+			m_rootCtrl->Add(new ui::ColorCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(64, 64), Color(255, 0, 0)));
+			m_rootCtrl->Add(new ui::ColorCtrl(Vector2<int_canvas>(64, 64), Vector2<int_canvas>(64, 64), Color(255, 255, 0)));
+			m_rootCtrl->Add(new ui::TextCtrl(Vector2<int_canvas>(64, 0), Vector2<int_canvas>(256, 64), m_font, "Hello World!\nTEST\nOMG YEs", Color(255, 0, 0)));
+		}
 
 		return true;
 	}
@@ -37,6 +54,9 @@ public:
 	}
 	void OnStopped()
 	{
+		delete m_rootCtrl;
+
+		delete m_font;
 		delete m_canvas;
 	}
 	bool OnEvent(Event &event)
@@ -44,6 +64,7 @@ public:
 		switch(event.type)
 		{
 			case event::PostRender:
+				m_rootCtrl->Render(m_canvas);
 				break;
 		}
 		return true;

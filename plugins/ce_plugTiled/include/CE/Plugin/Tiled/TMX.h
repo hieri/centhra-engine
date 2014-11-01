@@ -44,7 +44,7 @@ namespace ce
 
 					Layer();
 
-					virtual void Render(ui::CameraView2DCtrl *viewCtrl);
+					virtual void Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl);
 				};
 
 				class TileLayer : public Layer
@@ -55,7 +55,7 @@ namespace ce
 					TileLayer();
 					~TileLayer();
 
-					virtual void Render(ui::CameraView2DCtrl *viewCtrl);
+					virtual void Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl);
 				};
 
 				class ObjectDef
@@ -88,7 +88,7 @@ namespace ce
 					ObjectLayer();
 					~ObjectLayer();
 
-					virtual void Render(ui::CameraView2DCtrl *viewCtrl);
+					virtual void Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl);
 				};
 
 				class ImageLayer : public Layer
@@ -99,7 +99,7 @@ namespace ce
 					ImageLayer();
 					~ImageLayer();
 
-					virtual void Render(ui::CameraView2DCtrl *viewCtrl);
+					virtual void Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl);
 				};
 
 				static TMX *CreateFromFile(const char *file, TMX *tmx = 0);
@@ -107,7 +107,7 @@ namespace ce
 				TMX();
 				~TMX();
 
-				void Render(ui::CameraView2DCtrl *viewCtrl);
+				void Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl);
 				void SaveToFile(const char *file);
 
 				virtual void LoadObject(Layer *layer, ObjectDef *object);

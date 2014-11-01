@@ -207,7 +207,7 @@ public:
 			halfExtent = m_view->GetExtent() / 2;
 			center = m_entity->GetPosition();
 
-			m_view->Render();
+			m_view->Render(m_canvas);
 			glPushMatrix();
 				if(m_numFound)
 					glColor4ub(0, 255, 0, 255);

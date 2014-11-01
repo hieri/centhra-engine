@@ -258,7 +258,7 @@ public:
 			halfExtent = m_view->GetExtent() / 2;
 			center = m_entity->GetPosition();
 
-			m_view->Render();
+			m_view->Render(m_canvas);
 			glPushMatrix();
 				glColor4ub(255, 0, 0, 255);
 				glTranslatef((float)halfExtent[0], (float)halfExtent[1], 0.f);

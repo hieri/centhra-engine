@@ -11,6 +11,7 @@
 
 //- Centhra Engine -
 #include <CE/UI/Control.h>
+#include <CE/Canvas.h>
 #include <CE/Base.h>
 
 using namespace std;
@@ -19,15 +20,14 @@ namespace ce
 {
 	namespace ui
 	{
-		Control::Control(Vector2<short> position, Vector2<short> extent)
+		Control::Control(Vector2<int_canvas> position, Vector2<int_canvas> extent)
 		{
 			m_type = 0;
-			m_isVisible = true;
+			m_isVisible = m_isUpdatingAbsolute = true;
 			m_parent = 0;
 			m_position = position;
 			m_extent = extent;
-			m_children = vector<Control *>();
-			UpdatePosition();
+			UpdateAbsolute();
 		}
 		Control::~Control()
 		{
@@ -36,30 +36,31 @@ namespace ce
 			while(m_children.size())
 				delete m_children.back();
 		}
-		void Control::UpdatePosition()
+		void Control::UpdateAbsolute()
 		{
-			m_absolutePosition = m_position;
 			if(m_parent)
-				m_absolutePosition += m_parent->m_absolutePosition;
+				m_absolutePosition = m_position + m_parent->m_absolutePosition;
+			else
+				m_absolutePosition = m_position;
 			
-			short cx = m_position[0];
-			short cy = m_position[1];
-			short cw = m_extent[0];
-			short ch = m_extent[1];
+			int_canvas cx = m_position[0];
+			int_canvas cy = m_position[1];
+			int_canvas cw = m_extent[0];
+			int_canvas ch = m_extent[1];
 			
 			if(m_parent)
 			{
 				cx = m_absolutePosition[0];
 				cy = m_absolutePosition[1];
 
-				if(cx > (m_parent->m_exposurePosition[0] + m_parent->m_exposureExtent[0]))
-					cx = m_parent->m_exposurePosition[0] + m_parent->m_exposureExtent[0];
-				if(cy > (m_parent->m_exposurePosition[1] + m_parent->m_exposureExtent[1]))
-					cy = m_parent->m_exposurePosition[1] + m_parent->m_exposureExtent[1];
-				if(cx < m_parent->m_exposurePosition[0])
-					cx = m_parent->m_exposurePosition[0];
-				if(cy < m_parent->m_exposurePosition[1])
-					cy = m_parent->m_exposurePosition[1];
+				if(cx > (m_parent->m_exposedPosition[0] + m_parent->m_exposedExtent[0]))
+					cx = m_parent->m_exposedPosition[0] + m_parent->m_exposedExtent[0];
+				if(cy > (m_parent->m_exposedPosition[1] + m_parent->m_exposedExtent[1]))
+					cy = m_parent->m_exposedPosition[1] + m_parent->m_exposedExtent[1];
+				if(cx < m_parent->m_exposedPosition[0])
+					cx = m_parent->m_exposedPosition[0];
+				if(cy < m_parent->m_exposedPosition[1])
+					cy = m_parent->m_exposedPosition[1];
 			}
 			
 		//	if(cx > game::windowWidth)
@@ -73,8 +74,8 @@ namespace ce
 			
 			if(m_parent)
 			{
-				cw = m_parent->m_exposurePosition[0] + m_parent->m_exposureExtent[0] - cx;
-				ch = m_parent->m_exposurePosition[1] + m_parent->m_exposureExtent[1] - cy;
+				cw = m_parent->m_exposedPosition[0] + m_parent->m_exposedExtent[0] - cx;
+				ch = m_parent->m_exposedPosition[1] + m_parent->m_exposedExtent[1] - cy;
 				
 				if(cw > m_extent[0])
 					cw = m_extent[0];
@@ -105,11 +106,11 @@ namespace ce
 			if(cy < 0)
 				cy = 0;
 
-			m_exposurePosition = Vector2<short>(cx, cy);
-			m_exposureExtent = Vector2<short>(cw, ch);
-			
+			m_exposedPosition = Vector2<int_canvas>(cx, cy);
+			m_exposedExtent = Vector2<int_canvas>(cw, ch);
+
 			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-				(*it)->UpdatePosition();
+				(*it)->UpdateAbsolute();
 		}
 		void Control::Add(Control *control)
 		{
@@ -121,7 +122,8 @@ namespace ce
 							control->m_parent->Remove(control);
 						m_children.push_back(control);
 						control->m_parent = this;
-						control->UpdatePosition();
+						if(control->m_isUpdatingAbsolute)
+							control->UpdateAbsolute();
 					}
 		}
 		bool Control::Contains(Control *control)
@@ -169,27 +171,42 @@ namespace ce
 					Control *control = *it;
 					control->m_parent = 0;
 					m_children.erase(it);
-					control->UpdatePosition();
+					if(control->m_isUpdatingAbsolute)
+						control->UpdateAbsolute();
 				}
 			}
 		}
-		void Control::Render()
+		void Control::Render(UIContext &context)
 		{
 			bool noParent = !m_parent;
-			if(noParent)
+			if(context.isCanvas && noParent)
 				glEnable(GL_SCISSOR_TEST);
 			if(m_isVisible)
 			{
 				glPushMatrix();
-				glScissor(m_exposurePosition[0], m_exposurePosition[1], m_exposureExtent[0], m_exposureExtent[1]);
+				if(context.isCanvas)
+					glScissor(m_exposedPosition[0], context.height - m_exposedPosition[1] - m_exposedExtent[1], m_exposedExtent[0], m_exposedExtent[1]);
 				glTranslatef((float)m_position[0], (float)m_position[1], 0);
 				DoRender();
 				for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-					(*it)->Render();
+					(*it)->Render(context);
 				glPopMatrix();
 			}
-			if(noParent)
+			if(context.isCanvas && noParent)
 				glDisable(GL_SCISSOR_TEST);
+		}
+		void Control::Render(Canvas *canvas)
+		{
+			UIContext context;
+			context.width = canvas->GetWidth();
+			context.height = canvas->GetHeight();
+			context.isCanvas = true;
+			
+			glPushMatrix();
+			glTranslatef(0.f, (float)context.height, 0.f);
+			glScalef(1.f, -1.f, 1.f);
+			Render(context);
+			glPopMatrix();
 		}
 		void Control::DoRender()
 		{
@@ -198,36 +215,38 @@ namespace ce
 		{
 			m_isVisible = isVisible;
 		}
-		Vector2<short> Control::GetExtent() const
+		Vector2<int_canvas> Control::GetExtent() const
 		{
 			return m_extent;
 		}
-		Vector2<short> Control::GetPosition() const
+		Vector2<int_canvas> Control::GetPosition() const
 		{
 			return m_position;
 		}
-		Vector2<short> Control::GetAbsolutePosition() const
+		Vector2<int_canvas> Control::GetAbsolutePosition() const
 		{
 			return m_absolutePosition;
 		}
-		Vector2<short> Control::GetExposurePosition() const
+		Vector2<int_canvas> Control::GetExposurePosition() const
 		{
-			return m_exposurePosition;
+			return m_exposedPosition;
 		}
-		Vector2<short> Control::GetExposureExtent() const
+		Vector2<int_canvas> Control::GetExposureExtent() const
 		{
-			return m_exposureExtent;
+			return m_exposedExtent;
 		}
-		void Control::SetExtent(Vector2<short> extent)
+		void Control::SetExtent(Vector2<int_canvas> extent)
 		{
 			m_extent = extent;
-			UpdatePosition();
+			if(m_isUpdatingAbsolute)
+				UpdateAbsolute();
 			OnSetExtent();
 		}
-		void Control::SetPosition(Vector2<short> position)
+		void Control::SetPosition(Vector2<int_canvas> position)
 		{
 			m_position = position;
-			UpdatePosition();
+			if(m_isUpdatingAbsolute)
+				UpdateAbsolute();
 			OnSetPosition();
 		}
 		bool Control::OnEvent(Event &event)
@@ -240,14 +259,14 @@ namespace ce
 		void Control::OnSetPosition()
 		{
 		}
-		Control *Control::GetFromPosition(Vector2<short> position, bool recurse)
+		Control *Control::GetFromPosition(Vector2<int_canvas> position, bool recurse)
 		{
 			for(vector<Control *>::reverse_iterator it = m_children.rbegin(); it != m_children.rend(); it++)
 			{
 				Control *ctrl = *it;
 				
-				Vector2<short> expPos = ctrl->GetExposurePosition();
-				Vector2<short> expExt = ctrl->GetExposureExtent();
+				Vector2<int_canvas> expPos = ctrl->GetExposurePosition();
+				Vector2<int_canvas> expExt = ctrl->GetExposureExtent();
 				if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
 					continue;
 
@@ -256,6 +275,14 @@ namespace ce
 				return ctrl;
 			}
 			return this;
+		}
+		void Control::SetUpdatingAbsolute(bool isUpdatingAbsolute)
+		{
+			m_isUpdatingAbsolute = isUpdatingAbsolute;
+		}
+		bool Control::IsUpdatingAbsolute() const
+		{
+			return m_isUpdatingAbsolute;
 		}
 	}
 }

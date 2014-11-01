@@ -58,7 +58,7 @@ namespace ce
 				m_renderView = false;
 				m_idx = 0;
 			}
-			void TMX::Layer::Render(ui::CameraView2DCtrl *viewCtrl)
+			void TMX::Layer::Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl)
 			{
 			}
 
@@ -71,7 +71,7 @@ namespace ce
 			{
 				delete m_tileMap;
 			}
-			void TMX::TileLayer::Render(ui::CameraView2DCtrl *viewCtrl)
+			void TMX::TileLayer::Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl)
 			{
 				glEnable(GL_BLEND);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -132,7 +132,7 @@ namespace ce
 				glDisable(GL_BLEND);
 
 				if(m_renderView)
-					viewCtrl->Render();
+					viewCtrl->Render(canvas);
 			}
 
 			TMX::ObjectLayer::ObjectLayer() : Layer()
@@ -144,10 +144,10 @@ namespace ce
 				for(vector<ObjectDef *>::iterator it = m_objectDefVec.begin(); it != m_objectDefVec.end(); it++)
 					delete *it;
 			}
-			void TMX::ObjectLayer::Render(ui::CameraView2DCtrl *viewCtrl)
+			void TMX::ObjectLayer::Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl)
 			{
 				if(m_renderView)
-					viewCtrl->Render();
+					viewCtrl->Render(canvas);
 			}
 
 			TMX::ImageLayer::ImageLayer() : Layer()
@@ -157,10 +157,10 @@ namespace ce
 			TMX::ImageLayer::~ImageLayer()
 			{
 			}
-			void TMX::ImageLayer::Render(ui::CameraView2DCtrl *viewCtrl)
+			void TMX::ImageLayer::Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl)
 			{
 				if(m_renderView)
-					viewCtrl->Render();
+					viewCtrl->Render(canvas);
 			}
 
 			TMX::ObjectDef::ObjectDef()
@@ -383,12 +383,12 @@ namespace ce
 					delete tileSet;
 				}
 			}
-			void TMX::Render(ui::CameraView2DCtrl *viewCtrl)
+			void TMX::Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl)
 			{
 				for(vector<Layer *>::iterator it = m_layerVec.begin(); it != m_layerVec.end(); it++)
 				{
 					Layer *layer = *it;
-					layer->Render(viewCtrl);
+					layer->Render(canvas, viewCtrl);
 				}
 			}
 			void TMX::LoadObject(Layer *layer, ObjectDef *object)
@@ -478,7 +478,7 @@ namespace ce
 								{
 									ObjectDef *objectDef = *itB;
 
-									if(!objectDef->m_typeStr.compare("Prop"))
+									if(!objectDef->m_typeStr.compare("Prop"))// || !objectDef->m_typeStr.compare("Wall"))
 										continue;
 
 									xml_node xObject = xLayer.append_child("object");

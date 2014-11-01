@@ -12,8 +12,7 @@ namespace ce
 	{
 		static Font *ms_default;
 
-		std::map<unsigned int, std::map<unsigned short, unsigned int> > m_glDisplayListMap;
-		std::map<unsigned int, std::map<unsigned short, unsigned int> > m_glTextureMap;
+		std::map<unsigned int, std::map<unsigned short, unsigned int> > m_glTextureMap, m_glDisplayListMap, m_glUIDisplayListMap;
 		void *m_ftFace;
 		unsigned int m_height;
 
@@ -46,11 +45,13 @@ namespace ce
 		 *	@param str The string that will be drawn.
 		 */
 		void DrawString(const char *str);
+		void DrawStringUI(const char *str);
 
 		/**	@brief Draws a unicode character.
 		 *	@param unicodeChar The unicode character that will be drawn.
 		 */
 		void DrawUnicodeChar(unsigned short unicodeChar);
+		void DrawUnicodeCharUI(unsigned short unicodeChar);
 
 		/**	@brief Sets the character size of the Font.
 		 *	@param width The width of a character.

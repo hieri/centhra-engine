@@ -8,6 +8,7 @@
 #include <CE/ConfigUI.h>
 #include <CE/Vector2.h>
 #include <CE/Event.h>
+#include <CE/Canvas.h>
 
 namespace ce
 {
@@ -16,13 +17,13 @@ namespace ce
 		class Control
 		{
 		protected:
-			bool m_isVisible;
+			bool m_isVisible, m_isUpdatingAbsolute;
 			unsigned int m_type;
 			Control *m_parent;
 			std::vector<Control *> m_children;
-			Vector2<int_canvas> m_position, m_extent, m_absolutePosition, m_exposurePosition, m_exposureExtent;
+			Vector2<int_canvas> m_position, m_extent, m_absolutePosition, m_exposedPosition, m_exposedExtent;
 
-			void UpdatePosition();
+			void UpdateAbsolute();
 			virtual void DoRender();
 
 		public:
@@ -39,9 +40,20 @@ namespace ce
 
 			Control *GetFromPosition(Vector2<int_canvas> position, bool recurse = false);
 
-			void Render();
+
+			typedef struct UIContext
+			{
+				int_canvas width, height;
+				bool isCanvas;
+			} UIContext;
+
+			void Render(UIContext &context);
+			void Render(Canvas *canvas);
 
 			void SetVisible(bool isVisible);
+
+			void SetUpdatingAbsolute(bool isUpdatingAbsolute);
+			bool IsUpdatingAbsolute() const;
 
 			Vector2<int_canvas> GetPosition() const;
 			Vector2<int_canvas> GetExtent() const;

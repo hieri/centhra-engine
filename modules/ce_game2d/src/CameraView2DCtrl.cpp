@@ -40,9 +40,10 @@ namespace ce
 
 //					glEnable(GL_DEPTH_TEST);
 					glPushMatrix();
+						glScalef(1.f, -1.f, 1.f);
 						Vector2<float> half((float)m_extent[0] / 2.f, (float)m_extent[1] / 2.f);
 						Vector2<float> focusHalf = focusExtent / 2.f;
-						glTranslatef(half[0] - m_viewScale[0] * focusPosition[0], half[1] - m_viewScale[1] * focusPosition[1], 0.f);
+						glTranslatef(half[0] - m_viewScale[0] * focusPosition[0], -half[1] - m_viewScale[1] * focusPosition[1], 0.f);
 //						glTranslatef(half[0] - m_viewScale[0] * (focusPosition[0] + focusHalf[0]), half[1] - m_viewScale[1] * (focusPosition[1] + focusHalf[1]), 0.f);
 						glScalef(m_viewScale[0], m_viewScale[1], 1.f);
 

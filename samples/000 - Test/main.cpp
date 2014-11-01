@@ -73,7 +73,7 @@ public:
 			click->OnEvent(event);
 			break;
 		case event::PostRender:
-			m_masterCtrl->Render();
+			m_masterCtrl->Render(m_canvas);
 			break;
 		}
 

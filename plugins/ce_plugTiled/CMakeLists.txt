@@ -13,44 +13,24 @@ set(INC
 	${INC_DIR}/pugixml.hpp
 )
 
-find_package(OpenGL REQUIRED)
+set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-set(INCLUDE
-	${CMAKE_CURRENT_SOURCE_DIR}/include
-	${PROJECT_SOURCE_DIR}/modules/ce_base/include
-	${PROJECT_SOURCE_DIR}/modules/ce_frontend/include
-	${PROJECT_SOURCE_DIR}/modules/ce_game2d/include
-	${PROJECT_SOURCE_DIR}/modules/ce_ui/include
-)
+list(APPEND INCLUDE ${CE_BASE_INCLUDE_DIRS} ${CE_FRONTEND_INCLUDE_DIRS} ${CE_GAME2D_INCLUDE_DIRS} ${CE_UI_INCLUDE_DIRS})
+list(APPEND LIB ce_base ce_frontend ce_game2d ce_ui)
 
-set(LIB
-	ce_base
-	ce_frontend
-	ce_game2d
-	ce_ui
-	${OPENGL_LIBRARIES}
-#	optimized ${BOX2D_LIBRARY_RELEASE}
-#	debug ${BOX2D_LIBRARY_DEBUG}
-)
+list(REMOVE_DUPLICATES INCLUDE)
+list(REMOVE_DUPLICATES LIB)
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	find_package(X11 REQUIRED)
-	set(LIB ${LIB} ${X11_LIBRARIES})
-	if(CE_FRONTEND_USEXCB)
-		set(LIB ${LIB} ${PROJECT_SOURCE_DIR}/external/lib/libxcb.so ${PROJECT_SOURCE_DIR}/external/lib/libX11-xcb.so)
-	endif(CE_FRONTEND_USEXCB)
-	set(INCLUDE ${INCLUDE} ${X11_INCLUDE_DIR})
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-
-include_directories(${INCLUDE})
-
-set(NAME "ce_plugTiled")
-add_library(${NAME} STATIC ${SRC} ${INC} ${RES})
-set_target_properties(${NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
-set_target_properties(${NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/lib)
-set_target_properties(${NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/lib)
-set_target_properties(${NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
-set_target_properties(${NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/lib)
-set_target_properties(${NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/lib)
-set_target_properties(${NAME} PROPERTIES DEBUG_POSTFIX -d)
-target_link_libraries(${NAME} ${LIB})
+set(TARGET "ce_plugTiled")
+add_library(${TARGET} STATIC ${SRC} ${INC} ${RES})
+set_target_properties(${TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES DEBUG_POSTFIX -d)
+target_include_directories(${TARGET} PUBLIC ${INCLUDE})
+target_link_libraries(${TARGET} ${LIB})
+add_dependencies(${TARGET} ce_base ce_frontend ce_game2d ce_ui)
+set(CE_PLUGTILED_INCLUDE_DIRS ${INCLUDE} CACHE PATH "ce_plugTiled include directories")

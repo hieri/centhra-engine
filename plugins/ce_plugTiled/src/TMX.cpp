@@ -53,7 +53,7 @@ namespace ce
 
 			TMX::Layer::Layer()
 			{
-				m_type = Unknown;
+				m_type = Layer_Unknown;
 				m_width = m_height = 0;
 				m_renderView = false;
 				m_idx = 0;
@@ -165,7 +165,7 @@ namespace ce
 
 			TMX::ObjectDef::ObjectDef()
 			{
-				m_type = Unknown;
+				m_type = Object_Unknown;
 				m_width = m_height = m_gid = 0;
 				m_x = m_y = 0;
 			}

@@ -1,4 +1,3 @@
-
 set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/CE)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
@@ -26,14 +25,25 @@ set(SRC
 
 configure_file(${INC_DIR}/ConfigUI.h.in ${INC_DIR}/ConfigUI.h)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/modules/ce_base/include ${PROJECT_SOURCE_DIR}/modules/ce_frontend/include ${PROJECT_SOURCE_DIR}/external/include)
-set(NAME "ce_ui")
-add_library(${NAME} STATIC ${SRC} ${INC} ${RES})
-set_target_properties(${NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
-set_target_properties(${NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/lib)
-set_target_properties(${NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/lib)
-set_target_properties(${NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
-set_target_properties(${NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/lib)
-set_target_properties(${NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/lib)
-set_target_properties(${NAME} PROPERTIES DEBUG_POSTFIX -d)
-target_link_libraries(${NAME} ${LIB})
+set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(LIB "")
+
+list(APPEND INCLUDE ${CE_BASE_INCLUDE_DIRS} ${CE_FRONTEND_INCLUDE_DIRS})
+list(APPEND LIB ce_base ce_frontend)
+
+list(REMOVE_DUPLICATES INCLUDE)
+list(REMOVE_DUPLICATES LIB)
+
+set(TARGET "ce_ui")
+add_library(${TARGET} STATIC ${SRC} ${INC} ${RES})
+set_target_properties(${TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES DEBUG_POSTFIX -d)
+target_include_directories(${TARGET} PUBLIC ${INCLUDE})
+target_link_libraries(${TARGET} ${LIB})
+add_dependencies(${TARGET} ce_base ce_frontend)
+set(CE_UI_INCLUDE_DIRS ${INCLUDE} CACHE PATH "ce_ui include directories")

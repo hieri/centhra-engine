@@ -75,6 +75,7 @@ namespace ce
 		void UpdateViewport(int_canvas width, int_canvas height);
 		void SetVSync(bool vsync);
 		void SetWindowedExtent(int_canvas width, int_canvas height);
+		void Resize(int_canvas width, int_canvas height);
 
 		void SetTitle(const char *title);
 	};

@@ -41,8 +41,8 @@
 
 using namespace std;
 
-//TODO: sync mouse button values for cross-platform
-//TODO: fix xcb opengl window creation
+//TODO: find better fix for x11/xcb window creation
+//TODO: properly implement xcb fullscreen function
 
 namespace ce
 {
@@ -220,7 +220,8 @@ namespace ce
 					| XCB_EVENT_MASK_BUTTON_RELEASE
 					| XCB_EVENT_MASK_POINTER_MOTION
 					| XCB_EVENT_MASK_STRUCTURE_NOTIFY
-					| XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY;
+					| XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY
+					| XCB_EVENT_MASK_FOCUS_CHANGE;
 			#else
 				Window xWindow;
 				uint32_t xEventMask = KeyPressMask
@@ -264,7 +265,7 @@ namespace ce
 					uint32_t xcbValueList[] = { xcbEventMask, xcbColorMap, 0 };
 					uint32_t xcbValueMask = XCB_CW_EVENT_MASK | XCB_CW_COLORMAP;
 
-					xcb_create_window(xcbConnection, XCB_COPY_FROM_PARENT, xcbWindow, screen->root, 0, 0, width, height, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, visualID, xcbValueMask, xcbValueList);
+					xcb_create_window(xcbConnection, XCB_COPY_FROM_PARENT, xcbWindow, screen->root, 0, 0, width / 2, height / 2, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, visualID, xcbValueMask, xcbValueList);
 
 					if(!xcbWindow)
 					{
@@ -311,7 +312,7 @@ namespace ce
 					XSetWindowAttributes swa;
 					swa.colormap = xColorMap;
 					swa.event_mask = xEventMask;
-					xWindow = XCreateWindow(xDisplay, RootWindow(xDisplay, xVisualInfo->screen), 0, 0, width, height, 0, xVisualInfo->depth, InputOutput, xVisualInfo->visual, CWColormap | CWEventMask, &swa);
+					xWindow = XCreateWindow(xDisplay, RootWindow(xDisplay, xVisualInfo->screen), 0, 0, width / 2, height / 2, 0, xVisualInfo->depth, InputOutput, xVisualInfo->visual, CWColormap | CWEventMask, &swa);
 					
 					if(!xWindow)
 					{
@@ -392,7 +393,7 @@ namespace ce
 					uint32_t xcbValueList[] = { xcbEventMask, xcbColorMap, 0 };
 					uint32_t xcbValueMask = XCB_CW_EVENT_MASK | XCB_CW_COLORMAP;
 
-					xcb_create_window(xcbConnection, XCB_COPY_FROM_PARENT, xcbWindow, screen->root, 0, 0, width, height, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, xcbVisualInfo->visual_id, xcbValueMask, xcbValueList);
+					xcb_create_window(xcbConnection, XCB_COPY_FROM_PARENT, xcbWindow, screen->root, 0, 0, width / 2, height / 2, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, xcbVisualInfo->visual_id, xcbValueMask, xcbValueList);
 
 					if(!xcbWindow)
 					{
@@ -438,7 +439,7 @@ namespace ce
 					swa.border_pixel = 0;
 					swa.event_mask = xEventMask;
 
-					xWindow = XCreateWindow(xDisplay, xRootWindow, 0, 0, width, height, 0, xVisualInfo->depth, InputOutput, xVisualInfo->visual, CWColormap | CWEventMask, &swa);
+					xWindow = XCreateWindow(xDisplay, xRootWindow, 0, 0, width / 2, height / 2, 0, xVisualInfo->depth, InputOutput, xVisualInfo->visual, CWColormap | CWEventMask, &swa);
 
 					if(!xWindow)
 					{
@@ -552,6 +553,9 @@ namespace ce
 			app->m_canvasMap[hWnd] = canvas;
 		#endif
 		
+		#if CE_FRONTEND_USEXLIB
+			canvas->Resize(width, height);
+		#endif
 		canvas->UpdateViewport(width, height);
 		canvas->SetVSync(canvas->m_vsync);
 
@@ -626,43 +630,37 @@ namespace ce
 	void Canvas::Render()
 	{
 		unsigned long long time = m_app->GetRunTimeMS();
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(0.f, 0.f, 0.f, 1.f);
 
-//		print("VS: %d\n", m_vsync);
-		//TODO: integrate togglable VSync
-//		if((time - m_lastRenderTimeMS) > 15 || !m_vsync)
-		{
-			glClear(GL_COLOR_BUFFER_BIT);
-			glClearColor(0.f, 0.f, 0.f, 1.f);
+		m_lastRenderTimeMS = time;
 
-			m_lastRenderTimeMS = time;
+		Event event;
+		event.base.canvas = this;
+		event.base.timeMS = time;
+		event.type = event::PreRender;
+		m_app->OnEvent(event);
 
-			Event event;
-			event.base.canvas = this;
-			event.base.timeMS = time;
-			event.type = event::PreRender;
-			m_app->OnEvent(event);
+		event.base.timeMS = m_app->GetRunTimeMS();
+		event.type = event::Render;
+		m_app->OnEvent(event);
 
-			event.base.timeMS = m_app->GetRunTimeMS();
-			event.type = event::Render;
-			m_app->OnEvent(event);
+		event.base.timeMS = m_app->GetRunTimeMS();
+		event.type = event::PostRender;
+		m_app->OnEvent(event);
 
-			event.base.timeMS = m_app->GetRunTimeMS();
-			event.type = event::PostRender;
-			m_app->OnEvent(event);
+		#if CE_FRONTEND_USEXLIB
+			Display *xDisplay = (Display *)m_app->GetXDisplay();
 
-			#if CE_FRONTEND_USEXLIB
-				Display *xDisplay = (Display *)m_app->GetXDisplay();
-
-				#if CE_FRONTEND_USEXCB
-					glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3) ? m_glxWindow : m_xcbWindow);
-				#else
-					glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3) ? m_glxWindow : m_xWindow);
-				#endif
+			#if CE_FRONTEND_USEXCB
+				glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3) ? m_glxWindow : m_xcbWindow);
+			#else
+				glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3) ? m_glxWindow : m_xWindow);
 			#endif
-			#if CE_FRONTEND_USEWIN
-				SwapBuffers((HDC)m_deviceContextHandle);
-			#endif
-		}
+		#endif
+		#if CE_FRONTEND_USEWIN
+			SwapBuffers((HDC)m_deviceContextHandle);
+		#endif
 	}
 	bool Canvas::OnEvent(Event &event)
 	{
@@ -680,23 +678,24 @@ namespace ce
 		if(fullscreen)
 		{
 			#if CE_FRONTEND_USEXLIB
-				#if CE_FRONTEND_USEXCB
-				#else
-					Display *xDisplay = (Display *)m_app->GetXDisplay();
-					Atom wm_state = XInternAtom(xDisplay, "_NET_WM_STATE", False);
-					Atom fullscreen = XInternAtom(xDisplay, "_NET_WM_STATE_FULLSCREEN", False);
+				Display *xDisplay = (Display *)m_app->GetXDisplay();
+				Atom a_wm_state = XInternAtom(xDisplay, "_NET_WM_STATE", False);
+				Atom a_fullscreen = XInternAtom(xDisplay, "_NET_WM_STATE_FULLSCREEN", False);
 
-					XEvent xev;
-					memset(&xev, 0, sizeof(xev));
-					xev.type = ClientMessage;
+				XEvent xev;
+				memset(&xev, 0, sizeof(xev));
+				xev.type = ClientMessage;
+				#if CE_FRONTEND_USEXCB
+					xev.xclient.window = m_xcbWindow;
+				#else
 					xev.xclient.window = m_xWindow;
-					xev.xclient.message_type = wm_state;
-					xev.xclient.format = 32;
-					xev.xclient.data.l[0] = 1;
-					xev.xclient.data.l[1] = fullscreen;
-					xev.xclient.data.l[2] = 0;
-					XSendEvent(xDisplay, DefaultRootWindow(xDisplay), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 				#endif
+				xev.xclient.message_type = a_wm_state;
+				xev.xclient.format = 32;
+				xev.xclient.data.l[0] = 1;
+				xev.xclient.data.l[1] = a_fullscreen;
+				xev.xclient.data.l[2] = 0;
+				XSendEvent(xDisplay, DefaultRootWindow(xDisplay), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 			#endif
 
 			#if CE_FRONTEND_USEWIN
@@ -716,22 +715,24 @@ namespace ce
 		else
 		{
 			#if CE_FRONTEND_USEXLIB
-				#if CE_FRONTEND_USEXCB
-				#else
-					Display *xDisplay = (Display *)m_app->GetXDisplay();
-					Atom fullscreen = XInternAtom(xDisplay, "_NET_WM_STATE_FULLSCREEN", False);
+				Display *xDisplay = (Display *)m_app->GetXDisplay();
+				Atom a_wm_state = XInternAtom(xDisplay, "_NET_WM_STATE", False);
+				Atom a_fullscreen = XInternAtom(xDisplay, "_NET_WM_STATE_FULLSCREEN", False);
 
-					XEvent xev;
-					memset(&xev, 0, sizeof(xev));
-					xev.type = ClientMessage;
+				XEvent xev;
+				memset(&xev, 0, sizeof(xev));
+				xev.type = ClientMessage;
+				#if CE_FRONTEND_USEXCB
+					xev.xclient.window = m_xcbWindow;
+				#else
 					xev.xclient.window = m_xWindow;
-					xev.xclient.message_type = XInternAtom(xDisplay, "_NET_WM_STATE", False);
-					xev.xclient.format = 32;
-					xev.xclient.data.l[0] = 2;
-					xev.xclient.data.l[1] = fullscreen;
-					xev.xclient.data.l[2] = 0;
-					XSendEvent(xDisplay, DefaultRootWindow(xDisplay), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 				#endif
+				xev.xclient.message_type = a_wm_state;
+				xev.xclient.format = 32;
+				xev.xclient.data.l[0] = 2;
+				xev.xclient.data.l[1] = a_fullscreen;
+				xev.xclient.data.l[2] = 0;
+				XSendEvent(xDisplay, DefaultRootWindow(xDisplay), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 			#endif
 
 			#if CE_FRONTEND_USEWIN
@@ -810,6 +811,28 @@ namespace ce
 	{
 		m_windowedWidth = width;
 		m_windowedHeight = height;
+	}
+	void Canvas::Resize(int_canvas width, int_canvas height)
+	{
+		SetWindowedExtent(width, height);
+		if(IsFullscreen())
+			return;
+
+		#if CE_FRONTEND_USEXLIB
+			Display *xDisplay = (Display *)m_app->GetXDisplay();
+
+			#if CE_FRONTEND_USEXCB
+				xcb_connection_t *xcbConnection = (xcb_connection_t *)m_app->GetXCBConnection();
+				uint32_t xcbValueList[] = { (uint32_t)width, (uint32_t)height };
+				xcb_configure_window(xcbConnection, m_xcbWindow, XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT, xcbValueList);
+			#else
+				XWindowChanges changes;
+				changes.width = width;
+				changes.height = height;
+
+				XConfigureWindow(xDisplay, m_xWindow, CWWidth | CWHeight, &changes);
+			#endif
+		#endif
 	}
 	void Canvas::SetTitle(const char *title)
 	{

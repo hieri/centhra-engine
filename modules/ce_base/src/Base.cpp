@@ -38,10 +38,10 @@ namespace ce
 {
 	string g_error = "";
 
-	string compileMessage(const char *format, va_list ap)
+	string compileMessage(const char *format, char *argList)
 	{
 		char text[256];
-		vsnprintf(text, 256, format, ap);
+		vsnprintf(text, 256, format, (va_list)argList);
 		return string(text);
 	}
 

@@ -1,6 +1,6 @@
 //- Standard Library -
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 #include <string>
 
 #ifdef linux
@@ -11,11 +11,6 @@
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
-
-	#if _MSC_VER >= 1400
-		#define snprintf _snprintf_s
-		#define vsnprintf _vsnprintf_s
-	#endif
 #endif
 
 //- OpenGL -
@@ -26,14 +21,6 @@
 #include <CE/Base.h>
 
 using namespace std;
-
-//TODO: Move this into a support snippet file, or Base.h
-string compileMessage(const char *format, va_list ap)
-{
-	char text[4096];
-	vsnprintf(text, 4096, format, ap);
-	return string(text);
-}
 
 namespace ce
 {

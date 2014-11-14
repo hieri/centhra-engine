@@ -38,6 +38,7 @@ namespace ce
 	void error(const char *format, ...);
 	void print(const char *format, ...);
 	void warn(const char *format, ...);
+	std::string compileMessage(const char *format, char *argList);
 
 	//- Version -
 	unsigned int getVersionMajor();

@@ -16,18 +16,19 @@
 
 using namespace std;
 
+//TODO: Implement child trim toggle
+
 namespace ce
 {
 	namespace ui
 	{
-		Control::Control(Vector2<int_canvas> position, Vector2<int_canvas> extent)
+		Control::Control(Vector2<int_canvas> position, Vector2<int_canvas> extent) :
+			m_type(0), m_parent(0),
+			m_isVisible(true), m_isUpdatingDimensions(true), m_acceptsFocus(false), m_isFocused(false)
 		{
-			m_type = 0;
-			m_isVisible = m_isUpdatingAbsolute = true;
-			m_parent = 0;
 			m_position = position;
 			m_extent = extent;
-			UpdateAbsolute();
+			UpdateDimensions();
 		}
 		Control::~Control()
 		{
@@ -36,7 +37,8 @@ namespace ce
 			while(m_children.size())
 				delete m_children.back();
 		}
-		void Control::UpdateAbsolute()
+		//- Dimension Update -
+		void Control::UpdateDimensions()
 		{
 			if(m_parent)
 				m_absolutePosition = m_position + m_parent->m_absolutePosition;
@@ -110,7 +112,7 @@ namespace ce
 			m_exposedExtent = Vector2<int_canvas>(cw, ch);
 
 			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-				(*it)->UpdateAbsolute();
+				(*it)->UpdateDimensions();
 		}
 		void Control::Add(Control *control)
 		{
@@ -122,8 +124,8 @@ namespace ce
 							control->m_parent->Remove(control);
 						m_children.push_back(control);
 						control->m_parent = this;
-						if(control->m_isUpdatingAbsolute)
-							control->UpdateAbsolute();
+						if(control->m_isUpdatingDimensions)
+							control->UpdateDimensions();
 					}
 		}
 		bool Control::Contains(Control *control)
@@ -157,10 +159,6 @@ namespace ce
 				return false;
 			return find(m_children.begin(), m_children.end(), control) != m_children.end();
 		}
-		bool Control::IsVisible() const
-		{
-			return m_isVisible;
-		}
 		void Control::Remove(Control *control)
 		{
 			if(this != control)
@@ -171,8 +169,8 @@ namespace ce
 					Control *control = *it;
 					control->m_parent = 0;
 					m_children.erase(it);
-					if(control->m_isUpdatingAbsolute)
-						control->UpdateAbsolute();
+					if(control->m_isUpdatingDimensions)
+						control->UpdateDimensions();
 				}
 			}
 		}
@@ -211,6 +209,11 @@ namespace ce
 		void Control::DoRender()
 		{
 		}
+		//- Visibility -
+		bool Control::IsVisible() const
+		{
+			return m_isVisible;
+		}
 		void Control::SetVisible(bool isVisible)
 		{
 			m_isVisible = isVisible;
@@ -238,15 +241,15 @@ namespace ce
 		void Control::SetExtent(Vector2<int_canvas> extent)
 		{
 			m_extent = extent;
-			if(m_isUpdatingAbsolute)
-				UpdateAbsolute();
+			if(m_isUpdatingDimensions)
+				UpdateDimensions();
 			OnSetExtent();
 		}
 		void Control::SetPosition(Vector2<int_canvas> position)
 		{
 			m_position = position;
-			if(m_isUpdatingAbsolute)
-				UpdateAbsolute();
+			if(m_isUpdatingDimensions)
+				UpdateDimensions();
 			OnSetPosition();
 		}
 		bool Control::OnEvent(Event &event)
@@ -278,11 +281,63 @@ namespace ce
 		}
 		void Control::SetUpdatingAbsolute(bool isUpdatingAbsolute)
 		{
-			m_isUpdatingAbsolute = isUpdatingAbsolute;
+			m_isUpdatingDimensions = isUpdatingAbsolute;
 		}
 		bool Control::IsUpdatingAbsolute() const
 		{
-			return m_isUpdatingAbsolute;
+			return m_isUpdatingDimensions;
+		}
+
+		//- Focus -
+		Control *Control::ms_currentFocus = 0;
+		Control *Control::GetCurrentFocus()
+		{
+			return ms_currentFocus;
+		}
+		void Control::Focus()
+		{
+			if(ms_currentFocus == this)
+				return;
+			if(ms_currentFocus)
+			{
+				ms_currentFocus->m_isFocused = false;
+				ms_currentFocus->OnFocusLost();
+			}
+			m_isFocused = true;
+			ms_currentFocus = this;
+			OnFocus();
+		}
+		bool Control::IsFocused() const
+		{
+			return m_isFocused;
+		}
+		void Control::OnFocus()
+		{
+		}
+		void Control::OnFocusLost()
+		{
+		}
+		Control *Control::GetFocusFromPosition(Vector2<int_canvas> position)
+		{
+			for(vector<Control *>::reverse_iterator it = m_children.rbegin(); it != m_children.rend(); it++)
+			{
+				Control *ctrl = *it;
+
+				Vector2<int_canvas> expPos = ctrl->GetExposurePosition();
+				Vector2<int_canvas> expExt = ctrl->GetExposureExtent();
+				if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
+					continue;
+				return ctrl->GetFocusFromPosition(position);
+			}
+			if(m_acceptsFocus)
+				return this;
+			return 0;
+		}
+		void Control::SetFocusByPosition(Vector2<int_canvas> position)
+		{
+			Control *ctrl = GetFocusFromPosition(position);
+			if(ctrl)
+				ctrl->Focus();
 		}
 	}
 }

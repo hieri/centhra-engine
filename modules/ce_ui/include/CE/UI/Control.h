@@ -16,14 +16,40 @@ namespace ce
 	{
 		class Control
 		{
+			//- Visibility -
 		protected:
-			bool m_isVisible, m_isUpdatingAbsolute;
+			bool m_isVisible;
+		public:
+			bool IsVisible() const;
+			void SetVisible(bool isVisible);
+
+			//- Dimension Update -
+		protected:
+			bool m_isUpdatingDimensions;
+			void UpdateDimensions();
+
+			//- Focus -
+		protected:
+			static Control *ms_currentFocus;
+			bool m_acceptsFocus, m_isFocused;
+			void OnFocus();
+			void OnFocusLost();
+			Control *GetFocusFromPosition(Vector2<int_canvas> position);
+		public:
+			static Control *GetCurrentFocus();
+			bool IsFocused() const;
+			void Focus();
+			void SetFocusByPosition(Vector2<int_canvas> position);
+			// Tabbed Traversal
+//			Control *FindNextFocus();
+//			Control *FindPreviousFocus();
+
+		protected:
 			unsigned int m_type;
 			Control *m_parent;
 			std::vector<Control *> m_children;
 			Vector2<int_canvas> m_position, m_extent, m_absolutePosition, m_exposedPosition, m_exposedExtent;
 
-			void UpdateAbsolute();
 			virtual void DoRender();
 
 		public:
@@ -34,7 +60,6 @@ namespace ce
 			void Remove(Control *control);
 			bool IsAncestor(Control *control) const;
 			bool IsMember(Control *control) const;
-			bool IsVisible() const;
 			bool Contains(Control *control);
 			Control *GetParent() const;
 
@@ -50,7 +75,6 @@ namespace ce
 			void Render(UIContext &context);
 			void Render(Canvas *canvas);
 
-			void SetVisible(bool isVisible);
 
 			void SetUpdatingAbsolute(bool isUpdatingAbsolute);
 			bool IsUpdatingAbsolute() const;

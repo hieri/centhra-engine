@@ -21,15 +21,12 @@ class AppUserInterfaceSample : public AppFrontend
 	ui::Control *m_rootCtrl;
 	Font *m_font;
 
-	ui::TextEditCtrl *textA, *textB;
-
 public:
 	AppUserInterfaceSample()
 	{
 		m_canvas = 0;
 		m_rootCtrl = 0;
 		m_font = 0;
-		textA = textB = 0;
 	}
 	bool OnStart()
 	{
@@ -49,8 +46,12 @@ public:
 			ui::Control *random = new ui::ColorCtrl(Vector2<int_canvas>(64, 64), Vector2<int_canvas>(64, 64), Color(255, 255, 0));
 			m_rootCtrl->Add(random);
 
-			m_rootCtrl->Add(textA = new ui::TextEditCtrl(Vector2<int_canvas>(0, 300), Vector2<int_canvas>(400, 128), m_font, 128, "Testing", Color(255, 255, 0)));
-			m_rootCtrl->Add(textB = new ui::TextEditCtrl(Vector2<int_canvas>(0, 400), Vector2<int_canvas>(400, 128), m_font, 128, "Woah there", Color(255, 255, 0)));
+
+			for(int a = 0; a < 4; a++)
+				m_rootCtrl->Add(new ui::TextEditCtrl(Vector2<int_canvas>(300, 100 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(255, 255, 0)));
+			for(int a = 0; a < 4; a++)
+				m_rootCtrl->Add(new ui::TextEditCtrl(Vector2<int_canvas>(0, 100 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(255, 255, 0)));
+
 		}
 
 		return true;
@@ -72,16 +73,24 @@ public:
 		switch(event.type)
 		{
 			case event::KeyDown:
-				if(textA->IsFocused())
-					textA->OnEvent(event);
-				if(textB->IsFocused())
-					textB->OnEvent(event);
+				if(event.key.keyCode == Key_Tab)
+				{
+					ui::Control *nextFocus = m_rootCtrl->FindNextFocus(ui::Control::GetCurrentFocus());
+//					ui::Control *nextFocus = m_rootCtrl->FindPreviousFocus(ui::Control::GetCurrentFocus());
+					if(nextFocus)
+					{
+						print("Focus: %ld -> %ld\n", ui::Control::GetCurrentFocus(), nextFocus);
+						nextFocus->Focus();
+					}
+					break;
+				}
+
+				if(ui::Control::GetCurrentFocus())
+					ui::Control::GetCurrentFocus()->OnEvent(event);
 				break;
 			case event::KeyUp:
-				if(textA->IsFocused())
-					textA->OnEvent(event);
-				if(textB->IsFocused())
-					textB->OnEvent(event);
+				if(ui::Control::GetCurrentFocus())
+					ui::Control::GetCurrentFocus()->OnEvent(event);
 				break;
 			case event::MouseButtonDown:
 				m_rootCtrl->SetFocusByPosition(Vector2<int_canvas>(event.mouseButton.x, event.mouseButton.y));

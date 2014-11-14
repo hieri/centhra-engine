@@ -40,9 +40,8 @@ namespace ce
 			bool IsFocused() const;
 			void Focus();
 			void SetFocusByPosition(Vector2<int_canvas> position);
-			// Tabbed Traversal
-//			Control *FindNextFocus();
-//			Control *FindPreviousFocus();
+			Control *FindNextFocus(Control *reference = 0, bool fromParent = false);
+			Control *FindPreviousFocus(Control *reference = 0, bool fromParent = false);
 
 		protected:
 			unsigned int m_type;
@@ -62,6 +61,7 @@ namespace ce
 			bool IsMember(Control *control) const;
 			bool Contains(Control *control);
 			Control *GetParent() const;
+			Control *GetRoot();
 
 			Control *GetFromPosition(Vector2<int_canvas> position, bool recurse = false);
 

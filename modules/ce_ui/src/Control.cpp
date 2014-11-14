@@ -143,6 +143,12 @@ namespace ce
 		{
 			return m_parent;
 		}
+		Control *Control::GetRoot()
+		{
+			if(m_parent)
+				return m_parent->GetRoot();
+			return this;
+		}
 		bool Control::IsAncestor(Control *control) const
 		{
 			if(this == control)
@@ -316,6 +322,120 @@ namespace ce
 		}
 		void Control::OnFocusLost()
 		{
+		}
+		bool sortByYThenX(Control *A, Control *B)
+		{
+			Vector2<int_canvas> aPos = A->GetPosition();
+			Vector2<int_canvas> bPos = B->GetPosition();
+			if(bPos[1] < aPos[1])
+				return false;
+			else if(bPos[1] > aPos[1])
+				return true;
+			return bPos[0] > aPos[0];
+		}
+		bool sortByRYThenRX(Control *A, Control *B)
+		{
+			Vector2<int_canvas> aPos = A->GetPosition();
+			Vector2<int_canvas> bPos = B->GetPosition();
+			if(bPos[1] > aPos[1])
+				return false;
+			else if(bPos[1] < aPos[1])
+				return true;
+			return bPos[0] < aPos[0];
+		}
+		Control *Control::FindNextFocus(Control *reference, bool fromParent)
+		{
+			vector<Control *> topLayer;
+			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+				topLayer.push_back(*it);
+			sort(topLayer.begin(), topLayer.end(), sortByYThenX);
+
+			vector<Control *>::iterator it = find(topLayer.begin(), topLayer.end(), reference);
+			if(it == topLayer.end())
+				it = topLayer.begin();
+			else
+				it++;
+			for(; it != topLayer.end(); it++)
+			{
+				Control *ctrl = *it;
+
+				Control *ret = ctrl->FindNextFocus(0, true);
+				if(ret)
+					return ret;
+
+				if(ctrl->m_acceptsFocus)
+					if(ctrl != ms_currentFocus)
+						return ctrl;
+			}
+
+			if(!fromParent)
+			{
+				if(m_parent)
+					m_parent->FindNextFocus(this, false);
+				else
+				{
+					for(it = topLayer.begin(); it != topLayer.end(); it++)
+					{
+						Control *ctrl = *it;
+
+						Control *ret = ctrl->FindNextFocus(0, true);
+						if(ret)
+							return ret;
+
+						if(ctrl->m_acceptsFocus)
+							if(ctrl != ms_currentFocus)
+								return ctrl;
+					}
+				}
+			}
+
+			return 0;
+		}
+		Control *Control::FindPreviousFocus(Control *reference, bool fromParent)
+		{
+			vector<Control *> topLayer;
+			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+				topLayer.push_back(*it);
+			sort(topLayer.begin(), topLayer.end(), sortByRYThenRX);
+
+			vector<Control *>::iterator it = find(topLayer.begin(), topLayer.end(), reference);
+			if(it == topLayer.end())
+				it = topLayer.begin();
+			for(; it != topLayer.end(); it++)
+			{
+				Control *ctrl = *it;
+
+				Control *ret = ctrl->FindNextFocus(0, true);
+				if(ret)
+					return ret;
+
+				if(ctrl->m_acceptsFocus)
+					if(ctrl != ms_currentFocus)
+						return ctrl;
+			}
+
+			if(!fromParent)
+			{
+				if(m_parent)
+					m_parent->FindNextFocus(this, false);
+				else
+				{
+					for(it = topLayer.begin(); it != topLayer.end(); it++)
+					{
+						Control *ctrl = *it;
+
+						Control *ret = ctrl->FindNextFocus(0, true);
+						if(ret)
+							return ret;
+
+						if(ctrl->m_acceptsFocus)
+							if(ctrl != ms_currentFocus)
+								return ctrl;
+					}
+				}
+			}
+
+			return 0;
 		}
 		Control *Control::GetFocusFromPosition(Vector2<int_canvas> position)
 		{

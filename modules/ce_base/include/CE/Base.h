@@ -2,6 +2,7 @@
 #define _CE_BASE_H_
 
 //- Standard Library -
+#include <cstdarg>
 #include <string>
 
 //- Centhra Engine -
@@ -38,7 +39,7 @@ namespace ce
 	void error(const char *format, ...);
 	void print(const char *format, ...);
 	void warn(const char *format, ...);
-	std::string compileMessage(const char *format, char *argList);
+	std::string formatString(const char *format, va_list args, unsigned short size = 128);
 
 	//- Version -
 	unsigned int getVersionMajor();

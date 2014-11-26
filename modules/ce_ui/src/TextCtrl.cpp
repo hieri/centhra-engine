@@ -1,5 +1,4 @@
 //- Standard Library -
-#include <cstdarg>
 #include <cstdio>
 #include <string>
 
@@ -43,7 +42,7 @@ namespace ce
 		{
 			va_list	ap;
 			va_start(ap, format);
-			m_text = compileMessage(format, ap);
+			m_text = formatString(format, ap);
 			va_end(ap);
 		}
 		const char *TextCtrl::GetText() const

@@ -1,7 +1,6 @@
 //- Standard Library -
 #include <fstream>
 #include <iostream>
-#include <cstdarg>
 #include <cstdio>
 #include <string>
 #include <sstream>
@@ -38,11 +37,13 @@ namespace ce
 {
 	string g_error = "";
 
-	string compileMessage(const char *format, char *argList)
+	string formatString(const char *format, va_list args, unsigned short size)
 	{
-		char text[256];
-		vsnprintf(text, 256, format, (va_list)argList);
-		return string(text);
+		char *buffer = new char[size];
+		vsnprintf(buffer, size, format, args);
+		string str(buffer);
+		delete [] buffer;
+		return str;
 	}
 
 	bool m_verboseLogging = false;
@@ -62,7 +63,7 @@ namespace ce
 	{
 		va_list	ap;
 		va_start(ap, format);
-		g_error = string(compileMessage(format, ap));
+		g_error = string(formatString(format, ap));
 		va_end(ap);
 
 		if(m_verboseLogging)
@@ -142,7 +143,7 @@ namespace ce
 	{
 		va_list	ap;
 		va_start(ap, format);
-		string msg = compileMessage(format, ap);
+		string msg = formatString(format, ap);
 		App *current = App::GetCurrent();
 		if(current)
 			current->OnError(msg.c_str());
@@ -157,7 +158,7 @@ namespace ce
 	{
 		va_list	ap;
 		va_start(ap, format);
-		string msg = compileMessage(format, ap);
+		string msg = formatString(format, ap);
 		App *current = App::GetCurrent();
 		if(current)
 			current->OnPrint(msg.c_str());
@@ -172,7 +173,7 @@ namespace ce
 	{
 		va_list	ap;
 		va_start(ap, format);
-		string msg = compileMessage(format, ap);
+		string msg = formatString(format, ap);
 		App *current = App::GetCurrent();
 		if(current)
 			current->OnWarn(msg.c_str());

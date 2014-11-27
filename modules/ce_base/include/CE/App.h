@@ -39,7 +39,7 @@ namespace ce
 
 		/**	@brief Destructor
 		 */
-		~App();
+		virtual ~App();
 
 		/**	@brief Returns the time since the application was started in milliseconds
 		 *	@return Time since the application was started in milliseconds

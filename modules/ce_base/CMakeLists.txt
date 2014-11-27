@@ -10,6 +10,7 @@ set(INC
 	${INC_DIR}/FloatTable.h
 	${INC_DIR}/Font.h
 	${INC_DIR}/Group.h
+	${INC_DIR}/Math.h
 	${INC_DIR}/Image.h
 	${INC_DIR}/Matrix4x4.h
 	${INC_DIR}/Mutex.h
@@ -29,6 +30,7 @@ set(SRC
 	${SRC_DIR}/FloatTable.cpp
 	${SRC_DIR}/Font.cpp
 	${SRC_DIR}/Group.cpp
+	${SRC_DIR}/Math.cpp
 	${SRC_DIR}/Image.cpp
 	${SRC_DIR}/Mutex.cpp
 	${SRC_DIR}/Network.cpp

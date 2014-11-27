@@ -4,6 +4,8 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INC
 	${INC_DIR}/Game2D.h
 	${INC_DIR}/UI/CameraView2DCtrl.h
+	${INC_DIR}/UI/Editor2D.h
+	${INC_DIR}/Game2D/AppGame2D.h
 	${INC_DIR}/Game2D/Camera.h
 	${INC_DIR}/Game2D/ComplexTileMap.h
 	${INC_DIR}/Game2D/DefaultPhysicsHandler.h
@@ -22,10 +24,12 @@ set(INC
 )
 
 set(SRC
-	${SRC_DIR}/CameraView2DCtrl.cpp
+	${SRC_DIR}/AppGame2D.cpp
 	${SRC_DIR}/Camera.cpp
+	${SRC_DIR}/CameraView2DCtrl.cpp
 	${SRC_DIR}/ComplexTileMap.cpp
 	${SRC_DIR}/DefaultPhysicsHandler.cpp
+	${SRC_DIR}/Editor2D.cpp
 	${SRC_DIR}/Entity.cpp
 	${SRC_DIR}/Graph.cpp
 	${SRC_DIR}/PhysicalGroup.cpp

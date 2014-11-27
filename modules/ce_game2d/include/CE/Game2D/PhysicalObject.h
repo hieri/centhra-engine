@@ -80,6 +80,14 @@ namespace ce
 
 			friend class PhysicalGroup;
 			friend class PhysicsHandler::ObjectHandle;
+
+			//- Toggle Collision -
+		protected:
+			bool m_isCollidable;
+			unsigned int m_actualCollisionMask;
+		public:
+			void SetCollidable(bool collidable);
+			bool IsCollidable() const;
 		};
 	}
 }

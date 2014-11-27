@@ -1,5 +1,5 @@
-#ifndef _CE_UI_CAMERAVIEW2DCTRL_H_
-#define _CE_UI_CAMERAVIEW2DCTRL_H_
+#ifndef _CE_GAME2D_CAMERAVIEW2DCTRL_H_
+#define _CE_GAME2D_CAMERAVIEW2DCTRL_H_
 
 //- Centhra Engine -
 #include <CE/UI/Control.h>

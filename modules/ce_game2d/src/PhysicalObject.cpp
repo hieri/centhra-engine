@@ -39,14 +39,14 @@ namespace ce
 			return ms_netObjects[id];
 		}
 
-		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id, unsigned short netID, bool noID)
+		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id, unsigned short netID, bool noID) : m_isCollidable(true)
 		{
 			m_rotation = m_angularVelocity = 0.f;
 			m_position = position;
 			m_extent = extent;
 			m_color = Color(rand() % 256,  rand() % 256, rand() % 256);
 			m_velocity = Vector2<float>(0.f, 0.f);
-			m_typeMask = m_collisionMask = 1;
+			m_typeMask = m_collisionMask = m_actualCollisionMask = 1;
 
 			m_objectHandle = 0;
 
@@ -206,11 +206,13 @@ namespace ce
 		}
 		void PhysicalObject::SetCollisionMask(unsigned int mask)
 		{
-			m_collisionMask = mask;
+			m_actualCollisionMask = m_collisionMask = mask;
 			OnSetCollisionMask();
 
-			if(m_objectHandle)
-				m_objectHandle->OnSetCollisionMask();
+			//TODO:: Determine if m_collisionMask sould be set here
+			if(m_isCollidable)
+				if(m_objectHandle)
+					m_objectHandle->OnSetCollisionMask();
 		}
 		bool PhysicalObject::IsTrigger() const
 		{
@@ -260,6 +262,29 @@ namespace ce
 		}
 		void PhysicalObject::OnSetAngularVelocity()
 		{
+		}
+		//- Toggle Collision -
+		void PhysicalObject::SetCollidable(bool collidable)
+		{
+			if(collidable == m_isCollidable)
+				return;
+			if(collidable)
+			{
+				m_collisionMask = m_actualCollisionMask;
+				if(m_objectHandle)
+					m_objectHandle->OnSetCollisionMask();
+			}
+			else
+			{
+				m_collisionMask = 0;
+				if(m_objectHandle)
+					m_objectHandle->OnSetCollisionMask();
+			}
+			m_isCollidable = collidable;
+		}
+		bool PhysicalObject::IsCollidable() const
+		{
+			return m_isCollidable;
 		}
 	}
 }

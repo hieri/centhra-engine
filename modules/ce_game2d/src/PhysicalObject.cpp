@@ -39,14 +39,15 @@ namespace ce
 			return ms_netObjects[id];
 		}
 
-		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id, unsigned short netID, bool noID) : m_isCollidable(true)
+		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id, unsigned short netID, bool noID) : m_isCollidable(true), m_hasFixedRotation(false)
 		{
 			m_rotation = m_angularVelocity = 0.f;
 			m_position = position;
 			m_extent = extent;
 			m_color = Color(rand() % 256,  rand() % 256, rand() % 256);
 			m_velocity = Vector2<float>(0.f, 0.f);
-			m_typeMask = m_collisionMask = m_actualCollisionMask = 1;
+			m_typeMask = Mask_Object;
+			m_collisionMask = m_actualCollisionMask = 65535;
 
 			m_objectHandle = 0;
 
@@ -188,6 +189,10 @@ namespace ce
 		{
 			return m_isStatic;
 		}
+		bool PhysicalObject::HasFixedRotation() const
+		{
+			return m_hasFixedRotation;
+		}
 		unsigned int PhysicalObject::GetTypeMask() const
 		{
 			return m_typeMask;
@@ -233,6 +238,14 @@ namespace ce
 			if(m_objectHandle)
 				m_objectHandle->OnSetStatic();
 		}
+		void PhysicalObject::SetFixedRotation(bool fixedRotation)
+		{
+			m_hasFixedRotation = fixedRotation;
+			OnSetFixedRotation();
+
+			if(m_objectHandle)
+				m_objectHandle->OnSetFixedRotation();
+		}
 		bool PhysicalObject::CollidesWith(Vector2<float> pt)
 		{
 			if(m_objectHandle)
@@ -261,6 +274,9 @@ namespace ce
 		{
 		}
 		void PhysicalObject::OnSetAngularVelocity()
+		{
+		}
+		void PhysicalObject::OnSetFixedRotation()
 		{
 		}
 		//- Toggle Collision -

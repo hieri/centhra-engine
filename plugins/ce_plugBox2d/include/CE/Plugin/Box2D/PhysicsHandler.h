@@ -49,11 +49,11 @@ namespace ce
 					virtual void OnSetTypeMask();
 					virtual void OnSetCollisionMask();
 					virtual void OnSetAngularVelocity();
+					virtual void OnSetFixedRotation();
 
 				public:
 					friend class bPhysicsHandler;
 
-					void SetFixedRotation(bool fixedRotation);
 					virtual bool CollidesWith(Vector2<float> pt);
 				};
 

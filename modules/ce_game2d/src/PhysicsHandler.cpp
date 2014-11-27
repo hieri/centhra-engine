@@ -116,5 +116,8 @@ namespace ce
 		void PhysicsHandler::ObjectHandle::OnSetAngularVelocity()
 		{
 		}
+		void PhysicsHandler::ObjectHandle::OnSetFixedRotation()
+		{
+		}
 	}
 }

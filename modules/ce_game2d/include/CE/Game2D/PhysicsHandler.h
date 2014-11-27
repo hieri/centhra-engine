@@ -48,6 +48,7 @@ namespace ce
 				virtual void OnSetVelocity();
 				virtual void OnSetRotation();
 				virtual void OnSetAngularVelocity();
+				virtual void OnSetFixedRotation();
 
 			public:
 				PhysicalObject *GetReferenceObject() const;

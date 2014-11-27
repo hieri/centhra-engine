@@ -11,6 +11,12 @@ namespace ce
 {
 	namespace game2d
 	{
+		typedef enum ObjectTypeMask
+		{
+			Mask_Object = 1,
+			Mask_Prop = 2
+		} ObjectTypeMask;
+
 		class PhysicalGroup;
 
 		class PhysicalObject : public Entity
@@ -27,7 +33,7 @@ namespace ce
 			float m_rotation, m_angularVelocity;
 			Color m_color; //TODO: Remove this after finished
 			unsigned int m_typeMask, m_collisionMask;
-			bool m_isTrigger, m_isStatic;
+			bool m_isTrigger, m_isStatic, m_hasFixedRotation;
 
 			virtual void DoRender();
 
@@ -41,6 +47,7 @@ namespace ce
 
 			void Render();
 			bool IsStatic() const;
+			bool HasFixedRotation() const;
 			float GetRotation() const;
 			float GetAngularVelocity() const;
 			Vector2<float> GetExtent() const;
@@ -52,6 +59,7 @@ namespace ce
 			void SetVelocity(Vector2<float> velocity, bool updateHandle = true);
 			void SetRotation(float rotation, bool updateHandle = true);
 			void SetAngularVelocity(float angularVelocity, bool updateHandle = true);
+			void SetFixedRotation(bool fixedRotation);
 
 			unsigned short GetID() const;
 			unsigned short GetNetID() const;
@@ -77,6 +85,7 @@ namespace ce
 			virtual void OnSetVelocity();
 			virtual void OnSetRotation();
 			virtual void OnSetAngularVelocity();
+			virtual void OnSetFixedRotation();
 
 			friend class PhysicalGroup;
 			friend class PhysicsHandler::ObjectHandle;

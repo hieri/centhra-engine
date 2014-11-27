@@ -19,19 +19,22 @@ namespace ce
 			public:
 				Vector2<float> m_min, m_max, m_step;
 				int m_numFrames;
-				float *m_frameTimes;
+				float *m_frameTimes, m_duration;
 
-				Animation(Vector2<float> min, Vector2<float> max, Vector2<float> step, float *frameTimes, int numFrames);
+				Animation(Vector2<float> min, Vector2<float> max, Vector2<float> step, float *frameTimes, int numFrames, float duration);
 				~Animation();
 			};
 
 			Image *m_source;
 
 		public:
+			static Sprite *LoadSpriteFromFile(const char *file, Image *image);
+
 			Sprite(Image *source);
 			~Sprite();
 
-			int AddAnimation(Vector2<float> min, Vector2<float> max, Vector2<float> step, float *frameTimes, int numFrames);
+			int AddAnimation(Vector2<float> min, Vector2<float> max, Vector2<float> step, float *frameTimes, int numFrames, float duration);
+			float GetAnimationTime(int animation, float time);
 			void Draw(int animation, float time);
 
 		private:

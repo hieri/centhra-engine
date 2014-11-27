@@ -288,6 +288,7 @@ namespace ce
 				bd.active = true;
 				bd.angularDamping = 0.7f;
 				bd.userData = this;
+				bd.fixedRotation = object->HasFixedRotation();
 
 				if(object->IsTrigger())
 				{
@@ -388,11 +389,11 @@ namespace ce
 				b2Body *b2d_body = (b2Body *)m_b2d_body;
 				b2d_body->SetAngularVelocity(angularVelocity);
 			}
-			void bPhysicsHandler::bObjectHandle::SetFixedRotation(bool fixedRotation)
+			void bPhysicsHandler::bObjectHandle::OnSetFixedRotation()
 			{
 				b2Body *b2d_body = (b2Body *)m_b2d_body;
 				if(b2d_body)
-					b2d_body->SetFixedRotation(fixedRotation);
+					b2d_body->SetFixedRotation(m_object->HasFixedRotation());
 			}
 			bool bPhysicsHandler::bObjectHandle::CollidesWith(Vector2<float> pt)
 			{

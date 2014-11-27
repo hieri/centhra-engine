@@ -1,0 +1,3 @@
+//	TypeName | Image File | Extent (meters) | IsStatic | FixedRotation | Collidable | Sprite File
+samplePropA	../res/samplePropA.png	32 32	0	1	1
+samplePropB	../res/samplePropB.png	64 64	0	0	1	../res/sampleSprite.txt

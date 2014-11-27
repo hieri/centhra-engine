@@ -13,6 +13,7 @@
 #include <CE/UI/Editor2D.h>
 
 using namespace ce;
+using namespace std;
 
 #define NUMRANDOMS 32
 
@@ -101,10 +102,15 @@ public:
 		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
 		m_group->AttachHandler(m_box2dPhysicsHandler);
 
+		Image::Init();
 		Font::Init();
+
 		m_font = Font::CreateFromFile("../res/FreeMono.ttf");
 		if(m_font)
 			m_font->SetCharSize(0, 16 * 64, 96, 96);
+
+		game2d::PropDef::LoadFromFile("../res/sampleProps.txt");
+
 		m_editorCtrl = new ui::Editor2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(m_canvas->GetWidth(), m_canvas->GetHeight()), m_font);
 
 		bool parentStart = game2d::AppGame2D::OnStart();
@@ -128,8 +134,37 @@ public:
 		dif *= 512.f;
 		m_entity->SetVelocity(dif);
 
+/*		Vector2<float> origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
+//		origin = Vector2<float>(512.f, 512.f);
+
+		vector<Group::Member *> members = m_group->GetMembers();
+		for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
+		{
+			game2d::PhysicalObject *obj = (game2d::PhysicalObject *)*it;
+			if(obj == m_entity)
+				continue;
+			Vector2<float> pos = obj->GetPosition();
+			//			Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
+			//			Vector2<float> vel = m_randoms[a]->GetVelocity();
+			//			Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
+			Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
+			//			vel /= vel.GetLength();
+			//			vel *= 64.f;
+
+			if(pos[0] > 1008.f && vel[0] > 0)
+				vel[0] *= -1.f;
+			if(pos[0] < 0.f && vel[0] < 0)
+				vel[0] *= -1.f;
+			if(pos[1] > 1008.f && vel[1] > 0)
+				vel[1] *= -1.f;
+			if(pos[1] < 0.f && vel[1] < 0)
+				vel[1] *= -1.f;
+			obj->SetVelocity(vel);
+		}*/
+
 		game2d::Entity::FinalizeDelete();
 		m_group->ProcessPhysics(dt);
+		game2d::Entity::Process(dt);
 	}
 	bool OnProcess()
 	{
@@ -153,6 +188,7 @@ public:
 		delete m_box2dPhysicsHandler;
 	
 		RenderPrimitiveCleanup();
+		game2d::PropDef::Cleanup();
 
 		delete m_editorCtrl;
 		delete m_view;

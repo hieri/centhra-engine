@@ -6,6 +6,7 @@
 #include <CE/UI/ColorCtrl.h>
 #include <CE/UI/TextButtonCtrl.h>
 #include <CE/Game2D/PhysicalObject.h>
+#include <CE/Game2D/Prop.h>
 
 namespace ce
 {
@@ -13,7 +14,7 @@ namespace ce
 	{
 		class Editor2DCtrl : public ui::Control
 		{
-/*			class PropSelectorCtrl : public ui::ColorCtrl
+			class PropSelectorCtrl : public ui::ColorCtrl
 			{
 			protected:
 				virtual void DoRender();
@@ -25,20 +26,20 @@ namespace ce
 					virtual void DoRender();
 
 				public:
-					unsigned short m_propType;
-					PropDef *m_propDef;
+					unsigned short m_propID;
+					game2d::PropDef *m_propDef;
 
-					PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propType);
+					PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID);
 				};
 
 				PropSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent);
 
-				void OnSelect(short propType);
+				void OnSelect(short propID);
 				void GenerateButtons();
 				virtual bool OnEvent(Event &event);
 			};
 			friend bool Editor_PropSelectBtnUp(ui::ButtonCtrl *button);
-			*/
+			
 			game2d::PhysicalObject *m_hover;
 			std::vector<game2d::PhysicalObject *> m_selection;
 			std::vector<std::pair<game2d::PhysicalObject *, Vector2<float> > > m_dragSelection;
@@ -55,8 +56,8 @@ namespace ce
 			float m_startRotation;
 			bool m_isDragging, m_isSelecting, m_isRotating;
 			ui::TextButtonCtrl *m_modeObjectBtn, *m_modePropBtn, *m_modeTileBtn, *m_modeWallBtn;
-			//PropSelectorCtrl *m_propSelectorCtrl;
-			short m_propPlaceType;
+			PropSelectorCtrl *m_propSelectorCtrl;
+			short m_propPlaceID;
 
 			Font *m_font;
 

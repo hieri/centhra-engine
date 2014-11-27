@@ -27,6 +27,7 @@ namespace ce
 	{
 		//TODO: Modify Control class to intercept events
 		ui::TextCtrl *test = 0;
+		float g_propUIScale = 1.f;
 		bool Editor_BtnDown(ui::ButtonCtrl *button)
 		{
 			return false;
@@ -56,7 +57,7 @@ namespace ce
 			return false;
 		}
 
-		Editor2DCtrl::Editor2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font) : ui::Control(position, extent), m_isSelecting(false), m_isDragging(false), m_isRotating(false), m_mode(0), m_propPlaceType(-1), m_hover(0), m_font(font)
+		Editor2DCtrl::Editor2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font) : ui::Control(position, extent), m_isSelecting(false), m_isDragging(false), m_isRotating(false), m_mode(0), m_propPlaceID(-1), m_hover(0), m_font(font)
 		{
 			m_modeObjectBtn = new ui::TextButtonCtrl(Vector2<int_canvas>(32, 0), Vector2<int_canvas>(76, 22), m_font, "Object", Color(255, 255, 255), Color(63, 63, 63));
 			m_modePropBtn = new ui::TextButtonCtrl(Vector2<int_canvas>(124, 0), Vector2<int_canvas>(51, 22), m_font, "Prop", Color(255, 255, 255), Color(63, 63, 63));
@@ -71,15 +72,15 @@ namespace ce
 			m_modeWallBtn->SetOnButtonDown(Editor_BtnDown);
 			m_modeWallBtn->SetOnButtonUp(Editor_WallBtnUp);
 
-/*			m_propSelectorCtrl = new PropSelectorCtrl(Vector2<int_canvas>(extent[0] - 160 - 320, 0), Vector2<int_canvas>(128 + 320, 128));
+			m_propSelectorCtrl = new PropSelectorCtrl(Vector2<int_canvas>(extent[0] - 160 - 320, 0), Vector2<int_canvas>(128 + 320, 128));
 			m_propSelectorCtrl->GenerateButtons();
-			m_propSelectorCtrl->SetAnchor(ui::Control::Anchor_Right);*/
+			m_propSelectorCtrl->SetAnchor(ui::Control::Anchor_Right);
 
 			Add((ui::ButtonCtrl *)m_modeObjectBtn);
 			Add((ui::ButtonCtrl *)m_modePropBtn);
 			Add((ui::ButtonCtrl *)m_modeTileBtn);
 			Add((ui::ButtonCtrl *)m_modeWallBtn);
-//			Add(m_propSelectorCtrl);
+			Add(m_propSelectorCtrl);
 			SetMode(Mode_Object);
 		}
 		void Editor2DCtrl::SetMode(unsigned char mode)
@@ -88,11 +89,11 @@ namespace ce
 				m_selection.clear();
 
 			if(m_mode == Mode_Prop && m_mode != mode)
-				m_propPlaceType = -1;
+				m_propPlaceID = -1;
 
 			m_mode = mode;
 
-//			m_propSelectorCtrl->SetVisible(m_mode == Mode_Prop);
+			m_propSelectorCtrl->SetVisible(m_mode == Mode_Prop);
 
 			m_modeObjectBtn->SetBackgroundColor(mode == Mode_Object ? Color(63, 127, 63) : Color(63, 63, 63));
 			m_modePropBtn->SetBackgroundColor(mode == Mode_Prop ? Color(63, 127, 63) : Color(63, 63, 63));
@@ -124,17 +125,17 @@ namespace ce
 						StopDragging();
 					if(m_mode == Mode_Prop)
 					{
-						if(m_propPlaceType != -1)
+						if(m_propPlaceID != -1)
 						{
-							/*PropDef *propDef = PropDef::GetByType(m_propPlaceType);
+							game2d::PropDef *propDef = game2d::PropDef::GetPropDefByID(m_propPlaceID);
 							if(propDef)
 							{
 								Vector2<float> pos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
 								app->LockWorldMutex();
-								Prop *prop = new Prop(pos, m_propPlaceType);
-								app->m_currentZone->Add(prop);
+								game2d::Prop *prop = propDef->Spawn(pos);
+								((game2d::PhysicalGroup *)app->GetReferenceObject()->GetParentGroup())->Add(prop);
 								app->UnlockWorldMutex();
-							}*/
+							}
 						}
 						else
 						{
@@ -195,7 +196,7 @@ namespace ce
 							unsigned short ignoreMask = 0;// game2d::PhysicalObject::Mask_Wall;
 
 							game2d::PhysicalGroup *currentGroup = (game2d::PhysicalGroup *)app->GetReferenceObject()->GetParentGroup();
-							vector<game2d::PhysicalObject *> objects = currentGroup->BoxSearch(minX, minY, maxX, maxY, m_mode == Mode_Object ? (-1 & ~ignoreMask) : 0);// game2d::PhysicalObject::Mask_Prop);
+							vector<game2d::PhysicalObject *> objects = currentGroup->BoxSearch(minX, minY, maxX, maxY, m_mode == Mode_Object ? (-1 & ~ignoreMask) : game2d::Mask_Prop);
 							m_selection.clear();
 
 							if((maxX - minX) < 0.1f && (maxY - minY) < 0.1f)
@@ -456,7 +457,7 @@ namespace ce
 			}
 			m_hover = 0;
 		}
-		/*
+
 		//- Prop Selector -
 		Editor2DCtrl::PropSelectorCtrl::PropSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent) : ColorCtrl(position, extent, Color(63, 63, 63, 127))
 		{
@@ -465,23 +466,24 @@ namespace ce
 		{
 			ColorCtrl::DoRender();
 		}
-		void Editor2DCtrl::PropSelectorCtrl::OnSelect(short propType)
+		void Editor2DCtrl::PropSelectorCtrl::OnSelect(short propID)
 		{
 			Editor2DCtrl *editor = (Editor2DCtrl *)GetParent();
-			editor->m_propPlaceType = propType;
+			editor->m_propPlaceID = propID;
 		}
 		void Editor2DCtrl::PropSelectorCtrl::GenerateButtons()
 		{
-			vector<PropDef> *propDefTable = GetPropDefTable();
+			map<unsigned short, game2d::PropDef *> *propDefTable = game2d::PropDef::GetPropDefTable();
 			int_canvas spacer = 16;
 			int_canvas startX = spacer;
 			int_canvas startY = spacer;
-			for(vector<PropDef>::iterator it = propDefTable->begin(); it != propDefTable->end(); it++)
+			for(map<unsigned short, game2d::PropDef *>::iterator it = propDefTable->begin(); it != propDefTable->end(); it++)
 			{
-				int_canvas width = (int_canvas)(64.f * it->extent[0]);
-				int_canvas height = (int_canvas)(64.f * it->extent[1]);
+				Vector2<float> extent = it->second->GetExtent();
+				int_canvas width = (int_canvas)(g_propUIScale * extent[0]);
+				int_canvas height = (int_canvas)(g_propUIScale * extent[1]);
 
-				PropSelectCtrl *btn = new PropSelectCtrl(Vector2<int_canvas>(startX, startY), Vector2<int_canvas>(width, height), it->propType);
+				PropSelectCtrl *btn = new PropSelectCtrl(Vector2<int_canvas>(startX, startY), Vector2<int_canvas>(width, height), it->second->GetPropID());
 				Add(btn);
 
 				startX += width;
@@ -501,12 +503,12 @@ namespace ce
 		bool Editor_PropSelectBtnUp(ui::ButtonCtrl *button)
 		{
 			Editor2DCtrl::PropSelectorCtrl *selector = (Editor2DCtrl::PropSelectorCtrl *)button->GetParent();
-			selector->OnSelect((short)((Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl *)button)->m_propType);
+			selector->OnSelect((short)((Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl *)button)->m_propID);
 			return false;
 		}
-		Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl::PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propType) : ButtonCtrl(position, extent), m_propType(propType)
+		Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl::PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID) : ButtonCtrl(position, extent), m_propID(propID)
 		{
-			m_propDef = PropDef::GetByType(propType);
+			m_propDef = game2d::PropDef::GetPropDefByID(propID);
 			SetOnButtonDown(Editor_PropSelectBtnDown);
 			SetOnButtonUp(Editor_PropSelectBtnUp);
 		}
@@ -516,6 +518,6 @@ namespace ce
 				return;
 			glScalef((float)m_extent[0], (float)m_extent[1], 0.f);
 			m_propDef->UIRender();
-		}*/
+		}
 	}
 }

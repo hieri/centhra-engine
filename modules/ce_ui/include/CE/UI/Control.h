@@ -63,7 +63,7 @@ namespace ce
 				Anchor_Right = 2,
 				Anchor_Top = 4,
 				Anchor_Bottom = 8
-			};
+			} AnchorMask;
 			unsigned char GetAnchor() const;
 			void SetAnchor(unsigned char anchor);
 
@@ -77,7 +77,7 @@ namespace ce
 				Scaling_None,
 				Scaling_Horizontal = 1,
 				Scaling_Vertical = 2
-			};
+			} ScalingMask;
 			void ResetScaling();
 			unsigned char GetScaling() const;
 			void SetScaling(unsigned char scaling);

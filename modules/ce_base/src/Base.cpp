@@ -39,8 +39,12 @@ namespace ce
 
 	string formatString(const char *format, va_list args, unsigned short size)
 	{
-		char *buffer = new char[size];
-		vsnprintf(buffer, size, format, args);
+		char *buffer = new char[size + 1];
+		#ifdef _WIN32
+			vsnprintf(buffer, size + 1, size, format, args);
+		#else
+			vsnprintf(buffer, size + 1, format, args);
+		#endif
 		string str(buffer);
 		delete [] buffer;
 		return str;

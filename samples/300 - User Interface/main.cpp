@@ -48,10 +48,13 @@ public:
 
 
 			for(int a = 0; a < 4; a++)
-				m_rootCtrl->Add(new ui::TextEditCtrl(Vector2<int_canvas>(300, 200 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(255, 255, 0)));
-			for(int a = 0; a < 4; a++)
 				m_rootCtrl->Add(new ui::TextEditCtrl(Vector2<int_canvas>(0, 200 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(255, 255, 0)));
-
+			for(int a = 0; a < 4; a++)
+			{
+				ui::Control *ctrl = new ui::TextEditCtrl(Vector2<int_canvas>(300, 200 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(255, 255, 0));
+				ctrl->SetAnchor(ui::Control::Anchor_Bottom | ui::Control::Anchor_Right);
+				m_rootCtrl->Add(ctrl);
+			}
 		}
 
 		return true;
@@ -97,6 +100,10 @@ public:
 				break;
 			case event::PostRender:
 				m_rootCtrl->Render(m_canvas);
+				break;
+			case event::WindowResize:
+				if(m_rootCtrl)
+					m_rootCtrl->SetExtent(Vector2<int_canvas>(event.windowResize.width, event.windowResize.height));
 				break;
 		}
 		return true;

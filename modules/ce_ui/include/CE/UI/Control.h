@@ -50,6 +50,22 @@ namespace ce
 			Control *FindNextFocus(Control *reference = 0, bool fromParent = false);
 			Control *FindPreviousFocus(Control *reference = 0, bool fromParent = false);
 
+			//- Anchor -
+		protected:
+			unsigned char m_anchor;
+			bool m_isAnchorValid;
+			Vector2<int_canvas> m_anchorPos;
+		public:
+			typedef enum AnchorMask
+			{
+				Anchor_Center,
+				Anchor_Left = 1,
+				Anchor_Right = 2,
+				Anchor_Top = 4,
+				Anchor_Bottom = 8
+			};
+			void SetAnchor(unsigned char anchor);
+
 		protected:
 			unsigned int m_type;
 			Control *m_parent;
@@ -97,6 +113,9 @@ namespace ce
 			virtual bool OnEvent(Event &event);
 			virtual void OnSetPosition();
 			virtual void OnSetExtent();
+
+			virtual void OnAdded(Control *parent);
+			virtual void OnRemoved(Control *parent);
 		};
 	}
 }

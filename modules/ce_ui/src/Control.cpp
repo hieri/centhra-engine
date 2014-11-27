@@ -24,7 +24,8 @@ namespace ce
 	{
 		Control::Control(Vector2<int_canvas> position, Vector2<int_canvas> extent) :
 			m_type(0), m_parent(0),
-			m_isVisible(true), m_isUpdatingDimensions(true), m_acceptsFocus(false), m_isFocused(false)
+			m_isVisible(true), m_isUpdatingDimensions(true), m_acceptsFocus(false), m_isFocused(false),
+			m_anchor(Anchor_Left | Anchor_Top), m_isAnchorValid(false)
 		{
 			m_position = position;
 			m_extent = extent;
@@ -40,6 +41,50 @@ namespace ce
 		//- Dimension Update -
 		void Control::UpdateDimensions()
 		{
+			//- Anchor -
+			// Right -> Parent Width - CurPos + Pos
+			// Bottom -> ^^^^^
+			// Center -> Average?
+			if(!m_isAnchorValid)
+			{
+				if(m_parent)
+				{
+					Vector2<int_canvas> extent = m_parent->GetExtent();
+
+					if(m_anchor & Anchor_Left)
+						m_anchorPos[0] = m_position[0];
+					if(m_anchor & Anchor_Right)
+						m_anchorPos[0] = extent[0] - m_position[0];
+
+					if(m_anchor & Anchor_Top)
+						m_anchorPos[1] = m_position[1];
+					if(m_anchor & Anchor_Bottom)
+						m_anchorPos[1] = extent[1] - m_position[1];
+
+					//TODO: Handle center
+				}
+				else
+				{
+					//TODO: Handle root element resizing/anchor?
+				}
+				m_isAnchorValid = true;
+			}
+
+			if(m_anchor && m_parent)
+			{
+				Vector2<int_canvas> parentExtent = m_parent->GetExtent();
+
+				if(m_anchor & Anchor_Left)
+					m_position[0] = m_anchorPos[0];
+				if(m_anchor & Anchor_Right)
+					m_position[0] = parentExtent[0] - m_anchorPos[0];
+
+				if(m_anchor & Anchor_Top)
+					m_position[1] = m_anchorPos[1];
+				if(m_anchor & Anchor_Bottom)
+					m_position[1] = parentExtent[1] - m_anchorPos[1];
+			}
+
 			if(m_parent)
 				m_absolutePosition = m_position + m_parent->m_absolutePosition;
 			else
@@ -124,8 +169,10 @@ namespace ce
 							control->m_parent->Remove(control);
 						m_children.push_back(control);
 						control->m_parent = this;
+						control->m_isAnchorValid = false;
 						if(control->m_isUpdatingDimensions)
 							control->UpdateDimensions();
+						control->OnAdded(this);
 					}
 		}
 		bool Control::Contains(Control *control)
@@ -174,6 +221,8 @@ namespace ce
 				{
 					Control *control = *it;
 					control->m_parent = 0;
+					control->m_isAnchorValid = false;
+					control->OnRemoved(this);
 					m_children.erase(it);
 					if(control->m_isUpdatingDimensions)
 						control->UpdateDimensions();
@@ -254,6 +303,7 @@ namespace ce
 		void Control::SetPosition(Vector2<int_canvas> position)
 		{
 			m_position = position;
+			m_isAnchorValid = false;
 			if(m_isUpdatingDimensions)
 				UpdateDimensions();
 			OnSetPosition();
@@ -266,6 +316,12 @@ namespace ce
 		{
 		}
 		void Control::OnSetPosition()
+		{
+		}
+		void Control::OnAdded(Control *parent)
+		{
+		}
+		void Control::OnRemoved(Control *parent)
 		{
 		}
 		Control *Control::GetFromPosition(Vector2<int_canvas> position, bool recurse)
@@ -295,6 +351,7 @@ namespace ce
 		}
 
 		//- Focus -
+		//TODO: Implement as always sorted static deque
 		deque<Control *> Control::ms_focusCtrls;
 		void Control::AddToFocusCtrls(Control *ctrl)
 		{
@@ -450,6 +507,12 @@ namespace ce
 			Control *ctrl = GetFocusFromPosition(position);
 			if(ctrl)
 				ctrl->Focus();
+		}
+
+		//- Anchor -
+		void Control::SetAnchor(unsigned char anchor)
+		{
+			m_anchor = anchor;
 		}
 	}
 }

@@ -58,13 +58,29 @@ namespace ce
 		public:
 			typedef enum AnchorMask
 			{
-				Anchor_Center,
+				Anchor_None,
 				Anchor_Left = 1,
 				Anchor_Right = 2,
 				Anchor_Top = 4,
 				Anchor_Bottom = 8
 			};
+			unsigned char GetAnchor() const;
 			void SetAnchor(unsigned char anchor);
+
+			//- Scaling -
+		protected:
+			unsigned char m_scaling;
+			Vector2<int_canvas> m_scalingReference, m_scalingExtent;
+		public:
+			typedef enum ScalingMask
+			{
+				Scaling_None,
+				Scaling_Horizontal = 1,
+				Scaling_Vertical = 2
+			};
+			void ResetScaling();
+			unsigned char GetScaling() const;
+			void SetScaling(unsigned char scaling);
 
 		protected:
 			unsigned int m_type;

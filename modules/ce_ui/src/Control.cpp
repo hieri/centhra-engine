@@ -25,7 +25,7 @@ namespace ce
 		Control::Control(Vector2<int_canvas> position, Vector2<int_canvas> extent) :
 			m_type(0), m_parent(0),
 			m_isVisible(true), m_isUpdatingDimensions(true), m_acceptsFocus(false), m_isFocused(false),
-			m_anchor(Anchor_Left | Anchor_Top), m_isAnchorValid(false)
+			m_anchor(Anchor_None), m_isAnchorValid(false), m_scaling(Scaling_None)
 		{
 			m_position = position;
 			m_extent = extent;
@@ -42,9 +42,6 @@ namespace ce
 		void Control::UpdateDimensions()
 		{
 			//- Anchor -
-			// Right -> Parent Width - CurPos + Pos
-			// Bottom -> ^^^^^
-			// Center -> Average?
 			if(!m_isAnchorValid)
 			{
 				if(m_parent)
@@ -69,7 +66,6 @@ namespace ce
 				}
 				m_isAnchorValid = true;
 			}
-
 			if(m_anchor && m_parent)
 			{
 				Vector2<int_canvas> parentExtent = m_parent->GetExtent();
@@ -85,6 +81,20 @@ namespace ce
 					m_position[1] = parentExtent[1] - m_anchorPos[1];
 			}
 
+			//- Scaling -
+			if(m_scaling && m_parent)
+			{
+				Vector2<int_canvas> parentExtent = m_parent->GetExtent();
+				float xScale = (float)parentExtent[0] / m_scalingReference[0];
+				float yScale = (float)parentExtent[1] / m_scalingReference[1];
+
+				if(m_scaling & Scaling_Horizontal)
+					m_extent[0] = (int_canvas)(xScale * m_scalingExtent[0]);
+				if(m_scaling & Scaling_Vertical)
+					m_extent[1] = (int_canvas)(yScale * m_scalingExtent[1]);
+			}
+
+			//- Standard -
 			if(m_parent)
 				m_absolutePosition = m_position + m_parent->m_absolutePosition;
 			else
@@ -170,6 +180,7 @@ namespace ce
 						m_children.push_back(control);
 						control->m_parent = this;
 						control->m_isAnchorValid = false;
+						control->ResetScaling();
 						if(control->m_isUpdatingDimensions)
 							control->UpdateDimensions();
 						control->OnAdded(this);
@@ -510,9 +521,34 @@ namespace ce
 		}
 
 		//- Anchor -
+		unsigned char Control::GetAnchor() const
+		{
+			return m_anchor;
+		}
 		void Control::SetAnchor(unsigned char anchor)
 		{
 			m_anchor = anchor;
+		}
+
+		//- Scaling -
+		unsigned char Control::GetScaling() const
+		{
+			return m_scaling;
+		}
+		void Control::SetScaling(unsigned char scaling)
+		{
+			m_scaling = scaling;
+		}
+		void Control::ResetScaling()
+		{
+			if(m_parent)
+				m_scalingReference = m_parent->GetExtent();
+			else
+				m_scalingReference = Vector2<int_canvas>(1, 1);
+
+			m_scalingExtent = m_extent;
+
+			//TODO: Properly reset scaling extent
 		}
 	}
 }

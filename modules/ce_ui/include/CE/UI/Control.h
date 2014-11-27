@@ -3,6 +3,7 @@
 
 //- Standard Library -
 #include <vector>
+#include <deque>
 
 //- Centhra Engine -
 #include <CE/ConfigUI.h>
@@ -29,8 +30,14 @@ namespace ce
 			void UpdateDimensions();
 
 			//- Focus -
+		private:
+			static std::deque<Control *> ms_focusCtrls;
+
 		protected:
 			static Control *ms_currentFocus;
+			static void AddToFocusCtrls(Control *ctrl);
+			static void RemoveFromFocusCtrls(Control *ctrl);
+
 			bool m_acceptsFocus, m_isFocused;
 			void OnFocus();
 			void OnFocusLost();

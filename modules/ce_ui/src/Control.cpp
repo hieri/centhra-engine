@@ -295,6 +295,20 @@ namespace ce
 		}
 
 		//- Focus -
+		deque<Control *> Control::ms_focusCtrls;
+		void Control::AddToFocusCtrls(Control *ctrl)
+		{
+			deque<Control *>::iterator it = find(ms_focusCtrls.begin(), ms_focusCtrls.end(), ctrl);
+			if(it == ms_focusCtrls.end())
+				ms_focusCtrls.push_back(ctrl);
+		}
+		void Control::RemoveFromFocusCtrls(Control *ctrl)
+		{
+			deque<Control *>::iterator it = find(ms_focusCtrls.begin(), ms_focusCtrls.end(), ctrl);
+			if(it != ms_focusCtrls.end())
+				ms_focusCtrls.erase(it);
+		}
+
 		Control *Control::ms_currentFocus = 0;
 		Control *Control::GetCurrentFocus()
 		{
@@ -345,96 +359,74 @@ namespace ce
 		}
 		Control *Control::FindNextFocus(Control *reference, bool fromParent)
 		{
-			vector<Control *> topLayer;
-			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-				topLayer.push_back(*it);
-			sort(topLayer.begin(), topLayer.end(), sortByYThenX);
+			deque<Control *> ordered(ms_focusCtrls);
+			sort(ordered.begin(), ordered.end(), sortByYThenX);
 
-			vector<Control *>::iterator it = find(topLayer.begin(), topLayer.end(), reference);
-			if(it == topLayer.end())
-				it = topLayer.begin();
+			deque<Control *>::iterator it = find(ordered.begin(), ordered.end(), ms_currentFocus);
+
+			if(it == ordered.end())
+				it = ordered.begin();
 			else
 				it++;
-			for(; it != topLayer.end(); it++)
-			{
-				Control *ctrl = *it;
-
-				Control *ret = ctrl->FindNextFocus(0, true);
-				if(ret)
-					return ret;
-
-				if(ctrl->m_acceptsFocus)
-					if(ctrl != ms_currentFocus)
-						return ctrl;
-			}
-
-			if(!fromParent)
-			{
-				if(m_parent)
-					m_parent->FindNextFocus(this, false);
-				else
+			if(it != ordered.end())
+				while(!(*it)->IsVisible())
 				{
-					for(it = topLayer.begin(); it != topLayer.end(); it++)
-					{
-						Control *ctrl = *it;
+					it++;
+					if(it == ordered.end())
+						break;
+				}
 
-						Control *ret = ctrl->FindNextFocus(0, true);
-						if(ret)
-							return ret;
-
-						if(ctrl->m_acceptsFocus)
-							if(ctrl != ms_currentFocus)
-								return ctrl;
-					}
+			if(it == ordered.end())
+			{
+				it = ordered.begin();
+				while(!(*it)->IsVisible())
+				{
+					it++;
+					if(it == ordered.end())
+						break;
 				}
 			}
 
+			if(it == ordered.end())
+				return 0;
+			if((*it)->IsVisible())
+				return *it;
 			return 0;
 		}
 		Control *Control::FindPreviousFocus(Control *reference, bool fromParent)
 		{
-			vector<Control *> topLayer;
-			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-				topLayer.push_back(*it);
-			sort(topLayer.begin(), topLayer.end(), sortByRYThenRX);
+			deque<Control *> ordered(ms_focusCtrls);
+			sort(ordered.begin(), ordered.end(), sortByRYThenRX);
 
-			vector<Control *>::iterator it = find(topLayer.begin(), topLayer.end(), reference);
-			if(it == topLayer.end())
-				it = topLayer.begin();
-			for(; it != topLayer.end(); it++)
-			{
-				Control *ctrl = *it;
+			deque<Control *>::iterator it = find(ordered.begin(), ordered.end(), ms_currentFocus);
 
-				Control *ret = ctrl->FindNextFocus(0, true);
-				if(ret)
-					return ret;
-
-				if(ctrl->m_acceptsFocus)
-					if(ctrl != ms_currentFocus)
-						return ctrl;
-			}
-
-			if(!fromParent)
-			{
-				if(m_parent)
-					m_parent->FindNextFocus(this, false);
-				else
+			if(it == ordered.end())
+				it = ordered.begin();
+			else
+				it++;
+			if(it != ordered.end())
+				while(!(*it)->IsVisible())
 				{
-					for(it = topLayer.begin(); it != topLayer.end(); it++)
-					{
-						Control *ctrl = *it;
+					it++;
+					if(it == ordered.end())
+						break;
+				}
 
-						Control *ret = ctrl->FindNextFocus(0, true);
-						if(ret)
-							return ret;
-
-						if(ctrl->m_acceptsFocus)
-							if(ctrl != ms_currentFocus)
-								return ctrl;
-					}
+			if(it == ordered.end())
+			{
+				it = ordered.begin();
+				while(!(*it)->IsVisible())
+				{
+					it++;
+					if(it == ordered.end())
+						break;
 				}
 			}
 
+			if(it == ordered.end())
+				return 0;
+			if((*it)->IsVisible())
+				return *it;
 			return 0;
 		}
 		Control *Control::GetFocusFromPosition(Vector2<int_canvas> position)

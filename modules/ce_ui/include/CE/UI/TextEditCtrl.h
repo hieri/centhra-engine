@@ -19,6 +19,7 @@ namespace ce
 
 		public:
 			TextEditCtrl(Vector2<short> position, Vector2<short> extent, Font *font, unsigned short maxSize, const char *text = "", Color color = Color());
+			virtual ~TextEditCtrl();
 
 			virtual bool OnEvent(Event &event);
 		};

@@ -26,6 +26,11 @@ namespace ce
 			m_rightShift = false;
 			m_maxSize = maxSize;
 			m_acceptsFocus = true;
+			AddToFocusCtrls(this);
+		}
+		TextEditCtrl::~TextEditCtrl()
+		{
+			RemoveFromFocusCtrls(this);
 		}
 		void TextEditCtrl::DoRender()
 		{

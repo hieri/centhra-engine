@@ -123,7 +123,7 @@ namespace ce
 					return (*m_OnButtonUp)(this);
 				break;
 			}
-			return true;
+			return Control::OnEvent(event);
 		}
 	}
 }

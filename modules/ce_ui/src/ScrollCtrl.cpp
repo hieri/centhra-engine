@@ -19,6 +19,7 @@ using namespace std;
 
 //TODO: mouse drag scrolling
 //TODO: overflow based scroll bar sizing
+//TODO: move rendering calculations into a function, called in scroll and resize
 
 namespace ce
 {
@@ -509,7 +510,7 @@ namespace ce
 				return false;
 			}
 
-			return true;
+			return Control::OnEvent(event);
 		}
 	}
 }

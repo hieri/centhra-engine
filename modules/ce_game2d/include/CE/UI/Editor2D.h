@@ -5,6 +5,7 @@
 #include <CE/UI/Control.h>
 #include <CE/UI/ColorCtrl.h>
 #include <CE/UI/TextButtonCtrl.h>
+#include <CE/UI/ScrollCtrl.h>
 #include <CE/Game2D/PhysicalObject.h>
 #include <CE/Game2D/Prop.h>
 
@@ -14,13 +15,12 @@ namespace ce
 	{
 		class Editor2DCtrl : public ui::Control
 		{
-			class PropSelectorCtrl : public ui::ColorCtrl
+			//- Prop Selector -
+		protected:
+			class PropSelectorCtrl : public ui::ScrollCtrl
 			{
-			protected:
-				virtual void DoRender();
-
 			public:
-				class PropSelectCtrl : public ui::ButtonCtrl
+				class PropSelectCtrl : public ui::ButtonCtrl, ui::ColorCtrl
 				{
 				protected:
 					virtual void DoRender();
@@ -29,17 +29,22 @@ namespace ce
 					unsigned short m_propID;
 					game2d::PropDef *m_propDef;
 
-					PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID);
+					PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID, Font *font);
 				};
 
-				PropSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent);
+				PropSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Skin *skin);
 
 				void OnSelect(short propID);
-				void GenerateButtons();
-				virtual bool OnEvent(Event &event);
+				void GenerateButtons(Font *font);
 			};
-			friend bool Editor_PropSelectBtnUp(ui::ButtonCtrl *button);
 			
+			friend bool Editor_PropSelectBtnDown(ui::ButtonCtrl *button);
+
+			PropSelectorCtrl *m_propSelectorCtrl;
+			short m_propPlaceID;
+
+			//- Standard -
+		protected:
 			game2d::PhysicalObject *m_hover;
 			std::vector<game2d::PhysicalObject *> m_selection;
 			std::vector<std::pair<game2d::PhysicalObject *, Vector2<float> > > m_dragSelection;
@@ -56,8 +61,6 @@ namespace ce
 			float m_startRotation;
 			bool m_isDragging, m_isSelecting, m_isRotating;
 			ui::TextButtonCtrl *m_modeObjectBtn, *m_modePropBtn, *m_modeTileBtn, *m_modeWallBtn;
-			PropSelectorCtrl *m_propSelectorCtrl;
-			short m_propPlaceID;
 
 			Font *m_font;
 
@@ -81,7 +84,7 @@ namespace ce
 				Mode_Wall
 			} EditorMode;
 
-			Editor2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font);
+			Editor2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, Skin *scrollSkin);
 
 			virtual bool OnEvent(Event &event);
 			void SetMode(unsigned char mode);

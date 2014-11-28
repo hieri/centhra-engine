@@ -22,7 +22,7 @@ namespace ce
 			unsigned short m_propID;
 			Image *m_image;
 			Sprite *m_sprite;
-			std::string m_typeName, m_sourceFile;
+			std::string m_name, m_sourceFile;
 			Vector2<float> m_extent;
 			bool m_isStatic, m_hasFixedRotation, m_isCollidable, m_isAnimated;
 
@@ -39,6 +39,7 @@ namespace ce
 
 			unsigned short GetPropID() const;
 			Vector2<float> GetExtent() const;
+			std::string GetName() const;
 
 			Prop *Spawn(Vector2<float> position);
 			void UIRender();

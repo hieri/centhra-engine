@@ -42,8 +42,8 @@ namespace ce
 			{
 				stringstream lineStream(in);
 				PropDef *def = new PropDef();;
-				getline(lineStream, def->m_typeName, '\t');
-				if(!def->m_typeName.compare("//"))
+				getline(lineStream, def->m_name, '\t');
+				if(!def->m_name.compare("//"))
 					continue;
 				string imageFile, spriteFile;
 				getline(lineStream, imageFile, '\t');
@@ -91,6 +91,10 @@ namespace ce
 		Vector2<float> PropDef::GetExtent() const
 		{
 			return m_extent;
+		}
+		string PropDef::GetName() const
+		{
+			return m_name;
 		}
 		Prop *PropDef::Spawn(Vector2<float> position)
 		{

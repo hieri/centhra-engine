@@ -153,7 +153,7 @@ namespace ce
 					m_rightShift = false;
 				break;
 			}
-			return true;
+			return Control::OnEvent(event);
 		}
 	}
 }

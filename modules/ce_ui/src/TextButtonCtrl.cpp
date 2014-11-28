@@ -39,6 +39,5 @@ namespace ce
 		{
 			m_backgroundColor = backgroundColor;
 		}
-
 	}
 }

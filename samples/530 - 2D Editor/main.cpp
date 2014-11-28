@@ -28,11 +28,14 @@ class App2DEditorSample : public game2d::AppGame2D
 	ui::CameraView2DCtrl *m_view;
 //	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 	plugin::box2d::bPhysicsHandler *m_box2dPhysicsHandler;
-	ui::Editor2DCtrl *m_editorCtrl;
 	Font *m_font;
 	bool m_isEditMode;
 	bool w,a,s,d;
 	unsigned long long m_lastProcess;
+
+	ui::Editor2DCtrl *m_editorCtrl;
+	Image *m_editorScrollImage;
+	ui::Skin *m_editorScrollSkin;
 
 public:
 	Thread* m_physicsThread;
@@ -111,7 +114,9 @@ public:
 
 		game2d::PropDef::LoadFromFile("../res/sampleProps.txt");
 
-		m_editorCtrl = new ui::Editor2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(m_canvas->GetWidth(), m_canvas->GetHeight()), m_font);
+		m_editorScrollImage = Image::CreateFromFile("../res/editorPropScroll.png");
+		m_editorScrollSkin = new ui::Skin(m_editorScrollImage);
+		m_editorCtrl = new ui::Editor2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(m_canvas->GetWidth(), m_canvas->GetHeight()), m_font, m_editorScrollSkin);
 
 		bool parentStart = game2d::AppGame2D::OnStart();
 		if(!parentStart)
@@ -199,6 +204,9 @@ public:
 			delete m_randoms[a];
 		delete [] m_randoms;
 		delete m_group;
+
+		delete m_editorScrollSkin;
+		delete m_editorScrollImage;
 		delete m_font;
 		delete m_canvas;
 
@@ -248,14 +256,9 @@ public:
 				break;
 			}
 			break;
+		case event::MouseWheel:
 		case event::MouseMotion:
-			if(m_isEditMode)
-				m_editorCtrl->OnEvent(event);
-			break;
 		case event::MouseButtonDown:
-			if(m_isEditMode)
-				m_editorCtrl->OnEvent(event);
-			break;
 		case event::MouseButtonUp:
 			if(m_isEditMode)
 				m_editorCtrl->OnEvent(event);

@@ -20,7 +20,7 @@ namespace ce
 			class PropSelectorCtrl : public ui::ScrollCtrl
 			{
 			public:
-				class PropSelectCtrl : public ui::ButtonCtrl, ui::ColorCtrl
+				class PropSelectCtrl : public ui::ButtonCtrl, public ui::ColorCtrl
 				{
 				protected:
 					virtual void DoRender();
@@ -34,8 +34,11 @@ namespace ce
 
 				PropSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Skin *skin);
 
-				void OnSelect(short propID);
+				void OnSelect(PropSelectCtrl *btn);
 				void GenerateButtons(Font *font);
+
+			protected:
+				PropSelectCtrl *m_lastSelection;
 			};
 			
 			friend bool Editor_PropSelectBtnDown(ui::ButtonCtrl *button);

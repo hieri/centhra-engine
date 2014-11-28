@@ -460,13 +460,27 @@ namespace ce
 		}
 
 		//- Prop Selector -
-		Editor2DCtrl::PropSelectorCtrl::PropSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Skin *skin) : ScrollCtrl(position, extent, skin)
+		Color g_propSelectDefault(0, 0, 0, 127), g_propSelectHighlight(0, 255, 0, 63);
+		Editor2DCtrl::PropSelectorCtrl::PropSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Skin *skin) : ScrollCtrl(position, extent, skin), m_lastSelection(0)
 		{
 		}
-		void Editor2DCtrl::PropSelectorCtrl::OnSelect(short propID)
+		void Editor2DCtrl::PropSelectorCtrl::OnSelect(PropSelectCtrl *btn)
 		{
 			Editor2DCtrl *editor = (Editor2DCtrl *)GetParent();
-			editor->m_propPlaceID = propID;
+			if(editor->m_propPlaceID == btn->m_propID)
+			{
+				editor->m_propPlaceID = -1;
+				m_lastSelection = 0;
+				btn->SetColor(g_propSelectDefault);
+			}
+			else
+			{
+				if(m_lastSelection)
+					m_lastSelection->SetColor(g_propSelectDefault);
+				btn->SetColor(g_propSelectHighlight);
+				editor->m_propPlaceID = btn->m_propID;
+				m_lastSelection = btn;
+			}
 		}
 		void Editor2DCtrl::PropSelectorCtrl::GenerateButtons(Font *font)
 		{
@@ -487,14 +501,14 @@ namespace ce
 		bool Editor_PropSelectBtnDown(ui::ButtonCtrl *button)
 		{
 			Editor2DCtrl::PropSelectorCtrl *selector = (Editor2DCtrl::PropSelectorCtrl *)button->GetParent();
-			selector->OnSelect((short)((Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl *)button)->m_propID);
+			selector->OnSelect((Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl *)button);
 			return false;
 		}
 		bool Editor_PropSelectBtnUp(ui::ButtonCtrl *button)
 		{
 			return false;
 		}
-		Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl::PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID, Font *font) : ButtonCtrl(position, extent), ColorCtrl(position, extent, Color(0, 0, 0, 127)), m_propID(propID)
+		Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl::PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID, Font *font) : ButtonCtrl(position, extent), ColorCtrl(position, extent, g_propSelectDefault), m_propID(propID)
 		{
 			m_propDef = game2d::PropDef::GetPropDefByID(propID);
 			SetOnButtonDown(Editor_PropSelectBtnDown);

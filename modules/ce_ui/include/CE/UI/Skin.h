@@ -14,7 +14,7 @@ namespace ce
 			Rect<float> **m_relativeArray;
 			Rect<int> **m_array;
 			Image *m_image;
-			unsigned int m_numColumns, *m_numRows;
+			unsigned int m_numRows, *m_numColumns;
 
 		public:
 			Skin(Image *image);

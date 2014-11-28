@@ -64,7 +64,7 @@ public:
 			ui::ScrollCtrl *testScroll = new ui::ScrollCtrl(Vector2<int_canvas>(64, 300), Vector2<int_canvas>(256, 256), m_scrollSkin);
 
 			for(int a = 0; a < 4; a++)
-				testScroll->Add(new ui::TextEditCtrl(Vector2<int_canvas>(0, 200 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(0, 255, 0)));
+				testScroll->Add(new ui::TextEditCtrl(Vector2<int_canvas>(0, 200 + a * 24), Vector2<int_canvas>(257, 128), m_font, 128, "A: ", Color(0, 255, 0)));
 			for(int a = 0; a < 4; a++)
 			{
 				ui::Control *ctrl = new ui::TextEditCtrl(Vector2<int_canvas>(300, 200 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(0, 255, 0));

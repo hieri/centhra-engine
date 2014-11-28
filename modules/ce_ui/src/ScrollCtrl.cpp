@@ -17,6 +17,9 @@
 
 using namespace std;
 
+//TODO: mouse drag scrolling
+//TODO: overflow based scroll bar sizing
+
 namespace ce
 {
 	namespace ui
@@ -224,89 +227,205 @@ namespace ce
 				}
 
 				//- Overlay Scrolls -
-				int hScrollWidth = 0;
 				{
+					int vBackWidth, hBackHeight;
+
 					if(m_verticalScroll)
 					{
-						Rect<int> topRighti = m_skin->GetRect(6, 0);
-						Rect<float> topRightf = m_skin->GetRelativeRect(6, 0);
+						//- Get Skin Dimensions -
+						Rect<int> backTopi = m_skin->GetRect(3, 3);
+						Rect<float> backTopf = m_skin->GetRelativeRect(3, 3);
 
-						Rect<int> righti = m_skin->GetRect(6, 1);
-						Rect<float> rightf = m_skin->GetRelativeRect(6, 1);
+						Rect<int> backMidi = m_skin->GetRect(4, 3);
+						Rect<float> backMidf = m_skin->GetRelativeRect(4, 3);
 
-						Rect<int> bottomRighti = m_skin->GetRect(6, 2);
-						Rect<float> bottomRightf = m_skin->GetRelativeRect(6, 2);
-						hScrollWidth = righti.GetWidth();
+						Rect<int> backBottomi = m_skin->GetRect(5, 3);
+						Rect<float> backBottomf = m_skin->GetRelativeRect(5, 3);
 
-						glBegin(GL_QUADS);
+						Rect<int> barTopi = m_skin->GetRect(0, 5);
+						Rect<float> barTopf = m_skin->GetRelativeRect(0, 5);
 
-							glTexCoord2f(topRightf[0], topRightf[3]); glVertex2i(size[0] - topRighti.GetWidth(), topRighti.GetHeight());
-							glTexCoord2f(topRightf[0], topRightf[1]); glVertex2i(size[0] - topRighti.GetWidth(), 0);
-							glTexCoord2f(topRightf[2], topRightf[1]); glVertex2i(size[0], 0);
-							glTexCoord2f(topRightf[2], topRightf[3]); glVertex2i(size[0], topRighti.GetHeight());
+						Rect<int> barMidi = m_skin->GetRect(1, 5);
+						Rect<float> barMidf = m_skin->GetRelativeRect(1, 5);
 
-							glTexCoord2f(rightf[0], rightf[3]); glVertex2i(size[0] - topRighti.GetWidth(), size[1] - bottomRighti.GetHeight());
-							glTexCoord2f(rightf[0], rightf[1]); glVertex2i(size[0] - topRighti.GetWidth(), bottomRighti.GetHeight());
-							glTexCoord2f(rightf[2], rightf[1]); glVertex2i(size[0], bottomRighti.GetHeight());
-							glTexCoord2f(rightf[2], rightf[3]); glVertex2i(size[0], size[1] - bottomRighti.GetHeight());
+						Rect<int> barBottomi = m_skin->GetRect(2, 5);
+						Rect<float> barBottomf = m_skin->GetRelativeRect(2, 5);
 
-							glTexCoord2f(bottomRightf[0], bottomRightf[3]); glVertex2i(size[0] - bottomRighti.GetWidth(), size[1]);
-							glTexCoord2f(bottomRightf[0], bottomRightf[1]); glVertex2i(size[0] - bottomRighti.GetWidth(), size[1] - bottomRighti.GetHeight());
-							glTexCoord2f(bottomRightf[2], bottomRightf[1]); glVertex2i(size[0], size[1] - bottomRighti.GetHeight());
-							glTexCoord2f(bottomRightf[2], bottomRightf[3]); glVertex2i(size[0], size[1]);
+						//- Get Scroll Dimensions -
+						vBackWidth = backMidi.GetWidth();
+						int barSize = 32;
+						int backSize = m_extent[1];
+						int barArea = m_extent[1] - barSize;
 
-						glEnd();
-
-						int barYLength = 32;
-
-						Rect<int> topVertScrolli = m_skin->GetRect(7, 0);
-						Rect<float> topVertScrollf = m_skin->GetRelativeRect(7, 0);
-
-						Rect<int> vertScrolli = m_skin->GetRect(7, 1);
-						Rect<float> vertScrollf = m_skin->GetRelativeRect(7, 1);
-
-						Rect<int> bottomVertScrolli = m_skin->GetRect(7, 2);
-						Rect<float> bottomVertScrollf = m_skin->GetRelativeRect(7, 2);
-
-						int barY = m_extent[1] - barYLength;
 						if(m_horizontalScroll)
 						{
-							//Rect<int> vertScrolli = m_skin->GetRect(7, 1);
-							// account for horiz scroll
+							//- Account for Horizontal Scroll -
+							int horizontalHeight = m_skin->GetRect(0, 3).GetHeight();
+							barArea -= horizontalHeight;
+							backSize -= horizontalHeight;
 						}
 
-						int midY = barYLength - topVertScrolli.GetHeight() - bottomVertScrolli.GetHeight();
+						int backMidLength = backSize - backTopi.GetHeight() - backBottomi.GetHeight();
 
-						int offX = (int)((float)(hScrollWidth - vertScrolli.GetWidth()) / 2.f);
-						int startY = (int)(m_scrollPercentage[1] * barY);
-	//					print("PR: %f\n", m_scrollPercentage[1]);
+						int barOffset = (int)((float)(vBackWidth - barMidi.GetWidth()) / 2.f);
+						int barStart = (int)(m_scrollPercentage[1] * barArea);
+						int barMidLength = barSize - barTopi.GetHeight() - barBottomi.GetHeight();
 
+						//- Render Scroll Background -
 						glPushMatrix();
-					
-							glTranslatef((float)(size[0] - hScrollWidth + offX), (float)startY, 0.f);
+							glTranslatef((float)(size[0] - vBackWidth), 0.f, 0.f);
 							glBegin(GL_QUADS);
-								glTexCoord2f(topVertScrollf[0], topVertScrollf[3]); glVertex2i(0, topVertScrolli.GetHeight());
-								glTexCoord2f(topVertScrollf[0], topVertScrollf[1]); glVertex2i(0, 0);
-								glTexCoord2f(topVertScrollf[2], topVertScrollf[1]); glVertex2i(topVertScrolli.GetWidth(), 0);
-								glTexCoord2f(topVertScrollf[2], topVertScrollf[3]); glVertex2i(topVertScrolli.GetWidth(), topVertScrolli.GetHeight());
+								glTexCoord2f(backTopf[0], backTopf[3]); glVertex2i(0, backTopi.GetHeight());
+								glTexCoord2f(backTopf[0], backTopf[1]); glVertex2i(0, 0);
+								glTexCoord2f(backTopf[2], backTopf[1]); glVertex2i(backTopi.GetWidth(), 0);
+								glTexCoord2f(backTopf[2], backTopf[3]); glVertex2i(backTopi.GetWidth(), backTopi.GetHeight());
 							glEnd();
-
-							glTranslatef(0.f, (float)topVertScrolli.GetHeight(), 0.f);
+							glTranslatef(0.f, (float)backTopi.GetHeight(), 0.f);
 							glBegin(GL_QUADS);
-								glTexCoord2f(vertScrollf[0], vertScrollf[3]); glVertex2i(0, 0);
-								glTexCoord2f(vertScrollf[0], vertScrollf[1]); glVertex2i(0, midY);
-								glTexCoord2f(vertScrollf[2], vertScrollf[1]); glVertex2i(topVertScrolli.GetWidth(), midY);
-								glTexCoord2f(vertScrollf[2], vertScrollf[3]); glVertex2i(topVertScrolli.GetWidth(), 0);
-							glEnd();
-
-							glTranslatef(0.f, (float)midY, 0.f);
+								glTexCoord2f(backMidf[0], backMidf[3]); glVertex2i(0, 0);
+								glTexCoord2f(backMidf[0], backMidf[1]); glVertex2i(0, backMidLength);
+								glTexCoord2f(backMidf[2], backMidf[1]); glVertex2i(backTopi.GetWidth(), backMidLength);
+								glTexCoord2f(backMidf[2], backMidf[3]); glVertex2i(backTopi.GetWidth(), 0);
+								glEnd();
+								glTranslatef(0.f, (float)backMidLength, 0.f);
 							glBegin(GL_QUADS);
-								glTexCoord2f(bottomVertScrollf[0], bottomVertScrollf[3]); glVertex2i(0, bottomVertScrolli.GetHeight());
-								glTexCoord2f(bottomVertScrollf[0], bottomVertScrollf[1]); glVertex2i(0, 0);
-								glTexCoord2f(bottomVertScrollf[2], bottomVertScrollf[1]); glVertex2i(bottomVertScrolli.GetWidth(), 0);
-								glTexCoord2f(bottomVertScrollf[2], bottomVertScrollf[3]); glVertex2i(bottomVertScrolli.GetWidth(), bottomVertScrolli.GetHeight());
+								glTexCoord2f(backBottomf[0], backBottomf[3]); glVertex2i(0, backBottomi.GetHeight());
+								glTexCoord2f(backBottomf[0], backBottomf[1]); glVertex2i(0, 0);
+								glTexCoord2f(backBottomf[2], backBottomf[1]); glVertex2i(backBottomi.GetWidth(), 0);
+								glTexCoord2f(backBottomf[2], backBottomf[3]); glVertex2i(backBottomi.GetWidth(), backBottomi.GetHeight());
 							glEnd();
+						glPopMatrix();
 
+						//- Render Scroll Bar -
+						glPushMatrix();
+							glTranslatef((float)(size[0] - vBackWidth + barOffset), (float)barStart, 0.f);
+							glBegin(GL_QUADS);
+								glTexCoord2f(barTopf[0], barTopf[3]); glVertex2i(0, barTopi.GetHeight());
+								glTexCoord2f(barTopf[0], barTopf[1]); glVertex2i(0, 0);
+								glTexCoord2f(barTopf[2], barTopf[1]); glVertex2i(barTopi.GetWidth(), 0);
+								glTexCoord2f(barTopf[2], barTopf[3]); glVertex2i(barTopi.GetWidth(), barTopi.GetHeight());
+							glEnd();
+							glTranslatef(0.f, (float)barTopi.GetHeight(), 0.f);
+							glBegin(GL_QUADS);
+								glTexCoord2f(barMidf[0], barMidf[3]); glVertex2i(0, 0);
+								glTexCoord2f(barMidf[0], barMidf[1]); glVertex2i(0, barMidLength);
+								glTexCoord2f(barMidf[2], barMidf[1]); glVertex2i(barTopi.GetWidth(), barMidLength);
+								glTexCoord2f(barMidf[2], barMidf[3]); glVertex2i(barTopi.GetWidth(), 0);
+							glEnd();
+							glTranslatef(0.f, (float)barMidLength, 0.f);
+							glBegin(GL_QUADS);
+								glTexCoord2f(barBottomf[0], barBottomf[3]); glVertex2i(0, barBottomi.GetHeight());
+								glTexCoord2f(barBottomf[0], barBottomf[1]); glVertex2i(0, 0);
+								glTexCoord2f(barBottomf[2], barBottomf[1]); glVertex2i(barBottomi.GetWidth(), 0);
+								glTexCoord2f(barBottomf[2], barBottomf[3]); glVertex2i(barBottomi.GetWidth(), barBottomi.GetHeight());
+							glEnd();
+						glPopMatrix();
+					}
+
+					if(m_horizontalScroll)
+					{
+						//- Get Skin Dimensions -
+						Rect<int> backLefti = m_skin->GetRect(0, 3);
+						Rect<float> backLeftf = m_skin->GetRelativeRect(0, 3);
+
+						Rect<int> backMidi = m_skin->GetRect(1, 3);
+						Rect<float> backMidf = m_skin->GetRelativeRect(1, 3);
+
+						Rect<int> backRighti = m_skin->GetRect(2, 3);
+						Rect<float> backRightf = m_skin->GetRelativeRect(2, 3);
+
+						Rect<int> barLefti = m_skin->GetRect(0, 4);
+						Rect<float> barLeftf = m_skin->GetRelativeRect(0, 4);
+
+						Rect<int> barMidi = m_skin->GetRect(1, 4);
+						Rect<float> barMidf = m_skin->GetRelativeRect(1, 4);
+
+						Rect<int> barRighti = m_skin->GetRect(2, 4);
+						Rect<float> barRightf = m_skin->GetRelativeRect(2, 4);
+
+						//- Get Scroll Dimensions -
+						hBackHeight = backMidi.GetHeight();
+						int barSize = 32;
+						int backSize = m_extent[0];
+						int barArea = m_extent[0] - barSize;
+
+						if(m_verticalScroll)
+						{
+							//- Account for Vertical Scroll -
+							int verticalWidth = m_skin->GetRect(3, 3).GetWidth();
+							barArea -= verticalWidth;
+							backSize -= verticalWidth;
+						}
+
+						int backMidLength = backSize - backLefti.GetWidth() - backRighti.GetWidth();
+
+						int barOffset = (int)((float)(hBackHeight - barMidi.GetHeight()) / 2.f);
+						int barStart = (int)(m_scrollPercentage[0] * barArea);
+						int barMidLength = barSize - barLefti.GetWidth() - barRighti.GetWidth();
+
+						//- Render Scroll Background -
+						glPushMatrix();
+							glTranslatef(0.f, (float)(size[1] - hBackHeight), 0.f);
+							glBegin(GL_QUADS);
+								glTexCoord2f(backLeftf[0], backLeftf[3]); glVertex2i(0, backLefti.GetHeight());
+								glTexCoord2f(backLeftf[0], backLeftf[1]); glVertex2i(0, 0);
+								glTexCoord2f(backLeftf[2], backLeftf[1]); glVertex2i(backLefti.GetWidth(), 0);
+								glTexCoord2f(backLeftf[2], backLeftf[3]); glVertex2i(backLefti.GetWidth(), backLefti.GetHeight());
+							glEnd();
+							glTranslatef((float)backLefti.GetWidth(), 0.f, 0.f);
+							glBegin(GL_QUADS);
+								glTexCoord2f(backMidf[0], backMidf[3]); glVertex2i(0, 0);
+								glTexCoord2f(backMidf[0], backMidf[1]); glVertex2i(0, backLefti.GetHeight());
+								glTexCoord2f(backMidf[2], backMidf[1]); glVertex2i(backMidLength, backLefti.GetHeight());
+								glTexCoord2f(backMidf[2], backMidf[3]); glVertex2i(backMidLength, 0);
+							glEnd();
+							glTranslatef((float)backMidLength, 0.f, 0.f);
+							glBegin(GL_QUADS);
+								glTexCoord2f(backRightf[0], backRightf[3]); glVertex2i(0, backRighti.GetHeight());
+								glTexCoord2f(backRightf[0], backRightf[1]); glVertex2i(0, 0);
+								glTexCoord2f(backRightf[2], backRightf[1]); glVertex2i(backRighti.GetWidth(), 0);
+								glTexCoord2f(backRightf[2], backRightf[3]); glVertex2i(backRighti.GetWidth(), backRighti.GetHeight());
+							glEnd();
+						glPopMatrix();
+
+						//- Render Scroll Bar -
+						glPushMatrix();
+							glTranslatef((float)barStart, (float)(size[1] - hBackHeight + barOffset), 0.f);
+							glBegin(GL_QUADS);
+								glTexCoord2f(barLeftf[0], barLeftf[3]); glVertex2i(0, barLefti.GetHeight());
+								glTexCoord2f(barLeftf[0], barLeftf[1]); glVertex2i(0, 0);
+								glTexCoord2f(barLeftf[2], barLeftf[1]); glVertex2i(barLefti.GetWidth(), 0);
+								glTexCoord2f(barLeftf[2], barLeftf[3]); glVertex2i(barLefti.GetWidth(), barLefti.GetHeight());
+							glEnd();
+							glTranslatef((float)barLefti.GetWidth(), 0.f, 0.f);
+							glBegin(GL_QUADS);
+								glTexCoord2f(barMidf[0], barMidf[3]); glVertex2i(0, 0);
+								glTexCoord2f(barMidf[0], barMidf[1]); glVertex2i(0, barLefti.GetHeight());
+								glTexCoord2f(barMidf[2], barMidf[1]); glVertex2i(barMidLength, barLefti.GetHeight());
+								glTexCoord2f(barMidf[2], barMidf[3]); glVertex2i(barMidLength, 0);
+							glEnd();
+							glTranslatef((float)barMidLength, 0.f, 0.f);
+							glBegin(GL_QUADS);
+								glTexCoord2f(barRightf[0], barRightf[3]); glVertex2i(0, barRighti.GetHeight());
+								glTexCoord2f(barRightf[0], barRightf[1]); glVertex2i(0, 0);
+								glTexCoord2f(barRightf[2], barRightf[1]); glVertex2i(barRighti.GetWidth(), 0);
+								glTexCoord2f(barRightf[2], barRightf[3]); glVertex2i(barRighti.GetWidth(), barRighti.GetHeight());
+							glEnd();
+						glPopMatrix();
+					}
+
+					if(m_verticalScroll && m_horizontalScroll)
+					{
+						Rect<int> corneri = m_skin->GetRect(6, 3);
+						Rect<float> cornerf = m_skin->GetRelativeRect(6, 3);
+						glPushMatrix();
+							glTranslatef((float)(size[0] - vBackWidth), (float)(size[1] - hBackHeight), 0.f);
+							glBegin(GL_QUADS);
+								glTexCoord2f(cornerf[0], cornerf[3]); glVertex2i(0, corneri.GetHeight());
+								glTexCoord2f(cornerf[0], cornerf[1]); glVertex2i(0, 0);
+								glTexCoord2f(cornerf[2], cornerf[1]); glVertex2i(corneri.GetWidth(), 0);
+								glTexCoord2f(cornerf[2], cornerf[3]); glVertex2i(corneri.GetWidth(), corneri.GetHeight());
+							glEnd();
 						glPopMatrix();
 					}
 				}

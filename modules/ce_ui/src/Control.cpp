@@ -11,6 +11,7 @@
 
 //- Centhra Engine -
 #include <CE/UI/Control.h>
+#include <CE/UI/ScrollCtrl.h>
 #include <CE/Canvas.h>
 #include <CE/Base.h>
 
@@ -23,7 +24,7 @@ namespace ce
 	namespace ui
 	{
 		Control::Control(Vector2<int_canvas> position, Vector2<int_canvas> extent) :
-			m_type(0), m_parent(0),
+			m_type(Type_Control), m_parent(0),
 			m_isVisible(true), m_isUpdatingDimensions(true), m_acceptsFocus(false), m_isFocused(false),
 			m_anchor(Anchor_None), m_isAnchorValid(false), m_scaling(Scaling_None)
 		{
@@ -38,9 +39,14 @@ namespace ce
 			while(m_children.size())
 				delete m_children.back();
 		}
+		unsigned short Control::GetType() const
+		{
+			return m_type;
+		}
 		//- Dimension Update -
 		void Control::UpdateDimensions()
 		{
+			//TODO: Handle scroll offsets
 			//- Anchor -
 			if(!m_isAnchorValid)
 			{
@@ -96,7 +102,7 @@ namespace ce
 
 			//- Standard -
 			if(m_parent)
-				m_absolutePosition = m_position + m_parent->m_absolutePosition;
+				m_absolutePosition = m_position + m_parent->m_absolutePosition + m_parent->m_childOffset;
 			else
 				m_absolutePosition = m_position;
 			
@@ -184,6 +190,7 @@ namespace ce
 						if(control->m_isUpdatingDimensions)
 							control->UpdateDimensions();
 						control->OnAdded(this);
+						OnMemberAdded(control);
 					}
 		}
 		bool Control::Contains(Control *control)
@@ -237,6 +244,7 @@ namespace ce
 					m_children.erase(it);
 					if(control->m_isUpdatingDimensions)
 						control->UpdateDimensions();
+					OnMemberRemoved(control);
 				}
 			}
 		}
@@ -252,8 +260,12 @@ namespace ce
 					glScissor(m_exposedPosition[0], context.height - m_exposedPosition[1] - m_exposedExtent[1], m_exposedExtent[0], m_exposedExtent[1]);
 				glTranslatef((float)m_position[0], (float)m_position[1], 0);
 				DoRender();
-				for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-					(*it)->Render(context);
+				glPushMatrix();
+					glTranslatef((float)m_childOffset[0], (float)m_childOffset[1], 0);
+					for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+						(*it)->Render(context);
+				glPopMatrix();
+				DoOverlay();
 				glPopMatrix();
 			}
 			if(context.isCanvas && noParent)
@@ -273,6 +285,9 @@ namespace ce
 			glPopMatrix();
 		}
 		void Control::DoRender()
+		{
+		}
+		void Control::DoOverlay()
 		{
 		}
 		//- Visibility -
@@ -304,12 +319,19 @@ namespace ce
 		{
 			return m_exposedExtent;
 		}
+		Vector2<int_canvas> Control::GetChildOffset() const
+		{
+			return m_childOffset;
+		}
 		void Control::SetExtent(Vector2<int_canvas> extent)
 		{
 			m_extent = extent;
 			if(m_isUpdatingDimensions)
 				UpdateDimensions();
 			OnSetExtent();
+			if(m_parent)
+				if(m_parent->GetType() == Type_ScrollCtrl)
+					((ScrollCtrl *)m_parent)->UpdateScroll();
 		}
 		void Control::SetPosition(Vector2<int_canvas> position)
 		{
@@ -318,9 +340,29 @@ namespace ce
 			if(m_isUpdatingDimensions)
 				UpdateDimensions();
 			OnSetPosition();
+			if(m_parent)
+				if(m_parent->GetType() == Type_ScrollCtrl)
+					((ScrollCtrl *)m_parent)->UpdateScroll();
 		}
 		bool Control::OnEvent(Event &event)
 		{
+			//TODO: Use mouse motion
+			if(m_children.size())
+				if(event.type == event::MouseButtonDown || event.type == event::MouseButtonUp || event.type == event::MouseWheel)
+				{
+					Vector2<int_canvas> position(event.mouseButton.x, event.mouseButton.y);
+					for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+					{
+						Control *ctrl = *it;
+						Vector2<int_canvas> expPos = ctrl->GetExposurePosition();
+						Vector2<int_canvas> expExt = ctrl->GetExposureExtent();
+						if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
+							continue;
+						bool ret = ctrl->OnEvent(event);
+						if(!ret)
+							return false;
+					}
+				}
 			return true;
 		}
 		void Control::OnSetExtent()
@@ -333,6 +375,12 @@ namespace ce
 		{
 		}
 		void Control::OnRemoved(Control *parent)
+		{
+		}
+		void Control::OnMemberAdded(Control *ctrl)
+		{
+		}
+		void Control::OnMemberRemoved(Control *ctrl)
 		{
 		}
 		Control *Control::GetFromPosition(Vector2<int_canvas> position, bool recurse)
@@ -407,8 +455,8 @@ namespace ce
 		}
 		bool sortByYThenX(Control *A, Control *B)
 		{
-			Vector2<int_canvas> aPos = A->GetPosition();
-			Vector2<int_canvas> bPos = B->GetPosition();
+			Vector2<int_canvas> aPos = A->GetExposurePosition();
+			Vector2<int_canvas> bPos = B->GetExposurePosition();
 			if(bPos[1] < aPos[1])
 				return false;
 			else if(bPos[1] > aPos[1])
@@ -417,8 +465,8 @@ namespace ce
 		}
 		bool sortByRYThenRX(Control *A, Control *B)
 		{
-			Vector2<int_canvas> aPos = A->GetPosition();
-			Vector2<int_canvas> bPos = B->GetPosition();
+			Vector2<int_canvas> aPos = A->GetExposurePosition();
+			Vector2<int_canvas> bPos = B->GetExposurePosition();
 			if(bPos[1] > aPos[1])
 				return false;
 			else if(bPos[1] < aPos[1])

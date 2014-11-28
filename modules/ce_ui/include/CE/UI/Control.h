@@ -15,6 +15,19 @@ namespace ce
 {
 	namespace ui
 	{
+		//TODO: Split into masks for functionality
+		typedef enum ControlType
+		{
+			Type_Control,
+			Type_ColorCtrl,
+			Type_ImageCtrl,
+			Type_ButtonCtrl,
+			Type_TextCtrl,
+			Type_TextEditCtrl,
+			Type_TextButtonCtrl,
+			Type_ScrollCtrl
+		} ControlType;
+
 		class Control
 		{
 			//- Visibility -
@@ -27,6 +40,7 @@ namespace ce
 			//- Dimension Update -
 		protected:
 			bool m_isUpdatingDimensions;
+		public:
 			void UpdateDimensions();
 
 			//- Focus -
@@ -83,17 +97,21 @@ namespace ce
 			void SetScaling(unsigned char scaling);
 
 		protected:
-			unsigned int m_type;
+			unsigned short m_type;
 			Control *m_parent;
 			std::vector<Control *> m_children;
-			Vector2<int_canvas> m_position, m_extent, m_absolutePosition, m_exposedPosition, m_exposedExtent;
+			Vector2<int_canvas> m_position, m_extent, m_absolutePosition, m_exposedPosition, m_exposedExtent, m_childOffset;
 
+			//- Render Under Children -
 			virtual void DoRender();
+			//- Render Over Children -
+			virtual void DoOverlay();
 
 		public:
 			Control(Vector2<int_canvas> position, Vector2<int_canvas> extent);
 			virtual ~Control();
 
+			unsigned short GetType() const;
 			void Add(Control *control);
 			void Remove(Control *control);
 			bool IsAncestor(Control *control) const;
@@ -104,7 +122,6 @@ namespace ce
 
 			Control *GetFromPosition(Vector2<int_canvas> position, bool recurse = false);
 
-
 			typedef struct UIContext
 			{
 				int_canvas width, height;
@@ -114,7 +131,6 @@ namespace ce
 			void Render(UIContext &context);
 			void Render(Canvas *canvas);
 
-
 			void SetUpdatingAbsolute(bool isUpdatingAbsolute);
 			bool IsUpdatingAbsolute() const;
 
@@ -123,6 +139,7 @@ namespace ce
 			Vector2<int_canvas> GetAbsolutePosition() const;
 			Vector2<int_canvas> GetExposurePosition() const;
 			Vector2<int_canvas> GetExposureExtent() const;
+			Vector2<int_canvas> GetChildOffset() const;
 			void SetPosition(Vector2<int_canvas> position);
 			void SetExtent(Vector2<int_canvas> extent);
 
@@ -132,6 +149,9 @@ namespace ce
 
 			virtual void OnAdded(Control *parent);
 			virtual void OnRemoved(Control *parent);
+
+			virtual void OnMemberAdded(Control *ctrl);
+			virtual void OnMemberRemoved(Control *ctrl);
 		};
 	}
 }

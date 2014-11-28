@@ -8,6 +8,8 @@ set(INC
 	${INC_DIR}/UI/ButtonCtrl.h
 	${INC_DIR}/UI/ColorCtrl.h
 	${INC_DIR}/UI/ImageCtrl.h
+	${INC_DIR}/UI/ScrollCtrl.h
+	${INC_DIR}/UI/Skin.h
 	${INC_DIR}/UI/TextCtrl.h
 	${INC_DIR}/UI/TextButtonCtrl.h
 	${INC_DIR}/UI/TextEditCtrl.h
@@ -18,6 +20,8 @@ set(SRC
 	${SRC_DIR}/ButtonCtrl.cpp
 	${SRC_DIR}/ColorCtrl.cpp
 	${SRC_DIR}/ImageCtrl.cpp
+	${SRC_DIR}/ScrollCtrl.cpp
+	${SRC_DIR}/Skin.cpp
 	${SRC_DIR}/TextCtrl.cpp
 	${SRC_DIR}/TextButtonCtrl.cpp
 	${SRC_DIR}/TextEditCtrl.cpp

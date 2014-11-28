@@ -21,6 +21,7 @@ namespace ce
 	{
 		TextButtonCtrl::TextButtonCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, const char *text, Color color, Color backgroundColor) : TextCtrl(position, extent, font, text, color), ButtonCtrl(position, extent), m_backgroundColor(backgroundColor)
 		{
+			ButtonCtrl::m_type = Type_TextButtonCtrl;
 		}
 		void TextButtonCtrl::DoRender()
 		{

@@ -22,6 +22,7 @@ namespace ce
 	{
 		TextEditCtrl::TextEditCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, unsigned short maxSize, const char *text, Color color) : TextCtrl(position, extent, font, text, color)
 		{
+			m_type = Type_TextEditCtrl;
 			m_leftShift = false;
 			m_rightShift = false;
 			m_maxSize = maxSize;

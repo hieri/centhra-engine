@@ -27,6 +27,7 @@ namespace ce
 	{
 		TextCtrl::TextCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, const char *text, Color color) : ColorCtrl(position, extent, color)
 		{
+			m_type = Type_TextCtrl;
 			m_font = font;
 			m_text = string(text);
 		}

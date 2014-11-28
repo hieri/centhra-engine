@@ -17,6 +17,7 @@ set(INC
 	${INC_DIR}/Network.h
 	${INC_DIR}/Plugin.h
 	${INC_DIR}/Quaternion.h
+	${INC_DIR}/Rect.h
 	${INC_DIR}/Socket.h
 	${INC_DIR}/Thread.h
 	${INC_DIR}/Vector2.h

@@ -30,6 +30,7 @@
 using namespace std;
 
 //TODO: properly handle X11/XCB quit events
+//TODO: Linux scroll event
 
 namespace ce
 {

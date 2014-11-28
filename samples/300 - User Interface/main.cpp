@@ -20,6 +20,8 @@ class AppUserInterfaceSample : public AppFrontend
 	Canvas *m_canvas;
 	ui::Control *m_rootCtrl;
 	Font *m_font;
+	Image *m_scrollImage;
+	ui::Skin *m_scrollSkin;
 
 public:
 	AppUserInterfaceSample()
@@ -33,6 +35,7 @@ public:
 		m_canvas = Canvas::Create(1280, 720, "300 - User Interface");
 
 		Font::Init();
+		Image::Init();
 		m_font = Font::CreateFromFile("../res/FreeMono.ttf");
 		if(m_font)
 			m_font->SetCharSize(0, 14 * 64, 96, 96);
@@ -55,6 +58,21 @@ public:
 			}
 		}
 
+		{
+			m_scrollImage = Image::CreateFromFile("../res/scrollSkin.png");
+			m_scrollSkin = new ui::Skin(m_scrollImage);
+			ui::ScrollCtrl *testScroll = new ui::ScrollCtrl(Vector2<int_canvas>(64, 300), Vector2<int_canvas>(256, 256), m_scrollSkin);
+
+			for(int a = 0; a < 4; a++)
+				testScroll->Add(new ui::TextEditCtrl(Vector2<int_canvas>(0, 200 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(0, 255, 0)));
+			for(int a = 0; a < 4; a++)
+			{
+				ui::Control *ctrl = new ui::TextEditCtrl(Vector2<int_canvas>(300, 200 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(0, 255, 0));
+				testScroll->Add(ctrl);
+			}
+			m_rootCtrl->Add(testScroll);
+		}
+
 		return true;
 	}
 	bool OnProcess()
@@ -66,6 +84,8 @@ public:
 	{
 		delete m_rootCtrl;
 
+		delete m_scrollSkin;
+		delete m_scrollImage;
 		delete m_font;
 		delete m_canvas;
 	}
@@ -79,10 +99,7 @@ public:
 					ui::Control *nextFocus = m_rootCtrl->FindNextFocus(ui::Control::GetCurrentFocus());
 //					ui::Control *nextFocus = m_rootCtrl->FindPreviousFocus(ui::Control::GetCurrentFocus());
 					if(nextFocus)
-					{
-						print("Focus: %ld -> %ld\n", ui::Control::GetCurrentFocus(), nextFocus);
 						nextFocus->Focus();
-					}
 					break;
 				}
 
@@ -94,7 +111,15 @@ public:
 					ui::Control::GetCurrentFocus()->OnEvent(event);
 				break;
 			case event::MouseButtonDown:
-				m_rootCtrl->SetFocusByPosition(Vector2<int_canvas>(event.mouseButton.x, event.mouseButton.y));
+				if(m_rootCtrl)
+					if(m_rootCtrl->OnEvent(event))
+						m_rootCtrl->SetFocusByPosition(Vector2<int_canvas>(event.mouseButton.x, event.mouseButton.y));
+				break;
+			case event::MouseButtonUp:
+			case event::MouseMotion:
+			case event::MouseWheel:
+				if(m_rootCtrl)
+					m_rootCtrl->OnEvent(event);
 				break;
 			case event::PostRender:
 				m_rootCtrl->Render(m_canvas);

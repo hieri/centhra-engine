@@ -18,6 +18,7 @@ namespace ce
 	{
 		ImageCtrl::ImageCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Image *image, Color color) : ColorCtrl(position, extent, color)
 		{
+			m_type = Type_ImageCtrl;
 			m_image = image;
 		}
 		void ImageCtrl::SetImage(Image *image)

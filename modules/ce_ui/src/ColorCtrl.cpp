@@ -18,6 +18,7 @@ namespace ce
 	{
 		ColorCtrl::ColorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Color color) : Control(position, extent)
 		{
+			m_type = Type_ColorCtrl;
 			m_color = color;
 		}
 		void ColorCtrl::SetColor(Color color)

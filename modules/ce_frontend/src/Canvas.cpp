@@ -5,6 +5,7 @@
 #ifdef _WIN32
 	//- Windows -
 	#include <windows.h>
+	#include <windowsx.h>
 #endif
 
 //- OpenGL -
@@ -155,10 +156,20 @@ namespace ce
 				event.mouseButton.y = HIWORD(lParam);
 				app->OnEvent(event);
 				break;
-*/			case WM_MOUSEWHEEL:
-				event.type = event::MouseWheel;
-				event.mouseWheel.delta = GET_WHEEL_DELTA_WPARAM(wParam);
-				app->OnEvent(event);
+				*/
+			case WM_MOUSEWHEEL:
+				{
+					POINT pos;
+					pos.x = GET_X_LPARAM(lParam);
+					pos.y = GET_Y_LPARAM(lParam);
+					ScreenToClient(hWnd, &pos);
+					event.type = event::MouseWheel;
+					event.mouseWheel.x = (int_canvas)pos.x;
+					event.mouseWheel.y = (int_canvas)pos.y;
+					event.mouseWheel.delta = GET_WHEEL_DELTA_WPARAM(wParam);
+					event.mouseWheel.isHorizontal = (wParam & MK_SHIFT) != 0;
+					app->OnEvent(event);
+				}
 				break;
 			case WM_MOUSEMOVE:
 				event.type = event::MouseMotion;

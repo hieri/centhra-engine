@@ -94,7 +94,9 @@ namespace ce
 		int type;
 		unsigned long long timeMS;
 		Canvas *canvas;
+		int_canvas x, y;
 		int delta;
+		bool isHorizontal;
 	} MouseWheelEvent;
 
 	/**	@brief Window Resize Event Data Structure Class

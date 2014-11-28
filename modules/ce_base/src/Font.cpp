@@ -15,6 +15,7 @@
 #include <CE/Font.h>
 
 //TODO: handle freetype errors on startup
+//TODO: get text dimensions
 
 using namespace std;
 
@@ -90,15 +91,17 @@ namespace ce
 	void Font::DrawString(const char *str)
 	{
 		glPushMatrix();
-			for(unsigned int a = 0; a < strlen(str); a++)
+			unsigned int len = strlen(str);
+			for(unsigned int a = 0; a < len; a++)
 				DrawUnicodeChar(str[a]);
 		glPopMatrix();
 	}
 	void Font::DrawStringUI(const char *str)
 	{
 		glPushMatrix();
-		for(unsigned int a = 0; a < strlen(str); a++)
-			DrawUnicodeCharUI(str[a]);
+			unsigned int len = strlen(str);
+			for(unsigned int a = 0; a < len; a++)
+				DrawUnicodeCharUI(str[a]);
 		glPopMatrix();
 	}
 	void Font::DrawUnicodeChar(unsigned short unicodeChar)

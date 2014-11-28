@@ -25,7 +25,7 @@ namespace ce
 	{
 		Control::Control(Vector2<int_canvas> position, Vector2<int_canvas> extent) :
 			m_type(Type_Control), m_parent(0),
-			m_isVisible(true), m_isUpdatingDimensions(true), m_acceptsFocus(false), m_isFocused(false),
+			m_isVisible(true), m_isUpdatingDimensions(true), m_acceptsFocus(false), m_isFocused(false), m_hasOverlay(false),
 			m_anchor(Anchor_None), m_isAnchorValid(false), m_scaling(Scaling_None)
 		{
 			m_position = position;
@@ -265,7 +265,12 @@ namespace ce
 					for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 						(*it)->Render(context);
 				glPopMatrix();
-				DoOverlay();
+				if(m_hasOverlay)
+				{
+					if(context.isCanvas)
+						glScissor(m_exposedPosition[0], context.height - m_exposedPosition[1] - m_exposedExtent[1], m_exposedExtent[0], m_exposedExtent[1]);
+					DoOverlay();
+				}
 				glPopMatrix();
 			}
 			if(context.isCanvas && noParent)

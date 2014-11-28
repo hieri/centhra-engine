@@ -105,6 +105,7 @@ namespace ce
 			//- Render Under Children -
 			virtual void DoRender();
 			//- Render Over Children -
+			bool m_hasOverlay;
 			virtual void DoOverlay();
 
 		public:

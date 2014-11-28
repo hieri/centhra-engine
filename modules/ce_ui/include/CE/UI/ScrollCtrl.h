@@ -18,8 +18,10 @@ namespace ce
 			Skin *m_skin;
 			Vector2<int_canvas> m_scrollExtent;
 			Vector2<float> m_scrollPercentage;
+			bool m_horizontalScroll, m_verticalScroll;
 
 			virtual void DoRender();
+			virtual void DoOverlay();
 
 			void Scroll(Vector2<int_canvas> amt);
 

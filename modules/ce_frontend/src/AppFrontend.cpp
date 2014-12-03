@@ -30,7 +30,8 @@
 using namespace std;
 
 //TODO: properly handle X11/XCB quit events
-//TODO: Linux scroll event
+//TODO: Handle middle mouse button press
+//TODO: Rename mouseWheel to scroll
 
 namespace ce
 {
@@ -81,7 +82,7 @@ namespace ce
 							return Stop(true);
 						case XCB_KEY_PRESS:
 						{
-							xcb_button_press_event_t *cast = (xcb_button_press_event_t *)xcbEvent;
+							xcb_key_press_event_t *cast = (xcb_key_press_event_t *)xcbEvent;
 							event.type = event::KeyDown;
 							xcbWindow = cast->event;
 							if(m_canvasMap.count(xcbWindow))
@@ -107,28 +108,39 @@ namespace ce
 						}
 						case XCB_BUTTON_PRESS:
 						{
-							xcb_button_release_event_t *cast = (xcb_button_release_event_t *)xcbEvent;
+							xcb_button_press_event_t *cast = (xcb_button_press_event_t *)xcbEvent;
 							event.type = event::MouseButtonDown;
 							xcbWindow = cast->event;
 							if(m_canvasMap.count(xcbWindow))
 								event.base.canvas = m_canvasMap[xcbWindow];
-							switch(cast->detail)
+							if(cast->detail < 4)
 							{
-							case 1:
-								event.mouseButton.button = event::MouseButtonLeft;
-								break;
-							case 2:
-								event.mouseButton.button = event::MouseButtonMiddle;
-								break;
-							case 3:
-								event.mouseButton.button = event::MouseButtonRight;
-								break;
-							default:
-								event.mouseButton.button = event::Unknown;
+								switch(cast->detail)
+								{
+								case 1:
+									event.mouseButton.button = event::MouseButtonLeft;
+									break;
+								case 2:
+									event.mouseButton.button = event::MouseButtonMiddle;
+									break;
+								case 3:
+									event.mouseButton.button = event::MouseButtonRight;
+									break;
+								default:
+									event.mouseButton.button = event::Unknown;
+								}
+								event.mouseButton.state = cast->state;
+								event.mouseButton.x = cast->event_x;
+								event.mouseButton.y = cast->event_y;
 							}
-							event.mouseButton.state = cast->state;
-							event.mouseButton.x = cast->event_x;
-							event.mouseButton.y = cast->event_y;
+							else if(cast->detail < 6)
+							{
+								event.mouseWheel.type = event::MouseWheel;
+								event.mouseWheel.x = cast->event_x;
+								event.mouseWheel.y = cast->event_y;
+								event.mouseWheel.delta = cast->detail == 4 ? 120 : -120;
+								event.mouseWheel.isHorizontal = (cast->state & XCB_MOD_MASK_SHIFT) == 1;
+							}
 							OnEvent(event);
 							break;
 						}
@@ -234,24 +246,35 @@ namespace ce
 							OnEvent(event);
 							break;;
 						case ButtonPress:
-							event.mouseButton.type = event::MouseButtonDown;
-							switch(xEvent.xbutton.button)
+							if(xEvent.xbutton.button < 4)
 							{
-							case 1:
-								event.mouseButton.button = event::MouseButtonLeft;
-								break;
-							case 2:
-								event.mouseButton.button = event::MouseButtonMiddle;
-								break;
-							case 3:
-								event.mouseButton.button = event::MouseButtonRight;
-								break;
-							default:
-								event.mouseButton.button = event::Unknown;
+								event.mouseButton.type = event::MouseButtonDown;
+								switch(xEvent.xbutton.button)
+								{
+								case 1:
+									event.mouseButton.button = event::MouseButtonLeft;
+									break;
+								case 2:
+									event.mouseButton.button = event::MouseButtonMiddle;
+									break;
+								case 3:
+									event.mouseButton.button = event::MouseButtonRight;
+									break;
+								default:
+									event.mouseButton.button = event::Unknown;
+								}
+								event.mouseButton.state = xEvent.xbutton.state;
+								event.mouseButton.x = xEvent.xbutton.x;
+								event.mouseButton.y = xEvent.xbutton.y;
 							}
-							event.mouseButton.state = xEvent.xbutton.state;
-							event.mouseButton.x = xEvent.xbutton.x;
-							event.mouseButton.y = xEvent.xbutton.y;
+							else if(xEvent.xbutton.button < 6)
+							{
+								event.mouseWheel.type = event::MouseWheel;
+								event.mouseWheel.x = xEvent.xbutton.x;
+								event.mouseWheel.y = xEvent.xbutton.y;
+								event.mouseWheel.delta = xEvent.xbutton.button == 4 ? 120 : -120;
+								event.mouseWheel.isHorizontal = (xEvent.xbutton.state & ShiftMask) == 1;
+							}
 							OnEvent(event);
 							break;
 						case ButtonRelease:

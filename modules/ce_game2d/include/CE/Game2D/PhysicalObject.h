@@ -3,9 +3,11 @@
 
 //- Centhra Engine -
 #include <CE/Color.h>
+#include <CE/Rect.h>
 #include <CE/Vector2.h>
 #include <CE/Game2D/Entity.h>
 #include <CE/Game2D/PhysicsHandler.h>
+#include <CE/Game2D/World.h>
 
 namespace ce
 {
@@ -46,6 +48,7 @@ namespace ce
 			virtual ~PhysicalObject();
 
 			void Render();
+			void RenderAABB();
 			bool IsStatic() const;
 			bool HasFixedRotation() const;
 			float GetRotation() const;
@@ -90,6 +93,12 @@ namespace ce
 			friend class PhysicalGroup;
 			friend class PhysicsHandler::ObjectHandle;
 
+			//- Axis-Aligned Bounding Box -
+		protected:
+			Rect<float> m_aabb;
+		public:
+			Rect<float> GetAABB() const;
+
 			//- Toggle Collision -
 		protected:
 			bool m_isCollidable;
@@ -97,6 +106,13 @@ namespace ce
 		public:
 			void SetCollidable(bool collidable);
 			bool IsCollidable() const;
+
+			//- Layered Rendering -
+		protected:
+			World::ObjectLayer *m_renderLayer;
+		public:
+			World::ObjectLayer *GetRenderLayer() const;
+			void SetRenderLayer(World::ObjectLayer *layer);
 		};
 	}
 }

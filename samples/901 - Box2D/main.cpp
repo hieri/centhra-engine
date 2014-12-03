@@ -110,7 +110,7 @@ public:
 		m_entity->SetVelocity(dif);
 
 		
-		Vector2<float> origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
+		Vector2<float> origin = Vector2<float>(m_entity->GetPosition()[0], m_entity->GetPosition()[1]);
 //		origin = Vector2<float>(512.f, 512.f);
 
 		for(int a = 0; a < NUMRANDOMS; a++)
@@ -255,6 +255,5 @@ int main(int argc, char **argv)
 	while(myApp.IsRunning())
 		myApp.Process();
 
-	Thread::Exit(NULL);
 	return 0;
 }

@@ -39,7 +39,7 @@ namespace ce
 			return ms_netObjects[id];
 		}
 
-		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id, unsigned short netID, bool noID) : m_isCollidable(true), m_hasFixedRotation(false)
+		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id, unsigned short netID, bool noID) : m_isCollidable(true), m_hasFixedRotation(false), m_renderLayer(0)
 		{
 			m_rotation = m_angularVelocity = 0.f;
 			m_position = position;
@@ -81,6 +81,19 @@ namespace ce
 		{
 			glPushMatrix();
 			DoRender();
+			glPopMatrix();
+		}
+		void PhysicalObject::RenderAABB()
+		{
+			glPushMatrix();
+				glColor4ub(0, 255, 0, 255);
+				glBegin(GL_LINE_LOOP);
+					glVertex2f(m_aabb[0], m_aabb[1]);
+					glVertex2f(m_aabb[2], m_aabb[1]);
+					glVertex2f(m_aabb[2], m_aabb[3]);
+					glVertex2f(m_aabb[0], m_aabb[3]);
+				glEnd();
+				glColor3ub(255, 255, 255);
 			glPopMatrix();
 		}
 		void PhysicalObject::DoRender()
@@ -279,6 +292,7 @@ namespace ce
 		void PhysicalObject::OnSetFixedRotation()
 		{
 		}
+
 		//- Toggle Collision -
 		void PhysicalObject::SetCollidable(bool collidable)
 		{
@@ -301,6 +315,22 @@ namespace ce
 		bool PhysicalObject::IsCollidable() const
 		{
 			return m_isCollidable;
+		}
+
+		//- Layered Rendering -
+		World::ObjectLayer *PhysicalObject::GetRenderLayer() const
+		{
+			return m_renderLayer;
+		}
+		void PhysicalObject::SetRenderLayer(World::ObjectLayer *layer)
+		{
+			m_renderLayer = layer;
+		}
+
+		//- Axis-Aligned Bounding Box -
+		Rect<float> PhysicalObject::GetAABB() const
+		{
+			return m_aabb;
 		}
 	}
 }

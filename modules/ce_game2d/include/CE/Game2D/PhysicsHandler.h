@@ -2,6 +2,7 @@
 #define _CE_GAME2D_PHYSICSHANDLER_H_
 
 //- Centhra Engine -
+#include <CE/Rect.h>
 #include <CE/Game2D/Entity.h>
 #include <CE/Game2D/PhysicalGroup.h>
 
@@ -49,6 +50,10 @@ namespace ce
 				virtual void OnSetRotation();
 				virtual void OnSetAngularVelocity();
 				virtual void OnSetFixedRotation();
+
+				//- Axis-Aligned Bounding Box -
+			protected:
+				void UpdateObjectAABB(Rect<float> aabb);
 
 			public:
 				PhysicalObject *GetReferenceObject() const;

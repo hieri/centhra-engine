@@ -22,9 +22,10 @@ namespace ce
 
 		public:
 			PhysicalGroup();
+			virtual ~PhysicalGroup();
 			
 			void ProcessPhysics(float dt);
-			void Render(float minX, float minY, float maxX, float maxY);
+			virtual void Render(float minX, float minY, float maxX, float maxY);
 
 			void AttachHandler(PhysicsHandler *handler);
 			void DetachHandler();
@@ -37,6 +38,13 @@ namespace ce
 
 			virtual void OnMemberAdded(Group::Member *entity);
 			virtual void OnMemberRemoved(Group::Member *entity);
+
+			//- Debug Rendering -
+		protected:
+			bool m_renderDebug;
+		public:
+			bool IsRenderingDebug() const;
+			void SetDebugRendering(bool renderDebug);
 		};
 	}
 }

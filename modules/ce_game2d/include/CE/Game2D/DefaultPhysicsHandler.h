@@ -95,6 +95,7 @@ namespace ce
 				float m_zoneSize;
 				unsigned int m_width, m_height;
 				Zone ***m_zones;
+				DefaultPhysicsHandler *m_handler;
 
 			public:
 				Plane(unsigned int width, unsigned int height, float zoneSize);
@@ -109,6 +110,8 @@ namespace ce
 
 				std::vector<ObjectHandle *> BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask = -1, ObjectHandle *ignore = 0);
 				std::vector<ObjectHandle *> SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, ObjectHandle *ignore = 0);
+
+				friend DefaultPhysicsHandler;
 			};
 
 		protected:

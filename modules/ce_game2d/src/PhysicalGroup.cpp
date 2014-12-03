@@ -12,9 +12,14 @@ namespace ce
 {
 	namespace game2d
 	{
-		PhysicalGroup::PhysicalGroup()
+		PhysicalGroup::PhysicalGroup() : m_physicsHandler(0), m_renderDebug(false)
 		{
-			m_physicsHandler = 0;
+		}
+		PhysicalGroup::~PhysicalGroup()
+		{
+			DetachHandler();
+			while(m_members.size())
+				delete (PhysicalObject *)m_members.back();
 		}
 		void PhysicalGroup::ProcessPhysics(float dt)
 		{
@@ -23,16 +28,19 @@ namespace ce
 		}
 		void PhysicalGroup::Render(float minX, float minY, float maxX, float maxY)
 		{
-			if(m_physicsHandler)
-				m_physicsHandler->Render(minX, minY, maxX, maxY);
-			else //TODO: Determine if this is necessary
+			for(vector<Group::Member *>::iterator it = m_members.begin(); it != m_members.end(); it++)
 			{
-				for(vector<Group::Member *>::iterator it = m_members.begin(); it != m_members.end(); it++)
-				{
-					PhysicalObject *object = (PhysicalObject *)*it;
-					object->Render();
-				}
+				PhysicalObject *object = (PhysicalObject *)*it;
+				if(object->m_aabb[0] > maxX || object->m_aabb[1] > maxY || object->m_aabb[2] < minX || object->m_aabb[3] < minY)
+					continue;
+				object->Render();
+				if(m_renderDebug)
+					object->RenderAABB();
 			}
+
+			if(m_renderDebug)
+				if(m_physicsHandler)
+					m_physicsHandler->Render(minX, minY, maxX, maxY);
 		}
 		void PhysicalGroup::AttachHandler(PhysicsHandler *handler)
 		{
@@ -95,6 +103,16 @@ namespace ce
 		{
 			if(m_physicsHandler)
 				m_physicsHandler->CleanupObject((PhysicalObject *)entity);
+		}
+
+		//- Debug Rendering -
+		bool PhysicalGroup::IsRenderingDebug() const
+		{
+			return m_renderDebug;
+		}
+		void PhysicalGroup::SetDebugRendering(bool renderDebug)
+		{
+			m_renderDebug = renderDebug;
 		}
 	}
 }

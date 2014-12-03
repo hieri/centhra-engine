@@ -486,7 +486,7 @@ namespace ce
 
 		//-------------------------------------------------------------------------------------------------------------------------------------
 		
-		DefaultPhysicsHandler::Plane::Plane(unsigned int width, unsigned int height, float zoneSize)
+		DefaultPhysicsHandler::Plane::Plane(unsigned int width, unsigned int height, float zoneSize) : m_handler(0)
 		{
 			m_width = width;
 			m_height = height;
@@ -543,7 +543,7 @@ namespace ce
 			else if(_maxY >= (int)m_height)
 				_maxY = m_height - 1;
 
-			for(int a = _minX; a <= _maxX; a++)
+/*			for(int a = _minX; a <= _maxX; a++)
 				for(int b = _minY; b <= _maxY; b++)
 					for(vector<ObjectHandle *>::iterator it = m_zones[a][b]->m_children.begin(); it != m_zones[a][b]->m_children.end(); it++)
 					{
@@ -552,12 +552,12 @@ namespace ce
 							entity->m_object->Render();
 					}
 			ObjectHandle::ClearCache(0);
+			*/
 
-/*
 			for(int a = _minX; a <= _maxX; a++)
 				for(int b = _minY; b <= _maxY; b++)
 					m_zones[a][b]->Render();
-*/		}
+		}
 		void DefaultPhysicsHandler::Plane::Place(ObjectHandle *entity)
 		{
 			Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent(), halfExtent = extent / 2.f;
@@ -831,7 +831,14 @@ namespace ce
 						entity->GetVelocity()[0] *= -1.f;
 					if(!entity->m_canMove[1])
 						entity->GetVelocity()[1] *= -1.f;
-*/					entity->m_movement = Vector2<float>(0.f, 0.f);
+*/					
+					//- Update AABB -
+					{
+						Vector2<float> minRect = position - halfExtent;
+						Vector2<float> maxRect = position + halfExtent;
+						entity->UpdateObjectAABB(Rect<float>(minRect[0], minRect[1], maxRect[0], maxRect[1]));
+					}
+					entity->m_movement = Vector2<float>(0.f, 0.f);
 				}
 			}
 		}
@@ -995,6 +1002,7 @@ namespace ce
 		void DefaultPhysicsHandler::Initialize()
 		{
 			m_plane = new Plane(16, 16, 64.f);
+			m_plane->m_handler = this;
 			
 			vector<Group::Member *> members = GetReferenceGroup()->GetMembers();
 			for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)

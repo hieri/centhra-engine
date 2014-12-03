@@ -38,31 +38,14 @@ namespace ce
 					Vector2<float> focusPosition = focus->GetPosition();
 					Vector2<float> focusExtent = focus->GetExtent();
 
-//					glEnable(GL_DEPTH_TEST);
 					glPushMatrix();
 						glScalef(1.f, -1.f, 1.f);
 						Vector2<float> half((float)m_extent[0] / 2.f, (float)m_extent[1] / 2.f);
-						Vector2<float> focusHalf = focusExtent / 2.f;
 						glTranslatef(half[0] - m_viewScale[0] * focusPosition[0], -half[1] - m_viewScale[1] * focusPosition[1], 0.f);
-//						glTranslatef(half[0] - m_viewScale[0] * (focusPosition[0] + focusHalf[0]), half[1] - m_viewScale[1] * (focusPosition[1] + focusHalf[1]), 0.f);
 						glScalef(m_viewScale[0], m_viewScale[1], 1.f);
 
-						((game2d::PhysicalGroup *)focus->GetParentGroup())->Render((focusPosition[0] + focusHalf[0]) - half[0] / m_viewScale[0], (focusPosition[1] + focusHalf[1]) - half[1] / m_viewScale[1], (focusPosition[0] + focusHalf[0]) + half[0] / m_viewScale[0], (focusPosition[1] + focusHalf[1]) + half[1] / m_viewScale[1]);
-
-/*
-						game2d::Zone *zone = focus->GetZones()[0];
-						if(zone)
-						{
-							game2d::Plane *plane = zone->GetPlane();
-							if(plane)
-								plane->Render((focusPosition[0] + focusHalf[0]) - half[0] / m_viewScale[0], (focusPosition[1] + focusHalf[1]) - half[1] / m_viewScale[1], (focusPosition[0] + focusHalf[0]) + half[0] / m_viewScale[0], (focusPosition[1] + focusHalf[1]) + half[1] / m_viewScale[1]);
-							else
-								zone->Render();
-						}
-*/
+						((game2d::PhysicalGroup *)focus->GetParentGroup())->Render((focusPosition[0]) - half[0] / m_viewScale[0], (focusPosition[1]) - half[1] / m_viewScale[1], (focusPosition[0]) + half[0] / m_viewScale[0], (focusPosition[1]) + half[1] / m_viewScale[1]);
 					glPopMatrix();
-//					glClear(GL_DEPTH_BUFFER_BIT);
-//					glDisable(GL_DEPTH_TEST);
 				}
 			}
 		}

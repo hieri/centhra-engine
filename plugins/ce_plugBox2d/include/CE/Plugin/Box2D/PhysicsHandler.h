@@ -51,8 +51,8 @@ namespace ce
 					virtual void OnSetAngularVelocity();
 					virtual void OnSetFixedRotation();
 
-				public:
 					friend class bPhysicsHandler;
+				public:
 
 					virtual bool CollidesWith(Vector2<float> pt);
 				};

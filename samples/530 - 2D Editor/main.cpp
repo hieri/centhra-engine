@@ -10,6 +10,7 @@
 //#include <CE/Game2D/DefaultPhysicsHandler.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
 #include <CE/Game2D/AppGame2D.h>
+#include <CE/Game2D/World.h>
 #include <CE/UI/Editor2D.h>
 
 using namespace ce;
@@ -22,7 +23,7 @@ void *physicsFunc(void *arg);
 class App2DEditorSample : public game2d::AppGame2D
 {
 	Canvas *m_canvas;
-	game2d::PhysicalGroup *m_group;
+	game2d::World *m_world;
 	game2d::PhysicalObject *m_entity, **m_randoms;
 	game2d::Camera *m_camera;
 	ui::CameraView2DCtrl *m_view;
@@ -46,7 +47,7 @@ public:
 		m_box2dPhysicsHandler = 0;
 		m_entity = 0;
 		m_camera = 0;
-		m_group = 0;
+		m_world = 0;
 		m_view = 0;
 		m_lastProcess = 0;
 		w = a = s = d = false;
@@ -65,9 +66,13 @@ public:
 		srand((unsigned int)time(NULL));
 
 		m_canvas = Canvas::Create(640, 480, "530 - 2D Editor");
-		m_group = new game2d::PhysicalGroup();
+		m_world = new game2d::World();
+		game2d::World::ObjectLayer *objectLayerA = m_world->AddObjectLayer();
+		game2d::World::ObjectLayer *objectLayerB = m_world->AddObjectLayer();
+
 		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
-		m_group->Add(m_entity);
+		m_world->Add(m_entity);
+		m_entity->SetRenderLayer(objectLayerA);
 		SetReferenceObject(m_entity);
 
 		m_camera = new game2d::Camera();
@@ -99,11 +104,11 @@ public:
 
 			Vector2<float> dif = Vector2<float>((float)(rand() % 1024 - 512), (float)(rand() % 1024 - 512));
 			m_randoms[a]->SetVelocity(dif);
-			m_group->Add(m_randoms[a]);
+			m_world->Add(m_randoms[a]);
 		}
 
 		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
-		m_group->AttachHandler(m_box2dPhysicsHandler);
+		m_world->AttachHandler(m_box2dPhysicsHandler);
 
 		Image::Init();
 		Font::Init();
@@ -168,7 +173,7 @@ public:
 		}*/
 
 		game2d::Entity::FinalizeDelete();
-		m_group->ProcessPhysics(dt);
+		m_world->ProcessPhysics(dt);
 		game2d::Entity::Process(dt);
 	}
 	bool OnProcess()
@@ -189,7 +194,7 @@ public:
 	{
 		m_physicsThread->Join();
 
-		m_group->DetachHandler();
+		m_world->DetachHandler();
 		delete m_box2dPhysicsHandler;
 	
 		RenderPrimitiveCleanup();
@@ -199,11 +204,7 @@ public:
 		delete m_view;
 		delete m_camera;
 		game2d::Entity::FinalizeDelete();
-		delete m_entity;
-		for(int a = 0; a < NUMRANDOMS; a++)
-			delete m_randoms[a];
-		delete [] m_randoms;
-		delete m_group;
+		delete m_world;
 
 		delete m_editorScrollSkin;
 		delete m_editorScrollImage;

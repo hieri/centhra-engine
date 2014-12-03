@@ -119,5 +119,11 @@ namespace ce
 		void PhysicsHandler::ObjectHandle::OnSetFixedRotation()
 		{
 		}
+
+		//- Axis-Aligned Bounding Box -
+		void PhysicsHandler::ObjectHandle::UpdateObjectAABB(Rect<float> aabb)
+		{
+			m_object->m_aabb = aabb;
+		}
 	}
 }

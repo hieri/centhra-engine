@@ -37,7 +37,6 @@ namespace ce
 
 						Vector2<float> pointOfContact(worldManifold.points[0].x, worldManifold.points[0].y);
 
-
 						//TODO: Move collision test to PreSolve if possible
 						if(!objA->OnCollisionTest(objB, pointOfContact) || !objB->OnCollisionTest(objA, pointOfContact))
 							contact->SetEnabled(false);
@@ -226,28 +225,6 @@ namespace ce
 					b2Vec2 grav(gravity[0], -gravity[1]);
 					m_b2d_world->SetGravity(grav);
 				}
-				void Process(float dt)
-				{
-					// float32 time, velIterations, posIterations
-					m_b2d_world->Step(dt, 10, 10);
-
-					unsigned int count = m_b2d_world->GetBodyCount();
-					b2Body *body = m_b2d_world->GetBodyList();
-					for(unsigned int a = 0; a < count; a++)
-					{
-						bPhysicsHandler::bObjectHandle *objectHandle = (bPhysicsHandler::bObjectHandle *)body->GetUserData();
-						b2Vec2 pos = body->GetPosition();
-						float rot = body->GetAngle();
-						float angularVelocity = body->GetAngularVelocity();
-						game2d::PhysicalObject *pObj = objectHandle->GetReferenceObject();
-						b2Vec2 vel = body->GetLinearVelocity();
-						pObj->SetVelocity(Vector2<float>(vel.x, vel.y), false);
-						pObj->SetPosition(Vector2<float>(pos.x, pos.y), false);
-						pObj->SetRotation(radToDeg * rot, false);
-						pObj->SetAngularVelocity(angularVelocity, false);
-						body = body->GetNext();
-					}
-				}
 				void Render()
 				{
 					m_b2d_world->DrawDebugData();
@@ -304,6 +281,9 @@ namespace ce
 				b2Body *b2d_body = world->CreateBody(&bd);
 				b2d_body->CreateFixture(&fd);
 				m_b2d_body = b2d_body;
+
+				Rect<float> test;
+				UpdateObjectAABB(test);
 			}
 			bPhysicsHandler::bObjectHandle::~bObjectHandle()
 			{
@@ -431,19 +411,47 @@ namespace ce
 			}
 			void bPhysicsHandler::Render(float minX, float minY, float maxX, float maxY)
 			{
-				vector<Group::Member *> members = GetReferenceGroup()->GetMembers();
-				for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
-				{
-					game2d::PhysicalObject *object = (game2d::PhysicalObject *)*it;
-					object->Render();
-				}
-
 				if(m_b2d_system)
 					((Box2DSystem *)m_b2d_system)->Render();
 			}
 			void bPhysicsHandler::Process(float dt)
 			{
-				((Box2DSystem *)m_b2d_system)->Process(dt);
+				b2World *world = ((Box2DSystem *)m_b2d_system)->m_b2d_world;
+				// float32 time, velIterations, posIterations
+				world->Step(dt, 10, 10);
+
+				unsigned int count = world->GetBodyCount();
+				b2Body *body = world->GetBodyList();
+				for(unsigned int a = 0; a < count; a++)
+				{
+					bPhysicsHandler::bObjectHandle *objectHandle = (bPhysicsHandler::bObjectHandle *)body->GetUserData();
+					b2Vec2 pos = body->GetPosition();
+					float rot = body->GetAngle();
+					float angularVelocity = body->GetAngularVelocity();
+					game2d::PhysicalObject *pObj = objectHandle->GetReferenceObject();
+					b2Vec2 vel = body->GetLinearVelocity();
+					pObj->SetVelocity(Vector2<float>(vel.x, vel.y), false);
+					pObj->SetPosition(Vector2<float>(pos.x, pos.y), false);
+					pObj->SetRotation(radToDeg * rot, false);
+					pObj->SetAngularVelocity(angularVelocity, false);
+
+					//- Update AABB -
+					{
+						b2AABB aabb;
+						aabb.lowerBound = b2Vec2(FLT_MAX, FLT_MAX);
+						aabb.upperBound = b2Vec2(-FLT_MAX, -FLT_MAX);
+						b2Fixture *fixture = body->GetFixtureList();
+						while(fixture)
+						{
+							//TODO: Handle fixture children
+							aabb.Combine(aabb, fixture->GetAABB(0));
+							fixture = fixture->GetNext();
+						}
+						objectHandle->UpdateObjectAABB(Rect<float>(aabb.lowerBound.x, aabb.lowerBound.y, aabb.upperBound.x, aabb.upperBound.y));
+					}
+
+					body = body->GetNext();
+				}
 			}
 			void bPhysicsHandler::Cleanup()
 			{

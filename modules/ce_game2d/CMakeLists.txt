@@ -7,7 +7,6 @@ set(INC
 	${INC_DIR}/UI/Editor2D.h
 	${INC_DIR}/Game2D/AppGame2D.h
 	${INC_DIR}/Game2D/Camera.h
-	${INC_DIR}/Game2D/ComplexTileMap.h
 	${INC_DIR}/Game2D/DefaultPhysicsHandler.h
 	${INC_DIR}/Game2D/Entity.h
 	${INC_DIR}/Game2D/Graph.h
@@ -16,19 +15,18 @@ set(INC
 	${INC_DIR}/Game2D/PhysicalText.h
 	${INC_DIR}/Game2D/PhysicsHandler.h
 	${INC_DIR}/Game2D/Prop.h
-	${INC_DIR}/Game2D/SimpleTileMap.h
 	${INC_DIR}/Game2D/Sprite.h
 	${INC_DIR}/Game2D/TileMap.h
 	${INC_DIR}/Game2D/TileSet.h
 	${INC_DIR}/Game2D/TiledBackground.h
 	${INC_DIR}/Game2D/Trigger.h
+	${INC_DIR}/Game2D/World.h
 )
 
 set(SRC
 	${SRC_DIR}/AppGame2D.cpp
 	${SRC_DIR}/Camera.cpp
 	${SRC_DIR}/CameraView2DCtrl.cpp
-	${SRC_DIR}/ComplexTileMap.cpp
 	${SRC_DIR}/DefaultPhysicsHandler.cpp
 	${SRC_DIR}/Editor2D.cpp
 	${SRC_DIR}/Entity.cpp
@@ -38,12 +36,12 @@ set(SRC
 	${SRC_DIR}/PhysicalText.cpp
 	${SRC_DIR}/PhysicsHandler.cpp
 	${SRC_DIR}/Prop.cpp
-	${SRC_DIR}/SimpleTileMap.cpp
 	${SRC_DIR}/Sprite.cpp
 	${SRC_DIR}/TileMap.cpp
 	${SRC_DIR}/TileSet.cpp
 	${SRC_DIR}/TiledBackground.cpp
 	${SRC_DIR}/Trigger.cpp
+	${SRC_DIR}/World.cpp
 )
 
 configure_file(${INC_DIR}/ConfigGame2D.h.in ${INC_DIR}/ConfigGame2D.h)

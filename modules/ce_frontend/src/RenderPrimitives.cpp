@@ -110,7 +110,9 @@ namespace ce
 	}
 	void RenderPrimitiveCleanup()
 	{
-		glDeleteBuffers(1, &g_squareEBO);
-		glDeleteBuffers(1, &g_squareVBO);
+		if(g_squareEBO)
+			glDeleteBuffers(1, &g_squareEBO);
+		if(g_squareVBO)
+			glDeleteBuffers(1, &g_squareVBO);
 	}
 }

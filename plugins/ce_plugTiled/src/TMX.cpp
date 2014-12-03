@@ -1,5 +1,5 @@
-//- PugiXML -
-#include <pugixml.hpp>
+//- Standard Library -
+#include <sstream>
 
 #ifdef _WIN32
 	//- Windows -
@@ -9,9 +9,13 @@
 //- OpenGL -
 #include <GL/gl.h>
 
+//- PugiXML -
+#include <pugixml.hpp>
+
 //- Centhra Engine -
 #include <CE/Base.h>
 #include <CE/Plugin/Tiled/TMX.h>
+#include <CE/Game2D/Prop.h>
 
 using namespace std;
 using namespace pugi;
@@ -58,9 +62,6 @@ namespace ce
 				m_renderView = false;
 				m_idx = 0;
 			}
-			void TMX::Layer::Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl)
-			{
-			}
 
 			TMX::TileLayer::TileLayer() : Layer()
 			{
@@ -70,69 +71,6 @@ namespace ce
 			TMX::TileLayer::~TileLayer()
 			{
 				delete m_tileMap;
-			}
-			void TMX::TileLayer::Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl)
-			{
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-				glPushMatrix();
-				game2d::Camera *camera = viewCtrl->GetCamera();
-				if(camera)
-				{
-					game2d::PhysicalObject *focus = camera->GetFocus();
-
-					if(focus)
-					{
-						Vector2<float> focusPosition = focus->GetPosition();
-						Vector2<float> focusExtent = focus->GetExtent();
-
-						Vector2<float> viewScale = viewCtrl->GetViewScale();
-						Vector2<int_canvas> viewExtent = viewCtrl->GetExtent();
-
-						glPushMatrix();
-						Vector2<float> half((float)viewExtent[0] / 2.f, (float)viewExtent[1] / 2.f);
-						Vector2<float> focusHalf = focusExtent / 2.f;
-						glTranslatef(half[0] - viewScale[0] * focusPosition[0], half[1] - viewScale[1] * focusPosition[1], 0.f);
-		//						glTranslatef(half[0] - m_viewScale[0] * (focusPosition[0] + focusHalf[0]), half[1] - m_viewScale[1] * (focusPosition[1] + focusHalf[1]), 0.f);
-						glScalef(viewScale[0], viewScale[1], 1.f);
-
-						float minX, minY, maxX, maxY;
-						minX = ((focusPosition[0] + focusHalf[0]) - half[0] / viewScale[0]);
-						minY = ((focusPosition[1] + focusHalf[1]) - half[1] / viewScale[1]);
-						maxX = ((focusPosition[0] + focusHalf[0]) + half[0] / viewScale[0]);
-						maxY = ((focusPosition[1] + focusHalf[1]) + half[1] / viewScale[1]);
-
-						game2d::TileMap *tileMap = m_tileMap;
-						float scale = 1.f/32.f;//1.f;
-						Vector2<unsigned short> tileSize = tileMap->GetTileSize();
-						int _minX, _minY, _maxX, _maxY;
-						_minX = (int)((minX / tileSize[0]) / scale) - 1;
-						_maxX = (int)((maxX / tileSize[0]) / scale) + 1;
-						_minY = (int)((minY / tileSize[1]) / scale) - 1;
-						_maxY = (int)((maxY / tileSize[1]) / scale) + 1;						
-
-						if(_minX < 0)
-							_minX = 0;
-						if(_minY < 0)
-							_minY = 0;
-						if(_maxX < 0)
-							_maxX = 0;
-						if(_maxY < 0)
-							_maxY = 0;
-
-						glScalef(scale, scale, 1.f);
-						tileMap->Render(_minX, _minY, _maxX, _maxY);
-
-						glPopMatrix();
-					}
-				}
-				glPopMatrix();
-
-				glDisable(GL_BLEND);
-
-				if(m_renderView)
-					viewCtrl->Render(canvas);
 			}
 
 			TMX::ObjectLayer::ObjectLayer() : Layer()
@@ -144,11 +82,6 @@ namespace ce
 				for(vector<ObjectDef *>::iterator it = m_objectDefVec.begin(); it != m_objectDefVec.end(); it++)
 					delete *it;
 			}
-			void TMX::ObjectLayer::Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl)
-			{
-				if(m_renderView)
-					viewCtrl->Render(canvas);
-			}
 
 			TMX::ImageLayer::ImageLayer() : Layer()
 			{
@@ -156,11 +89,6 @@ namespace ce
 			}
 			TMX::ImageLayer::~ImageLayer()
 			{
-			}
-			void TMX::ImageLayer::Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl)
-			{
-				if(m_renderView)
-					viewCtrl->Render(canvas);
 			}
 
 			TMX::ObjectDef::ObjectDef()
@@ -217,7 +145,7 @@ namespace ce
 					}
 					else if(!name.compare("layer"))
 					{
-						game2d::ComplexTileMap *tileMap = new game2d::ComplexTileMap(Vector2<unsigned short>(mapWidth, mapHeight), Vector2<unsigned short>(tileWidth, tileHeight));
+						game2d::TileMap *tileMap = new game2d::TileMap(Vector2<unsigned short>(mapWidth, mapHeight), Vector2<unsigned short>(tileWidth, tileHeight));
 
 						unsigned short x = 0, y = 0;
 						for(xml_node tile = xNode.child("data").child("tile"); tile; tile = tile.next_sibling("tile"))
@@ -228,8 +156,10 @@ namespace ce
 								TileSet *ts = resolveTileset(tilesets, gid);
 								if(ts)
 								{
+									//TODO: Add tilesets ahead of time and use their indices
+									tileMap->AddTileSet(ts->tileSet);
 									Vector2<unsigned char> coord = gidToCoord(gid, ts);
-			 						tileMap->AddTile(idx, gid, x, mapHeight - y - 1, ts->tileSet, coord);
+									tileMap->SetTile(x, mapHeight - y - 1, coord, tileMap->GetTileSetIndex(ts->tileSet));
 								}
 							}
 
@@ -351,7 +281,7 @@ namespace ce
 					for(xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
 						tmx->m_propertyMap[property.attribute("name").as_string()] = property.attribute("value").as_string();
 
-				for(vector<Layer *>::iterator it = layerVec.begin(); it != layerVec.end(); it++)
+/*				for(vector<Layer *>::iterator it = layerVec.begin(); it != layerVec.end(); it++)
 				{
 					Layer *layer = *it;
 					if(layer->m_type == Layer_Object)
@@ -360,7 +290,7 @@ namespace ce
 						for(vector<ObjectDef *>::iterator itB = objectLayer->m_objectDefVec.begin(); itB != objectLayer->m_objectDefVec.end(); itB++)
 							tmx->LoadObject(layer, *itB);
 					}
-				}
+				}*/
 
 				return tmx;
 			}
@@ -383,20 +313,85 @@ namespace ce
 					delete tileSet;
 				}
 			}
-			void TMX::Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl)
+			void TMX::PopulateWorld(game2d::World *world)
 			{
+				int layerIdx = 0;
 				for(vector<Layer *>::iterator it = m_layerVec.begin(); it != m_layerVec.end(); it++)
 				{
 					Layer *layer = *it;
-					layer->Render(canvas, viewCtrl);
+
+					switch(layer->m_type)
+					{
+					case Layer_Object:
+					{
+							ObjectLayer *objectLayer = (ObjectLayer *)layer;
+							game2d::World::ObjectLayer *wObjectLayer = world->AddObjectLayer();
+
+							bool renderAll = false;
+							if(layer->m_propertyMap.size())
+								for(map<string, string>::iterator itB = layer->m_propertyMap.begin(); itB != layer->m_propertyMap.end(); itB++)
+									if(!itB->first.compare("RenderAll"))
+										if(!itB->second.compare("1") || !itB->second.compare("True") || !itB->second.compare("true"))
+											renderAll = true;
+
+							wObjectLayer->SetRenderAll(renderAll);
+
+							//TODO: Account for render mask
+
+							for(vector<ObjectDef *>::iterator it = objectLayer->m_objectDefVec.begin(); it != objectLayer->m_objectDefVec.end(); it++)
+							{
+								game2d::PhysicalObject *obj = LoadObject(*it);
+								if(!obj)
+									continue;
+								obj->SetRenderLayer(wObjectLayer);
+								world->Add(obj);
+							}
+						}
+						break;
+					case Layer_Tile:
+						{
+							TileLayer *tileLayer = (TileLayer *)layer;
+							game2d::World::TileLayer *wTileLayer = world->AddTileLayer(tileLayer->m_tileMap->GetSize(), tileLayer->m_tileMap->GetTileSize());
+							wTileLayer->CopyFrom(tileLayer->m_tileMap);
+						}
+						break;
+					}
+					layerIdx++;
 				}
 			}
-			void TMX::LoadObject(Layer *layer, ObjectDef *object)
+			game2d::PhysicalObject *TMX::LoadObject(ObjectDef *object)
 			{
+//				unsigned short mapWidth = m_size[0] * 32;
+				unsigned short mapHeight = m_size[1] * 32;
+
+				if(object->m_type == ObjectDef::Object_Point)
+				{
+					if(!object->m_typeStr.compare("Prop"))
+					{
+						game2d::PropDef *propDef = game2d::PropDef::GetPropDefByName(object->m_propertyMap["PropName"]);
+						if(!propDef)
+							return 0;
+						game2d::Prop *prop = propDef->Spawn(Vector2<float>((float)(object->m_x), (float)(mapHeight - object->m_y)));
+//						game2d::Prop *prop = propDef->Spawn(Vector2<float>((float)(object->m_x) / 32.f, (float)(mapHeight - object->m_y) / 32.f));
+						if(!prop)
+							return 0;
+						float rot = 0.f;
+						if(object->m_propertyMap.count("Rotation"))
+						{
+							stringstream rotStr(object->m_propertyMap["Rotation"]);
+							rotStr >> rot;
+						}
+						if(rot != 0.f)
+							prop->SetRotation(rot);
+						return prop;
+					}
+				}
+
+				return 0;
 			}
 			void TMX::SaveToFile(const char *file)
 			{
-				xml_document doc;
+/*				xml_document doc;
 //				doc.append_attribute("encoding").set_value("UTF-8");
 				
 				xml_node xMap = doc.append_child("map");
@@ -557,7 +552,7 @@ namespace ce
 					}
 				}
 
-				doc.save_file(file, " ", 1U, pugi::encoding_utf8);
+				doc.save_file(file, " ", 1U, pugi::encoding_utf8);*/
 			}
 			void TMX::SaveObjects(void *groupLayer)
 			{

@@ -33,6 +33,7 @@ namespace ce
 			{
 			protected:
 				unsigned char m_type, m_index;
+				World *m_world;
 
 			public:
 				Layer();
@@ -45,20 +46,38 @@ namespace ce
 			//- ObjectLayer: Renders the Physical Group -
 			class ObjectLayer : public Layer
 			{
-			protected:
-				bool m_isRendering;
 			public:
 				ObjectLayer();
-				bool IsRendering() const;
+
+				//- Render All -
+			protected:
+				bool m_renderAll;
+			public:
+				bool IsRenderingAll() const;
+				void SetRenderAll(bool renderAll);
+
+				//- Render Mask -
+			protected:
+				unsigned short m_renderMask;
+			public:
+				unsigned short GetRenderMask() const;
+				void SetRenderMask(unsigned short renderMask);
 
 				friend class World;
 			};
 
 			//- TileLayer: Renders TileMap -
-			class TileLayer : public Layer, TileMap
+			class TileLayer : public Layer, public TileMap
 			{
 			public:
-				TileLayer(Vector2<unsigned short> size, Vector2<unsigned short> tileSize, TileSet *tileSet);
+				TileLayer(Vector2<unsigned short> size, Vector2<unsigned short> tileSize);
+
+				//- Scale -
+			protected:
+				float m_scale;
+			public:
+				float GetScale() const;
+				void SetScale(float scale);
 
 				//- Parallax -
 			protected:
@@ -69,9 +88,16 @@ namespace ce
 			};
 
 			ObjectLayer *AddObjectLayer();
-			TileLayer *AddTileLayer(Vector2<unsigned short> size, Vector2<unsigned short> tileSize, TileSet *tileSet);
+			TileLayer *AddTileLayer(Vector2<unsigned short> size, Vector2<unsigned short> tileSize);
 			Layer *GetLayer(unsigned char layerIdx) const;
 			void RemoveLayer(unsigned char layerIdx);
+
+			//- Layer Movement -
+			void MoveLayerUp(Layer *layer);
+			void MoveLayerDown(Layer *layer);
+			void MoveLayerToFront(Layer *layer);
+			void MoveLayerToBack(Layer *layer);
+			void SwapLayers(Layer *layerA, Layer *layerB);
 
 		protected:
 			std::vector<Layer *> m_layers;

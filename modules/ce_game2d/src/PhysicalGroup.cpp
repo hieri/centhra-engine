@@ -5,6 +5,7 @@
 #include <CE/Base.h>
 #include <CE/Game2D/PhysicalGroup.h>
 #include <CE/Game2D/PhysicalObject.h>
+#include <CE/Game2D/World.h>
 
 using namespace std;
 

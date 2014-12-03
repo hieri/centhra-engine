@@ -6,7 +6,7 @@
 #include <vector>
 
 //- Centhra Engine -
-#include <CE/Game2D/ComplexTileMap.h>
+#include <CE/Game2D/World.h>
 #include <CE/UI/CameraView2DCtrl.h>
 
 namespace ce
@@ -18,7 +18,7 @@ namespace ce
 			class TMX
 			{
 			public:
-				typedef struct TileSet
+				typedef struct TileSetDef
 				{
 					std::string name, file;
 					unsigned short firstGID, tileWidth, tileHeight, imageWidth, imageHeight;
@@ -43,19 +43,15 @@ namespace ce
 					std::map<std::string, std::string> m_propertyMap;
 
 					Layer();
-
-					virtual void Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl);
 				};
 
 				class TileLayer : public Layer
 				{
 				public:
-					game2d::ComplexTileMap *m_tileMap;
+					game2d::TileMap *m_tileMap;
 
 					TileLayer();
 					~TileLayer();
-
-					virtual void Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl);
 				};
 
 				class ObjectDef
@@ -87,8 +83,6 @@ namespace ce
 
 					ObjectLayer();
 					~ObjectLayer();
-
-					virtual void Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl);
 				};
 
 				class ImageLayer : public Layer
@@ -98,8 +92,6 @@ namespace ce
 
 					ImageLayer();
 					~ImageLayer();
-
-					virtual void Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl);
 				};
 
 				static TMX *CreateFromFile(const char *file, TMX *tmx = 0);
@@ -107,11 +99,12 @@ namespace ce
 				TMX();
 				~TMX();
 
-				void Render(Canvas *canvas, ui::CameraView2DCtrl *viewCtrl);
+				void PopulateWorld(game2d::World *world);
+
+				//TODO: Export world as TMX
 				void SaveToFile(const char *file);
 
-				virtual void LoadObject(Layer *layer, ObjectDef *object);
-
+				virtual game2d::PhysicalObject *LoadObject(ObjectDef *object);
 				virtual void SaveObjects(void *groupLayer);
 
 			protected:

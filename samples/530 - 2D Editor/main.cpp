@@ -9,9 +9,13 @@
 #include <CE/Game2D.h>
 //#include <CE/Game2D/DefaultPhysicsHandler.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
+#include <CE/Plugin/Tiled/TMX.h>
 #include <CE/Game2D/AppGame2D.h>
 #include <CE/Game2D/World.h>
+#include <CE/Game2D/Prop.h>
 #include <CE/UI/Editor2D.h>
+
+#include <CE/UI/ImageCtrl.h>
 
 using namespace ce;
 using namespace std;
@@ -33,6 +37,8 @@ class App2DEditorSample : public game2d::AppGame2D
 	bool m_isEditMode;
 	bool w,a,s,d;
 	unsigned long long m_lastProcess;
+
+	plugin::tiled::TMX *m_tmx;
 
 	ui::Editor2DCtrl *m_editorCtrl;
 	Image *m_editorScrollImage;
@@ -56,6 +62,8 @@ public:
 		m_font = 0;
 		m_isEditMode = false;
 		m_physicsThread = new Thread(&physicsFunc);
+
+		m_tmx = 0;
 	}
 	~App2DEditorSample()
 	{
@@ -66,9 +74,25 @@ public:
 		srand((unsigned int)time(NULL));
 
 		m_canvas = Canvas::Create(640, 480, "530 - 2D Editor");
+
+		Image::Init();
+		Font::Init();
+
 		m_world = new game2d::World();
-		game2d::World::ObjectLayer *objectLayerA = m_world->AddObjectLayer();
-		game2d::World::ObjectLayer *objectLayerB = m_world->AddObjectLayer();
+
+		m_font = Font::CreateFromFile("../res/FreeMono.ttf");
+		if(m_font)
+			m_font->SetCharSize(0, 16 * 64, 96, 96);
+
+		game2d::PropDef::LoadFromFile("../res/sampleProps.txt");
+
+		m_tmx = plugin::tiled::TMX::CreateFromFile("../res/Test.tmx");
+		m_tmx->PopulateWorld(m_world);
+
+		game2d::World::ObjectLayer *objectLayerA = (game2d::World::ObjectLayer *)m_world->GetLayer(1);
+
+/*		game2d::World::ObjectLayer *objectLayerA = m_world->AddObjectLayer();
+		game2d::World::ObjectLayer *objectLayerB = m_world->AddObjectLayer();*/
 
 		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
 		m_world->Add(m_entity);
@@ -105,19 +129,11 @@ public:
 			Vector2<float> dif = Vector2<float>((float)(rand() % 1024 - 512), (float)(rand() % 1024 - 512));
 			m_randoms[a]->SetVelocity(dif);
 			m_world->Add(m_randoms[a]);
+			m_randoms[a]->SetRenderLayer(objectLayerA);
 		}
 
 		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
 		m_world->AttachHandler(m_box2dPhysicsHandler);
-
-		Image::Init();
-		Font::Init();
-
-		m_font = Font::CreateFromFile("../res/FreeMono.ttf");
-		if(m_font)
-			m_font->SetCharSize(0, 16 * 64, 96, 96);
-
-		game2d::PropDef::LoadFromFile("../res/sampleProps.txt");
 
 		m_editorScrollImage = Image::CreateFromFile("../res/editorPropScroll.png");
 		m_editorScrollSkin = new ui::Skin(m_editorScrollImage);
@@ -205,6 +221,10 @@ public:
 		delete m_camera;
 		game2d::Entity::FinalizeDelete();
 		delete m_world;
+
+		delete m_tmx;
+
+		game2d::PropDef::Cleanup();
 
 		delete m_editorScrollSkin;
 		delete m_editorScrollImage;

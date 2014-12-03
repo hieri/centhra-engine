@@ -18,6 +18,7 @@ namespace ce
 
 		class PhysicalGroup : public Entity, public Group
 		{
+		protected:
 			PhysicsHandler *m_physicsHandler;
 
 		public:

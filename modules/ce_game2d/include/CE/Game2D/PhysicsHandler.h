@@ -16,7 +16,6 @@ namespace ce
 
 		protected:
 			virtual void Initialize();
-			virtual void Render(float minX, float minY, float maxX, float maxY);
 			virtual void Process(float dt);
 			virtual void Cleanup();
 			virtual void SetupObject(PhysicalObject *object);
@@ -68,6 +67,7 @@ namespace ce
 			~PhysicsHandler();
 
 			PhysicalGroup *GetReferenceGroup() const;
+			virtual void Render(float minX, float minY, float maxX, float maxY);
 
 			friend class PhysicalGroup;
 		};

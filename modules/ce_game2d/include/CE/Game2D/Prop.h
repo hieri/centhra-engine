@@ -32,6 +32,7 @@ namespace ce
 		public:
 			static std::map<unsigned short, PropDef *> *GetPropDefTable();
 			static PropDef *GetPropDefByID(unsigned short propID);
+			static PropDef *GetPropDefByName(std::string name);
 			static void LoadFromFile(const char *file);
 			static void Cleanup();
 

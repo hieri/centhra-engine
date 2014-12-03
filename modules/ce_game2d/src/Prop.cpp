@@ -32,6 +32,16 @@ namespace ce
 				return ms_propDefs[propID];
 			return 0;
 		}
+		PropDef *PropDef::GetPropDefByName(string name)
+		{
+			for(map<unsigned short, PropDef *>::iterator it = ms_propDefs.begin(); it != ms_propDefs.end(); it++)
+			{
+				PropDef *propDef = it->second;
+				if(!propDef->m_name.compare(name))
+					return propDef;
+			}
+			return 0;
+		}
 		void PropDef::LoadFromFile(const char *file)
 		{
 			ifstream inFile;

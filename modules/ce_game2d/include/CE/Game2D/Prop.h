@@ -3,6 +3,7 @@
 
 //- Standard Library -
 #include <map>
+#include <string>
 
 //- Centhra Engine -
 #include <CE/Game2D/PhysicalObject.h>
@@ -26,7 +27,7 @@ namespace ce
 			Vector2<float> m_extent;
 			bool m_isStatic, m_hasFixedRotation, m_isCollidable, m_isAnimated;
 
-			friend Prop;
+			friend class Prop;
 
 		public:
 			static std::map<unsigned short, PropDef *> *GetPropDefTable();
@@ -56,7 +57,7 @@ namespace ce
 
 			virtual void DoRender();
 
-			friend PropDef;
+			friend class PropDef;
 
 		public:
 			virtual void OnProcess(float dt);

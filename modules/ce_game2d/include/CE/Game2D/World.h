@@ -39,7 +39,7 @@ namespace ce
 
 				unsigned char GetIndex() const;
 
-				friend World;
+				friend class World;
 			};
 			
 			//- ObjectLayer: Renders the Physical Group -
@@ -51,7 +51,7 @@ namespace ce
 				ObjectLayer();
 				bool IsRendering() const;
 
-				friend World;
+				friend class World;
 			};
 
 			//- TileLayer: Renders TileMap -

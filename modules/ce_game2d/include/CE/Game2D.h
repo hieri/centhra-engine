@@ -19,8 +19,6 @@
 #include <CE/Game2D/TileMap.h>
 #include <CE/Game2D/TileSet.h>
 #include <CE/Game2D/TiledBackground.h>
-#include <CE/Game2D/SimpleTileMap.h>
-#include <CE/Game2D/ComplexTileMap.h>
 #include <CE/Game2D/Trigger.h>
 
 #endif

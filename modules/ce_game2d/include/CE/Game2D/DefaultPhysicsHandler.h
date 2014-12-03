@@ -111,7 +111,7 @@ namespace ce
 				std::vector<ObjectHandle *> BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask = -1, ObjectHandle *ignore = 0);
 				std::vector<ObjectHandle *> SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, ObjectHandle *ignore = 0);
 
-				friend DefaultPhysicsHandler;
+				friend class DefaultPhysicsHandler;
 			};
 
 		protected:

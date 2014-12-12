@@ -57,11 +57,11 @@ namespace ce
 		}
 		void TextCtrl::DoRender()
 		{
-			glPushMatrix();
+/*			glPushMatrix();
 				glColor4ub(0, 255, 0, 127);
 				glScalef(m_extent[0], m_extent[1], 1.f);
 				RenderSquare();
-			glPopMatrix();
+			glPopMatrix();*/
 			glPushMatrix();
 				glColor4ubv(&m_color[0]);
 				m_font->DrawStringUI(m_text.c_str(), 0);

@@ -56,6 +56,8 @@ namespace ce
 
 		Editor2DCtrl::Editor2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, Skin *scrollSkin) : ui::Control(position, extent), m_isSelecting(false), m_isDragging(false), m_isRotating(false), m_mode(0), m_propPlaceID(-1), m_hover(0), m_font(font)
 		{
+			m_eventMask |= event::Mask_MouseButtonDown | event::Mask_MouseButtonUp | event::Mask_MouseMotion | event::Mask_KeyDown | event::Mask_KeyUp;
+
 			m_modeObjectBtn = new ui::TextButtonCtrl(Vector2<int_canvas>(32, 0), Vector2<int_canvas>(76, 22), m_font, "Object", Color(255, 255, 255), Color(63, 63, 63));
 			m_modePropBtn = new ui::TextButtonCtrl(Vector2<int_canvas>(124, 0), Vector2<int_canvas>(51, 22), m_font, "Prop", Color(255, 255, 255), Color(63, 63, 63));
 			m_modeTileBtn = new ui::TextButtonCtrl(Vector2<int_canvas>(191, 0), Vector2<int_canvas>(51, 22), m_font, "Tile", Color(255, 255, 255), Color(63, 63, 63));
@@ -99,12 +101,7 @@ namespace ce
 		}
 		bool Editor2DCtrl::OnEvent(Event &event)
 		{
-			bool childEvent = Control::OnEvent(event);
-			if(!childEvent)
-				return false;
-
 			game2d::AppGame2D *app = (game2d::AppGame2D *)App::GetCurrent();
-
 			switch(event.type)
 			{
 			case event::MouseButtonDown:
@@ -309,7 +306,7 @@ namespace ce
 				break;
 			}
 
-			return true;
+			return Control::OnEvent(event);
 		}
 		void Editor2DCtrl::DoRender()
 		{

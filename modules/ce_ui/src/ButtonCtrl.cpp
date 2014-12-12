@@ -24,6 +24,7 @@ namespace ce
 		ButtonCtrl::ButtonCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent) : Control(position, extent)
 		{
 			m_type = Type_ButtonCtrl;
+			m_eventMask |= event::Mask_MouseButtonDown | event::Mask_MouseButtonUp;
 			m_isEnabled = true;
 			m_group = -1;
 			m_OnButtonDown = 0;

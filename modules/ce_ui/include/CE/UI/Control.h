@@ -43,6 +43,19 @@ namespace ce
 		public:
 			void UpdateDimensions();
 
+			//- Event Handling -
+		protected:
+			unsigned short m_eventMask;
+		public:
+			unsigned short GetEventMask() const;
+			void SetEventMask(unsigned short mask);
+			bool ProcessEvent(Event &event);
+
+			/**	@brief Callback for event handling.
+			*	@return Whether or not the event is consumed.
+			*/
+			virtual bool OnEvent(Event &event);
+
 			//- Focus -
 		private:
 			static std::deque<Control *> ms_focusCtrls;
@@ -144,7 +157,6 @@ namespace ce
 			void SetPosition(Vector2<int_canvas> position);
 			void SetExtent(Vector2<int_canvas> extent);
 
-			virtual bool OnEvent(Event &event);
 			virtual void OnSetPosition();
 			virtual void OnSetExtent();
 

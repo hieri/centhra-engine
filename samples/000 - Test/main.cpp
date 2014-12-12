@@ -70,7 +70,7 @@ public:
 		case event::MouseButtonDown:
 			click = m_masterCtrl->GetFromPosition(Vector2<int_canvas>(event.mouseButton.x, 480 - event.mouseButton.y));
 			print("%d\t%d\t%d\n", event.mouseButton.x, 480 - event.mouseButton.y, click);
-			click->OnEvent(event);
+			click->ProcessEvent(event);
 			break;
 		case event::PostRender:
 			m_masterCtrl->Render(m_canvas);

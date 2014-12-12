@@ -67,6 +67,7 @@ namespace ce
 				return app->Stop();
 			case WM_KEYDOWN:
 				event.type = event::KeyDown;
+				event.base.mask = event::Mask_KeyDown;
 				event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
 				event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 				event.key.state = 1;
@@ -74,6 +75,7 @@ namespace ce
 				break;
 			case WM_SYSKEYDOWN:
 				event.type = event::KeyDown;
+				event.base.mask = event::Mask_KeyDown;
 				event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
 				event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 				event.key.state = 1;
@@ -83,6 +85,7 @@ namespace ce
 				break;
 			case WM_KEYUP:
 				event.type = event::KeyUp;
+				event.base.mask = event::Mask_KeyUp;
 				event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
 				event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 				event.key.state = 0;
@@ -90,6 +93,7 @@ namespace ce
 				break;
 			case WM_SYSKEYUP:
 				event.type = event::KeyUp;
+				event.base.mask = event::Mask_KeyUp;
 				event.key.scanCode = NativeScanCodeToScanCode((lParam & 0x00FF0000) >> 16);
 				event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 				event.key.state = 0;
@@ -99,6 +103,7 @@ namespace ce
 				break;
 			case WM_LBUTTONDOWN:
 				event.type = event::MouseButtonDown;
+				event.base.mask = event::Mask_MouseButtonDown;
 				event.mouseButton.button = event::MouseButtonLeft;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
@@ -106,6 +111,7 @@ namespace ce
 				break;
 			case WM_LBUTTONUP:
 				event.type = event::MouseButtonUp;
+				event.base.mask = event::Mask_MouseButtonUp;
 				event.mouseButton.button = event::MouseButtonLeft;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
@@ -113,6 +119,7 @@ namespace ce
 				break;
 			case WM_RBUTTONDOWN:
 				event.type = event::MouseButtonDown;
+				event.base.mask = event::Mask_MouseButtonDown;
 				event.mouseButton.button = event::MouseButtonRight;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
@@ -120,6 +127,7 @@ namespace ce
 				break;
 			case WM_RBUTTONUP:
 				event.type = event::MouseButtonUp;
+				event.base.mask = event::Mask_MouseButtonUp;
 				event.mouseButton.button = event::MouseButtonRight;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
@@ -127,6 +135,7 @@ namespace ce
 				break;
 			case WM_MBUTTONDOWN:
 				event.type = event::MouseButtonDown;
+				event.base.mask = event::Mask_MouseButtonDown;
 				event.mouseButton.button = event::MouseButtonMiddle;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
@@ -134,6 +143,7 @@ namespace ce
 				break;
 			case WM_MBUTTONUP:
 				event.type = event::MouseButtonUp;
+				event.base.mask = event::Mask_MouseButtonUp;
 				event.mouseButton.button = event::MouseButtonMiddle;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
@@ -163,16 +173,18 @@ namespace ce
 					pos.x = GET_X_LPARAM(lParam);
 					pos.y = GET_Y_LPARAM(lParam);
 					ScreenToClient(hWnd, &pos);
-					event.type = event::MouseWheel;
-					event.mouseWheel.x = (int_canvas)pos.x;
-					event.mouseWheel.y = (int_canvas)pos.y;
-					event.mouseWheel.delta = GET_WHEEL_DELTA_WPARAM(wParam);
-					event.mouseWheel.isHorizontal = (wParam & MK_SHIFT) != 0;
+					event.type = event::MouseScroll;
+					event.base.mask = event::Mask_MouseScroll;
+					event.mouseScroll.x = (int_canvas)pos.x;
+					event.mouseScroll.y = (int_canvas)pos.y;
+					event.mouseScroll.delta = GET_WHEEL_DELTA_WPARAM(wParam);
+					event.mouseScroll.isHorizontal = (wParam & MK_SHIFT) != 0;
 					app->OnEvent(event);
 				}
 				break;
 			case WM_MOUSEMOVE:
 				event.type = event::MouseMotion;
+				event.base.mask = event::Mask_MouseMotion;
 				event.mouseMotion.x = LOWORD(lParam);
 				event.mouseMotion.y = HIWORD(lParam);
 				app->OnEvent(event);
@@ -182,6 +194,7 @@ namespace ce
 					canvas->SetWindowedExtent(LOWORD(lParam), HIWORD(lParam));
 				canvas->UpdateViewport(LOWORD(lParam), HIWORD(lParam));
 				event.type = event::WindowResize;
+				event.base.mask = event::Mask_WindowResize;
 				event.windowResize.width = LOWORD(lParam);
 				event.windowResize.height = HIWORD(lParam);
 				app->OnEvent(event);
@@ -650,14 +663,18 @@ namespace ce
 		event.base.canvas = this;
 		event.base.timeMS = time;
 		event.type = event::PreRender;
+		event.base.mask = event::Mask_PreRender;
 		m_app->OnEvent(event);
 
 		event.base.timeMS = m_app->GetRunTimeMS();
 		event.type = event::Render;
+		event.base.mask = event::Mask_Render;
 		m_app->OnEvent(event);
 
 		event.base.timeMS = m_app->GetRunTimeMS();
 		event.type = event::PostRender;
+		event.base.mask = event::Mask_PostRender;
+
 		m_app->OnEvent(event);
 
 		#if CE_FRONTEND_USEXLIB

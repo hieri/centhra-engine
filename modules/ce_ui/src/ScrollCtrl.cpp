@@ -28,6 +28,7 @@ namespace ce
 		ScrollCtrl::ScrollCtrl(Vector2<short> position, Vector2<short> extent, Skin *skin) : Control(position, extent), m_skin(skin), m_horizontalScroll(false), m_verticalScroll(false)
 		{
 			m_type = Type_ScrollCtrl;
+			m_eventMask |= event::Mask_MouseScroll;
 			m_hasOverlay = true;
 		}
 		void ScrollCtrl::DoRender()
@@ -502,14 +503,13 @@ namespace ce
 		{
 			switch(event.type)
 			{
-			case event::MouseWheel:
-				if(event.mouseWheel.isHorizontal)
-					Scroll(Vector2<int_canvas>(-event.mouseWheel.delta / 10, 0));
+			case event::MouseScroll:
+				if(event.mouseScroll.isHorizontal)
+					Scroll(Vector2<int_canvas>(-event.mouseScroll.delta / 10, 0));
 				else
-					Scroll(Vector2<int_canvas>(0, -event.mouseWheel.delta / 10));
+					Scroll(Vector2<int_canvas>(0, -event.mouseScroll.delta / 10));
 				return false;
 			}
-
 			return Control::OnEvent(event);
 		}
 	}

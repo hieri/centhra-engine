@@ -15,6 +15,7 @@
 #include <CE/UI/TextEditCtrl.h>
 
 //TODO: Add navigation via Mouse and Keyboard
+//TODO: Internally handle focus for editting?
 
 namespace ce
 {
@@ -23,6 +24,7 @@ namespace ce
 		TextEditCtrl::TextEditCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, unsigned short maxSize, const char *text, Color color) : TextCtrl(position, extent, font, text, color)
 		{
 			m_type = Type_TextEditCtrl;
+			m_eventMask |= event::Mask_KeyDown | event::Mask_KeyUp;
 			m_leftShift = false;
 			m_rightShift = false;
 			m_maxSize = maxSize;

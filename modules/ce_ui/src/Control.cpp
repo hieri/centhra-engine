@@ -24,7 +24,7 @@ namespace ce
 	namespace ui
 	{
 		Control::Control(Vector2<int_canvas> position, Vector2<int_canvas> extent) :
-			m_type(Type_Control), m_parent(0),
+			m_type(Type_Control), m_parent(0), m_eventMask(0),
 			m_isVisible(true), m_isUpdatingDimensions(true), m_acceptsFocus(false), m_isFocused(false), m_hasOverlay(false),
 			m_anchor(Anchor_None), m_isAnchorValid(false), m_scaling(Scaling_None)
 		{
@@ -349,27 +349,6 @@ namespace ce
 				if(m_parent->GetType() == Type_ScrollCtrl)
 					((ScrollCtrl *)m_parent)->UpdateScroll();
 		}
-		bool Control::OnEvent(Event &event)
-		{
-			//TODO: Use mouse motion
-			if(m_children.size())
-				if(event.type == event::MouseButtonDown || event.type == event::MouseButtonUp || event.type == event::MouseWheel)
-				{
-					Vector2<int_canvas> position(event.mouseButton.x, event.mouseButton.y);
-					for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-					{
-						Control *ctrl = *it;
-						Vector2<int_canvas> expPos = ctrl->GetExposurePosition();
-						Vector2<int_canvas> expExt = ctrl->GetExposureExtent();
-						if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
-							continue;
-						bool ret = ctrl->OnEvent(event);
-						if(!ret)
-							return false;
-					}
-				}
-			return true;
-		}
 		void Control::OnSetExtent()
 		{
 		}
@@ -412,6 +391,47 @@ namespace ce
 		bool Control::IsUpdatingAbsolute() const
 		{
 			return m_isUpdatingDimensions;
+		}
+
+		//- Event Handling -
+		unsigned short Control::GetEventMask() const
+		{
+			return m_eventMask;
+		}
+		void Control::SetEventMask(unsigned short mask)
+		{
+			m_eventMask = mask;
+		}
+		unsigned short g_childEventTransfer = event::Mask_MouseButtonDown | event::Mask_MouseButtonUp | event::Mask_MouseScroll; //TODO: Use mouse motion
+		bool Control::ProcessEvent(Event &event)
+		{
+			//- Handle the event for its children first -
+			if(m_children.size())
+				if(event.base.mask & g_childEventTransfer)
+				{
+					Vector2<int_canvas> position(event.mouse.x, event.mouse.y);
+					for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+					{
+						Control *ctrl = *it;
+						Vector2<int_canvas> expPos = ctrl->GetExposurePosition();
+						Vector2<int_canvas> expExt = ctrl->GetExposureExtent();
+						if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
+							continue;
+						bool ret = ctrl->ProcessEvent(event);
+						if(!ret)
+							return false;
+					}
+				}
+
+			//- Handle the event if the event is included in the event mask -
+			if(event.base.mask & m_eventMask)
+				return OnEvent(event);
+
+			return true;
+		}
+		bool Control::OnEvent(Event &event)
+		{
+			return true;
 		}
 
 		//- Focus -

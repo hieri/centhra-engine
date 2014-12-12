@@ -241,7 +241,7 @@ public:
 			if(event.key.keyCode == Key_F10)
 				m_isEditMode = !m_isEditMode;
 			if(m_isEditMode)
-				m_editorCtrl->OnEvent(event);
+				m_editorCtrl->ProcessEvent(event);
 			switch(event.key.keyCode)
 			{
 			case Key_W:
@@ -260,7 +260,7 @@ public:
 			break;
 		case event::KeyUp:
 			if(m_isEditMode)
-				m_editorCtrl->OnEvent(event);
+				m_editorCtrl->ProcessEvent(event);
 			switch(event.key.keyCode)
 			{
 			case Key_W:
@@ -277,12 +277,12 @@ public:
 				break;
 			}
 			break;
-		case event::MouseWheel:
+		case event::MouseScroll:
 		case event::MouseMotion:
 		case event::MouseButtonDown:
 		case event::MouseButtonUp:
 			if(m_isEditMode)
-				m_editorCtrl->OnEvent(event);
+				m_editorCtrl->ProcessEvent(event);
 			break;
 		case event::PostRender:
 			LockWorldMutex();

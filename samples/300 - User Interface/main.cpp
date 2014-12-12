@@ -104,22 +104,22 @@ public:
 				}
 
 				if(ui::Control::GetCurrentFocus())
-					ui::Control::GetCurrentFocus()->OnEvent(event);
+					ui::Control::GetCurrentFocus()->ProcessEvent(event);
 				break;
 			case event::KeyUp:
 				if(ui::Control::GetCurrentFocus())
-					ui::Control::GetCurrentFocus()->OnEvent(event);
+					ui::Control::GetCurrentFocus()->ProcessEvent(event);
 				break;
 			case event::MouseButtonDown:
 				if(m_rootCtrl)
-					if(m_rootCtrl->OnEvent(event))
+					if(m_rootCtrl->ProcessEvent(event))
 						m_rootCtrl->SetFocusByPosition(Vector2<int_canvas>(event.mouseButton.x, event.mouseButton.y));
 				break;
 			case event::MouseButtonUp:
 			case event::MouseMotion:
-			case event::MouseWheel:
+			case event::MouseScroll:
 				if(m_rootCtrl)
-					m_rootCtrl->OnEvent(event);
+					m_rootCtrl->ProcessEvent(event);
 				break;
 			case event::PostRender:
 				m_rootCtrl->Render(m_canvas);

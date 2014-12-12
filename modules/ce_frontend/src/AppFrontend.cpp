@@ -31,7 +31,6 @@ using namespace std;
 
 //TODO: properly handle X11/XCB quit events
 //TODO: Handle middle mouse button press
-//TODO: Rename mouseWheel to scroll
 
 namespace ce
 {
@@ -84,6 +83,7 @@ namespace ce
 						{
 							xcb_key_press_event_t *cast = (xcb_key_press_event_t *)xcbEvent;
 							event.type = event::KeyDown;
+							event.base.mask = event::Mask_KeyDown;
 							xcbWindow = cast->event;
 							if(m_canvasMap.count(xcbWindow))
 								event.base.canvas = m_canvasMap[xcbWindow];
@@ -97,6 +97,7 @@ namespace ce
 						{
 							xcb_key_release_event_t *cast = (xcb_key_release_event_t *)xcbEvent;
 							event.type = event::KeyUp;
+							event.base.mask = event::Mask_KeyUp;
 							xcbWindow = cast->event;
 							if(m_canvasMap.count(xcbWindow))
 								event.base.canvas = m_canvasMap[xcbWindow];
@@ -110,6 +111,7 @@ namespace ce
 						{
 							xcb_button_press_event_t *cast = (xcb_button_press_event_t *)xcbEvent;
 							event.type = event::MouseButtonDown;
+							event.base.mask = event::Mask_MouseButtonDown;
 							xcbWindow = cast->event;
 							if(m_canvasMap.count(xcbWindow))
 								event.base.canvas = m_canvasMap[xcbWindow];
@@ -135,11 +137,12 @@ namespace ce
 							}
 							else if(cast->detail < 6)
 							{
-								event.mouseWheel.type = event::MouseWheel;
-								event.mouseWheel.x = cast->event_x;
-								event.mouseWheel.y = cast->event_y;
-								event.mouseWheel.delta = cast->detail == 4 ? 120 : -120;
-								event.mouseWheel.isHorizontal = (cast->state & XCB_MOD_MASK_SHIFT) == 1;
+								event.type = event::MouseScroll;
+								event.base.mask = event::Mask_MouseScroll;
+								event.mouseScroll.x = cast->event_x;
+								event.mouseScroll.y = cast->event_y;
+								event.mouseScroll.delta = cast->detail == 4 ? 120 : -120;
+								event.mouseScroll.isHorizontal = (cast->state & XCB_MOD_MASK_SHIFT) == 1;
 							}
 							OnEvent(event);
 							break;
@@ -148,6 +151,7 @@ namespace ce
 						{
 							xcb_button_release_event_t *cast = (xcb_button_release_event_t *)xcbEvent;
 							event.type = event::MouseButtonUp;
+							event.base.mask = event::Mask_MouseButtonUp;
 							xcbWindow = cast->event;
 							if(m_canvasMap.count(xcbWindow))
 								event.base.canvas = m_canvasMap[xcbWindow];
@@ -175,6 +179,7 @@ namespace ce
 						{
 							xcb_motion_notify_event_t *cast = (xcb_motion_notify_event_t *)xcbEvent;
 							event.type = event::MouseMotion;
+							event.base.mask = event::Mask_MouseMotion;
 							xcbWindow = cast->event;
 							if(m_canvasMap.count(xcbWindow))
 								event.base.canvas = m_canvasMap[xcbWindow];
@@ -196,6 +201,7 @@ namespace ce
 									event.base.canvas->SetWindowedExtent(cast->width, cast->height);
 								event.base.canvas->UpdateViewport(cast->width, cast->height);
 								event.type = event::WindowResize;
+								event.base.mask = event::Mask_WindowResize;
 								event.windowResize.width = cast->width;
 								event.windowResize.height = cast->height;
 								OnEvent(event);
@@ -233,6 +239,7 @@ namespace ce
 							return Stop(true);
 						case KeyPress:
 							event.type = event::KeyDown;
+							event.base.mask = event::Mask_KeyDown;
 							event.key.scanCode = NativeScanCodeToScanCode(xEvent.xkey.keycode);
 							event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 							event.key.state = xEvent.xkey.state;
@@ -240,6 +247,7 @@ namespace ce
 							break;
 						case KeyRelease:
 							event.type = event::KeyUp;
+							event.base.mask = event::Mask_KeyUp;
 							event.key.scanCode = NativeScanCodeToScanCode(xEvent.xkey.keycode);
 							event.key.keyCode = ScanCodeToKeyCode(event.key.scanCode);
 							event.key.state = xEvent.xkey.state;
@@ -248,7 +256,8 @@ namespace ce
 						case ButtonPress:
 							if(xEvent.xbutton.button < 4)
 							{
-								event.mouseButton.type = event::MouseButtonDown;
+								event.type = event::MouseButtonDown;
+								event.base.mask = event::Mask_MouseButtonDown;
 								switch(xEvent.xbutton.button)
 								{
 								case 1:
@@ -269,16 +278,18 @@ namespace ce
 							}
 							else if(xEvent.xbutton.button < 6)
 							{
-								event.mouseWheel.type = event::MouseWheel;
-								event.mouseWheel.x = xEvent.xbutton.x;
-								event.mouseWheel.y = xEvent.xbutton.y;
-								event.mouseWheel.delta = xEvent.xbutton.button == 4 ? 120 : -120;
-								event.mouseWheel.isHorizontal = (xEvent.xbutton.state & ShiftMask) == 1;
+								event.type = event::MouseScroll;
+								event.base.mask = event::Mask_MouseScroll;
+								event.mouseScroll.x = xEvent.xbutton.x;
+								event.mouseScroll.y = xEvent.xbutton.y;
+								event.mouseScroll.delta = xEvent.xbutton.button == 4 ? 120 : -120;
+								event.mouseScroll.isHorizontal = (xEvent.xbutton.state & ShiftMask) == 1;
 							}
 							OnEvent(event);
 							break;
 						case ButtonRelease:
-							event.mouseButton.type = event::MouseButtonUp;
+							event.type = event::MouseButtonUp;
+							event.base.mask = event::Mask_MouseButtonUp;
 							switch(xEvent.xbutton.button)
 							{
 							case 1:
@@ -300,6 +311,7 @@ namespace ce
 							break;
 						case MotionNotify:
 							event.type = event::MouseMotion;
+							event.base.mask = event::Mask_MouseMotion;
 							event.mouseMotion.x = xEvent.xmotion.x;
 							event.mouseMotion.y = xEvent.xmotion.y;
 							OnEvent(event);
@@ -311,6 +323,7 @@ namespace ce
 									event.base.canvas->SetWindowedExtent(xEvent.xconfigure.width, xEvent.xconfigure.height);
 								event.base.canvas->UpdateViewport(xEvent.xconfigure.width, xEvent.xconfigure.height);
 								event.type = event::WindowResize;
+								event.base.mask = event::Mask_WindowResize;
 								event.windowResize.width = xEvent.xconfigure.width;
 								event.windowResize.height = xEvent.xconfigure.height;
 								OnEvent(event);

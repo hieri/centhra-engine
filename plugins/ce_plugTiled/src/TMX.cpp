@@ -327,6 +327,7 @@ namespace ce
 							ObjectLayer *objectLayer = (ObjectLayer *)layer;
 							game2d::World::ObjectLayer *wObjectLayer = world->AddObjectLayer();
 
+							//- RenderAll: Attempts to render all objects in the World -
 							bool renderAll = false;
 							if(layer->m_propertyMap.size())
 								for(map<string, string>::iterator itB = layer->m_propertyMap.begin(); itB != layer->m_propertyMap.end(); itB++)

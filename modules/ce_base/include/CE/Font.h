@@ -4,6 +4,9 @@
 //- Standard Library -
 #include <map>
 
+//- Centhra Engine -
+#include <CE/Vector2.h>
+
 namespace ce
 {
 	/**	@brief Font Data Structure Class
@@ -12,12 +15,13 @@ namespace ce
 	{
 		static Font *ms_default;
 
-/*		typedef struct DisplayInfo
+		typedef struct DisplayInfo
 		{
-
+			int bearingX, bearingY, width, height, advance;
 		} DisplayInfo;
-*/
+
 		std::map<unsigned short, unsigned int> m_glTextureMap, m_glDisplayListMap, m_glUIDisplayListMap;
+		std::map<unsigned short, DisplayInfo> m_displayInfoMap;
 
 		void *m_ftFace;
 		unsigned int m_charWidth, m_charHeight;
@@ -54,8 +58,8 @@ namespace ce
 		/**	@brief Draws a string.
 		 *	@param str The string that will be drawn.
 		 */
-		void DrawString(const char *str, unsigned int newLineSize = 65535);
-		void DrawStringUI(const char *str, unsigned int newLineSize = 65535);
+		void DrawString(const char *str, unsigned int newLineAdvance = 4);
+		void DrawStringUI(const char *str, unsigned int newLineAdvance = 4);
 
 		/**	@brief Draws a unicode character.
 		 *	@param unicodeChar The unicode character that will be drawn.
@@ -77,6 +81,8 @@ namespace ce
 		 *	@return The character height of the Font.
 		 */
 		unsigned int GetCharHeight() const;
+
+		Vector2<int> StringDimensions(const char *str, unsigned int newLineAdvance = 4);
 	};
 }
 

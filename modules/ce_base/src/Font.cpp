@@ -71,7 +71,7 @@ namespace ce
 	Font::~Font()
 	{
 		DeleteDisplayData();
-		delete (FT_Face)m_ftFace;
+		FT_Done_Face((FT_Face)m_ftFace);
 	}
 	void Font::DeleteDisplayData()
 	{
@@ -84,12 +84,8 @@ namespace ce
 		for(map<unsigned short, unsigned int>::iterator it = m_glTextureMap.begin(); it != m_glTextureMap.end(); it++)
 			glDeleteTextures(1, &it->second);
 		m_glTextureMap.clear();
+		m_displayInfoMap.clear();
 	}
-/*	void Font::SetCharSize(unsigned int width, unsigned int height, unsigned int horizontalDpi, unsigned int verticalDpi)
-	{
-		m_height = height;
-	}*/
-
 	void Font::SetDPI(float horizontalDpi, float verticalDpi)
 	{
 		bool updateCharSize = false;
@@ -125,7 +121,6 @@ namespace ce
 			DeleteDisplayData();
 		}
 	}
-
 	void Font::GenerateDisplayAndInfo(unsigned short unicodeChar)
 	{
 		FT_Face ftFace = (FT_Face)m_ftFace;
@@ -143,6 +138,13 @@ namespace ce
 			h <<= 1;
 
 		//- Generate Info -
+		DisplayInfo info;
+		info.bearingX = ftGlyph->bitmap_left;
+		info.bearingY = ftGlyph->bitmap_top;
+		info.width = ftBitmap.width;
+		info.height = ftBitmap.rows;
+		info.advance = ftGlyph->advance.x >> 6;
+		m_displayInfoMap[unicodeChar] = info;
 
 		//- Generate Texture -
 		unsigned char *data = new unsigned char[2 * w * h];
@@ -182,7 +184,7 @@ namespace ce
 					glTexCoord2f(x, y); glVertex2f((GLfloat)ftBitmap.width, (GLfloat)-ftBitmap.rows);
 				glEnd();
 			glPopMatrix();
-			glTranslatef((GLfloat)(ftGlyph->advance.x >> 6), 0, 0);
+			glTranslatef((GLfloat)info.advance, 0, 0);
 
 		glEndList();
 
@@ -206,13 +208,13 @@ namespace ce
 					glTexCoord2f(x, y); glVertex2f((GLfloat)ftBitmap.width, (GLfloat)ftBitmap.rows);
 				glEnd();
 			glPopMatrix();
-			glTranslatef((GLfloat)(ftGlyph->advance.x >> 6), 0, 0);
+			glTranslatef((GLfloat)info.advance, 0, 0);
 
 		glEndList();
 
 		m_glUIDisplayListMap[unicodeChar] = glDisplayList;
 	}
-	void Font::DrawString(const char *str, unsigned int newLineSize)
+	void Font::DrawString(const char *str, unsigned int newLineAdvance)
 	{
 		glPushMatrix();
 			unsigned int len = strlen(str);
@@ -221,7 +223,7 @@ namespace ce
 				if(str[a] == '\n')
 				{
 					glPopMatrix();
-					glTranslatef(0, (float)-m_charHeight - 4.f, 0);
+						glTranslatef(0, -(float)m_charHeight - (float)newLineAdvance, 0);
 					glPushMatrix();
 				}
 				else
@@ -229,7 +231,7 @@ namespace ce
 			}
 		glPopMatrix();
 	}
-	void Font::DrawStringUI(const char *str, unsigned int newLineSize)
+	void Font::DrawStringUI(const char *str, unsigned int newLineAdvance)
 	{
 		glPushMatrix();
 			unsigned int len = strlen(str);
@@ -238,7 +240,7 @@ namespace ce
 				if(str[a] == '\n')
 				{
 					glPopMatrix();
-					glTranslatef(0, (float)m_charHeight + 4.f, 0);
+						glTranslatef(0, (float)m_charHeight + (float)newLineAdvance - 4, 0);
 					glPushMatrix();
 				}
 				else
@@ -285,5 +287,63 @@ namespace ce
 	unsigned int Font::GetCharHeight() const
 	{
 		return m_charHeight;
+	}
+	Vector2<int> Font::StringDimensions(const char *str, unsigned int newLineAdvance)
+	{
+		Vector2<int> dimensions, currentLine(0, m_charHeight);
+		int lineIdx = 0;
+
+		unsigned int len = strlen(str);
+		for(unsigned int a = 0; a < len; a++)
+		{
+			unsigned short unicodeChar = str[a];
+
+			if(unicodeChar == '\n')
+			{
+				if(lineIdx)
+				{
+				/*	if(currentLine[1] > m_charHeight)
+					{
+						int lead = m_charHeight + newLineAdvance;
+						if(lead > currentLine[1])
+							dimensions[1] += lead - currentLine[1];
+					}
+					else*/
+					dimensions[1] += newLineAdvance;
+				}
+
+//				dimensions[1] += currentLine[1];
+				dimensions[1] += m_charHeight;
+
+				if(currentLine[0] > dimensions[0])
+					dimensions[0] = currentLine[0];
+				currentLine = Vector2<int>(0, 0);
+				lineIdx++;
+			}
+			else
+			{
+				if(!m_displayInfoMap.count(unicodeChar))
+					GenerateDisplayAndInfo(unicodeChar);
+				
+				DisplayInfo &info = m_displayInfoMap[unicodeChar];
+
+//				print("Info: %d\t%d\t%d\t%d\t||\t%d\n", info.width, info.height, info.bearingX, info.bearingY, info.advance);
+
+				currentLine[0] += info.advance;
+				int curHeight = m_charHeight - info.bearingY + info.height;
+				if(curHeight > currentLine[1])
+					currentLine[1] = curHeight;
+			}
+		}
+
+		if(currentLine[1] > m_charHeight)
+			dimensions[1] += currentLine[1];
+		else
+			dimensions[1] += m_charHeight;
+
+		if(currentLine[0] > dimensions[0])
+			dimensions[0] = currentLine[0];
+
+		return dimensions;
 	}
 }

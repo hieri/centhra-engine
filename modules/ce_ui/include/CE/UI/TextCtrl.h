@@ -27,6 +27,14 @@ namespace ce
 			void SetFont(Font *font);
 			const char *GetText() const;
 			void SetText(const char *format, ...);
+
+			//- Text Wrap -
+		protected:
+			bool m_isWrapping;
+			void ApplyWrap();
+		public:
+			bool IsWrapping() const;
+			void SetWrapping(bool wrapping);
 		};
 	}
 }

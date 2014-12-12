@@ -6,6 +6,7 @@
 	//- Windows -
 	#include <windows.h>
 	#include <windowsx.h>
+	#include <D2d1.h>
 #endif
 
 //- OpenGL -
@@ -516,14 +517,20 @@ namespace ce
 				return 0;
 			}
 
+			FLOAT horizontalDpi, verticalDpi;
+			//TODO: Handle dynamic dpi per monitor settings
+			horizontalDpi = verticalDpi = 96.f;
+
+			//- Calculate Extent -
 			RECT extent;
 			UINT style = WS_OVERLAPPEDWINDOW;
 			extent.left = 0;
 			extent.top = 0;
-			extent.right = width;
-			extent.bottom = height;
+			extent.right = (UINT)((horizontalDpi * width) / 96.f);
+			extent.bottom = (UINT)((verticalDpi * height) / 96.f);
 			AdjustWindowRect(&extent, style, FALSE);
 
+			//- Create the Window -
 			HWND hWnd = CreateWindow("ceApp", title, style, CW_USEDEFAULT, CW_USEDEFAULT, extent.right - extent.left, extent.bottom - extent.top, 0, 0, hInstance, 0);
 			if(!hWnd)
 			{
@@ -580,15 +587,18 @@ namespace ce
 		#if CE_FRONTEND_USEXLIB
 			canvas->Resize(width, height);
 		#endif
+
+		canvas->m_horizontalDpi = horizontalDpi;
+		canvas->m_verticalDpi = verticalDpi;
 		canvas->UpdateViewport(width, height);
 		canvas->SetVSync(canvas->m_vsync);
 
 		return canvas;
 	}
 
-	Canvas::Canvas()
+	Canvas::Canvas() : m_app(0),
+		m_horizontalDpi(0), m_verticalDpi(0)
 	{
-		m_app = 0;
 		m_lastRenderTimeMS = 0;
 		m_width = 0;
 		m_height = 0;
@@ -868,5 +878,15 @@ namespace ce
 			HWND hwnd = (HWND)m_windowHandle;
 			SetWindowText(hwnd, title);
 		#endif
+	}
+
+	//- DPI -
+	float Canvas::GetHorizontalDPI() const
+	{
+		return m_horizontalDpi;
+	}
+	float Canvas::GetVerticalDPI() const
+	{
+		return m_verticalDpi;
 	}
 }

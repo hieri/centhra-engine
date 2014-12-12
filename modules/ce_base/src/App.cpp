@@ -1,11 +1,7 @@
-//- Standard Library -
-#include <cstdlib>
-#include <ctime>
-
 #ifdef linux
 	//- Linux -
 	#include <sys/time.h>
-	#include <stdio.h>
+	#include <cstdio>
 	#include <unistd.h>
 #endif
 
@@ -70,10 +66,6 @@ namespace ce
 		if(m_isRunning)
 		{
 			m_startTimeMS = getRunTimeMS();
-
-			//TODO: Determine if this is bad to have by default
-			srand((unsigned int)time(NULL));
-
 			OnStarted();
 		}
 

@@ -30,7 +30,7 @@ namespace ce
 
 		typedef enum EventMask
 		{
-			Base_Mask = 0,
+			Base_Mask               = 0,
 			Mask_PreRender          = 1 << (Base_Mask + 0),
 			Mask_Render             = 1 << (Base_Mask + 1),
 			Mask_PostRender         = 1 << (Base_Mask + 2),
@@ -39,7 +39,7 @@ namespace ce
 			Mask_MouseButtonDown    = 1 << (Base_Mask + 5),
 			Mask_MouseButtonUp      = 1 << (Base_Mask + 6),
 			Mask_MouseMotion        = 1 << (Base_Mask + 7),
-			Mask_MouseScroll         = 1 << (Base_Mask + 8),
+			Mask_MouseScroll        = 1 << (Base_Mask + 8),
 			Mask_WindowResize       = 1 << (Base_Mask + 9)
 		} EventMask;
 

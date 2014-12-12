@@ -82,7 +82,10 @@ public:
 
 		m_font = Font::CreateFromFile("../res/FreeMono.ttf");
 		if(m_font)
-			m_font->SetCharSize(0, 16 * 64, 96, 96);
+		{
+			m_font->SetDPI(m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
+			m_font->SetCharacterDimensions(16);
+		}
 
 		game2d::PropDef::LoadFromFile("../res/sampleProps.txt");
 

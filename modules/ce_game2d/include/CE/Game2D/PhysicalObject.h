@@ -15,8 +15,10 @@ namespace ce
 	{
 		typedef enum ObjectTypeMask
 		{
-			Mask_Object = 1,
-			Mask_Prop = 2
+			Base_Object = 0,
+			Mask_Object = 1 << (Base_Object + 0),
+			Mask_Prop   = 1 << (Base_Object + 1),
+			Next_Object = 3
 		} ObjectTypeMask;
 
 		class PhysicalGroup;

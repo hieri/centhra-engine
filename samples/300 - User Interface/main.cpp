@@ -38,7 +38,10 @@ public:
 		Image::Init();
 		m_font = Font::CreateFromFile("../res/FreeMono.ttf");
 		if(m_font)
-			m_font->SetCharSize(0, 14 * 64, 96, 96);
+		{
+			m_font->SetDPI(m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
+			m_font->SetCharacterDimensions(14);
+		}
 
 		m_rootCtrl = new ui::Control(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(1280, 720));
 

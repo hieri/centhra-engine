@@ -35,7 +35,10 @@ public:
 		print("Loading <../res/FreeMono.ttf>\n");
 		m_font = Font::CreateFromFile("../res/FreeMono.ttf");
 		if(m_font)
-			m_font->SetCharSize(0, 14*64, 96, 96);
+		{
+			m_font->SetDPI(m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
+			m_font->SetCharacterDimensions(14);
+		}
 		else
 			print("  Unable to load font.\n");
 

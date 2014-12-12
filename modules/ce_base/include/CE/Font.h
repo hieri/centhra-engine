@@ -12,11 +12,21 @@ namespace ce
 	{
 		static Font *ms_default;
 
-		std::map<unsigned int, std::map<unsigned short, unsigned int> > m_glTextureMap, m_glDisplayListMap, m_glUIDisplayListMap;
+/*		typedef struct DisplayInfo
+		{
+
+		} DisplayInfo;
+*/
+		std::map<unsigned short, unsigned int> m_glTextureMap, m_glDisplayListMap, m_glUIDisplayListMap;
+
 		void *m_ftFace;
-		unsigned int m_height;
+		unsigned int m_charWidth, m_charHeight;
+		float m_horizontalDpi, m_verticalDpi;
 
 		Font();
+
+		void DeleteDisplayData();
+		void GenerateDisplayAndInfo(unsigned short unicodeChar);
 
 	public:
 		/**	@brief Initializes the registered font loaders.
@@ -44,8 +54,8 @@ namespace ce
 		/**	@brief Draws a string.
 		 *	@param str The string that will be drawn.
 		 */
-		void DrawString(const char *str);
-		void DrawStringUI(const char *str);
+		void DrawString(const char *str, unsigned int newLineSize = 65535);
+		void DrawStringUI(const char *str, unsigned int newLineSize = 65535);
 
 		/**	@brief Draws a unicode character.
 		 *	@param unicodeChar The unicode character that will be drawn.
@@ -59,7 +69,9 @@ namespace ce
 		 *	@param horizontalDpi The horizontal dpi of a character.
 		 *	@param verticalDpi The vertical dpi of a character.
 		 */
-		void SetCharSize(unsigned int width, unsigned int height, unsigned int horizontalDpi, unsigned int verticalDpi);
+//		void SetCharSize(unsigned int width, unsigned int height, unsigned int horizontalDpi, unsigned int verticalDpi);
+		void SetCharacterDimensions(unsigned int height);
+		void SetDPI(float horizontalDpi, float verticalDpi);
 
 		/**	@brief Returns the character height of the font.
 		 *	@return The character height of the Font.

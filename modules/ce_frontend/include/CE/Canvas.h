@@ -78,6 +78,13 @@ namespace ce
 		void Resize(int_canvas width, int_canvas height);
 
 		void SetTitle(const char *title);
+
+		//- DPI -
+		private:
+			float m_horizontalDpi, m_verticalDpi;
+		public:
+			float GetHorizontalDPI() const;
+			float GetVerticalDPI() const;
 	};
 }
 

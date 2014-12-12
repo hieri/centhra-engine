@@ -1,4 +1,5 @@
 //- Standard Library -
+#include <cmath>
 #include <cstring>
 #include <string>
 
@@ -217,6 +218,8 @@ namespace ce
 			return 0;
 		}
 
+		float horizontalDpi, verticalDpi;
+
 		#if CE_FRONTEND_USEXLIB
 			Display *xDisplay = (Display *)app->GetXDisplay();
 			int xDefaultScreen = app->GetXDefaultScreen();
@@ -247,6 +250,11 @@ namespace ce
 					| XCB_EVENT_MASK_STRUCTURE_NOTIFY
 					| XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY
 					| XCB_EVENT_MASK_FOCUS_CHANGE;
+
+				//- Calculate DPI -
+				//TODO: Use raw values instead of rounded
+				horizontalDpi = floor(screen->width_in_pixels * 25.4f / screen->width_in_millimeters + 0.5f);
+				verticalDpi = floor(screen->height_in_pixels * 25.4f / screen->height_in_millimeters + 0.5f);
 			#else
 				Window xWindow;
 				uint32_t xEventMask = KeyPressMask
@@ -333,6 +341,13 @@ namespace ce
 					}
 
 					Colormap xColorMap = XCreateColormap(xDisplay, RootWindow(xDisplay, xVisualInfo->screen), xVisualInfo->visual, AllocNone);
+ 
+					//- Calculate DPI -
+					//TODO: Use raw values instead of rounded
+					horizontalDpi = floor(DisplayWidth(xDisplay, xVisualInfo->screen)
+						* 25.4f / DisplayWidthMM(xDisplay, xVisualInfo->screen) + 0.5f);
+					verticalDpi = floor(DisplayHeight(xDisplay, xVisualInfo->screen)
+						* 25.4f	/ DisplayHeightMM(xDisplay, xVisualInfo->screen) + 0.5f);
 
 					XSetWindowAttributes swa;
 					swa.colormap = xColorMap;
@@ -464,6 +479,13 @@ namespace ce
 					swa.border_pixel = 0;
 					swa.event_mask = xEventMask;
 
+					//- Calculate DPI -
+					//TODO: Use raw values instead of rounded
+					horizontalDpi = floor(DisplayWidth(xDisplay, xVisualInfo->screen)
+						* 25.4f / DisplayWidthMM(xDisplay, xVisualInfo->screen) + 0.5f);
+					verticalDpi = floor(DisplayHeight(xDisplay, xVisualInfo->screen)
+						* 25.4f	/ DisplayHeightMM(xDisplay, xVisualInfo->screen) + 0.5f);
+
 					xWindow = XCreateWindow(xDisplay, xRootWindow, 0, 0, width / 2, height / 2, 0, xVisualInfo->depth, InputOutput, xVisualInfo->visual, CWColormap | CWEventMask, &swa);
 
 					if(!xWindow)
@@ -517,7 +539,6 @@ namespace ce
 				return 0;
 			}
 
-			FLOAT horizontalDpi, verticalDpi;
 			//TODO: Handle dynamic dpi per monitor settings
 			horizontalDpi = verticalDpi = 96.f;
 

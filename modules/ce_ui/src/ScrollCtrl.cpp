@@ -1,3 +1,6 @@
+//- Standard Library -
+#include <cstring>
+
 #ifdef linux
 	//- Linux -
 	#include <unistd.h>
@@ -14,6 +17,7 @@
 //- Centhra Engine -
 #include <CE/UI/ScrollCtrl.h>
 #include <CE/Base.h>
+#include <CE/RenderPrimitives.h>
 
 using namespace std;
 
@@ -30,6 +34,16 @@ namespace ce
 			m_type = Type_ScrollCtrl;
 			m_eventMask |= event::Mask_MouseScroll;
 			m_hasOverlay = true;
+
+			m_hasControlZones = true;
+			ControlZone horizontalScroll, verticalScroll;
+			memset(&horizontalScroll, 0, sizeof(ControlZone));
+			memset(&verticalScroll, 0, sizeof(ControlZone));
+			horizontalScroll.id = 1;
+			verticalScroll.id = 2;
+
+			m_controlZones.push_back(horizontalScroll);
+			m_controlZones.push_back(verticalScroll);
 		}
 		void ScrollCtrl::DoRender()
 		{
@@ -130,6 +144,16 @@ namespace ce
 				glBindTexture(GL_TEXTURE_2D, 0);
 				glDisable(GL_TEXTURE_2D);
 				glDisable(GL_BLEND);
+			glPopMatrix();
+			glPushMatrix();
+				glTranslatef((float)m_controlZones[0].x, (float)m_controlZones[0].y, 0.f);
+				glScalef((float)m_controlZones[0].width, (float)m_controlZones[0].height, 1.f);
+				RenderSquare();
+			glPopMatrix();
+			glPushMatrix();
+				glTranslatef((float)m_controlZones[1].x, (float)m_controlZones[1].y, 0.f);
+				glScalef((float)m_controlZones[1].width, (float)m_controlZones[1].height, 1.f);
+				RenderSquare();
 			glPopMatrix();
 		}
 		void ScrollCtrl::DoOverlay()
@@ -474,6 +498,71 @@ namespace ce
 
 			m_childOffset[0] = (int_canvas)(m_scrollPercentage[0] * -m_scrollExtent[0]);
 			m_childOffset[1] = (int_canvas)(m_scrollPercentage[1] * -m_scrollExtent[1]);
+
+			UpdateControlZones();
+		}
+		void ScrollCtrl::UpdateControlZones()
+		{
+			ControlZone &horizontalScroll = m_controlZones[0];
+			ControlZone &verticalScroll = m_controlZones[1];
+			int barSize = 32;
+			int vBackWidth = m_skin->GetRect(4, 3).GetWidth(), hBackHeight = m_skin->GetRect(1, 3).GetHeight();
+
+			if(m_horizontalScroll)
+			{
+				horizontalScroll.minY = m_extent[1] - hBackHeight;
+				horizontalScroll.maxY = m_extent[1];
+				if(m_verticalScroll)
+					horizontalScroll.maxX = m_extent[0] - vBackWidth;
+				else
+					horizontalScroll.maxX = m_extent[0];
+				horizontalScroll.width = barSize;
+				horizontalScroll.height = hBackHeight;
+
+				int barArea = m_extent[0] - barSize;
+				if(m_verticalScroll)
+				{
+					//- Account for Vertical Scroll -
+					barArea -= m_skin->GetRect(3, 3).GetHeight();
+				}
+				horizontalScroll.x = (int)(m_scrollPercentage[0] * barArea);
+
+				if(horizontalScroll.y < horizontalScroll.minY)
+					horizontalScroll.y = horizontalScroll.minY;
+			}
+			else
+			{
+				horizontalScroll.height = 0;
+				horizontalScroll.width = 0;
+			}
+
+			if(m_verticalScroll)
+			{
+				verticalScroll.minX = m_extent[0] - vBackWidth;
+				verticalScroll.maxX = m_extent[0];
+				if(m_horizontalScroll)
+					verticalScroll.maxY = m_extent[1] - hBackHeight;
+				else
+					verticalScroll.maxY = m_extent[1];
+				verticalScroll.height = barSize;
+				verticalScroll.width = vBackWidth;
+
+				int barArea = m_extent[1] - barSize;
+				if(m_horizontalScroll)
+				{
+					//- Account for Horizontal Scroll -
+					barArea -= m_skin->GetRect(0, 3).GetHeight();
+				}
+				verticalScroll.y = (int)(m_scrollPercentage[1] * barArea);
+
+				if(verticalScroll.x < verticalScroll.minX)
+					verticalScroll.x = verticalScroll.minX;
+			}
+			else
+			{
+				verticalScroll.height = 0;
+				verticalScroll.width = 0;
+			}
 		}
 		void ScrollCtrl::Scroll(Vector2<int_canvas> amt)
 		{
@@ -496,6 +585,8 @@ namespace ce
 			m_scrollPercentage[0] = ((float)m_childOffset[0]) / -m_scrollExtent[0];
 			m_scrollPercentage[1] = ((float)m_childOffset[1]) / -m_scrollExtent[1];
 
+			UpdateControlZones();
+
 			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 				(*it)->UpdateDimensions();
 		}
@@ -511,6 +602,37 @@ namespace ce
 				return false;
 			}
 			return Control::OnEvent(event);
+		}
+		void ScrollCtrl::OnControlZoneMove(ControlZone *zone)
+		{
+			if(zone->id == 1)
+			{
+				int barSize = 32;
+				int barArea = m_extent[0] - barSize;
+				if(m_verticalScroll)
+				{
+					//- Account for Vertical Scroll -
+					barArea -= m_skin->GetRect(3, 3).GetHeight();
+				}
+				m_scrollPercentage[0] = (float)zone->x / barArea;
+				m_childOffset[0] = (int_canvas)(m_scrollPercentage[0] * -m_scrollExtent[0]);
+				for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+					(*it)->UpdateDimensions();
+			}
+			else if(zone->id == 2)
+			{
+				int barSize = 32;
+				int barArea = m_extent[1] - barSize;
+				if(m_horizontalScroll)
+				{
+					//- Account for Horizontal Scroll -
+					barArea -= m_skin->GetRect(0, 3).GetHeight();
+				}
+				m_scrollPercentage[1] = (float)zone->y / barArea;
+				m_childOffset[1] = (int_canvas)(m_scrollPercentage[1] * -m_scrollExtent[1]);
+				for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+					(*it)->UpdateDimensions();
+			}
 		}
 	}
 }

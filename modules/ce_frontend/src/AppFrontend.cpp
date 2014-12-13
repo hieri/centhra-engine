@@ -30,7 +30,6 @@
 using namespace std;
 
 //TODO: properly handle X11/XCB quit events
-//TODO: Handle middle mouse button press
 
 namespace ce
 {

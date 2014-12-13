@@ -40,14 +40,14 @@ public:
 		if(m_font)
 		{
 			m_font->SetDPI(m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
-			m_font->SetCharacterDimensions(32);
+			m_font->SetCharacterDimensions(14);
 		}
 
 		m_rootCtrl = new ui::Control(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(1280, 720));
-
+		
 		{
 //			m_rootCtrl->Add(new ui::ColorCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(64, 64), Color(255, 0, 0)));
-
+			
 			{
 				ui::TextCtrl *textCtrl = new ui::TextCtrl(Vector2<int_canvas>(64, 0), Vector2<int_canvas>(256, 64), m_font, "Igggg\nIgggg\nIgggg", Color(255, 0, 0));
 				textCtrl->SetWrapping(true);
@@ -63,22 +63,23 @@ public:
 			{
 				ui::Control *ctrl = new ui::TextEditCtrl(Vector2<int_canvas>(300, 200 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(255, 255, 0));
 				m_rootCtrl->Add(ctrl);
-			}
+			}*/
 		}
+
 
 		{
 			m_scrollImage = Image::CreateFromFile("../res/scrollSkin.png");
 			m_scrollSkin = new ui::Skin(m_scrollImage);
-			ui::ScrollCtrl *testScroll = new ui::ScrollCtrl(Vector2<int_canvas>(64, 300), Vector2<int_canvas>(256, 256), m_scrollSkin);
+			ui::ScrollCtrl *testScroll = new ui::ScrollCtrl(Vector2<int_canvas>(200, 0), Vector2<int_canvas>(400, 400), m_scrollSkin);
 
 			for(int a = 0; a < 4; a++)
-				testScroll->Add(new ui::TextEditCtrl(Vector2<int_canvas>(0, 200 + a * 24), Vector2<int_canvas>(257, 128), m_font, 128, "A: ", Color(0, 255, 0)));
+				testScroll->Add(new ui::TextEditCtrl(Vector2<int_canvas>(0, 64 + a * 24), Vector2<int_canvas>(257, 128), m_font, 128, "A: ", Color(0, 255, 0)));
 			for(int a = 0; a < 4; a++)
 			{
-				ui::Control *ctrl = new ui::TextEditCtrl(Vector2<int_canvas>(300, 200 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(0, 255, 0));
+				ui::Control *ctrl = new ui::TextEditCtrl(Vector2<int_canvas>(300, 364 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(0, 255, 0));
 				testScroll->Add(ctrl);
 			}
-			m_rootCtrl->Add(testScroll);*/
+			m_rootCtrl->Add(testScroll);
 		}
 
 		return true;
@@ -125,6 +126,8 @@ public:
 				break;
 			case event::MouseButtonUp:
 			case event::MouseMotion:
+				if(m_rootCtrl)
+					m_rootCtrl->ProcessEvent(event);
 			case event::MouseScroll:
 				if(m_rootCtrl)
 					m_rootCtrl->ProcessEvent(event);

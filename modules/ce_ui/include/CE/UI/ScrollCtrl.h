@@ -19,6 +19,7 @@ namespace ce
 			Vector2<int_canvas> m_scrollExtent;
 			Vector2<float> m_scrollPercentage;
 			bool m_horizontalScroll, m_verticalScroll;
+			int vBackWidth, hBackHeight;
 
 			virtual void DoRender();
 			virtual void DoOverlay();
@@ -28,12 +29,14 @@ namespace ce
 		public:
 			ScrollCtrl(Vector2<short> position, Vector2<short> extent, Skin *skin);
 
+			void UpdateControlZones();
 			void UpdateScroll();
 
 			virtual void OnMemberAdded(Control *ctrl);
 			virtual void OnMemberRemoved(Control *ctrl);
 
 			virtual bool OnEvent(Event &event);
+			virtual void OnControlZoneMove(ControlZone *zone);
 		};
 	}
 }

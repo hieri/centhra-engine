@@ -24,8 +24,9 @@ namespace ce
 	namespace ui
 	{
 		Control::Control(Vector2<int_canvas> position, Vector2<int_canvas> extent) :
-			m_type(Type_Control), m_parent(0), m_eventMask(0),
-			m_isVisible(true), m_isUpdatingDimensions(true), m_acceptsFocus(false), m_isFocused(false), m_hasOverlay(false),
+			m_type(Type_Control), m_parent(0), m_eventMask(0), m_activeControlZone(0),
+			m_isVisible(true), m_isUpdatingDimensions(true), m_acceptsFocus(false),
+			m_isFocused(false), m_hasOverlay(false), m_hasControlZones(false),
 			m_anchor(Anchor_None), m_isAnchorValid(false), m_scaling(Scaling_None)
 		{
 			m_position = position;
@@ -34,6 +35,7 @@ namespace ce
 		}
 		Control::~Control()
 		{
+			ClearEventCapture();
 			if(m_parent)
 				m_parent->Remove(this);
 			while(m_children.size())
@@ -394,6 +396,41 @@ namespace ce
 		}
 
 		//- Event Handling -
+		map<unsigned char, deque<Control *> > Control::ms_eventCaptures;
+		void Control::CaptureEvent(unsigned char eventId)
+		{
+			deque<unsigned char>::iterator itA = find(m_eventCapture.begin(), m_eventCapture.end(), eventId);
+			if(itA == m_eventCapture.end())
+			{
+				m_eventCapture.push_back(eventId);
+				if(ms_eventCaptures.count(eventId))
+				{
+					deque<Control *>::iterator itB = find(ms_eventCaptures[eventId].begin(), ms_eventCaptures[eventId].end(), this);
+					if(itB != ms_eventCaptures[eventId].end())
+						return;
+				}
+				ms_eventCaptures[eventId].push_back(this);
+			}
+		}
+		void Control::ReleaseEvent(unsigned char eventId)
+		{
+			deque<unsigned char>::iterator itA = find(m_eventCapture.begin(), m_eventCapture.end(), eventId);
+			if(itA != m_eventCapture.end())
+			{
+				if(ms_eventCaptures.count(eventId))
+				{
+					deque<Control *>::iterator itB = find(ms_eventCaptures[eventId].begin(), ms_eventCaptures[eventId].end(), this);
+					if(itB != ms_eventCaptures[eventId].end())
+						ms_eventCaptures[eventId].erase(itB);
+				}
+				m_eventCapture.erase(itA);
+			}
+		}
+		void Control::ClearEventCapture()
+		{
+			while(m_eventCapture.size())
+				ReleaseEvent(*m_eventCapture.begin());
+		}
 		unsigned short Control::GetEventMask() const
 		{
 			return m_eventMask;
@@ -402,12 +439,22 @@ namespace ce
 		{
 			m_eventMask = mask;
 		}
-		unsigned short g_childEventTransfer = event::Mask_MouseButtonDown | event::Mask_MouseButtonUp | event::Mask_MouseScroll; //TODO: Use mouse motion
+		unsigned short g_childEventTransferMask = event::Mask_MouseButtonDown | event::Mask_MouseButtonUp | event::Mask_MouseScroll | event::Mask_MouseMotion; //TODO: Use mouse motion
+		unsigned short g_controlZoneEventMask = event::Mask_MouseButtonDown | event::Mask_MouseButtonUp | event::Mask_MouseMotion;
 		bool Control::ProcessEvent(Event &event)
 		{
+			//- Process Event Capture w/ Root Element -
+			if(!m_parent)
+				if(ms_eventCaptures.count(event.type))
+					for(deque<Control *>::iterator it = ms_eventCaptures[event.type].begin(); it != ms_eventCaptures[event.type].end(); it++)
+					{
+						if(!(*it)->ProcessEvent(event))
+							return false;
+					}
+
 			//- Handle the event for its children first -
 			if(m_children.size())
-				if(event.base.mask & g_childEventTransfer)
+				if(event.base.mask & g_childEventTransferMask)
 				{
 					Vector2<int_canvas> position(event.mouse.x, event.mouse.y);
 					for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
@@ -420,6 +467,67 @@ namespace ce
 						bool ret = ctrl->ProcessEvent(event);
 						if(!ret)
 							return false;
+					}
+				}
+
+			if(m_hasControlZones)
+				if(event.base.mask & g_controlZoneEventMask)
+				{
+					if(m_activeControlZone)
+					{
+						if(event.type == event::MouseButtonUp)
+						{
+							if(event.mouseButton.button == event::MouseButtonLeft)
+							{
+								m_activeControlZone = 0;
+								ReleaseEvent(event::MouseButtonUp);
+								ReleaseEvent(event::MouseMotion);
+								return false;
+							}
+						}
+						else if(event.type == event::MouseMotion)
+						{
+							Vector2<int_canvas> position(event.mouse.x, event.mouse.y);
+							position -= m_absolutePosition;
+							position[0] += m_activeControlZone->dragOffsetX;
+							position[1] += m_activeControlZone->dragOffsetY;
+
+							if(position[0] < m_activeControlZone->minX)
+								position[0] = m_activeControlZone->minX;
+							if(position[1] < m_activeControlZone->minY)
+								position[1] = m_activeControlZone->minY;
+
+							//TODO: Include this in the control zone definition
+							int_canvas maxX = m_activeControlZone->maxX - m_activeControlZone->width;
+							int_canvas maxY = m_activeControlZone->maxY - m_activeControlZone->height;
+							if(position[0] > maxX)
+								position[0] = maxX;
+							if(position[1] > maxY)
+								position[1] = maxY;
+
+							m_activeControlZone->x = position[0];
+							m_activeControlZone->y = position[1];
+							OnControlZoneMove(m_activeControlZone);
+							return false;
+						}
+					}
+					else if(event.type == event::MouseButtonDown)
+					{
+						if(event.mouseButton.button == event::MouseButtonLeft)
+						{
+							Vector2<int_canvas> position(event.mouse.x, event.mouse.y);
+							position -= m_absolutePosition;
+							ControlZone *zone = GetControlZoneFromPosition(position);
+							if(zone)
+							{
+								zone->dragOffsetX = zone->x - position[0];
+								zone->dragOffsetY = zone->y - position[1];
+								m_activeControlZone = zone;
+								CaptureEvent(event::MouseButtonUp);
+								CaptureEvent(event::MouseMotion);
+								return false;
+							}
+						}
 					}
 				}
 
@@ -622,6 +730,21 @@ namespace ce
 			m_scalingExtent = m_extent;
 
 			//TODO: Properly reset scaling extent
+		}
+
+		//- Control Zones -
+		Control::ControlZone *Control::GetControlZoneFromPosition(Vector2<int_canvas> position)
+		{
+			for(vector<ControlZone>::iterator it = m_controlZones.begin(); it != m_controlZones.end(); it++)
+			{
+				if(it->x > position[0] || (it->x + it->width) < position[0] || it->y > position[1] || (it->y + it->height) < position[1])
+					continue;
+				return &(*it);
+			}
+			return 0;
+		}
+		void Control::OnControlZoneMove(ControlZone *zone)
+		{
 		}
 	}
 }

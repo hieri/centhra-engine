@@ -4,6 +4,7 @@
 //- Standard Library -
 #include <vector>
 #include <deque>
+#include <map>
 
 //- Centhra Engine -
 #include <CE/ConfigUI.h>
@@ -45,6 +46,11 @@ namespace ce
 
 			//- Event Handling -
 		protected:
+			static std::map<unsigned char, std::deque<Control *> > ms_eventCaptures;
+			std::deque<unsigned char> m_eventCapture;
+			void CaptureEvent(unsigned char eventId);
+			void ReleaseEvent(unsigned char eventId);
+			void ClearEventCapture();
 			unsigned short m_eventMask;
 		public:
 			unsigned short GetEventMask() const;
@@ -165,6 +171,22 @@ namespace ce
 
 			virtual void OnMemberAdded(Control *ctrl);
 			virtual void OnMemberRemoved(Control *ctrl);
+
+			//- Control Zones -
+		public:
+			typedef struct ControlZone
+			{
+				unsigned char id;
+				int_canvas x, y, width, height,
+					minX, maxX, minY, maxY,
+					dragOffsetX, dragOffsetY;
+			} ControlZone;
+		protected:
+			bool m_hasControlZones;
+			ControlZone *m_activeControlZone;
+			std::vector<ControlZone> m_controlZones;
+			ControlZone *GetControlZoneFromPosition(Vector2<int_canvas> position);
+			virtual void OnControlZoneMove(ControlZone *zone);
 		};
 	}
 }

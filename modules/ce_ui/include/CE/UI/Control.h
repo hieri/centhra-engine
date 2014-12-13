@@ -24,8 +24,9 @@ namespace ce
 			Type_ImageCtrl,
 			Type_ButtonCtrl,
 			Type_TextCtrl,
-			Type_TextEditCtrl,
 			Type_TextButtonCtrl,
+			Type_TextDropDownCtrl,
+			Type_TextEditCtrl,
 			Type_ScrollCtrl
 		} ControlType;
 
@@ -43,6 +44,7 @@ namespace ce
 			bool m_isUpdatingDimensions;
 		public:
 			void UpdateDimensions();
+			virtual void OnDimensionUpdate();
 
 			//- Event Handling -
 		protected:
@@ -177,16 +179,20 @@ namespace ce
 			typedef struct ControlZone
 			{
 				unsigned char id;
+				bool canMove;
 				int_canvas x, y, width, height,
 					minX, maxX, minY, maxY,
 					dragOffsetX, dragOffsetY;
 			} ControlZone;
 		protected:
 			bool m_hasControlZones;
-			ControlZone *m_activeControlZone;
+			ControlZone *m_activeControlZone, *m_hoverControlZone;
 			std::vector<ControlZone> m_controlZones;
 			ControlZone *GetControlZoneFromPosition(Vector2<int_canvas> position);
 			virtual void OnControlZoneMove(ControlZone *zone);
+			virtual void OnControlZoneSelect(ControlZone *zone);
+			virtual void OnControlZoneHover(ControlZone *zone);
+			virtual void OnControlZoneHoverLost(ControlZone *zone);
 		};
 	}
 }

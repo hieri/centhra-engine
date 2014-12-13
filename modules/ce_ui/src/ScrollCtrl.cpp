@@ -21,7 +21,6 @@
 
 using namespace std;
 
-//TODO: mouse drag scrolling
 //TODO: overflow based scroll bar sizing
 //TODO: move rendering calculations into a function, called in scroll and resize
 
@@ -41,6 +40,8 @@ namespace ce
 			memset(&verticalScroll, 0, sizeof(ControlZone));
 			horizontalScroll.id = 1;
 			verticalScroll.id = 2;
+			horizontalScroll.canMove = true;
+			verticalScroll.canMove = true;
 
 			m_controlZones.push_back(horizontalScroll);
 			m_controlZones.push_back(verticalScroll);

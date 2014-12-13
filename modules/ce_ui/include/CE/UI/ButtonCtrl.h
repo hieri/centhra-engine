@@ -25,7 +25,7 @@ namespace ce
 			int m_group;
 
 			bool (*m_OnButtonDown)(ButtonCtrl *ctrl);
-			bool(*m_OnButtonUp)(ButtonCtrl *ctrl);
+			bool (*m_OnButtonUp)(ButtonCtrl *ctrl);
 
 		protected:
 			virtual void DoRender();

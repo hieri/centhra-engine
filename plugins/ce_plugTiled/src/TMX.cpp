@@ -315,6 +315,11 @@ namespace ce
 			}
 			void TMX::PopulateWorld(game2d::World *world)
 			{
+				//- Associate Tile Sets -
+				for(vector<TileSet *>::iterator it = m_tileSetVec.begin(); it != m_tileSetVec.end(); it++)
+					world->AssociateTileSet((*it)->tileSet);
+
+				//- Generate Layers -
 				int layerIdx = 0;
 				for(vector<Layer *>::iterator it = m_layerVec.begin(); it != m_layerVec.end(); it++)
 				{

@@ -12,6 +12,7 @@
 #include <CE/UI/ScrollCtrl.h>
 #include <CE/UI/TextCtrl.h>
 #include <CE/UI/TextButtonCtrl.h>
+#include <CE/UI/TextDropDownCtrl.h>
 #include <CE/UI/TextEditCtrl.h>
 
 #endif

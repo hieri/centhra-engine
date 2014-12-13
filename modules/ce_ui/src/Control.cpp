@@ -24,7 +24,7 @@ namespace ce
 	namespace ui
 	{
 		Control::Control(Vector2<int_canvas> position, Vector2<int_canvas> extent) :
-			m_type(Type_Control), m_parent(0), m_eventMask(0), m_activeControlZone(0),
+			m_type(Type_Control), m_parent(0), m_eventMask(0), m_activeControlZone(0), m_hoverControlZone(0),
 			m_isVisible(true), m_isUpdatingDimensions(true), m_acceptsFocus(false),
 			m_isFocused(false), m_hasOverlay(false), m_hasControlZones(false),
 			m_anchor(Anchor_None), m_isAnchorValid(false), m_scaling(Scaling_None)
@@ -174,8 +174,13 @@ namespace ce
 			m_exposedPosition = Vector2<int_canvas>(cx, cy);
 			m_exposedExtent = Vector2<int_canvas>(cw, ch);
 
+			OnDimensionUpdate();
+
 			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 				(*it)->UpdateDimensions();
+		}
+		void Control::OnDimensionUpdate()
+		{
 		}
 		void Control::Add(Control *control)
 		{
@@ -485,7 +490,7 @@ namespace ce
 								return false;
 							}
 						}
-						else if(event.type == event::MouseMotion)
+						else if(event.type == event::MouseMotion && m_activeControlZone->canMove)
 						{
 							Vector2<int_canvas> position(event.mouse.x, event.mouse.y);
 							position -= m_absolutePosition;
@@ -524,9 +529,26 @@ namespace ce
 								zone->dragOffsetY = zone->y - position[1];
 								m_activeControlZone = zone;
 								CaptureEvent(event::MouseButtonUp);
-								CaptureEvent(event::MouseMotion);
+								if(zone->canMove)
+									CaptureEvent(event::MouseMotion);
+								OnControlZoneSelect(zone);
 								return false;
 							}
+						}
+					}
+					else if(event.type == event::MouseMotion)
+					{
+						Vector2<int_canvas> position(event.mouse.x, event.mouse.y);
+						position -= m_absolutePosition;
+						ControlZone *zone = GetControlZoneFromPosition(position);
+
+						if(m_hoverControlZone != zone)
+						{
+							if(m_hoverControlZone)
+								OnControlZoneHoverLost(m_hoverControlZone);
+							m_hoverControlZone = zone;
+							if(zone)
+								OnControlZoneHover(zone);
 						}
 					}
 				}
@@ -744,6 +766,15 @@ namespace ce
 			return 0;
 		}
 		void Control::OnControlZoneMove(ControlZone *zone)
+		{
+		}
+		void Control::OnControlZoneSelect(ControlZone *zone)
+		{
+		}
+		void Control::OnControlZoneHover(ControlZone *zone)
+		{
+		}
+		void Control::OnControlZoneHoverLost(ControlZone *zone)
 		{
 		}
 	}

@@ -42,8 +42,11 @@ namespace ce
 
 				friend class World;
 			};
+		protected:
+			std::vector<Layer *> m_layers;
 			
 			//- ObjectLayer: Renders the Physical Group -
+		public:
 			class ObjectLayer : public Layer
 			{
 			public:
@@ -67,6 +70,7 @@ namespace ce
 			};
 
 			//- TileLayer: Renders TileMap -
+		public:
 			class TileLayer : public Layer, public TileMap
 			{
 			public:
@@ -99,8 +103,14 @@ namespace ce
 			void MoveLayerToBack(Layer *layer);
 			void SwapLayers(Layer *layerA, Layer *layerB);
 
+			//- Tile Set Association -
 		protected:
-			std::vector<Layer *> m_layers;
+			std::vector<TileSet *> m_associatedTileSets;
+		public:
+			void AssociateTileSet(TileSet *tileSet);
+			void DisassociateTileSet(TileSet *tileSet);
+			bool IsTileSetAssociated(TileSet *tileSet);
+			std::vector<TileSet *> *GetAssociatedTileSets();
 		};
 	}
 }

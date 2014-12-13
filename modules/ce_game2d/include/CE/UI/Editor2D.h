@@ -15,6 +15,35 @@ namespace ce
 	{
 		class Editor2DCtrl : public ui::Control
 		{
+			//- Tile Selector -
+		protected:
+			class TileSelectorCtrl : public ui::ScrollCtrl
+			{
+			public:
+				class TileSelectCtrl : public ui::ButtonCtrl, public ui::ColorCtrl
+				{
+				protected:
+					virtual void DoRender();
+
+				public:
+					unsigned short m_propID;
+					game2d::PropDef *m_propDef;
+
+					TileSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID, Font *font);
+				};
+
+				TileSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Skin *skin);
+
+				void OnSelect(TileSelectCtrl *btn);
+				void GenerateButtons(Font *font);
+
+			protected:
+				TileSelectCtrl *m_lastSelection;
+			};
+			friend bool Editor_TileSelectBtnDown(ui::ButtonCtrl *button);
+
+			TileSelectorCtrl *m_tileSelectorCtrl;
+
 			//- Prop Selector -
 		protected:
 			class PropSelectorCtrl : public ui::ScrollCtrl

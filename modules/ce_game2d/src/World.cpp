@@ -220,5 +220,29 @@ namespace ce
 		{
 			m_parallax = parallax;
 		}
+
+		//-------------------------------- Tile Set Assocation --------------------------------
+		void World::AssociateTileSet(TileSet *tileSet)
+		{
+			if(!IsTileSetAssociated(tileSet))
+			{
+				m_associatedTileSets.push_back(tileSet);
+				//TODO: Sort tilesets by identifier
+			}
+		}
+		void World::DisassociateTileSet(TileSet *tileSet)
+		{
+			vector<TileSet *>::iterator it = find(m_associatedTileSets.begin(), m_associatedTileSets.end(), tileSet);
+			if(it != m_associatedTileSets.end())
+				m_associatedTileSets.erase(it);
+		}
+		bool World::IsTileSetAssociated(TileSet *tileSet)
+		{
+			return find(m_associatedTileSets.begin(), m_associatedTileSets.end(), tileSet) != m_associatedTileSets.end();
+		}
+		vector<TileSet *> *World::GetAssociatedTileSets()
+		{
+			return &m_associatedTileSets;
+		}
 	}
 }

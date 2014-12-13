@@ -18,8 +18,6 @@ using namespace std;
 //TODO: Handle deletions on objects that are selected
 //TODO: Auto sizing text buttons to wrap around the text
 //TODO: Have active/inactive state changes for the editor, so we can handle cleanup/setup
-//TODO: ScrollCtrl
-//TODO: Global MouseUp event
 
 namespace ce
 {
@@ -75,11 +73,16 @@ namespace ce
 			m_propSelectorCtrl->SetAnchor(ui::Control::Anchor_Right);
 			m_propSelectorCtrl->GenerateButtons(m_font);
 
+			m_tileSelectorCtrl = new TileSelectorCtrl(Vector2<int_canvas>(extent[0] - 230, 0), Vector2<int_canvas>(230, 120), scrollSkin);
+			m_tileSelectorCtrl->SetAnchor(ui::Control::Anchor_Right);
+			m_tileSelectorCtrl->GenerateButtons(m_font);
+
 			Add((ui::ButtonCtrl *)m_modeObjectBtn);
 			Add((ui::ButtonCtrl *)m_modePropBtn);
 			Add((ui::ButtonCtrl *)m_modeTileBtn);
 			Add((ui::ButtonCtrl *)m_modeWallBtn);
 			Add(m_propSelectorCtrl);
+			Add(m_tileSelectorCtrl);
 			SetMode(Mode_Object);
 		}
 		void Editor2DCtrl::SetMode(unsigned char mode)
@@ -93,6 +96,7 @@ namespace ce
 			m_mode = mode;
 
 			m_propSelectorCtrl->SetVisible(m_mode == Mode_Prop);
+			m_tileSelectorCtrl->SetVisible(m_mode == Mode_Tile);
 
 			m_modeObjectBtn->SetBackgroundColor(mode == Mode_Object ? Color(63, 127, 63) : Color(63, 63, 63));
 			m_modePropBtn->SetBackgroundColor(mode == Mode_Prop ? Color(63, 127, 63) : Color(63, 63, 63));
@@ -501,15 +505,10 @@ namespace ce
 			selector->OnSelect((Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl *)button);
 			return false;
 		}
-		bool Editor_PropSelectBtnUp(ui::ButtonCtrl *button)
-		{
-			return false;
-		}
 		Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl::PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID, Font *font) : ButtonCtrl(position, extent), ColorCtrl(position, extent, g_propSelectDefault), m_propID(propID)
 		{
 			m_propDef = game2d::PropDef::GetPropDefByID(propID);
 			SetOnButtonDown(Editor_PropSelectBtnDown);
-			SetOnButtonUp(Editor_PropSelectBtnUp);
 
 			ui::TextCtrl *propLabel = new ui::TextCtrl(Vector2<int_canvas>(52, 14), Vector2<int_canvas>(256, 20), font, m_propDef->GetName().c_str());
 			ButtonCtrl::Add(propLabel);
@@ -521,6 +520,81 @@ namespace ce
 			glPushMatrix();
 				glScalef((float)ButtonCtrl::m_extent[1], (float)ButtonCtrl::m_extent[1], 0.f);
 				m_propDef->UIRender();
+			glPopMatrix();
+		}
+
+		//- Tile Selector -
+//		Color g_propSelectDefault(0, 0, 0, 127), g_propSelectHighlight(0, 255, 0, 63);
+		Editor2DCtrl::TileSelectorCtrl::TileSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Skin *skin) : ScrollCtrl(position, extent, skin), m_lastSelection(0)
+		{
+		}
+		void Editor2DCtrl::TileSelectorCtrl::OnSelect(TileSelectCtrl *btn)
+		{
+			Editor2DCtrl *editor = (Editor2DCtrl *)GetParent();
+			if(editor->m_propPlaceID == btn->m_propID)
+			{
+				editor->m_propPlaceID = -1;
+				m_lastSelection = 0;
+				btn->SetColor(g_propSelectDefault);
+			}
+			else
+			{
+				if(m_lastSelection)
+					m_lastSelection->SetColor(g_propSelectDefault);
+				btn->SetColor(g_propSelectHighlight);
+				editor->m_propPlaceID = btn->m_propID;
+				m_lastSelection = btn;
+			}
+		}
+		void Editor2DCtrl::TileSelectorCtrl::GenerateButtons(Font *font)
+		{
+//			map<unsigned short, game2d::PropDef *> *propDefTable = game2d::PropDef::GetPropDefTable();
+			int_canvas padding = 8, buttonWidth = 214, buttonHeight = 48;
+			int_canvas startX = padding;
+			int_canvas startY = padding;
+
+			game2d::AppGame2D *app = (game2d::AppGame2D *)App::GetCurrent();
+			game2d::PhysicalGroup *currentGroup = (game2d::PhysicalGroup *)app->GetReferenceObject()->GetParentGroup();
+			game2d::World *world = (game2d::World *)currentGroup;
+
+			vector<game2d::TileSet *> *tileSets = world->GetAssociatedTileSets();
+			print("TileSets: %d\n", tileSets->size());
+	/*		for(map<unsigned short, game2d::PropDef *>::iterator it = propDefTable->begin(); it != propDefTable->end(); it++)
+			{
+				Vector2<float> extent = it->second->GetExtent();
+				TileSelectCtrl *btn = new TileSelectCtrl(Vector2<int_canvas>(startX, startY), Vector2<int_canvas>(buttonWidth, buttonHeight), it->second->GetPropID(), font);
+				Add((ui::ButtonCtrl *)btn);
+
+				startY += buttonHeight + padding;
+			}*/
+		}
+
+		bool Editor_TileSelectBtnDown(ui::ButtonCtrl *button)
+		{
+			Editor2DCtrl::TileSelectorCtrl *selector = (Editor2DCtrl::TileSelectorCtrl *)button->GetParent();
+			selector->OnSelect((Editor2DCtrl::TileSelectorCtrl::TileSelectCtrl *)button);
+			return false;
+		}
+		bool Editor_TileSelectBtnUp(ui::ButtonCtrl *button)
+		{
+			return false;
+		}
+		Editor2DCtrl::TileSelectorCtrl::TileSelectCtrl::TileSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID, Font *font) : ButtonCtrl(position, extent), ColorCtrl(position, extent, g_propSelectDefault), m_propID(propID)
+		{
+			m_propDef = game2d::PropDef::GetPropDefByID(propID);
+			SetOnButtonDown(Editor_TileSelectBtnDown);
+			SetOnButtonUp(Editor_TileSelectBtnUp);
+
+			ui::TextCtrl *propLabel = new ui::TextCtrl(Vector2<int_canvas>(52, 14), Vector2<int_canvas>(256, 20), font, m_propDef->GetName().c_str());
+			ButtonCtrl::Add(propLabel);
+		}
+		void Editor2DCtrl::TileSelectorCtrl::TileSelectCtrl::DoRender()
+		{
+			ColorCtrl::DoRender();
+
+			glPushMatrix();
+			glScalef((float)ButtonCtrl::m_extent[1], (float)ButtonCtrl::m_extent[1], 0.f);
+			m_propDef->UIRender();
 			glPopMatrix();
 		}
 	}

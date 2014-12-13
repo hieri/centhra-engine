@@ -48,11 +48,12 @@ public:
 		{
 //			m_rootCtrl->Add(new ui::ColorCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(64, 64), Color(255, 0, 0)));
 			
-			{
+/*			{
 				ui::TextCtrl *textCtrl = new ui::TextCtrl(Vector2<int_canvas>(64, 0), Vector2<int_canvas>(256, 64), m_font, "Igggg\nIgggg\nIgggg", Color(255, 0, 0));
 				textCtrl->SetWrapping(true);
 				m_rootCtrl->Add(textCtrl);
 			}
+			*/
 
 /*			ui::Control *random = new ui::ColorCtrl(Vector2<int_canvas>(64, 64), Vector2<int_canvas>(64, 64), Color(255, 255, 0));
 			m_rootCtrl->Add(random);
@@ -66,11 +67,12 @@ public:
 			}*/
 		}
 
-
+		
 		{
 			m_scrollImage = Image::CreateFromFile("../res/scrollSkin.png");
 			m_scrollSkin = new ui::Skin(m_scrollImage);
 			ui::ScrollCtrl *testScroll = new ui::ScrollCtrl(Vector2<int_canvas>(200, 0), Vector2<int_canvas>(400, 400), m_scrollSkin);
+			m_rootCtrl->Add(testScroll);
 
 			for(int a = 0; a < 4; a++)
 				testScroll->Add(new ui::TextEditCtrl(Vector2<int_canvas>(0, 64 + a * 24), Vector2<int_canvas>(257, 128), m_font, 128, "A: ", Color(0, 255, 0)));
@@ -79,7 +81,15 @@ public:
 				ui::Control *ctrl = new ui::TextEditCtrl(Vector2<int_canvas>(300, 364 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(0, 255, 0));
 				testScroll->Add(ctrl);
 			}
-			m_rootCtrl->Add(testScroll);
+
+			{
+				ui::TextDropDownCtrl *dropDownCtrl = new ui::TextDropDownCtrl(Vector2<int_canvas>(64, 300), Vector2<int_canvas>(128, 32), m_font, "Select Here");
+				dropDownCtrl->AddSelection(0, "Item A");
+				dropDownCtrl->AddSelection(2, "Item B");
+				dropDownCtrl->AddSelection(1, "Item C");
+
+				testScroll->Add(dropDownCtrl);
+			}
 		}
 
 		return true;

@@ -12,6 +12,7 @@ set(INC
 	${INC_DIR}/UI/Skin.h
 	${INC_DIR}/UI/TextCtrl.h
 	${INC_DIR}/UI/TextButtonCtrl.h
+	${INC_DIR}/UI/TextDropDownCtrl.h
 	${INC_DIR}/UI/TextEditCtrl.h
 )
 
@@ -24,6 +25,7 @@ set(SRC
 	${SRC_DIR}/Skin.cpp
 	${SRC_DIR}/TextCtrl.cpp
 	${SRC_DIR}/TextButtonCtrl.cpp
+	${SRC_DIR}/TextDropDownCtrl.cpp
 	${SRC_DIR}/TextEditCtrl.cpp
 )
 

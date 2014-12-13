@@ -139,6 +139,7 @@ namespace ce
 			bool IsAncestor(Control *control) const;
 			bool IsMember(Control *control) const;
 			bool Contains(Control *control);
+			bool Contains(Vector2<int_canvas> position);
 			Control *GetParent() const;
 			Control *GetRoot();
 

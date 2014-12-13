@@ -19,12 +19,15 @@ namespace ce
 			protected:
 				TextDropDownCtrl *m_source;
 				Font *m_font;
-				unsigned char m_hoverId;
+				unsigned short m_hoverIdx;
 
 				virtual void DoRender();
 	
+				friend class TextDropDownCtrl;
+
 			public:
 				TextDropDownSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, TextDropDownCtrl *source, Color color = Color(0, 0, 0, 0));
+				~TextDropDownSelectCtrl();
 
 				virtual bool OnEvent(Event &event);
 
@@ -38,12 +41,13 @@ namespace ce
 
 		protected:
 			TextDropDownSelectCtrl *m_selector;
+			int_canvas m_selectorWidth;
 			std::string m_placeHolder;
 
 			virtual void DoRender();
 
 		public:
-			TextDropDownCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, const char *text = "", Color color = Color());
+			TextDropDownCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, int_canvas selectorWidth, const char *text = "", Color color = Color());
 			~TextDropDownCtrl();
 
 			virtual void OnAdded(Control *parent);

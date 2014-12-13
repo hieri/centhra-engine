@@ -83,10 +83,13 @@ public:
 			}
 
 			{
-				ui::TextDropDownCtrl *dropDownCtrl = new ui::TextDropDownCtrl(Vector2<int_canvas>(64, 300), Vector2<int_canvas>(128, 32), m_font, "Select Here");
+				ui::TextDropDownCtrl *dropDownCtrl = new ui::TextDropDownCtrl(Vector2<int_canvas>(64, 300), Vector2<int_canvas>(128, 20), m_font, 150, "Select Here");
 				dropDownCtrl->AddSelection(0, "Item A");
 				dropDownCtrl->AddSelection(2, "Item B");
 				dropDownCtrl->AddSelection(1, "Item C");
+				dropDownCtrl->AddSelection(2, "Item B");
+				dropDownCtrl->AddSelection(2, "Item B");
+				dropDownCtrl->AddSelection(2, "Item B");
 
 				testScroll->Add(dropDownCtrl);
 			}

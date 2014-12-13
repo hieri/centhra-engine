@@ -211,6 +211,13 @@ namespace ce
 					return true;
 			return false;
 		}
+		bool Control::Contains(Vector2<int_canvas> position)
+		{
+			if(!m_isVisible)
+				return false;
+			Vector2<int_canvas> exposureEnd = m_exposedPosition + m_exposedExtent;
+			return !(position[0] < m_exposedPosition[0] || position[1] < m_exposedPosition[1] || position[0] > exposureEnd[0] || position[1] > exposureEnd[1]);
+		}
 		Control *Control::GetParent() const
 		{
 			return m_parent;

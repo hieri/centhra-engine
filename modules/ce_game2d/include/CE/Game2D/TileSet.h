@@ -1,6 +1,9 @@
 #ifndef _CE_GAME2D_TILESET_H_
 #define _CE_GAME2D_TILESET_H_
 
+//- Standard Library -
+#include <string>
+
 //- Centhra Engine -
 #include <CE/Game2D/Entity.h>
 #include <CE/Image.h>

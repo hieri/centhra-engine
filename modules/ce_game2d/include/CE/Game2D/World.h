@@ -2,6 +2,7 @@
 #define _CE_GAME2D_WORLD_H_
 
 //- Standard Library -
+#include <string>
 #include <vector>
 
 //- Centhra Engine -

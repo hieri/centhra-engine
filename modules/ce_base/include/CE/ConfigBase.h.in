@@ -11,4 +11,9 @@
 #define CE_BASE_USEPOSIXSOCKET @BASE_USEPOSIXSOCKET@
 #define CE_BASE_USEWINSOCKET @BASE_USEWINSOCKET@
 
+namespace ce
+{
+	typedef short int_canvas;
+}
+
 #endif

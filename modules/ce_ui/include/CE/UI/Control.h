@@ -8,9 +8,10 @@
 
 //- Centhra Engine -
 #include <CE/ConfigUI.h>
-#include <CE/Vector2.h>
-#include <CE/Event.h>
 #include <CE/Canvas.h>
+#include <CE/Event.h>
+#include <CE/Matrix4x4.h>
+#include <CE/Vector2.h>
 
 namespace ce
 {
@@ -123,12 +124,6 @@ namespace ce
 			std::vector<Control *> m_children;
 			Vector2<int_canvas> m_position, m_extent, m_absolutePosition, m_exposedPosition, m_exposedExtent, m_childOffset;
 
-			//- Render Under Children -
-			virtual void DoRender();
-			//- Render Over Children -
-			bool m_hasOverlay;
-			virtual void DoOverlay();
-
 		public:
 			Control(Vector2<int_canvas> position, Vector2<int_canvas> extent);
 			virtual ~Control();
@@ -145,15 +140,6 @@ namespace ce
 			void DeleteChildren();
 
 			Control *GetFromPosition(Vector2<int_canvas> position, bool recurse = false);
-
-			typedef struct UIContext
-			{
-				int_canvas width, height;
-				bool isCanvas;
-			} UIContext;
-
-			void Render(UIContext &context);
-			void Render(Canvas *canvas);
 
 			void SetUpdatingAbsolute(bool isUpdatingAbsolute);
 			bool IsUpdatingAbsolute() const;
@@ -175,6 +161,27 @@ namespace ce
 
 			virtual void OnMemberAdded(Control *ctrl);
 			virtual void OnMemberRemoved(Control *ctrl);
+
+			//- Rendering -
+		protected:
+			Matrix4x4<float> m_relativeMatrix, m_absoluteMatrix;
+			void UpdateRelativeMatrix();
+			void UpdateAbsoluteMatrix();
+		public:
+			typedef struct UIContext
+			{
+				int_canvas width, height;
+				bool isCanvas;
+				Matrix4x4<float> transformation;
+			} UIContext;
+			void Render(UIContext &context);
+			void Render(Canvas *canvas);
+		protected:
+			//- Render Under Children -
+			virtual void DoRender();
+			//- Render Over Children -
+			bool m_hasOverlay;
+			virtual void DoOverlay();
 
 			//- Control Zones -
 		public:

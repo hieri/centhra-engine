@@ -614,6 +614,8 @@ namespace ce
 		canvas->UpdateViewport(width, height);
 		canvas->SetVSync(canvas->m_vsync);
 
+		glClearColor(0.f, 0.f, 0.f, 1.f);
+
 		return canvas;
 	}
 
@@ -684,15 +686,14 @@ namespace ce
 	}
 	void Canvas::Render()
 	{
-		unsigned long long time = m_app->GetRunTimeMS();
+		//- Clear the Rendering Buffer -
 		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(0.f, 0.f, 0.f, 1.f);
-
-		m_lastRenderTimeMS = time;
 
 		Event event;
 		event.base.canvas = this;
-		event.base.timeMS = time;
+
+		//- Give Application 3 Levels of Rendering -
+		event.base.timeMS = m_app->GetRunTimeMS();
 		event.type = event::PreRender;
 		event.base.mask = event::Mask_PreRender;
 		m_app->OnEvent(event);
@@ -705,12 +706,11 @@ namespace ce
 		event.base.timeMS = m_app->GetRunTimeMS();
 		event.type = event::PostRender;
 		event.base.mask = event::Mask_PostRender;
-
 		m_app->OnEvent(event);
 
+		//- Swap Buffers & Flush Rendering Calls -
 		#if CE_FRONTEND_USEXLIB
 			Display *xDisplay = (Display *)m_app->GetXDisplay();
-
 			#if CE_FRONTEND_USEXCB
 				glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3) ? m_glxWindow : m_xcbWindow);
 			#else
@@ -720,6 +720,8 @@ namespace ce
 		#if CE_FRONTEND_USEWIN
 			SwapBuffers((HDC)m_deviceContextHandle);
 		#endif
+
+		m_lastRenderTimeMS = m_app->GetRunTimeMS();
 	}
 	bool Canvas::OnEvent(Event &event)
 	{
@@ -838,6 +840,8 @@ namespace ce
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+
+		UpdateModelViewMatrix();
 	}
 	void Canvas::SetVSync(bool vsync)
 	{
@@ -909,5 +913,15 @@ namespace ce
 	float Canvas::GetVerticalDPI() const
 	{
 		return m_verticalDpi;
+	}
+
+	//- Model View -
+	void Canvas::UpdateModelViewMatrix()
+	{
+		m_modelViewMatrix = Matrix4x4<float>::BuildFromTranslation(Vector2<int_canvas>(0, m_height)) * Matrix4x4<float>::BuildFromScale(Vector2<int_canvas>(1, -1));
+	}
+	Matrix4x4<float> Canvas::GetModelViewMatrix() const
+	{
+		return m_modelViewMatrix;
 	}
 }

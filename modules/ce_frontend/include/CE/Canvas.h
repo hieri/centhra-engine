@@ -4,6 +4,7 @@
 //- Centhra Engine -
 #include <CE/ConfigFrontend.h>
 #include <CE/Event.h>
+#include <CE/Matrix4x4.h>
 
 //- Standard Library -
 #include <string>
@@ -80,11 +81,18 @@ namespace ce
 		void SetTitle(const char *title);
 
 		//- DPI -
-		private:
-			float m_horizontalDpi, m_verticalDpi;
-		public:
-			float GetHorizontalDPI() const;
-			float GetVerticalDPI() const;
+	protected:
+		float m_horizontalDpi, m_verticalDpi;
+	public:
+		float GetHorizontalDPI() const;
+		float GetVerticalDPI() const;
+
+		//- Model View -
+	protected:
+		Matrix4x4<float> m_modelViewMatrix;
+		void UpdateModelViewMatrix();
+	public:
+		Matrix4x4<float> GetModelViewMatrix() const;
 	};
 }
 

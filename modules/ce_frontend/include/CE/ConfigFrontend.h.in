@@ -1,13 +1,11 @@
 #ifndef _CE_CONFIG_FRONTEND_H_
 #define _CE_CONFIG_FRONTEND_H_
 
+//- Centhra Engine -
+#include <CE/ConfigBase.h>
+
 #define CE_FRONTEND_USEXLIB @FRONTEND_USEXLIB@
 #define CE_FRONTEND_USEXCB @FRONTEND_USEXCB@
 #define CE_FRONTEND_USEWIN @FRONTEND_USEWIN@
-
-namespace ce
-{
-	typedef short int_canvas;
-}
 
 #endif

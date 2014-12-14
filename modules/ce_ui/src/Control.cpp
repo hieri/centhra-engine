@@ -32,6 +32,7 @@ namespace ce
 			m_position = position;
 			m_extent = extent;
 			UpdateDimensions();
+			UpdateRelativeMatrix();
 		}
 		Control::~Control()
 		{
@@ -173,6 +174,8 @@ namespace ce
 			m_exposedPosition = Vector2<int_canvas>(cx, cy);
 			m_exposedExtent = Vector2<int_canvas>(cw, ch);
 
+			UpdateAbsoluteMatrix();
+
 			OnDimensionUpdate();
 
 			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
@@ -266,6 +269,21 @@ namespace ce
 			while(m_children.size())
 				delete m_children.back();
 		}
+		//- Rendering -
+		void Control::UpdateRelativeMatrix()
+		{
+			m_relativeMatrix = Matrix4x4<float>::BuildFromTranslation(m_position);
+			UpdateAbsoluteMatrix();
+		}
+		void Control::UpdateAbsoluteMatrix()
+		{
+			if(m_parent)
+				m_absoluteMatrix = (m_parent->m_absoluteMatrix * Matrix4x4<float>::BuildFromTranslation(m_parent->m_childOffset)) * m_relativeMatrix;
+			else
+				m_absoluteMatrix = m_relativeMatrix;
+			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+				(*it)->UpdateAbsoluteMatrix();
+		}
 		void Control::Render(UIContext &context)
 		{
 			bool noParent = !m_parent;
@@ -273,23 +291,20 @@ namespace ce
 				glEnable(GL_SCISSOR_TEST);
 			if(m_isVisible)
 			{
-				glPushMatrix();
 				if(context.isCanvas)
 					glScissor(m_exposedPosition[0], context.height - m_exposedPosition[1] - m_exposedExtent[1], m_exposedExtent[0], m_exposedExtent[1]);
-				glTranslatef((float)m_position[0], (float)m_position[1], 0);
+				Matrix4x4<float> currentMatrix = context.transformation * m_absoluteMatrix;
+				glLoadMatrixf(&currentMatrix[0]);
 				DoRender();
-				glPushMatrix();
-					glTranslatef((float)m_childOffset[0], (float)m_childOffset[1], 0);
-					for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-						(*it)->Render(context);
-				glPopMatrix();
+				for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+					(*it)->Render(context);
 				if(m_hasOverlay)
 				{
+					glLoadMatrixf(&currentMatrix[0]);
 					if(context.isCanvas)
 						glScissor(m_exposedPosition[0], context.height - m_exposedPosition[1] - m_exposedExtent[1], m_exposedExtent[0], m_exposedExtent[1]);
 					DoOverlay();
 				}
-				glPopMatrix();
 			}
 			if(context.isCanvas && noParent)
 				glDisable(GL_SCISSOR_TEST);
@@ -300,12 +315,8 @@ namespace ce
 			context.width = canvas->GetWidth();
 			context.height = canvas->GetHeight();
 			context.isCanvas = true;
-			
-			glPushMatrix();
-			glTranslatef(0.f, (float)context.height, 0.f);
-			glScalef(1.f, -1.f, 1.f);
+			context.transformation = canvas->GetModelViewMatrix();
 			Render(context);
-			glPopMatrix();
 		}
 		void Control::DoRender()
 		{
@@ -362,6 +373,7 @@ namespace ce
 			m_isAnchorValid = false;
 			if(m_isUpdatingDimensions)
 				UpdateDimensions();
+			UpdateRelativeMatrix();
 			OnSetPosition();
 			if(m_parent)
 				if(m_parent->GetType() == Type_ScrollCtrl)

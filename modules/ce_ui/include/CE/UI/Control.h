@@ -142,6 +142,7 @@ namespace ce
 			bool Contains(Vector2<int_canvas> position);
 			Control *GetParent() const;
 			Control *GetRoot();
+			void DeleteChildren();
 
 			Control *GetFromPosition(Vector2<int_canvas> position, bool recurse = false);
 

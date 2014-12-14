@@ -50,6 +50,8 @@ namespace ce
 			TextDropDownCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, int_canvas selectorWidth, const char *text = "", Color color = Color());
 			~TextDropDownCtrl();
 
+			void ReattachSelector();
+
 			virtual void OnAdded(Control *parent);
 			virtual void OnDimensionUpdate();
 			virtual bool OnEvent(Event &event);
@@ -58,10 +60,12 @@ namespace ce
 		protected:
 			unsigned short m_selectionIdx;
 			std::vector<std::pair<unsigned char, std::string> > m_selections;
-			bool(*m_OnSelection)(TextDropDownCtrl *ctrl);
+			bool(*m_OnSelection)(TextDropDownCtrl *ctrl, unsigned char id);
 		public:
 			void AddSelection(unsigned char id, std::string text);
+			void ClearSelections();
 			void Select(unsigned char id);
+			void SetOnSelection(bool(*callback)(TextDropDownCtrl *, unsigned char id));
 		};
 	}
 }

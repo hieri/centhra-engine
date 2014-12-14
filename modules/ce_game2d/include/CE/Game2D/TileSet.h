@@ -13,15 +13,21 @@ namespace ce
 	{
 		class TileSet : public Entity
 		{
+			std::string m_name;
 			Image *m_sourceImage;
 			Vector2<unsigned short> m_size, m_tileSize;
 
 		public:
 			TileSet(Image *sourceImage, Vector2<unsigned short> tileSize);
 
+			std::string GetName() const;
+			void SetName(std::string name);
 			Image *GetImage() const;
 			Vector2<unsigned short> GetTileSize() const;
 			Vector2<unsigned short> GetSize() const;
+
+			void Render(unsigned short x, unsigned short y);
+			void UIRender(unsigned short x, unsigned short y);
 		};
 	}
 }

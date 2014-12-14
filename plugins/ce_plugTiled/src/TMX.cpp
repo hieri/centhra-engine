@@ -141,6 +141,7 @@ namespace ce
 						tilesetFile.append(ts->file);
 						ts->image = Image::CreateFromFile(tilesetFile.c_str());
 						ts->tileSet = new game2d::TileSet(ts->image, tileSize);
+						ts->tileSet->SetName(ts->name);
 						tilesets.push_back(ts);
 					}
 					else if(!name.compare("layer"))
@@ -331,6 +332,7 @@ namespace ce
 					{
 							ObjectLayer *objectLayer = (ObjectLayer *)layer;
 							game2d::World::ObjectLayer *wObjectLayer = world->AddObjectLayer();
+							wObjectLayer->SetName(layer->m_name);
 
 							//- RenderAll: Attempts to render all objects in the World -
 							bool renderAll = false;
@@ -358,6 +360,7 @@ namespace ce
 						{
 							TileLayer *tileLayer = (TileLayer *)layer;
 							game2d::World::TileLayer *wTileLayer = world->AddTileLayer(tileLayer->m_tileMap->GetSize(), tileLayer->m_tileMap->GetTileSize());
+							wTileLayer->SetName(layer->m_name);
 							wTileLayer->CopyFrom(tileLayer->m_tileMap);
 						}
 						break;

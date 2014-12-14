@@ -108,6 +108,10 @@ namespace ce
 						m_layers[layerIdx]->m_index = layerIdx;
 			}
 		}
+		vector<World::Layer *> *World::GetLayers()
+		{
+			return &m_layers;
+		}
 
 		//- Layer Movement -
 		void World::MoveLayerUp(Layer *layer)
@@ -164,9 +168,21 @@ namespace ce
 		World::Layer::Layer() : m_index(255), m_type(Layer_Unknown), m_world(0)
 		{
 		}
+		unsigned char World::Layer::GetType() const
+		{
+			return m_type;
+		}
 		unsigned char World::Layer::GetIndex() const
 		{
 			return m_index;
+		}
+		string World::Layer::GetName() const
+		{
+			return m_name;
+		}
+		void World::Layer::SetName(string name)
+		{
+			m_name = name;
 		}
 
 		//-------------------------------- ObjectLayer --------------------------------

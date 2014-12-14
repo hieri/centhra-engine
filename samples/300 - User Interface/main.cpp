@@ -87,10 +87,6 @@ public:
 				dropDownCtrl->AddSelection(0, "Item A");
 				dropDownCtrl->AddSelection(2, "Item B");
 				dropDownCtrl->AddSelection(1, "Item C");
-				dropDownCtrl->AddSelection(2, "Item B");
-				dropDownCtrl->AddSelection(2, "Item B");
-				dropDownCtrl->AddSelection(2, "Item B");
-
 				testScroll->Add(dropDownCtrl);
 			}
 		}

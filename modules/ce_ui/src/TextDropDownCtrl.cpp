@@ -142,9 +142,16 @@ namespace ce
 				delete m_selector;
 			}
 		}
+		void TextDropDownCtrl::ReattachSelector()
+		{
+			if(m_selector)
+				if(m_parent)
+					GetRoot()->Add(m_selector);
+		}
 		void TextDropDownCtrl::OnAdded(Control *parent)
 		{
-			GetRoot()->Add(m_selector);
+			if(m_selector)
+				GetRoot()->Add(m_selector);
 		}
 		void TextDropDownCtrl::OnDimensionUpdate()
 		{
@@ -167,7 +174,6 @@ namespace ce
 			glPopMatrix();
 			glDisable(GL_BLEND);
 		}
-
 		bool TextDropDownCtrl::OnEvent(Event &event)
 		{
 			switch(event.type)
@@ -200,8 +206,7 @@ namespace ce
 							GetRoot()->Add(m_selector);
 					}
 				}
-
-				break;
+				return false;
 			}
 
 			return true;
@@ -214,8 +219,22 @@ namespace ce
 			if(m_selector)
 				m_selector->UpdateControlZones();
 		}
+		void TextDropDownCtrl::ClearSelections()
+		{
+			m_selections.clear();
+			if(m_selector)
+				m_selector->UpdateControlZones();
+		}
 		void TextDropDownCtrl::Select(unsigned char id)
 		{
+			if(m_selector)
+				if(m_selector->IsVisible())
+				{
+					m_selector->SetVisible(false);
+					m_selector->ReleaseEvent(event::MouseButtonDown);
+					m_selector->ReleaseEvent(event::MouseMotion);
+				}
+
 			vector<pair<unsigned char, string> >::iterator it = m_selections.begin();
 			for(; it != m_selections.end(); it++)
 				if(it->first == id)
@@ -230,7 +249,11 @@ namespace ce
 				m_text = m_placeHolder;
 			}
 			if(m_OnSelection)
-				(*m_OnSelection)(this);
+				(*m_OnSelection)(this, id);
+		}
+		void TextDropDownCtrl::SetOnSelection(bool(*callback)(TextDropDownCtrl *, unsigned char id))
+		{
+			m_OnSelection = callback;
 		}
 	}
 }

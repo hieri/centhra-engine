@@ -38,8 +38,7 @@ namespace ce
 			ClearEventCapture();
 			if(m_parent)
 				m_parent->Remove(this);
-			while(m_children.size())
-				delete m_children.back();
+			DeleteChildren();
 		}
 		unsigned short Control::GetType() const
 		{
@@ -262,6 +261,11 @@ namespace ce
 				}
 			}
 		}
+		void Control::DeleteChildren()
+		{
+			while(m_children.size())
+				delete m_children.back();
+		}
 		void Control::Render(UIContext &context)
 		{
 			bool noParent = !m_parent;
@@ -472,6 +476,8 @@ namespace ce
 					for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
 					{
 						Control *ctrl = *it;
+						if(!ctrl->IsVisible())
+							continue;
 						Vector2<int_canvas> expPos = ctrl->GetExposurePosition();
 						Vector2<int_canvas> expExt = ctrl->GetExposureExtent();
 						if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))

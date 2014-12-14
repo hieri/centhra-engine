@@ -6,6 +6,7 @@
 #include <CE/UI/ColorCtrl.h>
 #include <CE/UI/TextButtonCtrl.h>
 #include <CE/UI/ScrollCtrl.h>
+#include <CE/UI/TextDropDownCtrl.h>
 #include <CE/Game2D/PhysicalObject.h>
 #include <CE/Game2D/Prop.h>
 
@@ -26,23 +27,33 @@ namespace ce
 					virtual void DoRender();
 
 				public:
-					unsigned short m_propID;
-					game2d::PropDef *m_propDef;
+					unsigned short m_tileX, m_tileY;
 
-					TileSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID, Font *font);
+					TileSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short tileX, unsigned short tileY, Font *font);
 				};
 
 				TileSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Skin *skin);
 
 				void OnSelect(TileSelectCtrl *btn);
-				void GenerateButtons(Font *font);
+				void GenerateButtons(Font *font, game2d::TileSet *tileSet);
 
 			protected:
 				TileSelectCtrl *m_lastSelection;
 			};
+			friend class TileSelectorCtrl;
+			friend class TileSelectorCtrl::TileSelectCtrl;
+
 			friend bool Editor_TileSelectBtnDown(ui::ButtonCtrl *button);
 
 			TileSelectorCtrl *m_tileSelectorCtrl;
+			ui::TextDropDownCtrl *m_tileSetSelection;
+			friend bool Editor_TileSetSelection(ui::TextDropDownCtrl *ctrl, unsigned char id);
+			game2d::TileSet *m_currentTileSet;
+
+			Vector2<float> m_tileHover;
+			Vector2<unsigned short> m_currentTile;
+		public:
+			void SelectTileSet(unsigned char tileSetId);
 
 			//- Prop Selector -
 		protected:
@@ -92,11 +103,8 @@ namespace ce
 			Vector2<int_canvas> m_dragStart, m_curMouse;
 			float m_startRotation;
 			bool m_isDragging, m_isSelecting, m_isRotating;
-			ui::TextButtonCtrl *m_modeObjectBtn, *m_modePropBtn, *m_modeTileBtn, *m_modeWallBtn;
 
 			Font *m_font;
-
-			unsigned char m_mode;
 
 		protected:
 			virtual void DoRender();
@@ -108,17 +116,34 @@ namespace ce
 			void CheckHover(Vector2<float> position);
 
 		public:
+			Editor2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, Skin *scrollSkin);
+
+			virtual void OnAdded(Control *parent);
+			virtual bool OnEvent(Event &event);
+
+			//- Layer Selection -
+		protected:
+			ui::TextDropDownCtrl *m_layerSelection;
+			game2d::World::Layer *m_currentLayer;
+			friend bool Editor_OnLayerSelect(ui::TextDropDownCtrl *ctrl, unsigned char id);
+		public:
+			void UpdateLayerSelection();
+			void SelectLayer(unsigned char layerId);
+
+			//- Mode Selection -
+		protected:
+			unsigned char m_mode;
+			ui::TextDropDownCtrl *m_objectModeSelection;
+			friend bool Editor_OnObjectModeSelect(ui::TextDropDownCtrl *ctrl, unsigned char id);
+		public:
 			typedef enum EditorMode
 			{
+				Mode_None,
 				Mode_Object,
 				Mode_Prop,
 				Mode_Tile,
 				Mode_Wall
 			} EditorMode;
-
-			Editor2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, Skin *scrollSkin);
-
-			virtual bool OnEvent(Event &event);
 			void SetMode(unsigned char mode);
 		};
 	}

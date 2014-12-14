@@ -33,12 +33,16 @@ namespace ce
 			{
 			protected:
 				unsigned char m_type, m_index;
+				std::string m_name;
 				World *m_world;
 
 			public:
 				Layer();
 
 				unsigned char GetIndex() const;
+				unsigned char GetType() const;
+				std::string GetName() const;
+				void SetName(std::string name);
 
 				friend class World;
 			};
@@ -95,6 +99,7 @@ namespace ce
 			TileLayer *AddTileLayer(Vector2<unsigned short> size, Vector2<unsigned short> tileSize);
 			Layer *GetLayer(unsigned char layerIdx) const;
 			void RemoveLayer(unsigned char layerIdx);
+			std::vector<Layer *> *GetLayers();
 
 			//- Layer Movement -
 			void MoveLayerUp(Layer *layer);

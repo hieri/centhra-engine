@@ -27,9 +27,9 @@ namespace ce
 					virtual void DoRender();
 
 				public:
-					unsigned short m_tileX, m_tileY;
+					unsigned char m_tileX, m_tileY;
 
-					TileSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short tileX, unsigned short tileY, Font *font);
+					TileSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned char tileX, unsigned char tileY, Font *font);
 				};
 
 				TileSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Skin *skin);
@@ -58,7 +58,7 @@ namespace ce
 			} TileMode;
 			unsigned char m_tileMode;
 			Vector2<float> m_tileHover;
-			Vector2<unsigned short> m_currentTile;
+			Vector2<unsigned char> m_currentTile;
 		public:
 			void SelectTileSet(unsigned char tileSetId);
 

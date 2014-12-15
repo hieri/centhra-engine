@@ -21,7 +21,7 @@ namespace ce
 			m_tileSize = tileSize;
 
 			Vector2<unsigned int> imageSize = sourceImage->GetSize();
-			m_size = Vector2<unsigned short>(imageSize[0] / tileSize[0], imageSize[1] / tileSize[1]);
+			m_size = Vector2<unsigned char>((unsigned char)(imageSize[0] / tileSize[0]), (unsigned char)(imageSize[1] / tileSize[1]));
 		}
 		string TileSet::GetName() const
 		{
@@ -39,11 +39,11 @@ namespace ce
 		{
 			return m_tileSize;
 		}
-		Vector2<unsigned short> TileSet::GetSize() const
+		Vector2<unsigned char> TileSet::GetSize() const
 		{
 			return m_size;
 		}
-		void TileSet::Render(unsigned short x, unsigned short y)
+		void TileSet::Render(unsigned char x, unsigned char y)
 		{
 			if(x < m_size[0] && y < m_size[1])
 			{
@@ -84,7 +84,7 @@ namespace ce
 				glDisable(GL_BLEND);
 			}
 		}
-		void TileSet::UIRender(unsigned short x, unsigned short y)
+		void TileSet::UIRender(unsigned char x, unsigned char y)
 		{
 			if(x < m_size[0] && y < m_size[1])
 			{

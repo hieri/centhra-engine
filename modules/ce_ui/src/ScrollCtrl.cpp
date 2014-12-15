@@ -501,6 +501,9 @@ namespace ce
 			m_childOffset[1] = (int_canvas)(m_scrollPercentage[1] * -m_scrollExtent[1]);
 
 			UpdateControlZones();
+
+			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+				(*it)->UpdateDimensions();
 		}
 		void ScrollCtrl::UpdateControlZones()
 		{

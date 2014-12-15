@@ -18,7 +18,8 @@ namespace ce
 		{
 			std::string m_name;
 			Image *m_sourceImage;
-			Vector2<unsigned short> m_size, m_tileSize;
+			Vector2<unsigned short> m_tileSize;
+			Vector2<unsigned char> m_size;
 
 		public:
 			TileSet(Image *sourceImage, Vector2<unsigned short> tileSize);
@@ -27,10 +28,10 @@ namespace ce
 			void SetName(std::string name);
 			Image *GetImage() const;
 			Vector2<unsigned short> GetTileSize() const;
-			Vector2<unsigned short> GetSize() const;
+			Vector2<unsigned char> GetSize() const;
 
-			void Render(unsigned short x, unsigned short y);
-			void UIRender(unsigned short x, unsigned short y);
+			void Render(unsigned char x, unsigned char y);
+			void UIRender(unsigned char x, unsigned char y);
 		};
 	}
 }

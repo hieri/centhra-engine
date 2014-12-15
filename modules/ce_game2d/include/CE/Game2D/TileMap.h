@@ -45,6 +45,7 @@ namespace ce
 			void AddTileSet(TileSet *tileSet);
 			bool HasTileSet(TileSet *tileSet);
 			unsigned char GetTileSetIndex(TileSet *tileSet);
+			TileSet *GetTileSet(unsigned char idx) const;
 
 			//- Bleeding -
 		protected:

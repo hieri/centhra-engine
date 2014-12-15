@@ -50,7 +50,7 @@ namespace ce
 		Editor2DCtrl::Editor2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, Skin *scrollSkin)
 			: ui::Control(position, extent), m_isSelecting(false), m_isDragging(false), m_isRotating(false), m_tileMode(TileMode_None),
 			m_mode(0), m_propPlaceID(-1), m_hover(0), m_font(font), m_currentLayer(0), m_currentTileSet(0),
-			m_currentTile(65535, 65535)
+			m_currentTile(255, 255)
 		{
 			m_eventMask |= event::Mask_MouseButtonDown | event::Mask_MouseButtonUp | event::Mask_MouseMotion | event::Mask_KeyDown | event::Mask_KeyUp;
 
@@ -151,7 +151,7 @@ namespace ce
 					}
 					else if(m_mode == Mode_Tile)
 						if(m_currentLayer && m_tileMode == TileMode_None)
-							if(m_currentTile[0] != 65535 || m_currentTile[1] != 65535)
+							if(m_currentTile[0] != 255 || m_currentTile[1] != 255)
 							{
 								Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
 								game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
@@ -166,7 +166,7 @@ namespace ce
 								{
 									if(!tileLayer->HasTileSet(m_currentTileSet))
 										tileLayer->AddTileSet(m_currentTileSet);
-									tileLayer->SetTile(x, y, Vector2<unsigned char>((unsigned char)m_currentTile[0], (unsigned char)m_currentTile[1]), tileLayer->GetTileSetIndex(m_currentTileSet));
+									tileLayer->SetTile(x, y, Vector2<unsigned char>(m_currentTile[0], m_currentTile[1]), tileLayer->GetTileSetIndex(m_currentTileSet));
 								}
 								m_tileMode = TileMode_Placing;
 							}
@@ -201,6 +201,36 @@ namespace ce
 							m_tileMode = TileMode_Deleting;
 						}
 				}
+				else if(event.mouseButton.button == event::MouseButtonMiddle)
+					if(m_mode == Mode_Tile)
+					{
+						Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
+						game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
+						Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
+						Vector2<unsigned short> size = tileLayer->GetSize();
+						float tileScale = tileLayer->GetScale();
+						float tileWidth = tileScale * tileSize[0];
+						float tileHeight = tileScale * tileSize[1];
+						unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
+						unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
+						m_tileHover[0] = tileWidth * x;
+						m_tileHover[1] = tileHeight * y;
+
+						if(x < size[0] && y < size[1])
+						{
+							Vector3<unsigned char> tile = tileLayer->GetTile(x, y);
+							if(tile[0] != 255 || tile[1] != 255 || tile[2] != 255)
+							{
+								game2d::TileSet *tileSet = tileLayer->GetTileSet(tile[0]);
+								m_currentTile[0] = tile[1];
+								m_currentTile[1] = tile[2];
+//								if(m_currentTileSet != tileSet)
+									m_currentTileSet = tileSet;
+								//TODO: Write an update selection for buttons instead of regenerating them
+								m_tileSelectorCtrl->GenerateButtons(m_font, tileSet);
+							}
+						}
+					}
 				break;
 			case event::MouseButtonUp:
 				if(m_mode == Mode_Object || m_mode == Mode_Prop)
@@ -324,7 +354,7 @@ namespace ce
 							{
 								if(!tileLayer->HasTileSet(m_currentTileSet))
 									tileLayer->AddTileSet(m_currentTileSet);
-								tileLayer->SetTile(x, y, Vector2<unsigned char>((unsigned char)m_currentTile[0], (unsigned char)m_currentTile[1]), tileLayer->GetTileSetIndex(m_currentTileSet));
+								tileLayer->SetTile(x, y, Vector2<unsigned char>(m_currentTile[0], m_currentTile[1]), tileLayer->GetTileSetIndex(m_currentTileSet));
 							}
 						}
 						else if(m_tileMode == TileMode_Deleting)
@@ -419,7 +449,7 @@ namespace ce
 				}
 				else if(m_mode == Mode_Tile)
 					if(m_currentLayer)
-						if(m_currentTile[0] != 65535 || m_currentTile[1] != 65535)
+						if(m_currentTile[0] != 255 || m_currentTile[1] != 255)
 						{
 							glTranslatef(0.f, (float)m_extent[1], 0.f);
 							glScalef(1.f, -1.f, 1.f);
@@ -581,6 +611,7 @@ namespace ce
 
 				startY += buttonHeight + padding;
 			}
+			UpdateDimensions();
 		}
 
 		bool Editor_PropSelectBtnDown(ui::ButtonCtrl *button)
@@ -619,7 +650,7 @@ namespace ce
 			if(m_currentTileSet != target)
 			{
 				m_currentTileSet = target;
-				m_currentTile = Vector2<unsigned short>(65535, 65535);
+				m_currentTile = Vector2<unsigned char>(255, 255);
 				m_tileSelectorCtrl->GenerateButtons(m_font, target);
 			}
 		}
@@ -629,10 +660,10 @@ namespace ce
 		void Editor2DCtrl::TileSelectorCtrl::OnSelect(TileSelectCtrl *btn)
 		{
 			Editor2DCtrl *editor = (Editor2DCtrl *)GetParent();
-			Vector2<unsigned short> tile(btn->m_tileX, btn->m_tileY);
+			Vector2<unsigned char> tile(btn->m_tileX, btn->m_tileY);
 			if(editor->m_currentTile == tile)
 			{
-				editor->m_currentTile = Vector2<unsigned short>(65535, 65535);
+				editor->m_currentTile = Vector2<unsigned char>(255, 255);
 				m_lastSelection = 0;
 				btn->SetColor(g_tileSelectDefault);
 			}
@@ -652,13 +683,15 @@ namespace ce
 			Vector2<unsigned short> tileSize = tileSet->GetTileSize();
 			int_canvas padding = 4, buttonWidth = tileSize[0], buttonHeight = tileSize[1];
 
-			Vector2<unsigned short> size = tileSet->GetSize();
-			for(unsigned short x = 0; x < size[0]; x++)
+			Vector2<unsigned char> size = tileSet->GetSize(), currentTile = ((Editor2DCtrl *)m_parent)->m_currentTile;
+				for(unsigned char y = 0; y < size[1]; y++)
 			{
-				for(unsigned short y = 0; y < size[1]; y++)
+			for(unsigned char x = 0; x < size[0]; x++)
 				{
 					TileSelectCtrl *btn = new TileSelectCtrl(Vector2<int_canvas>(x * buttonWidth + (x + 1) * padding, y * buttonHeight + (y + 1) * padding), Vector2<int_canvas>(buttonWidth, buttonHeight), x, y, font);
+					btn->SetColor((x == currentTile[0] && y == currentTile[1]) ? g_tileSelectHighlight : g_tileSelectDefault);
 					Add((ui::ButtonCtrl *)btn);
+					((ButtonCtrl *)btn)->UpdateAbsoluteMatrix();
 				}
 			}
 		}
@@ -673,7 +706,7 @@ namespace ce
 		{
 			return false;
 		}
-		Editor2DCtrl::TileSelectorCtrl::TileSelectCtrl::TileSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short tileX, unsigned short tileY, Font *font)
+		Editor2DCtrl::TileSelectorCtrl::TileSelectCtrl::TileSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned char tileX, unsigned char tileY, Font *font)
 			: ButtonCtrl(position, extent), ColorCtrl(position, extent, g_tileSelectDefault),
 			m_tileX(tileX), m_tileY(tileY)
 		{

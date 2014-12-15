@@ -120,7 +120,7 @@ namespace ce
 					TileSet *tileSet = m_tileSets[tile[0]];
 					if(tileSet)
 					{
-						Vector2<unsigned short> tileSetSize = tileSet->GetSize();
+						Vector2<unsigned char> tileSetSize = tileSet->GetSize();
 						if(tile[1] < tileSetSize[0] && tile[2] < tileSetSize[1])
 						{
 							unsigned int x, y, X, Y, _x, _y, _X, _Y;
@@ -197,6 +197,12 @@ namespace ce
 			if(it == m_tileSets.end())
 				return 255;
 			return (unsigned char)(it - m_tileSets.begin());
+		}
+		TileSet *TileMap::GetTileSet(unsigned char idx) const
+		{
+			if(idx < m_tileSets.size())
+				return m_tileSets[idx];
+			return 0;
 		}
 
 		//- Bleeding -

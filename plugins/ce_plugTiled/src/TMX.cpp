@@ -40,7 +40,7 @@ namespace ce
 			}
 			Vector2<unsigned char> gidToCoord(unsigned short gid, TMX::TileSet *ts)
 			{
-				Vector2<unsigned short> size = ts->tileSet->GetSize();
+				Vector2<unsigned char> size = ts->tileSet->GetSize();
 
 				gid -= ts->firstGID;
 

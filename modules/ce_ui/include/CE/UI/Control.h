@@ -165,9 +165,9 @@ namespace ce
 			//- Rendering -
 		protected:
 			Matrix4x4<float> m_relativeMatrix, m_absoluteMatrix;
+		public:
 			void UpdateRelativeMatrix();
 			void UpdateAbsoluteMatrix();
-		public:
 			typedef struct UIContext
 			{
 				int_canvas width, height;

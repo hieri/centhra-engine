@@ -103,7 +103,7 @@ public:
 		m_entity->SetCollisionMask(0);
 		m_group->Add(m_entity);
 
-		m_camera = new game2d::Camera();
+		m_camera = new game2d::Camera(m_group);
 		m_camera->SetFocus(m_entity);
 
 		m_view = new ui::CameraView2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(640, 480));

@@ -48,7 +48,7 @@ namespace ce
 		}
 
 		Editor2DCtrl::Editor2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, Skin *scrollSkin)
-			: ui::Control(position, extent), m_isSelecting(false), m_isDragging(false), m_isRotating(false),
+			: ui::Control(position, extent), m_isSelecting(false), m_isDragging(false), m_isRotating(false), m_tileMode(TileMode_None),
 			m_mode(0), m_propPlaceID(-1), m_hover(0), m_font(font), m_currentLayer(0), m_currentTileSet(0),
 			m_currentTile(65535, 65535)
 		{
@@ -119,7 +119,7 @@ namespace ce
 								Vector2<float> pos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
 								app->LockWorldMutex();
 								game2d::Prop *prop = propDef->Spawn(pos);
-								((game2d::PhysicalGroup *)app->GetReferenceObject()->GetParentGroup())->Add(prop);
+								game2d::Camera::GetCurrent()->GetFocusGroup()->Add(prop);
 								app->UnlockWorldMutex();
 							}
 						}
@@ -150,21 +150,25 @@ namespace ce
 						m_isSelecting = true;
 					}
 					else if(m_mode == Mode_Tile)
-						if(m_currentLayer)
+						if(m_currentLayer && m_tileMode == TileMode_None)
 							if(m_currentTile[0] != 65535 || m_currentTile[1] != 65535)
 							{
-								Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
+								Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
 								game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
 								Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
+								Vector2<unsigned short> size = tileLayer->GetSize();
 								float tileScale = tileLayer->GetScale();
 								float tileWidth = tileScale * tileSize[0];
 								float tileHeight = tileScale * tileSize[1];
 								unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
 								unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
-
-								if(!tileLayer->HasTileSet(m_currentTileSet))
-									tileLayer->AddTileSet(m_currentTileSet);
-								tileLayer->SetTile(x, y, Vector2<unsigned char>((unsigned char)m_currentTile[0], (unsigned char)m_currentTile[1]), tileLayer->GetTileSetIndex(m_currentTileSet));
+								if(x < size[0] && y < size[1])
+								{
+									if(!tileLayer->HasTileSet(m_currentTileSet))
+										tileLayer->AddTileSet(m_currentTileSet);
+									tileLayer->SetTile(x, y, Vector2<unsigned char>((unsigned char)m_currentTile[0], (unsigned char)m_currentTile[1]), tileLayer->GetTileSetIndex(m_currentTileSet));
+								}
+								m_tileMode = TileMode_Placing;
 							}
 				}
 				else if(event.mouseButton.button == event::MouseButtonRight)
@@ -181,17 +185,20 @@ namespace ce
 						}
 					}
 					else if(m_mode == Mode_Tile)
-						if(m_currentLayer)
+						if(m_currentLayer && m_tileMode == TileMode_None)
 						{
-							Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
+							Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
 							game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
 							Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
+							Vector2<unsigned short> size = tileLayer->GetSize();
 							float tileScale = tileLayer->GetScale();
 							float tileWidth = tileScale * tileSize[0];
 							float tileHeight = tileScale * tileSize[1];
 							unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
 							unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
-							tileLayer->SetTile(x, y, Vector2<unsigned char>(255, 255), 255);
+							if(x < size[0] && y < size[1])
+								tileLayer->SetTile(x, y, Vector2<unsigned char>(255, 255), 255);
+							m_tileMode = TileMode_Deleting;
 						}
 				}
 				break;
@@ -214,8 +221,7 @@ namespace ce
 
 							unsigned short ignoreMask = 0;// game2d::PhysicalObject::Mask_Wall;
 
-							game2d::PhysicalGroup *currentGroup = (game2d::PhysicalGroup *)app->GetReferenceObject()->GetParentGroup();
-							vector<game2d::PhysicalObject *> objects = currentGroup->BoxSearch(minX, minY, maxX, maxY, m_mode == Mode_Object ? (-1 & ~ignoreMask) : game2d::Mask_Prop);
+							vector<game2d::PhysicalObject *> objects = game2d::Camera::GetCurrent()->GetFocusGroup()->BoxSearch(minX, minY, maxX, maxY, m_mode == Mode_Object ? (-1 & ~ignoreMask) : game2d::Mask_Prop);
 							m_selection.clear();
 
 							if((maxX - minX) < 0.1f && (maxY - minY) < 0.1f)
@@ -255,6 +261,13 @@ namespace ce
 						if(m_isRotating)
 							StopRotating();
 					}
+				}
+				else if(m_mode == Mode_Tile)
+				{
+					if(event.mouseButton.button == event::MouseButtonLeft && m_tileMode == TileMode_Placing)
+						m_tileMode = TileMode_None;
+					else if(event.mouseButton.button == event::MouseButtonRight && m_tileMode == TileMode_Deleting)
+						m_tileMode = TileMode_None;
 				}
 				break;
 			case event::MouseMotion:
@@ -296,11 +309,27 @@ namespace ce
 						Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
 						game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
 						Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
+						Vector2<unsigned short> size = tileLayer->GetSize();
 						float tileScale = tileLayer->GetScale();
 						float tileWidth = tileScale * tileSize[0];
 						float tileHeight = tileScale * tileSize[1];
-						m_tileHover[0] = floor(curPos[0] / tileWidth) * tileWidth;
-						m_tileHover[1] = floor(curPos[1] / tileHeight) * tileHeight;
+						unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
+						unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
+						m_tileHover[0] = tileWidth * x;
+						m_tileHover[1] = tileHeight * y;
+
+						if(m_tileMode == TileMode_Placing)
+						{
+							if(x < size[0] && y < size[1])
+							{
+								if(!tileLayer->HasTileSet(m_currentTileSet))
+									tileLayer->AddTileSet(m_currentTileSet);
+								tileLayer->SetTile(x, y, Vector2<unsigned char>((unsigned char)m_currentTile[0], (unsigned char)m_currentTile[1]), tileLayer->GetTileSetIndex(m_currentTileSet));
+							}
+						}
+						else if(m_tileMode == TileMode_Deleting)
+							if(x < size[0] && y < size[1])
+								tileLayer->SetTile(x, y, Vector2<unsigned char>(255, 255), 255);
 					}
 				break;
 			case event::KeyDown:
@@ -341,7 +370,7 @@ namespace ce
 		void Editor2DCtrl::DoRender()
 		{
 			game2d::AppGame2D *app = (game2d::AppGame2D *)App::GetCurrent();
-			game2d::PhysicalObject *referenceObject = app->GetReferenceObject();
+			game2d::Camera *camera = game2d::Camera::GetCurrent();
 			ui::CameraView2DCtrl *currentViewport = app->GetCurrentViewport();
 
 			glEnable(GL_BLEND);
@@ -362,17 +391,12 @@ namespace ce
 					{
 						glTranslatef(0.f, (float)m_extent[1], 0.f);
 						glScalef(1.f, -1.f, 1.f);
-						if(referenceObject)
-						{
-							Vector2<float> focusPosition = referenceObject->GetPosition();
-							Vector2<float> focusExtent = referenceObject->GetExtent();
-
-							Vector2<int_canvas> viewExtent = currentViewport->GetExtent();
-							Vector2<float> half((float)viewExtent[0] / 2.f, (float)viewExtent[1] / 2.f);
-							Vector2<float> viewScale = currentViewport->GetViewScale();
-							glTranslatef(half[0] - viewScale[0] * focusPosition[0], half[1] - viewScale[1] * focusPosition[1], 0.f);
-							glScalef(viewScale[0], viewScale[1], 1.f);
-						}
+						Vector2<float> focalPoint = camera->GetFocalPoint();
+						Vector2<int_canvas> viewExtent = currentViewport->GetExtent();
+						Vector2<float> half((float)viewExtent[0] / 2.f, (float)viewExtent[1] / 2.f);
+						Vector2<float> viewScale = currentViewport->GetViewScale();
+						glTranslatef(half[0] - viewScale[0] * focalPoint[0], half[1] - viewScale[1] * focalPoint[1], 0.f);
+						glScalef(viewScale[0], viewScale[1], 1.f);
 
 						glColor4ub(0, 0, 255, 200);
 						for(vector<game2d::PhysicalObject *>::iterator it = m_selection.begin(); it != m_selection.end(); it++)
@@ -399,17 +423,12 @@ namespace ce
 						{
 							glTranslatef(0.f, (float)m_extent[1], 0.f);
 							glScalef(1.f, -1.f, 1.f);
-							if(referenceObject)
-							{
-								Vector2<float> focusPosition = referenceObject->GetPosition();
-								Vector2<float> focusExtent = referenceObject->GetExtent();
-
-								Vector2<int_canvas> viewExtent = currentViewport->GetExtent();
-								Vector2<float> half((float)viewExtent[0] / 2.f, (float)viewExtent[1] / 2.f);
-								Vector2<float> viewScale = currentViewport->GetViewScale();
-								glTranslatef(half[0] - viewScale[0] * focusPosition[0], half[1] - viewScale[1] * focusPosition[1], 0.f);
-								glScalef(viewScale[0], viewScale[1], 1.f);
-							}
+							Vector2<float> focalPoint = camera->GetFocalPoint();
+							Vector2<int_canvas> viewExtent = currentViewport->GetExtent();
+							Vector2<float> half((float)viewExtent[0] / 2.f, (float)viewExtent[1] / 2.f);
+							Vector2<float> viewScale = currentViewport->GetViewScale();
+							glTranslatef(half[0] - viewScale[0] * focalPoint[0], half[1] - viewScale[1] * focalPoint[1], 0.f);
+							glScalef(viewScale[0], viewScale[1], 1.f);
 
 							game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
 							Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
@@ -592,9 +611,7 @@ namespace ce
 		Color g_tileSelectDefault(255, 255, 255, 255), g_tileSelectHighlight(127, 255, 127, 255);
 		void Editor2DCtrl::SelectTileSet(unsigned char tileSetId)
 		{
-			game2d::AppGame2D *app = (game2d::AppGame2D *)App::GetCurrent();
-			game2d::PhysicalGroup *currentGroup = (game2d::PhysicalGroup *)app->GetReferenceObject()->GetParentGroup();
-			game2d::World *world = (game2d::World *)currentGroup;
+			game2d::World *world = (game2d::World *)game2d::Camera::GetCurrent()->GetFocusGroup();
 			vector<game2d::TileSet *> *tileSets = world->GetAssociatedTileSets();
 			//TODO: Handle out of bounds
 			game2d::TileSet *target = tileSets->operator[](tileSetId);
@@ -678,9 +695,7 @@ namespace ce
 		{
 			if(!m_layerSelection)
 				return;
-			game2d::AppGame2D *app = (game2d::AppGame2D *)App::GetCurrent();
-			game2d::PhysicalGroup *currentGroup = (game2d::PhysicalGroup *)app->GetReferenceObject()->GetParentGroup();
-			game2d::World *world = (game2d::World *)currentGroup;
+			game2d::World *world = (game2d::World *)game2d::Camera::GetCurrent()->GetFocusGroup();
 			vector<game2d::World::Layer *> *layers = world->GetLayers();
 			m_layerSelection->ClearSelections();
 			unsigned char idx = 0;
@@ -689,9 +704,7 @@ namespace ce
 		}
 		void Editor2DCtrl::SelectLayer(unsigned char layerId)
 		{
-			game2d::AppGame2D *app = (game2d::AppGame2D *)App::GetCurrent();
-			game2d::PhysicalGroup *currentGroup = (game2d::PhysicalGroup *)app->GetReferenceObject()->GetParentGroup();
-			game2d::World *world = (game2d::World *)currentGroup;
+			game2d::World *world = (game2d::World *)game2d::Camera::GetCurrent()->GetFocusGroup();
 			game2d::World::Layer *layer = world->GetLayer(layerId);
 
 			unsigned char layerType = layer->GetType();

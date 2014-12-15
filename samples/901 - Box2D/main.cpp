@@ -57,7 +57,7 @@ public:
 		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
 		m_group->Add(m_entity);
 
-		m_camera = new game2d::Camera();
+		m_camera = new game2d::Camera(m_group);
 		m_camera->SetFocus(m_entity);
 
 		m_view = new ui::CameraView2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(640, 480));

@@ -21,7 +21,7 @@ namespace ce
 
 		public:
 			TileMap(Vector2<unsigned short> size, Vector2<unsigned short> tileSize);
-			~TileMap();
+			virtual ~TileMap();
 
 			void CopyFrom(TileMap *source);
 

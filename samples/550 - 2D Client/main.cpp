@@ -108,7 +108,7 @@ public:
 		m_dummy = new game2d::PhysicalObject(Vector2<float>(460.f, 512.f), Vector2<float>(32.f, 32.f));
 		m_group->Add(m_dummy);
 
-		m_camera = new game2d::Camera();
+		m_camera = new game2d::Camera(m_group);
 
 		m_view = new ui::CameraView2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(320, 240));
 		m_view->SetCamera(m_camera);

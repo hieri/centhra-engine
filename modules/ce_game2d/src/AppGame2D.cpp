@@ -18,6 +18,16 @@ namespace ce
 		}
 		Vector2<float> AppGame2D::GetWorldPositionFromCanvasPosition(int_canvas x, int_canvas y)
 		{
+			game2d::Camera *camera = game2d::Camera::GetCurrent();
+			//TODO: Determine if we should start asserting
+			if(m_currentViewport && camera)
+			{
+				Vector2<int_canvas> extent = m_currentViewport->GetExtent();
+				Vector2<float> viewScale = m_currentViewport->GetViewScale();
+				Vector2<float> dif((float)(x - extent[0] / 2) / viewScale[0], (float)(extent[1] / 2 - y) / viewScale[1]);
+				return dif + camera->GetFocalPoint();
+			}
+
 			return Vector2<float>(0.f, 0.f);
 		}
 		bool AppGame2D::OnStart()
@@ -30,8 +40,8 @@ namespace ce
 		}
 		void AppGame2D::OnStopped()
 		{
-			AppFrontend::OnStopped();
 			m_worldMutex.Destroy();
+			AppFrontend::OnStopped();
 		}
 		void AppGame2D::LockWorldMutex()
 		{
@@ -40,14 +50,6 @@ namespace ce
 		void AppGame2D::UnlockWorldMutex()
 		{
 			m_worldMutex.Unlock();
-		}
-		PhysicalObject *AppGame2D::GetReferenceObject() const
-		{
-			return m_referenceObject;
-		}
-		void AppGame2D::SetReferenceObject(PhysicalObject *object)
-		{
-			m_referenceObject = object;
 		}
 
 		//- Viewport -

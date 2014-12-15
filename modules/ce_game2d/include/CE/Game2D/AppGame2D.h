@@ -37,9 +37,6 @@ namespace ce
 
 			virtual Vector2<float> GetWorldPositionFromCanvasPosition(int_canvas x, int_canvas y);
 
-			PhysicalObject *GetReferenceObject() const;
-			void SetReferenceObject(PhysicalObject *object);
-
 			virtual bool OnStart();
 			virtual void OnStopped();
 		};

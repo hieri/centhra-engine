@@ -38,6 +38,8 @@ class App2DEditorSample : public game2d::AppGame2D
 	bool w,a,s,d;
 	unsigned long long m_lastProcess;
 
+	float m_zoomLevel;
+
 	plugin::tiled::TMX *m_tmx;
 
 	ui::Editor2DCtrl *m_editorCtrl;
@@ -63,10 +65,13 @@ public:
 		m_isEditMode = false;
 		m_physicsThread = new Thread(&physicsFunc);
 
+		m_zoomLevel = 1.f;
+
 		m_tmx = 0;
 	}
 	~App2DEditorSample()
 	{
+		print("U WOT?\n");
 		delete m_physicsThread;
 	}
 	bool OnStart()
@@ -100,14 +105,15 @@ public:
 		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
 		m_world->Add(m_entity);
 		m_entity->SetRenderLayer(objectLayerA);
-		SetReferenceObject(m_entity);
 
-		m_camera = new game2d::Camera();
+		m_camera = new game2d::Camera(m_world);
 		m_camera->SetFocus(m_entity);
 
 		m_view = new ui::CameraView2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(640, 480));
 		m_view->SetCamera(m_camera);
 		SetCurrentViewport(m_view);
+
+		m_view->SetViewScale(Vector2<float>(m_zoomLevel, m_zoomLevel));
 
 		m_entity->SetCollisionMask(0);
 
@@ -161,7 +167,10 @@ public:
 		if(d)
 			dif[0] += 1.f;
 		dif *= 512.f;
-		m_entity->SetVelocity(dif);
+		if(m_camera->GetMode() == game2d::Camera::Mode_Follow)
+			m_entity->SetVelocity(dif);
+		else
+			m_camera->SetPosition(m_camera->GetPosition() + dif * dt);
 
 /*		Vector2<float> origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
 //		origin = Vector2<float>(512.f, 512.f);
@@ -216,24 +225,23 @@ public:
 		m_world->DetachHandler();
 		delete m_box2dPhysicsHandler;
 	
-		RenderPrimitiveCleanup();
-		game2d::PropDef::Cleanup();
-
 		delete m_editorCtrl;
 		delete m_view;
 		delete m_camera;
-		game2d::Entity::FinalizeDelete();
+
 		delete m_world;
+
+		game2d::Entity::FinalizeDelete();
 
 		delete m_tmx;
 
+		RenderPrimitiveCleanup();
 		game2d::PropDef::Cleanup();
 
 		delete m_editorScrollSkin;
 		delete m_editorScrollImage;
 		delete m_font;
 		delete m_canvas;
-
 		game2d::AppGame2D::OnStopped();
 	}
 	bool OnEvent(Event &event)
@@ -242,7 +250,18 @@ public:
 		{
 		case event::KeyDown:
 			if(event.key.keyCode == Key_F10)
+			{
 				m_isEditMode = !m_isEditMode;
+				if(m_isEditMode)
+					m_camera->SetPosition(m_entity->GetPosition());
+				else
+				{
+					m_zoomLevel = 1.f;
+					if(m_view)
+						m_view->SetViewScale(Vector2<float>(m_zoomLevel, m_zoomLevel));
+				}
+				m_camera->SetMode(m_isEditMode ? game2d::Camera::Mode_Free : game2d::Camera::Mode_Follow);
+			}
 			if(m_isEditMode)
 				m_editorCtrl->ProcessEvent(event);
 			switch(event.key.keyCode)
@@ -281,6 +300,17 @@ public:
 			}
 			break;
 		case event::MouseScroll:
+			if(m_isEditMode)
+				if(m_editorCtrl->ProcessEvent(event))
+				{
+					if(!event.mouseScroll.isHorizontal)
+					{
+						m_zoomLevel *= 1.f + ((float)event.mouseScroll.delta / 120.f) / 8.f;
+						if(m_view)
+							m_view->SetViewScale(Vector2<float>(m_zoomLevel, m_zoomLevel));
+					}
+				}
+			break;
 		case event::MouseMotion:
 		case event::MouseButtonDown:
 		case event::MouseButtonUp:
@@ -305,13 +335,6 @@ public:
 		}
 		return true;
 	}
-	Vector2<float> GetWorldPositionFromCanvasPosition(int_canvas x, int_canvas y)
-	{
-		Vector2<int_canvas> extent = m_view->GetExtent();
-		Vector2<float> viewScale = m_view->GetViewScale();
-		Vector2<float> dif((float)(x - extent[0] / 2) / viewScale[0], (float)(extent[1] / 2 - y) / viewScale[1]);
-		return dif + m_entity->GetPosition();
-	}
 };
 
 void *physicsFunc(void *arg)
@@ -334,7 +357,7 @@ void *physicsFunc(void *arg)
 
 		sleepMS(1);
 	}
-	
+
 	Thread::Exit(NULL);
 	return 0;
 }

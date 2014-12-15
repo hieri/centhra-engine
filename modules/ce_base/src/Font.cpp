@@ -336,7 +336,7 @@ namespace ce
 			}
 		}
 
-		if(currentLine[1] > m_charHeight)
+		if((unsigned int)currentLine[1] > m_charHeight)
 			dimensions[1] += currentLine[1];
 		else
 			dimensions[1] += m_charHeight;

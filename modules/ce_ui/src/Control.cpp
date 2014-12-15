@@ -48,7 +48,6 @@ namespace ce
 		//- Dimension Update -
 		void Control::UpdateDimensions()
 		{
-			//TODO: Handle scroll offsets
 			//- Anchor -
 			if(!m_isAnchorValid)
 			{
@@ -267,7 +266,7 @@ namespace ce
 		void Control::DeleteChildren()
 		{
 			while(m_children.size())
-				delete m_children.back();
+				delete m_children.front();
 		}
 		//- Rendering -
 		void Control::UpdateRelativeMatrix()

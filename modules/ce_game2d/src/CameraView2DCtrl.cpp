@@ -32,21 +32,15 @@ namespace ce
 		{
 			if(m_camera)
 			{
-				game2d::PhysicalObject *focus = m_camera->GetFocus();
-				if(focus)
-				{
-					Vector2<float> focusPosition = focus->GetPosition();
-					Vector2<float> focusExtent = focus->GetExtent();
+				Vector2<float> focalPoint = m_camera->GetFocalPoint();
+				glPushMatrix();
+					glScalef(1.f, -1.f, 1.f);
+					Vector2<float> half((float)m_extent[0] / 2.f, (float)m_extent[1] / 2.f);
+					glTranslatef(half[0] - m_viewScale[0] * focalPoint[0], -half[1] - m_viewScale[1] * focalPoint[1], 0.f);
+					glScalef(m_viewScale[0], m_viewScale[1], 1.f);
 
-					glPushMatrix();
-						glScalef(1.f, -1.f, 1.f);
-						Vector2<float> half((float)m_extent[0] / 2.f, (float)m_extent[1] / 2.f);
-						glTranslatef(half[0] - m_viewScale[0] * focusPosition[0], -half[1] - m_viewScale[1] * focusPosition[1], 0.f);
-						glScalef(m_viewScale[0], m_viewScale[1], 1.f);
-
-						((game2d::PhysicalGroup *)focus->GetParentGroup())->Render((focusPosition[0]) - half[0] / m_viewScale[0], (focusPosition[1]) - half[1] / m_viewScale[1], (focusPosition[0]) + half[0] / m_viewScale[0], (focusPosition[1]) + half[1] / m_viewScale[1]);
-					glPopMatrix();
-				}
+					m_camera->GetFocusGroup()->Render((focalPoint[0]) - half[0] / m_viewScale[0], (focalPoint[1]) - half[1] / m_viewScale[1], (focalPoint[0]) + half[0] / m_viewScale[0], (focalPoint[1]) + half[1] / m_viewScale[1]);
+				glPopMatrix();
 			}
 		}
 		Vector2<float> CameraView2DCtrl::GetViewScale() const

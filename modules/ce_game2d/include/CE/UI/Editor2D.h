@@ -50,6 +50,13 @@ namespace ce
 			friend bool Editor_TileSetSelection(ui::TextDropDownCtrl *ctrl, unsigned char id);
 			game2d::TileSet *m_currentTileSet;
 
+			typedef enum TileMode
+			{
+				TileMode_None,
+				TileMode_Placing,
+				TileMode_Deleting
+			} TileMode;
+			unsigned char m_tileMode;
 			Vector2<float> m_tileHover;
 			Vector2<unsigned short> m_currentTile;
 		public:
@@ -145,6 +152,12 @@ namespace ce
 				Mode_Wall
 			} EditorMode;
 			void SetMode(unsigned char mode);
+
+			//- Camera Control -
+		protected:
+			float m_zoom, m_minZoom, m_maxZoom;
+			bool m_freeCam;
+		public:
 		};
 	}
 }

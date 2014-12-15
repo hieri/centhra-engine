@@ -166,7 +166,7 @@ namespace ce
 		protected:
 			Matrix4x4<float> m_relativeMatrix, m_absoluteMatrix;
 		public:
-			void UpdateRelativeMatrix();
+			void UpdateRelativeMatrix(bool updateAbsolute = true);
 			void UpdateAbsoluteMatrix();
 			typedef struct UIContext
 			{

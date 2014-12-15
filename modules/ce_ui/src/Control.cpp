@@ -86,6 +86,8 @@ namespace ce
 					m_position[1] = m_anchorPos[1];
 				if(m_anchor & Anchor_Bottom)
 					m_position[1] = parentExtent[1] - m_anchorPos[1];
+
+				UpdateRelativeMatrix(false);
 			}
 
 			//- Scaling -
@@ -269,10 +271,11 @@ namespace ce
 				delete m_children.front();
 		}
 		//- Rendering -
-		void Control::UpdateRelativeMatrix()
+		void Control::UpdateRelativeMatrix(bool updateAbsolute)
 		{
 			m_relativeMatrix = Matrix4x4<float>::BuildFromTranslation(m_position);
-			UpdateAbsoluteMatrix();
+			if(updateAbsolute)
+				UpdateAbsoluteMatrix();
 		}
 		void Control::UpdateAbsoluteMatrix()
 		{

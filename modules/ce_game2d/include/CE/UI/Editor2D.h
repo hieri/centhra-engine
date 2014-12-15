@@ -16,6 +16,37 @@ namespace ce
 	{
 		class Editor2DCtrl : public ui::Control
 		{
+			//- Prop Selector -
+		protected:
+			class PropSelectorCtrl : public ui::ScrollCtrl
+			{
+			public:
+				class PropSelectCtrl : public ui::ButtonCtrl, public ui::ColorCtrl
+				{
+				protected:
+					virtual void DoRender();
+
+				public:
+					unsigned short m_propID;
+					game2d::PropDef *m_propDef;
+
+					PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID, Font *font);
+				};
+
+				PropSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Skin *skin);
+
+				void OnSelect(PropSelectCtrl *btn);
+				void GenerateButtons(Font *font);
+
+			protected:
+				PropSelectCtrl *m_lastSelection;
+			};
+			
+			friend bool Editor_PropSelectBtnDown(ui::ButtonCtrl *button);
+
+			PropSelectorCtrl *m_propSelectorCtrl;
+			short m_propPlaceID;
+
 			//- Tile Selector -
 		protected:
 			class TileSelectorCtrl : public ui::ScrollCtrl
@@ -59,39 +90,11 @@ namespace ce
 			unsigned char m_tileMode;
 			Vector2<float> m_tileHover;
 			Vector2<unsigned char> m_currentTile;
+			Vector2<unsigned short> m_tilePlacementGroupSize;
+			Vector3<unsigned char> **m_tilePlacementGroup;
+			void ClearTilePlacementGroup();
 		public:
 			void SelectTileSet(unsigned char tileSetId);
-
-			//- Prop Selector -
-		protected:
-			class PropSelectorCtrl : public ui::ScrollCtrl
-			{
-			public:
-				class PropSelectCtrl : public ui::ButtonCtrl, public ui::ColorCtrl
-				{
-				protected:
-					virtual void DoRender();
-
-				public:
-					unsigned short m_propID;
-					game2d::PropDef *m_propDef;
-
-					PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID, Font *font);
-				};
-
-				PropSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Skin *skin);
-
-				void OnSelect(PropSelectCtrl *btn);
-				void GenerateButtons(Font *font);
-
-			protected:
-				PropSelectCtrl *m_lastSelection;
-			};
-			
-			friend bool Editor_PropSelectBtnDown(ui::ButtonCtrl *button);
-
-			PropSelectorCtrl *m_propSelectorCtrl;
-			short m_propPlaceID;
 
 			//- Standard -
 		protected:

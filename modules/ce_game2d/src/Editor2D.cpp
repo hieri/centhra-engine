@@ -1,3 +1,6 @@
+//- Standard Library -
+#include <algorithm>
+
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
@@ -49,7 +52,7 @@ namespace ce
 
 		Editor2DCtrl::Editor2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, Skin *scrollSkin)
 			: ui::Control(position, extent), m_isSelecting(false), m_isDragging(false), m_isRotating(false), m_tileMode(TileMode_None),
-			m_mode(0), m_propPlaceID(-1), m_hover(0), m_font(font), m_currentLayer(0), m_currentTileSet(0),
+			m_mode(0), m_propPlaceID(-1), m_hover(0), m_font(font), m_currentLayer(0), m_currentTileSet(0), m_tilePlacementGroup(0),
 			m_currentTile(255, 255)
 		{
 			m_eventMask |= event::Mask_MouseButtonDown | event::Mask_MouseButtonUp | event::Mask_MouseMotion | event::Mask_KeyDown | event::Mask_KeyUp;
@@ -151,6 +154,7 @@ namespace ce
 					}
 					else if(m_mode == Mode_Tile)
 						if(m_currentLayer && m_tileMode == TileMode_None)
+						{
 							if(m_currentTile[0] != 255 || m_currentTile[1] != 255)
 							{
 								Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
@@ -170,6 +174,70 @@ namespace ce
 								}
 								m_tileMode = TileMode_Placing;
 							}
+							else if(m_tilePlacementGroup)
+							{
+								Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
+								game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
+								Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
+								Vector2<unsigned short> size = tileLayer->GetSize();
+								float tileScale = tileLayer->GetScale();
+								float tileWidth = tileScale * tileSize[0];
+								float tileHeight = tileScale * tileSize[1];
+								unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
+								unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
+
+								short startX = (short)x - m_tilePlacementGroupSize[0] / 2;
+								short startY = (short)y - m_tilePlacementGroupSize[1] / 2;
+								short endX = startX + m_tilePlacementGroupSize[0] - 1;
+								short endY = startY + m_tilePlacementGroupSize[1] - 1;
+
+								//- Determine Real Start and End -
+								if(startX > endX)
+									swap(startX, endX);
+								if(startY > endY)
+									swap(startY, endY);
+
+								short originX = startX;
+								short originY = startY;
+
+								//- Limit Selection -
+								if(startX < 0)
+									startX = 0;
+								if(startX >= size[0])
+									startX = size[0] - 1;
+								if(endX < 0)
+									endX = 0;
+								if(endX >= size[0])
+									endX = size[0] - 1;
+								if(startY < 0)
+									startY = 0;
+								if(startY >= size[1])
+									startY = size[1] - 1;
+								if(endY < 0)
+									endY = 0;
+								if(endY >= size[1])
+									endY = size[1] - 1;
+
+								if((originX + m_tilePlacementGroupSize[0]) > 0 && (originY + m_tilePlacementGroupSize[1]) > 0 && originX < (short)size[0] && originY < (short)size[1])
+								{
+									//- Place Selection -
+									for(short a = startX; a <= endX; a++)
+										for(short b = startY; b <= endY; b++)
+										{
+											Vector3<unsigned char> &tile = m_tilePlacementGroup[a - originX][b - originY];
+											if(tile[0] == 255 || tile[1] == 255 || tile[2] == 255)
+												continue;
+											tileLayer->SetTile(a, b, Vector2<unsigned char>(tile[1], tile[2]), tile[0]);
+										}
+								}
+								m_tileMode = TileMode_Placing;
+							}
+							else
+							{
+								m_dragStart = m_curMouse = Vector2<int_canvas>(event.mouseButton.x, event.mouseButton.y);
+								m_isSelecting = true;
+							}
+						}
 				}
 				else if(event.mouseButton.button == event::MouseButtonRight)
 				{
@@ -185,7 +253,13 @@ namespace ce
 						}
 					}
 					else if(m_mode == Mode_Tile)
-						if(m_currentLayer && m_tileMode == TileMode_None)
+					{
+						if(m_tileMode == TileMode_Placing && m_tilePlacementGroup)
+						{
+							ClearTilePlacementGroup();
+							m_tileMode = TileMode_None;
+						}
+						if(m_tileMode == TileMode_None && m_currentLayer)
 						{
 							Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
 							game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
@@ -196,41 +270,90 @@ namespace ce
 							float tileHeight = tileScale * tileSize[1];
 							unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
 							unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
-							if(x < size[0] && y < size[1])
+
+							if(m_tilePlacementGroup)
+							{
+								short startX = (short)x - m_tilePlacementGroupSize[0] / 2;
+								short startY = (short)y - m_tilePlacementGroupSize[1] / 2;
+								short endX = startX + m_tilePlacementGroupSize[0] - 1;
+								short endY = startY + m_tilePlacementGroupSize[1] - 1;
+
+								//- Determine Real Start and End -
+								if(startX > endX)
+									swap(startX, endX);
+								if(startY > endY)
+									swap(startY, endY);
+
+								short originX = startX;
+								short originY = startY;
+
+								//- Limit Selection -
+								if(startX < 0)
+									startX = 0;
+								if(startX >= size[0])
+									startX = size[0] - 1;
+								if(endX < 0)
+									endX = 0;
+								if(endX >= size[0])
+									endX = size[0] - 1;
+								if(startY < 0)
+									startY = 0;
+								if(startY >= size[1])
+									startY = size[1] - 1;
+								if(endY < 0)
+									endY = 0;
+								if(endY >= size[1])
+									endY = size[1] - 1;
+
+								if((originX + m_tilePlacementGroupSize[0]) > 0 && (originY + m_tilePlacementGroupSize[1]) > 0 && originX < (short)size[0] && originY < (short)size[1])
+								{
+									//- Delete Selection -
+									for(short a = startX; a <= endX; a++)
+										for(short b = startY; b <= endY; b++)
+											tileLayer->SetTile(a, b, Vector2<unsigned char>(255, 255), 255);
+								}
+							}
+							else if(x < size[0] && y < size[1])
 								tileLayer->SetTile(x, y, Vector2<unsigned char>(255, 255), 255);
 							m_tileMode = TileMode_Deleting;
 						}
+					}
 				}
 				else if(event.mouseButton.button == event::MouseButtonMiddle)
 					if(m_mode == Mode_Tile)
-					{
-						Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
-						game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
-						Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
-						Vector2<unsigned short> size = tileLayer->GetSize();
-						float tileScale = tileLayer->GetScale();
-						float tileWidth = tileScale * tileSize[0];
-						float tileHeight = tileScale * tileSize[1];
-						unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
-						unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
-						m_tileHover[0] = tileWidth * x;
-						m_tileHover[1] = tileHeight * y;
-
-						if(x < size[0] && y < size[1])
+						if(m_tileMode == TileMode_None)
 						{
-							Vector3<unsigned char> tile = tileLayer->GetTile(x, y);
-							if(tile[0] != 255 || tile[1] != 255 || tile[2] != 255)
+							//- Pick Tile -
+							Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
+							game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
+							Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
+							Vector2<unsigned short> size = tileLayer->GetSize();
+							float tileScale = tileLayer->GetScale();
+							float tileWidth = tileScale * tileSize[0];
+							float tileHeight = tileScale * tileSize[1];
+							unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
+							unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
+
+							ClearTilePlacementGroup();
+							if(x < size[0] && y < size[1])
 							{
-								game2d::TileSet *tileSet = tileLayer->GetTileSet(tile[0]);
-								m_currentTile[0] = tile[1];
-								m_currentTile[1] = tile[2];
-//								if(m_currentTileSet != tileSet)
-									m_currentTileSet = tileSet;
-								//TODO: Write an update selection for buttons instead of regenerating them
-								m_tileSelectorCtrl->GenerateButtons(m_font, tileSet);
+								Vector3<unsigned char> tile = tileLayer->GetTile(x, y);
+								if(tile[0] != 255 || tile[1] != 255 || tile[2] != 255)
+								{
+									game2d::TileSet *tileSet = tileLayer->GetTileSet(tile[0]);
+									game2d::World *world = (game2d::World *)game2d::Camera::GetCurrent()->GetFocusGroup();
+									vector<game2d::TileSet *> *tileSets = world->GetAssociatedTileSets();
+									vector<game2d::TileSet *>::iterator it = find(tileSets->begin(), tileSets->end(), tileSet);
+									m_tileSetSelection->Select(it - tileSets->begin());
+									m_currentTile[0] = tile[1];
+									m_currentTile[1] = tile[2];
+								}
+								else
+									m_currentTile = Vector2<unsigned char>(255, 255);
 							}
+							else
+								m_currentTile = Vector2<unsigned char>(255, 255);
 						}
-					}
 				break;
 			case event::MouseButtonUp:
 				if(m_mode == Mode_Object || m_mode == Mode_Prop)
@@ -294,6 +417,74 @@ namespace ce
 				}
 				else if(m_mode == Mode_Tile)
 				{
+					//- Select and Populate Placement Group -
+					if(m_isSelecting)
+					{
+						ClearTilePlacementGroup();
+
+						//- Get Selection Dimensions -
+						Vector2<float> startPos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
+						Vector2<float> endPos = app->GetWorldPositionFromCanvasPosition(m_dragStart[0], m_dragStart[1]);
+						game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
+						Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
+						Vector2<unsigned short> size = tileLayer->GetSize();
+						float tileScale = tileLayer->GetScale();
+						float tileWidth = tileScale * tileSize[0];
+						float tileHeight = tileScale * tileSize[1];
+						short startX = (unsigned short)floor(startPos[0] / tileWidth);
+						short startY = (unsigned short)floor(startPos[1] / tileHeight);
+						short endX = (unsigned short)floor(endPos[0] / tileWidth);
+						short endY = (unsigned short)floor(endPos[1] / tileHeight);
+
+						//- Determine Real Start and End -
+						if(startX > endX)
+							swap(startX, endX);
+						if(startY > endY)
+							swap(startY, endY);
+
+						//- Limit Selection -
+						if(startX < 0)
+							startX = 0;
+						if(startX >= size[0])
+							startX = size[0] - 1;
+						if(endX < 0)
+							endX = 0;
+						if(endX >= size[0])
+							endX = size[0] - 1;
+						if(startY < 0)
+							startY = 0;
+						if(startY >= size[1])
+							startY = size[1] - 1;
+						if(endY < 0)
+							endY = 0;
+						if(endY >= size[1])
+							endY = size[1] - 1;
+						m_tilePlacementGroupSize = Vector2<unsigned short>((unsigned short)(endX - startX + 1), (unsigned short)(endY - startY + 1));
+
+						if(m_tilePlacementGroupSize[0] && m_tilePlacementGroupSize[1])
+						{
+							//- Populate Selection -
+							unsigned short validTiles = 0;
+							m_tilePlacementGroup = new Vector3<unsigned char> *[m_tilePlacementGroupSize[0]];
+							for(unsigned short a = 0; a < m_tilePlacementGroupSize[0]; a++)
+							{
+								m_tilePlacementGroup[a] = new Vector3<unsigned char>[m_tilePlacementGroupSize[1]];
+								for(unsigned short b = 0; b < m_tilePlacementGroupSize[1]; b++)
+								{
+									m_tilePlacementGroup[a][b] = tileLayer->GetTile(startX + a, startY + b);
+									if(m_tilePlacementGroup[a][b][1] != 255 && m_tilePlacementGroup[a][b][2] != 255)
+										validTiles++;
+								}
+							}
+							if(!validTiles)
+								ClearTilePlacementGroup();
+						}
+						else
+							m_tilePlacementGroupSize = Vector2<unsigned short>(0, 0);
+
+						m_isSelecting = false;
+					}
+
 					if(event.mouseButton.button == event::MouseButtonLeft && m_tileMode == TileMode_Placing)
 						m_tileMode = TileMode_None;
 					else if(event.mouseButton.button == event::MouseButtonRight && m_tileMode == TileMode_Deleting)
@@ -301,10 +492,10 @@ namespace ce
 				}
 				break;
 			case event::MouseMotion:
+				if(m_isSelecting)
+					m_curMouse = Vector2<int_canvas>(event.mouseMotion.x, event.mouseMotion.y);
 				if(m_mode == Mode_Object || m_mode == Mode_Prop)
 				{
-					if(m_isSelecting)
-						m_curMouse = Vector2<int_canvas>(event.mouseMotion.x, event.mouseMotion.y);
 					if(m_selection.size())
 					{
 						Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
@@ -335,7 +526,7 @@ namespace ce
 				}
 				else if(m_mode == Mode_Tile)
 					if(m_currentLayer)
-					{
+					{ 
 						Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
 						game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
 						Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
@@ -343,14 +534,63 @@ namespace ce
 						float tileScale = tileLayer->GetScale();
 						float tileWidth = tileScale * tileSize[0];
 						float tileHeight = tileScale * tileSize[1];
-						unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
-						unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
-						m_tileHover[0] = tileWidth * x;
-						m_tileHover[1] = tileHeight * y;
+						m_tileHover[0] = floor(curPos[0] / tileWidth);
+						m_tileHover[1] = floor(curPos[1] / tileHeight);
+						unsigned short x = (unsigned short)m_tileHover[0];
+						unsigned short y = (unsigned short)m_tileHover[1];
+						m_tileHover[0] *= tileWidth;
+						m_tileHover[1] *= tileHeight;
 
 						if(m_tileMode == TileMode_Placing)
 						{
-							if(x < size[0] && y < size[1])
+							if(m_tilePlacementGroup)
+							{
+								short startX = (short)x - m_tilePlacementGroupSize[0] / 2;
+								short startY = (short)y - m_tilePlacementGroupSize[1] / 2;
+								short endX = startX + m_tilePlacementGroupSize[0] - 1;
+								short endY = startY + m_tilePlacementGroupSize[1] - 1;
+
+								//- Determine Real Start and End -
+								if(startX > endX)
+									swap(startX, endX);
+								if(startY > endY)
+									swap(startY, endY);
+
+								short originX = startX;
+								short originY = startY;
+
+								//- Limit Selection -
+								if(startX < 0)
+									startX = 0;
+								if(startX >= size[0])
+									startX = size[0] - 1;
+								if(endX < 0)
+									endX = 0;
+								if(endX >= size[0])
+									endX = size[0] - 1;
+								if(startY < 0)
+									startY = 0;
+								if(startY >= size[1])
+									startY = size[1] - 1;
+								if(endY < 0)
+									endY = 0;
+								if(endY >= size[1])
+									endY = size[1] - 1;
+
+								if((originX + m_tilePlacementGroupSize[0]) > 0 && (originY + m_tilePlacementGroupSize[1]) > 0 && originX < (short)size[0] && originY < (short)size[1])
+								{
+									//- Place Selection -
+									for(short a = startX; a <= endX; a++)
+										for(short b = startY; b <= endY; b++)
+										{
+											Vector3<unsigned char> &tile = m_tilePlacementGroup[a - originX][b - originY];
+											if(tile[0] == 255 || tile[1] == 255 || tile[2] == 255)
+												continue;
+											tileLayer->SetTile(a, b, Vector2<unsigned char>(tile[1], tile[2]), tile[0]);
+										}
+								}
+							}
+							else if(x < size[0] && y < size[1])
 							{
 								if(!tileLayer->HasTileSet(m_currentTileSet))
 									tileLayer->AddTileSet(m_currentTileSet);
@@ -358,8 +598,52 @@ namespace ce
 							}
 						}
 						else if(m_tileMode == TileMode_Deleting)
-							if(x < size[0] && y < size[1])
+						{
+							if(m_tilePlacementGroup)
+							{
+								short startX = (short)x - m_tilePlacementGroupSize[0] / 2;
+								short startY = (short)y - m_tilePlacementGroupSize[1] / 2;
+								short endX = startX + m_tilePlacementGroupSize[0] - 1;
+								short endY = startY + m_tilePlacementGroupSize[1] - 1;
+
+								//- Determine Real Start and End -
+								if(startX > endX)
+									swap(startX, endX);
+								if(startY > endY)
+									swap(startY, endY);
+
+								short originX = startX;
+								short originY = startY;
+
+								//- Limit Selection -
+								if(startX < 0)
+									startX = 0;
+								if(startX >= size[0])
+									startX = size[0] - 1;
+								if(endX < 0)
+									endX = 0;
+								if(endX >= size[0])
+									endX = size[0] - 1;
+								if(startY < 0)
+									startY = 0;
+								if(startY >= size[1])
+									startY = size[1] - 1;
+								if(endY < 0)
+									endY = 0;
+								if(endY >= size[1])
+									endY = size[1] - 1;
+
+								if((originX + m_tilePlacementGroupSize[0]) > 0 && (originY + m_tilePlacementGroupSize[1]) > 0 && originX < (short)size[0] && originY < (short)size[1])
+								{
+									//- Delete Selection -
+									for(short a = startX; a <= endX; a++)
+										for(short b = startY; b <= endY; b++)
+											tileLayer->SetTile(a, b, Vector2<unsigned char>(255, 255), 255);
+								}
+							}
+							else if(x < size[0] && y < size[1])
 								tileLayer->SetTile(x, y, Vector2<unsigned char>(255, 255), 255);
+						}
 					}
 				break;
 			case event::KeyDown:
@@ -407,17 +691,16 @@ namespace ce
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			glPushMatrix();
-
+				if(m_isSelecting)
+				{
+					glTranslatef((float)m_dragStart[0], (float)(m_dragStart[1]), 0.f);
+					glScalef((float)(m_curMouse[0] - m_dragStart[0]), -(float)(m_dragStart[1] - m_curMouse[1]), 1.f);
+					glColor4ub(0, 0, 255, 200);
+					RenderSquare();
+				}
 				if(m_mode == Mode_Object || m_mode == Mode_Prop)
 				{
-					if(m_isSelecting)
-					{
-						glTranslatef((float)m_dragStart[0], (float)(m_dragStart[1]), 0.f);
-						glScalef((float)(m_curMouse[0] - m_dragStart[0]), -(float)(m_dragStart[1] - m_curMouse[1]), 1.f);
-						glColor4ub(0, 0, 255, 200);
-						RenderSquare();
-					}
-					else
+					if(m_selection.size())
 					{
 						glTranslatef(0.f, (float)m_extent[1], 0.f);
 						glScalef(1.f, -1.f, 1.f);
@@ -448,33 +731,59 @@ namespace ce
 					}
 				}
 				else if(m_mode == Mode_Tile)
-					if(m_currentLayer)
+				{
+					if(m_currentLayer && ((m_currentTile[0] != 255 || m_currentTile[1] != 255) || m_tilePlacementGroup))
+					{
+						glTranslatef(0.f, (float)m_extent[1], 0.f);
+						glScalef(1.f, -1.f, 1.f);
+						Vector2<float> focalPoint = camera->GetFocalPoint();
+						Vector2<int_canvas> viewExtent = currentViewport->GetExtent();
+						Vector2<float> half((float)viewExtent[0] / 2.f, (float)viewExtent[1] / 2.f);
+						Vector2<float> viewScale = currentViewport->GetViewScale();
+						glTranslatef(half[0] - viewScale[0] * focalPoint[0], half[1] - viewScale[1] * focalPoint[1], 0.f);
+						glScalef(viewScale[0], viewScale[1], 1.f);
+
+						game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
+						Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
+						float tileScale = tileLayer->GetScale();
+
+						//TODO: Cache the tile size
 						if(m_currentTile[0] != 255 || m_currentTile[1] != 255)
 						{
-							glTranslatef(0.f, (float)m_extent[1], 0.f);
-							glScalef(1.f, -1.f, 1.f);
-							Vector2<float> focalPoint = camera->GetFocalPoint();
-							Vector2<int_canvas> viewExtent = currentViewport->GetExtent();
-							Vector2<float> half((float)viewExtent[0] / 2.f, (float)viewExtent[1] / 2.f);
-							Vector2<float> viewScale = currentViewport->GetViewScale();
-							glTranslatef(half[0] - viewScale[0] * focalPoint[0], half[1] - viewScale[1] * focalPoint[1], 0.f);
-							glScalef(viewScale[0], viewScale[1], 1.f);
-
-							game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
-							Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
-							float tileScale = tileLayer->GetScale();
-
-							//TODO: Cache the tile size
-
 							glPushMatrix();
-								glColor4ub(255, 255, 255, 200);
+								glColor4ub(127, 255, 127, 200);
 								glTranslatef(m_tileHover[0], m_tileHover[1], 0.f);
 								glScalef((float)tileSize[0] * tileScale, (float)tileSize[1] * tileScale, 1.f);
 								m_currentTileSet->Render(m_currentTile[0], m_currentTile[1]);
-//								RenderSquare();
 								glColor4ub(255, 255, 255, 255);
 							glPopMatrix();
 						}
+						if(m_tilePlacementGroup)
+						{
+							glPushMatrix();
+								glColor4ub(127, 255, 127, 200);
+								glTranslatef(m_tileHover[0], m_tileHover[1], 0.f);
+								glScalef((float)tileSize[0] * tileScale, (float)tileSize[1] * tileScale, 1.f);
+
+								glTranslatef(-(float)(m_tilePlacementGroupSize[0] / 2), -(float)(m_tilePlacementGroupSize[1] / 2), 0.f);
+								for(unsigned short a = 0; a < m_tilePlacementGroupSize[0]; a++)
+								{
+									glPushMatrix();
+									for(unsigned short b = 0; b < m_tilePlacementGroupSize[1]; b++)
+									{
+										Vector3<unsigned char> &tile = m_tilePlacementGroup[a][b];
+										if(tile[1] != 255 && tile[2] != 255)
+											tileLayer->GetTileSet(tile[0])->Render(tile[1], tile[2]);
+										glTranslatef(0.f, 1.f, 0.f);
+									}
+									glPopMatrix();
+									glTranslatef(1.f, 0.f, 0.f);
+								}
+								glColor4ub(255, 255, 255, 255);
+							glPopMatrix();
+						}
+					}
+				}
 
 			glPopMatrix();
 
@@ -642,6 +951,13 @@ namespace ce
 		Color g_tileSelectDefault(255, 255, 255, 255), g_tileSelectHighlight(127, 255, 127, 255);
 		void Editor2DCtrl::SelectTileSet(unsigned char tileSetId)
 		{
+			ClearTilePlacementGroup();
+
+			if(m_tileMode == TileMode_Placing && m_tilePlacementGroup)
+			{
+				ClearTilePlacementGroup();
+				m_tileMode = TileMode_None;
+			}
 			game2d::World *world = (game2d::World *)game2d::Camera::GetCurrent()->GetFocusGroup();
 			vector<game2d::TileSet *> *tileSets = world->GetAssociatedTileSets();
 			//TODO: Handle out of bounds
@@ -660,6 +976,7 @@ namespace ce
 		void Editor2DCtrl::TileSelectorCtrl::OnSelect(TileSelectCtrl *btn)
 		{
 			Editor2DCtrl *editor = (Editor2DCtrl *)GetParent();
+			editor->ClearTilePlacementGroup();
 			Vector2<unsigned char> tile(btn->m_tileX, btn->m_tileY);
 			if(editor->m_currentTile == tile)
 			{
@@ -762,6 +1079,14 @@ namespace ce
 
 			m_currentLayer = layer;
 		}
+		void Editor2DCtrl::ClearTilePlacementGroup()
+		{
+			for(unsigned short a = 0; a < m_tilePlacementGroupSize[0]; a++)
+				delete [] m_tilePlacementGroup[a];
+			delete [] m_tilePlacementGroup;
+			m_tilePlacementGroup = 0;
+			m_tilePlacementGroupSize = Vector2<unsigned short>(0, 0);
+		}
 
 		//------------------- Mode Selection --------------
 		void Editor2DCtrl::SetMode(unsigned char mode)
@@ -770,6 +1095,8 @@ namespace ce
 				return;
 
 			m_mode = mode;
+			ClearTilePlacementGroup();
+			m_tileMode = TileMode_None;
 
 			if(m_mode == Mode_Object || m_mode == Mode_Prop)
 				m_selection.clear();

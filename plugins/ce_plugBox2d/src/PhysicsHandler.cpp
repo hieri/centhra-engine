@@ -459,7 +459,6 @@ namespace ce
 				if(m_b2d_system)
 				{
 					vector<Group::Member *> *members = m_referenceGroup->GetMembers();
-					print("Count: %d\n", members->size());
 					for(vector<Group::Member *>::iterator it = members->begin(); it != members->end(); it++)
 					{
 						game2d::PhysicalObject *object = (game2d::PhysicalObject *)*it;

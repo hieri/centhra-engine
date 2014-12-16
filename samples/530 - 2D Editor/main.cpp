@@ -72,7 +72,6 @@ public:
 	}
 	~App2DEditorSample()
 	{
-		print("U WOT?\n");
 		delete m_physicsThread;
 	}
 	bool OnStart()
@@ -142,10 +141,10 @@ public:
 			m_randoms[a]->SetRenderLayer(objectLayerA);
 		}
 
-//		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
-//		m_world->AttachHandler(m_box2dPhysicsHandler);
-		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
-		m_world->AttachHandler(m_defaultPhysicsHandler);
+		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
+		m_world->AttachHandler(m_box2dPhysicsHandler);
+//		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
+//		m_world->AttachHandler(m_defaultPhysicsHandler);
 
 		m_editorScrollImage = Image::CreateFromFile("../res/editorPropScroll.png");
 		m_editorScrollSkin = new ui::Skin(m_editorScrollImage);
@@ -155,7 +154,7 @@ public:
 		if(!parentStart)
 			return false;
 		
-//		m_physicsThread->Start(this);
+		m_physicsThread->Start(this);
 		return true;
 	}
 	void ProcessPhysics(float dt)
@@ -215,9 +214,9 @@ public:
 			float dt = (float)(t - m_lastProcess) / 1000.f;
 			m_lastProcess = t;
 
-			LockWorldMutex();
+/*			LockWorldMutex();
 			ProcessPhysics(dt);
-			UnlockWorldMutex();
+			UnlockWorldMutex();*/
 		}
 
 		sleepMS(1);
@@ -225,11 +224,11 @@ public:
 	}
 	void OnStopped()
 	{
-//		m_physicsThread->Join();
+		m_physicsThread->Join();
 
 		m_world->DetachHandler();
-//		delete m_box2dPhysicsHandler;
-		delete m_defaultPhysicsHandler;
+		delete m_box2dPhysicsHandler;
+//		delete m_defaultPhysicsHandler;
 	
 		delete m_editorCtrl;
 		delete m_view;

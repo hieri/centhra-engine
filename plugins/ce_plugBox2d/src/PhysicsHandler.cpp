@@ -403,10 +403,15 @@ namespace ce
 				m_b2d_system = new Box2DSystem(Vector2<float>(0, 0.f));
 
 				vector<Group::Member *> *members = m_referenceGroup->GetMembers();
-				for(vector<Group::Member *>::iterator it = members->begin(); it != members->end(); it++)
+				if(members->empty() == false)
 				{
-					game2d::PhysicalObject *object = (game2d::PhysicalObject *)*it;
-					SetupObject(object);
+					Group::Member **markObjects = &members->front();
+					Group::Member **endObjects = markObjects + members->size();
+					while(markObjects != endObjects)
+					{
+						game2d::PhysicalObject *object = (game2d::PhysicalObject *)*markObjects++;
+						SetupObject(object);
+					}
 				}
 			}
 			void bPhysicsHandler::Render(float minX, float minY, float maxX, float maxY)
@@ -459,10 +464,15 @@ namespace ce
 				if(m_b2d_system)
 				{
 					vector<Group::Member *> *members = m_referenceGroup->GetMembers();
-					for(vector<Group::Member *>::iterator it = members->begin(); it != members->end(); it++)
+					if(members->empty() == false)
 					{
-						game2d::PhysicalObject *object = (game2d::PhysicalObject *)*it;
-						CleanupObject(object);
+						Group::Member **markObjects = &members->front();
+						Group::Member **endObjects = markObjects + members->size();
+						while(markObjects != endObjects)
+						{
+							game2d::PhysicalObject *object = (game2d::PhysicalObject *)*markObjects++;
+							CleanupObject(object);
+						}
 					}
 				}
 

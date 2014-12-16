@@ -29,14 +29,19 @@ namespace ce
 		}
 		void PhysicalGroup::Render(float minX, float minY, float maxX, float maxY)
 		{
-			for(vector<Group::Member *>::iterator it = m_members.begin(); it != m_members.end(); it++)
+			if(m_members.empty() == false)
 			{
-				PhysicalObject *object = (PhysicalObject *)*it;
-				if(object->m_aabb[0] > maxX || object->m_aabb[1] > maxY || object->m_aabb[2] < minX || object->m_aabb[3] < minY)
-					continue;
-				object->Render();
-				if(m_renderDebug)
-					object->RenderAABB();
+				Group::Member **markObjects = &m_members.front();
+				Group::Member **endObjects = markObjects + m_members.size();
+				while(markObjects != endObjects)
+				{
+					PhysicalObject *object = (PhysicalObject *)*markObjects++;
+					if(object->m_aabb[0] > maxX || object->m_aabb[1] > maxY || object->m_aabb[2] < minX || object->m_aabb[3] < minY)
+						continue;
+					object->Render();
+					if(m_renderDebug)
+						object->RenderAABB();
+				}
 			}
 
 			if(m_renderDebug)

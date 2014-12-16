@@ -272,8 +272,13 @@ namespace ce
 	}
 	void cleanupPacketHandlers()
 	{
-		for(vector<PacketHandler *>::iterator it = g_packetHandlerVec.begin(); it != g_packetHandlerVec.end(); it++)
-			delete *it;
+		if(g_packetHandlerVec.empty() == false)
+		{
+			PacketHandler **markPacketHandlers = &g_packetHandlerVec.front();
+			PacketHandler **endPacketHandlers = markPacketHandlers + g_packetHandlerVec.size();
+			while(markPacketHandlers != endPacketHandlers)
+				delete *markPacketHandlers++;
+		}
 		g_packetHandlerVec.clear();
 	}
 

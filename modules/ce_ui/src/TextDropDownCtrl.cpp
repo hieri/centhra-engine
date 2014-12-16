@@ -77,17 +77,22 @@ namespace ce
 			
 			unsigned short selectionHeight = m_font->GetCharHeight() + 4;
 			unsigned short idx = 0;
-			for(vector<pair<unsigned char, string> >::iterator it = m_source->m_selections.begin(); it != m_source->m_selections.end(); it++)
+			if(m_source->m_selections.empty() == false)
 			{
-				zone.id = it->first;
-				zone.x = 0;
-				zone.y = idx * selectionHeight;
-				zone.width = m_extent[0];
-				zone.height = selectionHeight;
+				pair<unsigned char, string> *markOptions = &m_source->m_selections.front();
+				pair<unsigned char, string> *endOptions = markOptions + m_source->m_selections.size();
+				while(markOptions != endOptions)
+				{
+					zone.id = (markOptions++)->first;
+					zone.x = 0;
+					zone.y = idx * selectionHeight;
+					zone.width = m_extent[0];
+					zone.height = selectionHeight;
 
-				m_controlZones.push_back(zone);
+					m_controlZones.push_back(zone);
 
-				idx++;
+					idx++;
+				}
 			}
 			if(m_controlZones.size())
 				SetExtent(Vector2<int_canvas>(m_extent[0], 2 + m_controlZones.size() * selectionHeight));
@@ -104,19 +109,21 @@ namespace ce
 			glPushMatrix();
 				unsigned short idx = 0;
 				glTranslatef(2.f, 2.f, 0.f);
-				for(vector<pair<unsigned char, string> >::iterator it = m_source->m_selections.begin(); it != m_source->m_selections.end(); it++)
+				if(m_source->m_selections.empty() == false)
 				{
-					if(idx)
-						glTranslatef(0.f, (float)m_font->GetCharHeight() + 4.f, 0.f);
-
-					if(idx == m_hoverIdx)
-						glColor4ub(0, 255, 0, 255);
-					m_font->DrawStringUI(it->second.c_str(), 0);
-
-					if(idx == m_hoverIdx)
-						glColor4ub(255, 255, 255, 255);
-
-					idx++;
+					pair<unsigned char, string> *markOptions = &m_source->m_selections.front();
+					pair<unsigned char, string> *endOptions = markOptions + m_source->m_selections.size();
+					while(markOptions != endOptions)
+					{
+						if(idx)
+							glTranslatef(0.f, (float)m_font->GetCharHeight() + 4.f, 0.f);
+						if(idx == m_hoverIdx)
+							glColor4ub(0, 255, 0, 255);
+						m_font->DrawStringUI((markOptions++)->second.c_str(), 0);
+						if(idx == m_hoverIdx)
+							glColor4ub(255, 255, 255, 255);
+						idx++;
+					}
 				}
 
 				glColor4ub(255, 255, 255, 255);
@@ -235,15 +242,27 @@ namespace ce
 					m_selector->ReleaseEvent(event::MouseMotion);
 				}
 
-			vector<pair<unsigned char, string> >::iterator it = m_selections.begin();
-			for(; it != m_selections.end(); it++)
-				if(it->first == id)
+			if(m_selections.empty() == false)
+			{
+				pair<unsigned char, string> *markOptions = &m_selections.front();
+				pair<unsigned char, string> *endOptions = markOptions + m_selections.size();
+				while(markOptions != endOptions)
 				{
-					m_selectionIdx = it - m_selections.begin();
-					m_text = it->second;
-					break;
+					if(markOptions->first == id)
+					{
+						m_selectionIdx = markOptions - &m_selections.front();
+						m_text = markOptions->second;
+						break;
+					}
+					markOptions++;
 				}
-			if(it == m_selections.end())
+				if(markOptions == endOptions)
+				{
+					m_selectionIdx = 65535;
+					m_text = m_placeHolder;
+				}
+			}
+			else
 			{
 				m_selectionIdx = 65535;
 				m_text = m_placeHolder;

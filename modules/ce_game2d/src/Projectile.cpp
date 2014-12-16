@@ -67,24 +67,36 @@ namespace ce
 
 		void ProjectileDef::Cleanup()
 		{
-			/*			for(vector<projectileDefinition>::iterator it = g_projectileDefinitionTable.begin(); it != g_projectileDefinitionTable.end(); it++)
+/*			if(g_projectileDefinitionTable.empty() == false)
 			{
-			delete it->image;
-			if(it->hasSprite)
-			delete it->sprite;
-			}*/
-		}
+				projectileDefinition *markProjDefs = &g_projectileDefinitionTable.front();
+				projectileDefinition *endProjDefs = markProjDefs + g_projectileDefinitionTable.size();
+				while(markProjDefs != endProjDefs)
+				{
+					delete markProjDefs->image;
+					if(markProjDefs->hasSprite)
+						delete markProjDefs->sprite;
+					markProjDefs++;
+				}
+			}
+*/		}
 
 /*		void Projectile::InitAssets()
 		{
-			for(vector<projectileDefinition>::iterator it = g_projectileDefinitionTable.begin(); it != g_projectileDefinitionTable.end(); it++)
+			if(g_projectileDefinitionTable.empty() == false)
 			{
-				it->image = Image::CreateFromFile(it->spriteFile.c_str());
-				if(it->hasSprite)
-					it->sprite = LoadSpriteFromFile(it->spriteDefinitionFile.c_str(), it->image);
+				projectileDefinition *markProjDefs = &g_projectileDefinitionTable.front();
+				projectileDefinition *endProjDefs = markProjDefs + g_projectileDefinitionTable.size();
+				while(markProjDefs != endProjDefs)
+				{
+					markProjDefs->image = Image::CreateFromFile(markProjDefs->spriteFile.c_str());
+					if(markProjDefs->hasSprite)
+						markProjDefs->sprite = LoadSpriteFromFile(markProjDefs->spriteDefinitionFile.c_str(), markProjDefs->image);
+					markProjDefs++;
+				}
 			}
-		}*/
-
+		}
+*/
 //		unsigned short g_projectileColMask = Object::Mask_Body | Object::Mask_Wall;
 		Projectile::Projectile(Vector2<float> position, unsigned char type, Vector2<float> direction, float rotation, PhysicalObject *source) : PhysicalObject(position, g_projectileDefinitionTable[type].extent, true), m_projectileType(type), m_source(source), m_lastBoost(0), m_timeout(0)
 		{

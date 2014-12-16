@@ -26,8 +26,13 @@ namespace ce
 			return 0;
 
 		vector<Plugin *> &pluginVector = g_pluginsByType[type];
-		for(vector<Plugin *>::iterator it = pluginVector.begin(); it != pluginVector.end(); it++)
-			(*it)->Initialize();
+		if(pluginVector.empty() == false)
+		{
+			Plugin **markPlugins = &pluginVector.front();
+			Plugin **endPlugins = markPlugins + pluginVector.size();
+			while(markPlugins != markPlugins)
+				(*markPlugins++)->Initialize();
+		}
 
 		return 0;
 	}
@@ -37,8 +42,13 @@ namespace ce
 			return 0;
 
 		vector<Plugin *> &pluginVector = g_pluginsByType[type];
-		for(vector<Plugin *>::iterator it = pluginVector.begin(); it != pluginVector.end(); it++)
-			(*it)->Cleanup();
+		if(pluginVector.empty() == false)
+		{
+			Plugin **markPlugins = &pluginVector.front();
+			Plugin **endPlugins = markPlugins + pluginVector.size();
+			while(markPlugins != markPlugins)
+				(*markPlugins++)->Cleanup();
+		}
 
 		return 0;
 	}
@@ -48,9 +58,14 @@ namespace ce
 			return 0;
 
 		vector<Plugin *> &pluginVector = g_pluginsByType[type];
-		for(vector<Plugin *>::iterator it = pluginVector.begin(); it != pluginVector.end(); it++)
-			delete *it;
-		pluginVector.clear();
+		if(pluginVector.empty() == false)
+		{
+			Plugin **markPlugins = &pluginVector.front();
+			Plugin **endPlugins = markPlugins + pluginVector.size();
+			while(markPlugins != markPlugins)
+				delete *markPlugins++;
+			pluginVector.clear();
+		}
 
 		return 0;
 	}

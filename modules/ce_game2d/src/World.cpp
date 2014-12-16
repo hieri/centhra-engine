@@ -25,52 +25,67 @@ namespace ce
 		}
 		World::~World()
 		{
-			for(vector<Layer *>::iterator it = m_layers.begin(); it != m_layers.end(); it++)
-				delete *it;
+			if(m_layers.empty() == false)
+			{
+				Layer **mark = &m_layers.front();
+				Layer **end = mark + m_layers.size();
+				while(mark != end)
+					delete *mark++;
+			}
 		}
 		void World::Render(float minX, float minY, float maxX, float maxY)
 		{
 			Vector2<float> center((minX + maxX) / 2.f, (minY + maxY) / 2.f);
 
-			for(vector<Layer *>::iterator it = m_layers.begin(); it != m_layers.end(); it++)
+			if(m_layers.empty() == false)
 			{
-				Layer *layer = *it;
-
-				switch(layer->m_type)
+				Layer **markLayers = &m_layers.front();
+				Layer **endLayers = markLayers + m_layers.size();
+				while(markLayers != endLayers)
 				{
-				case Layer_Object:
+					Layer *layer = *markLayers++;
+
+					switch(layer->m_type)
 					{
-						ObjectLayer *objectLayer = (ObjectLayer *)layer;
-						unsigned short renderMask = objectLayer->GetRenderMask();
-						
-						for(vector<Group::Member *>::iterator it = m_members.begin(); it != m_members.end(); it++)
+					case Layer_Object:
 						{
-							PhysicalObject *object = (PhysicalObject *)*it;
-							if(!objectLayer->m_renderAll)
-								if(object->GetRenderLayer() != objectLayer)
-									continue;
-							if(!(renderMask & object->GetTypeMask()))
-								continue;
-							Rect<float> aabb = object->GetAABB();
-							if(aabb[0] > maxX || aabb[1] > maxY || aabb[2] < minX || aabb[3] < minY)
-								continue;
-							object->Render();
+							ObjectLayer *objectLayer = (ObjectLayer *)layer;
+							unsigned short renderMask = objectLayer->GetRenderMask();
+
+							if(m_members.empty() == false)
+							{
+								Group::Member **markObjects = &m_members.front();
+								Group::Member **endObjects = markObjects + m_members.size();
+								while(markObjects != endObjects)
+								{
+									PhysicalObject *object = (PhysicalObject *)*markObjects++;
+									if(!objectLayer->m_renderAll)
+										if(object->GetRenderLayer() != objectLayer)
+											continue;
+									if(!(renderMask & object->GetTypeMask()))
+										continue;
+									Rect<float> aabb = object->GetAABB();
+									if(aabb[0] > maxX || aabb[1] > maxY || aabb[2] < minX || aabb[3] < minY)
+										continue;
+									object->Render();
+									if(m_renderDebug)
+										object->RenderAABB();
+								}
+							}
+
 							if(m_renderDebug)
-								object->RenderAABB();
+								if(m_physicsHandler)
+									m_physicsHandler->Render(minX, minY, maxX, maxY);
+
 						}
-
-						if(m_renderDebug)
-							if(m_physicsHandler)
-								m_physicsHandler->Render(minX, minY, maxX, maxY);
-
+						break;
+					case Layer_Tile:
+						{
+							TileLayer *tileLayer = (TileLayer *)layer;
+							tileLayer->Render(minX, minY, maxX, maxY, tileLayer->GetScale());
+						}
+						break;
 					}
-					break;
-				case Layer_Tile:
-					{
-						TileLayer *tileLayer = (TileLayer *)layer;
-						tileLayer->Render(minX, minY, maxX, maxY, tileLayer->GetScale());
-					}
-					break;
 				}
 			}
 		}

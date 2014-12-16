@@ -27,10 +27,15 @@ namespace ce
 		vector<DefaultPhysicsHandler::ObjectHandle *> DefaultPhysicsHandler::ObjectHandle::ms_cacheVectors[8];
 		void DefaultPhysicsHandler::ObjectHandle::ClearCache(unsigned int idx)
 		{
-			std::vector<ObjectHandle *> &cacheVector = ms_cacheVectors[idx];
-			for(vector<ObjectHandle *>::iterator it = cacheVector.begin(); it != cacheVector.end(); it++)
-				(*it)->m_cache[idx] = false;
-			cacheVector.clear();
+			vector<ObjectHandle *> &cacheVector = ms_cacheVectors[idx];
+			if(cacheVector.empty() == false)
+			{
+				ObjectHandle **markObjectHandles = &cacheVector.front();
+				ObjectHandle **endObjectHandles = markObjectHandles + cacheVector.size();
+				while(markObjectHandles != endObjectHandles)
+					(*markObjectHandles++)->m_cache[idx] = false;
+				cacheVector.clear();
+			}
 		}
 		DefaultPhysicsHandler::ObjectHandle::ObjectHandle(PhysicsHandler *handler, PhysicalObject *object) : PhysicsHandler::ObjectHandle(handler, object)
 		{
@@ -128,6 +133,10 @@ namespace ce
 		{
 			return m_object->GetCollisionMask();
 		}
+		unsigned int DefaultPhysicsHandler::ObjectHandle::GetTypeMask() const
+		{
+			return m_object->GetTypeMask();
+		}
 		bool DefaultPhysicsHandler::ObjectHandle::Cache(unsigned int idx)
 		{
 			if(m_cache[idx])
@@ -150,18 +159,29 @@ namespace ce
 		}
 		DefaultPhysicsHandler::Zone::~Zone()
 		{
-			for(vector<ObjectHandle *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-				(*it)->RemoveZone(this);
+			if(m_children.empty() == false)
+			{
+				ObjectHandle **markObjectHandles = &m_children.front();
+				ObjectHandle **endObjectHandles = markObjectHandles + m_children.size();
+				while(markObjectHandles != endObjectHandles)
+					(*markObjectHandles++)->RemoveZone(this);
+			}
 		}
 		void DefaultPhysicsHandler::Zone::DoRender()
 		{
-/*			for(vector<ObjectHandle *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+/*			if(m_children.empty() == false)
 			{
-				ObjectHandle *entity = *it;
-				if(entity->Cache(0))
-					entity->Render();
+				ObjectHandle **markObjectHandles = &m_children.front();
+				ObjectHandle **endObjectHandles = markObjectHandles + m_children.size();
+				while(markObjectHandles != endObjectHandles)
+				{
+					ObjectHandle *entity = *markObjectHandles++;
+					if(entity->Cache(0))
+						entity->Render();
+				}
 			}
 */
+
 			glPushMatrix();
 				if(m_children.size())
 					glColor3ub(255, 0, 0);
@@ -241,142 +261,167 @@ namespace ce
 		}
 		void DefaultPhysicsHandler::Zone::PhysicsPhase1(float dt)
 		{
-			for(vector<ObjectHandle *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+			if(m_children.empty() == false)
 			{
-				ObjectHandle *entity = *it;
-				entity->m_movement = entity->GetVelocity() * entity->m_movePadding * dt;
-				Vector2<float> position = entity->GetPosition();
-				Vector2<float> halfExtent = entity->GetExtent() / 2.f;
-
-				for(int a = 0; a < 2; a++)
+				ObjectHandle **markObjectHandles = &m_children.front();
+				ObjectHandle **endObjectHandles = markObjectHandles + m_children.size();
+				while(markObjectHandles != endObjectHandles)
 				{
-					entity->m_moveBoxMin[a] = position[a] - halfExtent[a];
-					if(entity->m_movement[a] < 0.f)
-						entity->m_moveBoxMin[a] += entity->m_movement[a];
-					entity->m_moveBoxMax[a] = position[a] + halfExtent[a];
-					if(entity->m_movement[a] > 0.f)
-						entity->m_moveBoxMax[a] += entity->m_movement[a];
-					entity->m_canMove[a] = true;
+					ObjectHandle *entity = *markObjectHandles++;
+					entity->m_movement = entity->GetVelocity() * entity->m_movePadding * dt;
+					Vector2<float> position = entity->GetPosition();
+					Vector2<float> halfExtent = entity->GetExtent() / 2.f;
+
+					for(int a = 0; a < 2; a++)
+					{
+						entity->m_moveBoxMin[a] = position[a] - halfExtent[a];
+						if(entity->m_movement[a] < 0.f)
+							entity->m_moveBoxMin[a] += entity->m_movement[a];
+						entity->m_moveBoxMax[a] = position[a] + halfExtent[a];
+						if(entity->m_movement[a] > 0.f)
+							entity->m_moveBoxMax[a] += entity->m_movement[a];
+						entity->m_canMove[a] = true;
+					}
+					entity->m_finishedPhysics = false;
 				}
-				entity->m_finishedPhysics = false;
 			}
 		}
 		void DefaultPhysicsHandler::Zone::PhysicsPhase2(float dt)
 		{
-			for(vector<ObjectHandle *>::iterator itA = m_children.begin(); itA != m_children.end(); itA++)
+			if(m_children.empty() == false)
 			{
-				ObjectHandle *entityA = *itA;
-				if(entityA->GetVelocity()[0] != 0.f || entityA->GetVelocity()[1] != 0.f)
+				ObjectHandle **markObjectHandlesA = &m_children.front();
+				ObjectHandle **endObjectHandles = markObjectHandlesA + m_children.size();
+				while(markObjectHandlesA != endObjectHandles)
 				{
-					Vector2<float> aMin, aMax, aOMin, aOMax;
-					aMin = entityA->m_moveBoxMin;
-					aMax = entityA->m_moveBoxMax;
-					Vector2<float> extentA = entityA->GetExtent();
-					Vector2<float> halfExtentA = extentA / 2.f;
-					aOMin = entityA->GetPosition() - halfExtentA;
-					aOMax = aOMin + extentA;
+					ObjectHandle *entityA = *markObjectHandlesA++;
+					if(entityA->GetVelocity()[0] != 0.f || entityA->GetVelocity()[1] != 0.f)
+					{
+						Vector2<float> aMin, aMax, aOMin, aOMax;
+						aMin = entityA->m_moveBoxMin;
+						aMax = entityA->m_moveBoxMax;
+						Vector2<float> extentA = entityA->GetExtent();
+						Vector2<float> halfExtentA = extentA / 2.f;
+						aOMin = entityA->GetPosition() - halfExtentA;
+						aOMax = aOMin + extentA;
 
-					unsigned int colCount = 0;
-					vector<ObjectHandle *> diagonals;
+						unsigned int colCount = 0;
+						vector<ObjectHandle *> diagonals;
 
-					for(vector<ObjectHandle *>::iterator itB = m_children.begin(); itB != m_children.end(); itB++)
-						if(itA != itB)
+						ObjectHandle **markObjectHandlesB = &m_children.front();
+						while(markObjectHandlesB != endObjectHandles)
 						{
-							ObjectHandle *entityB = *itB;
-							if(!(entityA->GetCollisionMask() & entityB->GetCollisionMask()))
-								continue;
-							Vector2<float> bMin, bMax, bOMin, bOMax;
-							bMin = entityB->m_moveBoxMin;
-							bMax = entityB->m_moveBoxMax;
-							Vector2<float> extentB = entityB->GetExtent();
-							Vector2<float> halfExtentB = extentB / 2.f;
-							bOMin = entityB->GetPosition() - halfExtentB;
-							bOMax = bOMin + extentB;
-							if(aMin[0] < bMax[0] && aMin[1] < bMax[1] && bMin[0] < aMax[0] && bMin[1] < aMax[1])
+							ObjectHandle *entityB = *markObjectHandlesB++;
+							if(entityA != entityB)
 							{
-								bool xCol = aMin[0] < bMax[0] && bMin[0] < aMax[0] && aOMin[1] < bOMax[1] && bOMin[1] < aOMax[1];
-								bool yCol = aOMin[0] < bOMax[0] && bOMin[0] < aOMax[0] && aMin[1] < bMax[1] && bMin[1] < aMax[1];
-								if(xCol)
+								if(!(entityA->GetCollisionMask() & entityB->GetTypeMask() && entityA->GetTypeMask() & entityB->GetCollisionMask()))
+									continue;
+								Vector2<float> bMin, bMax, bOMin, bOMax;
+								bMin = entityB->m_moveBoxMin;
+								bMax = entityB->m_moveBoxMax;
+								Vector2<float> extentB = entityB->GetExtent();
+								Vector2<float> halfExtentB = extentB / 2.f;
+								bOMin = entityB->GetPosition() - halfExtentB;
+								bOMax = bOMin + extentB;
+								if(aMin[0] < bMax[0] && aMin[1] < bMax[1] && bMin[0] < aMax[0] && bMin[1] < aMax[1])
 								{
-									bool axCol = aMin[0] < bOMax[0] && bOMin[0] < aMax[0];
-									bool bxCol = aOMin[0] < bMax[0] && bMin[0] < aOMax[0];
-									if(axCol || !bxCol)
-										entityA->m_canMove[0] = false;
-									if(bxCol || !axCol)
-										entityB->m_canMove[0] = false;
+									bool xCol = aMin[0] < bMax[0] && bMin[0] < aMax[0] && aOMin[1] < bOMax[1] && bOMin[1] < aOMax[1];
+									bool yCol = aOMin[0] < bOMax[0] && bOMin[0] < aOMax[0] && aMin[1] < bMax[1] && bMin[1] < aMax[1];
+									if(xCol)
+									{
+										bool axCol = aMin[0] < bOMax[0] && bOMin[0] < aMax[0];
+										bool bxCol = aOMin[0] < bMax[0] && bMin[0] < aOMax[0];
+										if(axCol || !bxCol)
+											entityA->m_canMove[0] = false;
+										if(bxCol || !axCol)
+											entityB->m_canMove[0] = false;
+									}
+									if(yCol)
+									{
+										bool ayCol = aMin[1] < bOMax[1] && bOMin[1] < aMax[1];
+										bool byCol = aOMin[1] < bMax[1] && bMin[1] < aOMax[1];
+										if(ayCol || !byCol)
+											entityA->m_canMove[1] = false;
+										if(byCol || !ayCol)
+											entityB->m_canMove[1] = false;
+									}
+									if(!xCol && !yCol)
+										diagonals.push_back(entityB);
+									colCount++;
 								}
-								if(yCol)
-								{
-									bool ayCol = aMin[1] < bOMax[1] && bOMin[1] < aMax[1];
-									bool byCol = aOMin[1] < bMax[1] && bMin[1] < aOMax[1];
-									if(ayCol || !byCol)
-										entityA->m_canMove[1] = false;
-									if(byCol || !ayCol)
-										entityB->m_canMove[1] = false;
-								}
-								if(!xCol && !yCol)
-									diagonals.push_back(entityB);
-								colCount++;
 							}
 						}
-					if((entityA->m_canMove[0] || entityA->m_canMove[1]) && diagonals.size())
-					{
-//						entityA->m_canMove[1] = false;
-						entityA->m_canMove[0] = false;
-/*						for(vector<ObjectHandle *>::iterator itB = diagonals.begin(); itB != diagonals.end(); itB++)
+						if((entityA->m_canMove[0] || entityA->m_canMove[1]) && diagonals.size())
 						{
-							ObjectHandle *entityB = *itB;
-							//entityB->m_canMove[1] = false;
-							entityB->m_canMove[0] = false;
-						}*/
+	//						entityA->m_canMove[1] = false;
+							entityA->m_canMove[0] = false;
+
+/*							if(diagonals.empty() == false)
+							{
+								ObjectHandle **markObjectHandlesC = &diagonals.front();
+								ObjectHandle **endObjectHandlesC = markObjectHandlesC + diagonals.size();
+								while(markObjectHandlesC != endObjectHandlesC)
+								{
+									ObjectHandle *entityC = *markObjectHandlesB++;
+									//entityC->m_canMove[1] = false;
+									entityC->m_canMove[0] = false;
+								}
+							}
+*/
+						}
 					}
 				}
 			}
 		}
 		void DefaultPhysicsHandler::Zone::PhysicsPhase3(float dt)
 		{
-			for(vector<ObjectHandle *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+			if(m_children.empty() == false)
 			{
-				ObjectHandle *entity = *it;
-				if(!entity->m_finishedPhysics)
+				ObjectHandle **markObjectHandles = &m_children.front();
+				ObjectHandle **endObjectHandles = markObjectHandles + m_children.size();
+				while(markObjectHandles != endObjectHandles)
 				{
-					entity->m_finishedPhysics = true;
-					Vector2<float> velocity = entity->GetVelocity();
+					ObjectHandle *entity = *markObjectHandles++;
+					if(!entity->m_finishedPhysics)
+					{
+						entity->m_finishedPhysics = true;
+						Vector2<float> velocity = entity->GetVelocity();
 
-					if(!entity->m_canMove[0])
-					{
-						if(entity->m_movePadding[0] > 0.05f)
-							entity->m_movePadding[0] /= 2.f;
-						else
-							entity->m_movePadding[0] = 0.1f;
-					}
-					if(!entity->m_canMove[1])
-					{
-						if(entity->m_movePadding[1] > 0.05f)
-							entity->m_movePadding[1] /= 2.f;
-						else
-							entity->m_movePadding[1] = 0.1f;
-					}
-
-					if(entity->m_canMove[0] || entity->m_canMove[1])
-					{
 						if(!entity->m_canMove[0])
-							entity->m_movement[0] = 0.f;
+						{
+							if(entity->m_movePadding[0] > 0.05f)
+								entity->m_movePadding[0] /= 2.f;
+							else
+								entity->m_movePadding[0] = 0.1f;
+						}
 						if(!entity->m_canMove[1])
-							entity->m_movement[1] = 0.f;
+						{
+							if(entity->m_movePadding[1] > 0.05f)
+								entity->m_movePadding[1] /= 2.f;
+							else
+								entity->m_movePadding[1] = 0.1f;
+						}
 
-						entity->Move(entity->m_movement);
+						if(entity->m_canMove[0] || entity->m_canMove[1])
+						{
+							if(!entity->m_canMove[0])
+								entity->m_movement[0] = 0.f;
+							if(!entity->m_canMove[1])
+								entity->m_movement[1] = 0.f;
 
-						if(entity->m_canMove[0])
-							entity->m_movePadding[0] = 1.f;
-						if(entity->m_canMove[1])
-							entity->m_movePadding[1] = 1.f;
+							entity->Move(entity->m_movement);
+
+							if(entity->m_canMove[0])
+								entity->m_movePadding[0] = 1.f;
+							if(entity->m_canMove[1])
+								entity->m_movePadding[1] = 1.f;
+						}
+						if(!entity->m_canMove[0])
+							entity->GetVelocity()[0] *= -1.f;
+						if(!entity->m_canMove[1])
+							entity->GetVelocity()[1] *= -1.f;
+						entity->m_movement = Vector2<float>(0.f, 0.f);
 					}
-					if(!entity->m_canMove[0])
-						entity->GetVelocity()[0] *= -1.f;
-					if(!entity->m_canMove[1])
-						entity->GetVelocity()[1] *= -1.f;
-					entity->m_movement = Vector2<float>(0.f, 0.f);
 				}
 			}
 		}
@@ -384,13 +429,18 @@ namespace ce
 		{
 			Vector2<float> _min(minX, minY), _max(maxX, maxY);
 			vector<ObjectHandle *> found;
-			for(vector<ObjectHandle *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+			if(m_children.empty() == false)
 			{
-				ObjectHandle *entity = *it;
-				if(entity->GetCollisionMask() & mask)
-					if(entity != ignore)
-						if(entity->CollidesWith(_min, _max))
-							found.push_back(entity);
+				ObjectHandle **markObjectHandles = &m_children.front();
+				ObjectHandle **endObjectHandles = markObjectHandles + m_children.size();
+				while(markObjectHandles != endObjectHandles)
+				{
+					ObjectHandle *entity = *markObjectHandles++;
+					if(entity->GetCollisionMask() & mask)
+						if(entity != ignore)
+							if(entity->CollidesWith(_min, _max))
+								found.push_back(entity);
+				}
 			}
 			return found;
 		}
@@ -402,49 +452,59 @@ namespace ce
 			//- handle the vertical line case -
 			if(!(endX - startX))
 			{
-				for(vector<ObjectHandle *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+				if(m_children.empty() == false)
 				{
-					ObjectHandle *entity = *it;
-					if(entity->GetCollisionMask() & mask)
-						if(entity != ignore)
-							if(entity->CollidesWith(_min, _max))
-							{
-								Vector2<float> position = entity->GetPosition();
-								Vector2<float> extent = entity->GetExtent();
-								Vector2<float> halfExtent = extent / 2.f;
+					ObjectHandle **markObjectHandles = &m_children.front();
+					ObjectHandle **endObjectHandles = markObjectHandles + m_children.size();
+					while(markObjectHandles != endObjectHandles)
+					{
+						ObjectHandle *entity = *markObjectHandles++;
+						if(entity->GetCollisionMask() & mask)
+							if(entity != ignore)
+								if(entity->CollidesWith(_min, _max))
+								{
+									Vector2<float> position = entity->GetPosition();
+									Vector2<float> extent = entity->GetExtent();
+									Vector2<float> halfExtent = extent / 2.f;
 
-								float _startY = position[1] - halfExtent[1];
-								float _endY = position[1] + halfExtent[1];
+									float _startY = position[1] - halfExtent[1];
+									float _endY = position[1] + halfExtent[1];
 
-								Vector2<float> rMin(_min[0], _startY), rMax(_max[0], _endY);
+									Vector2<float> rMin(_min[0], _startY), rMax(_max[0], _endY);
 
-								if(entity->CollidesWith(rMin, rMax))
-									found.push_back(entity);
-							}
+									if(entity->CollidesWith(rMin, rMax))
+										found.push_back(entity);
+								}
+					}
 				}
 			}
 			//- handle the horizontal line case -
 			else if(!(endY - startY))
 			{
-				for(vector<ObjectHandle *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+				if(m_children.empty() == false)
 				{
-					ObjectHandle *entity = *it;
-					if(entity->GetCollisionMask() & mask)
-						if(entity != ignore)
-							if(entity->CollidesWith(_min, _max))
-							{
-								Vector2<float> position = entity->GetPosition();
-								Vector2<float> extent = entity->GetExtent();
-								Vector2<float> halfExtent = extent / 2.f;
+					ObjectHandle **markObjectHandles = &m_children.front();
+					ObjectHandle **endObjectHandles = markObjectHandles + m_children.size();
+					while(markObjectHandles != endObjectHandles)
+					{
+						ObjectHandle *entity = *markObjectHandles++;
+						if(entity->GetCollisionMask() & mask)
+							if(entity != ignore)
+								if(entity->CollidesWith(_min, _max))
+								{
+									Vector2<float> position = entity->GetPosition();
+									Vector2<float> extent = entity->GetExtent();
+									Vector2<float> halfExtent = extent / 2.f;
 
-								float _startX = position[0] - halfExtent[0];
-								float _endX = position[0] + halfExtent[0];
+									float _startX = position[0] - halfExtent[0];
+									float _endX = position[0] + halfExtent[0];
 
-								Vector2<float> rMin(_startX, _min[1]), rMax(_endX, _max[1]);
+									Vector2<float> rMin(_startX, _min[1]), rMax(_endX, _max[1]);
 
-								if(entity->CollidesWith(rMin, rMax))
-									found.push_back(entity);
-							}
+									if(entity->CollidesWith(rMin, rMax))
+										found.push_back(entity);
+								}
+					}
 				}
 			}
 			//- handle the diagonal line case -
@@ -457,27 +517,32 @@ namespace ce
 				}
 
 				float slope = (endY - startY) / (endX - startX);
-				for(vector<ObjectHandle *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+				if(m_children.empty() == false)
 				{
-					ObjectHandle *entity = *it;
-					if(entity->GetCollisionMask() & mask)
-						if(entity != ignore)
-							if(entity->CollidesWith(_min, _max))
-							{
-								Vector2<float> position = entity->GetPosition();
-								Vector2<float> extent = entity->GetExtent();
-								Vector2<float> halfExtent = extent / 2.f;
+					ObjectHandle **markObjectHandles = &m_children.front();
+					ObjectHandle **endObjectHandles = markObjectHandles + m_children.size();
+					while(markObjectHandles != endObjectHandles)
+					{
+						ObjectHandle *entity = *markObjectHandles++;
+						if(entity->GetCollisionMask() & mask)
+							if(entity != ignore)
+								if(entity->CollidesWith(_min, _max))
+								{
+									Vector2<float> position = entity->GetPosition();
+									Vector2<float> extent = entity->GetExtent();
+									Vector2<float> halfExtent = extent / 2.f;
 
-								float _startX = position[0] - halfExtent[0];
-								float _startY = startY + (_startX - startX) * slope;
-								float _endX = position[0] + halfExtent[0];
-								float _endY = startY + (_endX - startX) * slope;
+									float _startX = position[0] - halfExtent[0];
+									float _startY = startY + (_startX - startX) * slope;
+									float _endX = position[0] + halfExtent[0];
+									float _endY = startY + (_endX - startX) * slope;
 
-								Vector2<float> rMin(min(_startX, _endX), min(_startY, _endY)), rMax(max(_startX, _endX), max(_startY, _endY));
+									Vector2<float> rMin(min(_startX, _endX), min(_startY, _endY)), rMax(max(_startX, _endX), max(_startY, _endY));
 
-								if(entity->CollidesWith(rMin, rMax))
-									found.push_back(entity);
-							}
+									if(entity->CollidesWith(rMin, rMax))
+										found.push_back(entity);
+								}
+					}
 				}
 			}
 
@@ -545,14 +610,19 @@ namespace ce
 
 /*			for(int a = _minX; a <= _maxX; a++)
 				for(int b = _minY; b <= _maxY; b++)
-					for(vector<ObjectHandle *>::iterator it = m_zones[a][b]->m_children.begin(); it != m_zones[a][b]->m_children.end(); it++)
+					if(m_zones[a][b]->m_children.empty() == false)
 					{
-						ObjectHandle *entity = *it;
-						if(entity->Cache(0))
-							entity->m_object->Render();
+						ObjectHandle **markObjectHandles = &m_zones[a][b]->m_children.front();
+						ObjectHandle **endObjectHandles = markObjectHandles + m_zones[a][b]->m_children.size();
+						while(markObjectHandles != endObjectHandles)
+						{
+							ObjectHandle *entity = *markObjectHandles++;
+							if(entity->Cache(0))
+								entity->m_object->Render();
+						}
 					}
 			ObjectHandle::ClearCache(0);
-			*/
+*/
 
 			for(int a = _minX; a <= _maxX; a++)
 				for(int b = _minY; b <= _maxY; b++)
@@ -655,135 +725,43 @@ namespace ce
 			vector<ObjectHandle *> entities;
 			for(unsigned int a = 0; a < m_width; a++)
 				for(unsigned int b = 0; b < m_height; b++)
-					for(vector<ObjectHandle *>::iterator it = m_zones[a][b]->m_children.begin(); it != m_zones[a][b]->m_children.end(); it++)
+					if(m_zones[a][b]->m_children.empty() == false)
 					{
-						(*it)->m_startedPhysics = false;
-						entities.push_back(*it);
+						ObjectHandle **markObjectHandles = &m_zones[a][b]->m_children.front();
+						ObjectHandle **endObjectHandles = markObjectHandles + m_zones[a][b]->m_children.size();
+						while(markObjectHandles != endObjectHandles)
+						{
+							ObjectHandle *entity = *markObjectHandles++;
+							entity->m_startedPhysics = false;
+							entities.push_back(entity);
+						}
 					}
 			for(unsigned int a = 0; a < m_width; a++)
 				for(unsigned int b = 0; b < m_height; b++)
 					m_zones[a][b]->PhysicsPhase1(dt);
 
-			for(vector<ObjectHandle *>::iterator it = entities.begin(); it != entities.end(); it++)
+			if(entities.empty() == false)
 			{
-				ObjectHandle *entity = *it;
-				if(entity->m_startedPhysics)
-					continue;
-				Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent(), halfExtent = extent / 2.f;
-				int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
-				aMinX = (int)floor((position[0] - halfExtent[0]) / m_zoneSize);
-				aMinY = (int)floor((position[1] - halfExtent[1]) / m_zoneSize);
-				aMaxX = (int)floor((position[0] + halfExtent[0]) / m_zoneSize);
-				aMaxY = (int)floor((position[1] + halfExtent[1]) / m_zoneSize);
-
-				bMinX = (int)floor(entity->m_moveBoxMin[0] / m_zoneSize);
-				bMinY = (int)floor(entity->m_moveBoxMin[1] / m_zoneSize);
-				bMaxX = (int)floor(entity->m_moveBoxMax[0] / m_zoneSize);
-				bMaxY = (int)floor(entity->m_moveBoxMax[1] / m_zoneSize);
-
-				if(aMinX < 0)
-					aMinX = 0;
-				else if(aMinX >= (int)m_width)
-					aMinX = m_width - 1;
-				if(aMinY < 0)
-					aMinY = 0;
-				else if(aMinY >= (int)m_height)
-					aMinY = m_height - 1;
-				if(aMaxX < 0)
-					aMaxX = 0;
-				else if(aMaxX >= (int)m_width)
-					aMaxX = m_width - 1;
-				if(aMaxY < 0)
-					aMaxY = 0;
-				else if(aMaxY >= (int)m_height)
-					aMaxY = m_height - 1;
-
-				if(bMinX < 0)
-					bMinX = 0;
-				else if(bMinX >= (int)m_width)
-					bMinX = m_width - 1;
-				if(bMinY < 0)
-					bMinY = 0;
-				else if(bMinY >= (int)m_height)
-					bMinY = m_height - 1;
-				if(bMaxX < 0)
-					bMaxX = 0;
-				else if(bMaxX >= (int)m_width)
-					bMaxX = m_width - 1;
-				if(bMaxY < 0)
-					bMaxY = 0;
-				else if(bMaxY >= (int)m_height)
-					bMaxY = m_height - 1;
-
-				for(int x = aMinX; x <= aMaxX; x++)
-					for(int y = aMinY; y <= aMaxY; y++)
-						if(x < bMinX || y < bMinY || x > bMaxX || y > bMaxY)
-							m_zones[x][y]->Remove(entity);
-
-				for(int x = bMinX; x <= bMaxX; x++)
-					for(int y = bMinY; y <= bMaxY; y++)
-						if(x < aMinX || y < aMinY || x > aMaxX || y > aMaxY)
-							m_zones[x][y]->Add(entity);
-
-				entity->m_startedPhysics = true;
-			}
-
-			for(unsigned int a = 0; a < m_width; a++)
-				for(unsigned int b = 0; b < m_height; b++)
-					m_zones[a][b]->PhysicsPhase2(dt);
-
-			for(vector<ObjectHandle *>::iterator it = entities.begin(); it != entities.end(); it++)
-			{
-				ObjectHandle *entity = *it;
-				if(!entity->m_finishedPhysics)
+				ObjectHandle **markObjectHandles = &entities.front();
+				ObjectHandle **endObjectHandles = markObjectHandles + entities.size();
+				while(markObjectHandles != endObjectHandles)
 				{
-					entity->m_finishedPhysics = true;
-					Vector2<float> velocity = entity->GetVelocity();
-					int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
-
-					aMinX = (int)floor(entity->m_moveBoxMin[0] / m_zoneSize);
-					aMinY = (int)floor(entity->m_moveBoxMin[1] / m_zoneSize);
-					aMaxX = (int)floor(entity->m_moveBoxMax[0] / m_zoneSize);
-					aMaxY = (int)floor(entity->m_moveBoxMax[1] / m_zoneSize);
-
-/*					if(!entity->m_canMove[0])
-					{
-						if(entity->m_movePadding[0] >= 0.01f)
-							entity->m_movePadding[0] /= 2.f;
-						else
-							entity->m_movement[0] = 0.f;
-					}
-					if(!entity->m_canMove[1])
-					{
-						if(entity->m_movePadding[1] >= 0.01f)
-							entity->m_movePadding[1] /= 2.f;
-						else
-							entity->m_movement[1] = 1.f;
-					}
-*/
-					if(entity->m_canMove[0] || entity->m_canMove[1])
-					{
-						if(!entity->m_canMove[0])
-							entity->m_movement[0] = 0.f;
-						if(!entity->m_canMove[1])
-							entity->m_movement[1] = 0.f;
-
-						entity->SetPosition(entity->GetPosition() + entity->m_movement);
-//						entity->Move(entity->m_movement);
-
-/*						if(entity->m_canMove[0])
-							entity->m_movePadding[0] = 1.f;
-						if(entity->m_canMove[1])
-							entity->m_movePadding[1] = 1.f;
-*/					}
-
+					ObjectHandle *entity = *markObjectHandles++;
+					if(entity->m_startedPhysics)
+						continue;
 					Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent(), halfExtent = extent / 2.f;
-					bMinX = (int)floor((position[0] - halfExtent[0]) / m_zoneSize);
-					bMinY = (int)floor((position[1] - halfExtent[1]) / m_zoneSize);
-					bMaxX = (int)floor((position[0] + halfExtent[0]) / m_zoneSize);
-					bMaxY = (int)floor((position[1] + halfExtent[1]) / m_zoneSize);
-					
-					 if(aMinX < 0)
+					int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
+					aMinX = (int)floor((position[0] - halfExtent[0]) / m_zoneSize);
+					aMinY = (int)floor((position[1] - halfExtent[1]) / m_zoneSize);
+					aMaxX = (int)floor((position[0] + halfExtent[0]) / m_zoneSize);
+					aMaxY = (int)floor((position[1] + halfExtent[1]) / m_zoneSize);
+
+					bMinX = (int)floor(entity->m_moveBoxMin[0] / m_zoneSize);
+					bMinY = (int)floor(entity->m_moveBoxMin[1] / m_zoneSize);
+					bMaxX = (int)floor(entity->m_moveBoxMax[0] / m_zoneSize);
+					bMaxY = (int)floor(entity->m_moveBoxMax[1] / m_zoneSize);
+
+					if(aMinX < 0)
 						aMinX = 0;
 					else if(aMinX >= (int)m_width)
 						aMinX = m_width - 1;
@@ -826,19 +804,126 @@ namespace ce
 						for(int y = bMinY; y <= bMaxY; y++)
 							if(x < aMinX || y < aMinY || x > aMaxX || y > aMaxY)
 								m_zones[x][y]->Add(entity);
-					
-/*					if(!entity->m_canMove[0])
-						entity->GetVelocity()[0] *= -1.f;
-					if(!entity->m_canMove[1])
-						entity->GetVelocity()[1] *= -1.f;
-*/					
-					//- Update AABB -
+
+					entity->m_startedPhysics = true;
+				}
+			}
+
+			for(unsigned int a = 0; a < m_width; a++)
+				for(unsigned int b = 0; b < m_height; b++)
+					m_zones[a][b]->PhysicsPhase2(dt);
+			if(entities.empty() == false)
+			{
+				ObjectHandle **markObjectHandles = &entities.front();
+				ObjectHandle **endObjectHandles = markObjectHandles + entities.size();
+				while(markObjectHandles != endObjectHandles)
+				{
+					ObjectHandle *entity = *markObjectHandles++;
+					if(!entity->m_finishedPhysics)
 					{
-						Vector2<float> minRect = position - halfExtent;
-						Vector2<float> maxRect = position + halfExtent;
-						entity->UpdateObjectAABB(Rect<float>(minRect[0], minRect[1], maxRect[0], maxRect[1]));
+						entity->m_finishedPhysics = true;
+						Vector2<float> velocity = entity->GetVelocity();
+						int aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY;
+
+						aMinX = (int)floor(entity->m_moveBoxMin[0] / m_zoneSize);
+						aMinY = (int)floor(entity->m_moveBoxMin[1] / m_zoneSize);
+						aMaxX = (int)floor(entity->m_moveBoxMax[0] / m_zoneSize);
+						aMaxY = (int)floor(entity->m_moveBoxMax[1] / m_zoneSize);
+
+/*						if(!entity->m_canMove[0])
+						{
+							if(entity->m_movePadding[0] >= 0.01f)
+								entity->m_movePadding[0] /= 2.f;
+							else
+								entity->m_movement[0] = 0.f;
+						}
+						if(!entity->m_canMove[1])
+						{
+							if(entity->m_movePadding[1] >= 0.01f)
+								entity->m_movePadding[1] /= 2.f;
+							else
+								entity->m_movement[1] = 1.f;
+						}
+*/
+						if(entity->m_canMove[0] || entity->m_canMove[1])
+						{
+							if(!entity->m_canMove[0])
+								entity->m_movement[0] = 0.f;
+							if(!entity->m_canMove[1])
+								entity->m_movement[1] = 0.f;
+
+							entity->SetPosition(entity->GetPosition() + entity->m_movement);
+//							entity->Move(entity->m_movement);
+
+/*							if(entity->m_canMove[0])
+								entity->m_movePadding[0] = 1.f;
+							if(entity->m_canMove[1])
+								entity->m_movePadding[1] = 1.f;
+*/						}
+
+						Vector2<float> position = entity->GetPosition(), extent = entity->GetExtent(), halfExtent = extent / 2.f;
+						bMinX = (int)floor((position[0] - halfExtent[0]) / m_zoneSize);
+						bMinY = (int)floor((position[1] - halfExtent[1]) / m_zoneSize);
+						bMaxX = (int)floor((position[0] + halfExtent[0]) / m_zoneSize);
+						bMaxY = (int)floor((position[1] + halfExtent[1]) / m_zoneSize);
+					
+						 if(aMinX < 0)
+							aMinX = 0;
+						else if(aMinX >= (int)m_width)
+							aMinX = m_width - 1;
+						if(aMinY < 0)
+							aMinY = 0;
+						else if(aMinY >= (int)m_height)
+							aMinY = m_height - 1;
+						if(aMaxX < 0)
+							aMaxX = 0;
+						else if(aMaxX >= (int)m_width)
+							aMaxX = m_width - 1;
+						if(aMaxY < 0)
+							aMaxY = 0;
+						else if(aMaxY >= (int)m_height)
+							aMaxY = m_height - 1;
+
+						if(bMinX < 0)
+							bMinX = 0;
+						else if(bMinX >= (int)m_width)
+							bMinX = m_width - 1;
+						if(bMinY < 0)
+							bMinY = 0;
+						else if(bMinY >= (int)m_height)
+							bMinY = m_height - 1;
+						if(bMaxX < 0)
+							bMaxX = 0;
+						else if(bMaxX >= (int)m_width)
+							bMaxX = m_width - 1;
+						if(bMaxY < 0)
+							bMaxY = 0;
+						else if(bMaxY >= (int)m_height)
+							bMaxY = m_height - 1;
+
+						for(int x = aMinX; x <= aMaxX; x++)
+							for(int y = aMinY; y <= aMaxY; y++)
+								if(x < bMinX || y < bMinY || x > bMaxX || y > bMaxY)
+									m_zones[x][y]->Remove(entity);
+
+						for(int x = bMinX; x <= bMaxX; x++)
+							for(int y = bMinY; y <= bMaxY; y++)
+								if(x < aMinX || y < aMinY || x > aMaxX || y > aMaxY)
+									m_zones[x][y]->Add(entity);
+					
+/*						if(!entity->m_canMove[0])
+							entity->GetVelocity()[0] *= -1.f;
+						if(!entity->m_canMove[1])
+							entity->GetVelocity()[1] *= -1.f;
+*/					
+						//- Update AABB -
+						{
+							Vector2<float> minRect = position - halfExtent;
+							Vector2<float> maxRect = position + halfExtent;
+							entity->UpdateObjectAABB(Rect<float>(minRect[0], minRect[1], maxRect[0], maxRect[1]));
+						}
+						entity->m_movement = Vector2<float>(0.f, 0.f);
 					}
-					entity->m_movement = Vector2<float>(0.f, 0.f);
 				}
 			}
 		}
@@ -878,11 +963,16 @@ namespace ce
 				for(int y = MinY; y <= MaxY; y++)
 				{
 					vector<ObjectHandle *> localFound = m_zones[x][y]->BoxSearch(minX, minY, maxX, maxY, mask, ignore);
-					for(vector<ObjectHandle *>::iterator it = localFound.begin(); it != localFound.end(); it++)
+					if(localFound.empty() == false)
 					{
-						ObjectHandle *entity = *it;
-						if(entity->Cache(1))
-							found.push_back(entity);
+						ObjectHandle **markObjectHandles = &localFound.front();
+						ObjectHandle **endObjectHandles = markObjectHandles + localFound.size();
+						while(markObjectHandles != endObjectHandles)
+						{
+							ObjectHandle *entity = *markObjectHandles++;
+							if(entity->Cache(1))
+								found.push_back(entity);
+						}
 					}
 				}
 			ObjectHandle::ClearCache(1);
@@ -985,14 +1075,24 @@ namespace ce
 			}
 
 			//- go through the zones and find which entities intersect the line segment -
-			for(vector<Zone *>::iterator itA = searchZones.begin(); itA != searchZones.end(); itA++)
+			if(searchZones.empty() == false)
 			{
-				vector<ObjectHandle *> localFound = (*itA)->SegmentSearch(startX, startY, endX, endY, mask, ignore);
-				for(vector<ObjectHandle *>::iterator itB = localFound.begin(); itB != localFound.end(); itB++)
+				Zone **markZones = &searchZones.front();
+				Zone **endZones = markZones + searchZones.size();
+				while(markZones != endZones)
 				{
-					ObjectHandle *entity = *itB;
-					if(entity->Cache(1))
-						found.push_back(entity);
+					vector<ObjectHandle *> localFound = (*markZones++)->SegmentSearch(startX, startY, endX, endY, mask, ignore);
+					if(localFound.empty() == false)
+					{
+						ObjectHandle **markObjectHandles = &localFound.front();
+						ObjectHandle **endObjectHandles = markObjectHandles + localFound.size();
+						while(markObjectHandles != endObjectHandles)
+						{
+							ObjectHandle *entity = *markObjectHandles++;
+							if(entity->Cache(1))
+								found.push_back(entity);
+						}
+					}
 				}
 			}
 			ObjectHandle::ClearCache(1);
@@ -1005,13 +1105,16 @@ namespace ce
 			m_plane->m_handler = this;
 			
 			vector<Group::Member *> *members = m_referenceGroup->GetMembers();
-			for(vector<Group::Member *>::iterator it = members->begin(); it != members->end(); it++)
+			if(members->empty() == false)
 			{
-				PhysicalObject *object = (PhysicalObject *)*it;
-
-				ObjectHandle *handle = new ObjectHandle(this, object);
-
-				m_plane->Place(handle);
+				Group::Member **markObjects = &members->front();
+				Group::Member **endObjects = markObjects + members->size();
+				while(markObjects != endObjects)
+				{
+					PhysicalObject *object = (PhysicalObject *)*markObjects++;
+					ObjectHandle *handle = new ObjectHandle(this, object);
+					m_plane->Place(handle);
+				}
 			}
 		}
 		void DefaultPhysicsHandler::SetupObject(PhysicalObject *object)
@@ -1036,16 +1139,19 @@ namespace ce
 		}
 		void DefaultPhysicsHandler::Cleanup()
 		{
-			PhysicalGroup *group = GetReferenceGroup();
-			vector<Group::Member *> *members = group->GetMembers();
-			for(vector<Group::Member *>::iterator it = members->begin(); it != members->end(); it++)
+			vector<Group::Member *> *members = m_referenceGroup->GetMembers();
+			if(members->empty() == false)
 			{
-				PhysicalObject *object = (PhysicalObject *)*it;
-				ObjectHandle *handle = (ObjectHandle *)object->GetObjectHandle();
-				if(handle)
-					delete handle;
+				Group::Member **markObjects = &members->front();
+				Group::Member **endObjects = markObjects + members->size();
+				while(markObjects != endObjects)
+				{
+					PhysicalObject *object = (PhysicalObject *)*markObjects++;
+					ObjectHandle *handle = (ObjectHandle *)object->GetObjectHandle();
+					if(handle)
+						delete handle;
+				}
 			}
-
 			delete m_plane;
 			PhysicsHandler::Cleanup();
 		}
@@ -1058,8 +1164,13 @@ namespace ce
 					ignoreHandle = (ObjectHandle *)ignore->GetObjectHandle();
 				vector<PhysicalObject *> objects;
 				vector<ObjectHandle *> handles = m_plane->BoxSearch(minX, minY, maxX, maxY, mask, ignoreHandle);
-				for(vector<ObjectHandle *>::iterator it = handles.begin(); it != handles.end(); it++)
-					objects.push_back((*it)->GetReferenceObject());
+				if(handles.empty() == false)
+				{
+					ObjectHandle **markObjectHandles = &handles.front();
+					ObjectHandle **endObjectHandles = markObjectHandles + handles.size();
+					while(markObjectHandles != endObjectHandles)
+						objects.push_back((*markObjectHandles++)->GetReferenceObject());
+				}
 				return objects;
 			}
 
@@ -1074,8 +1185,13 @@ namespace ce
 					ignoreHandle = (ObjectHandle *)ignore->GetObjectHandle();
 				vector<PhysicalObject *> objects;
 				vector<ObjectHandle *> handles = m_plane->SegmentSearch(startX, startY, endX, endY, mask, ignoreHandle);
-				for(vector<ObjectHandle *>::iterator it = handles.begin(); it != handles.end(); it++)
-					objects.push_back((*it)->GetReferenceObject());
+				if(handles.empty() == false)
+				{
+					ObjectHandle **markObjectHandles = &handles.front();
+					ObjectHandle **endObjectHandles = markObjectHandles + handles.size();
+					while(markObjectHandles != endObjectHandles)
+						objects.push_back((*markObjectHandles++)->GetReferenceObject());
+				}
 				return objects;
 			}
 

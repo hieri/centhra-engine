@@ -258,8 +258,13 @@ namespace ce
 		}
 
 		string extension = fileName.substr(lastPeriod + 1, string::npos);
-		for(string::iterator it = extension.begin(); it != extension.end(); it++)
-			*it = tolower(*it);
+		if(extension.empty() == false)
+		{
+			char *markChars = &extension.front();
+			char *endChars = markChars + extension.size();
+			while(markChars != endChars)
+				*markChars = tolower(*markChars++);
+		}
 
 		Audio *audio = 0;
 

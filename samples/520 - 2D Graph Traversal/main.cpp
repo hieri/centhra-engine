@@ -19,6 +19,7 @@
 #define NUMRANDOMS 64
 
 using namespace ce;
+using namespace std;
 
 class NodeEntity : public game2d::PhysicalObject
 {
@@ -43,13 +44,18 @@ protected:
 		glPopMatrix();
 		
 		glBegin(GL_LINES);
-		std::vector<game2d::Graph::Node *> vec = m_node->GetNeighbors();
+		vector<game2d::Graph::Node *> vec = m_node->GetNeighbors();
 		Vector2<float> origin = m_node->GetPosition();
-		for(std::vector<game2d::Graph::Node *>::iterator it = vec.begin(); it != vec.end(); it++)
+		if(vec.empty() == false)
 		{
-			Vector2<float> nodePos = (*it)->GetPosition();
-			glVertex2f(origin[0], origin[1]);
-			glVertex2f(nodePos[0], nodePos[1]);
+			game2d::Graph::Node **markNodes = &vec.front();
+			game2d::Graph::Node **endNodes = markNodes + vec.size();
+			while(markNodes != endNodes)
+			{
+				Vector2<float> nodePos = (*markNodes++)->GetPosition();
+				glVertex2f(origin[0], origin[1]);
+				glVertex2f(nodePos[0], nodePos[1]);
+			}
 		}
 		glEnd();
 	}
@@ -71,7 +77,7 @@ class App2DGraphTraversalSample : public AppFrontend
 	ui::CameraView2DCtrl *m_view;
 	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 	Vector2<float> m_pointA, m_pointB;
-	std::vector<Vector2<float> > m_path;
+	vector<Vector2<float> > m_path;
 	NodeEntity *m_nodeEntities[10];
 	game2d::Graph::Node *m_nodes[10];
 	game2d::Graph *m_graph;
@@ -109,24 +115,24 @@ public:
 		m_view = new ui::CameraView2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(640, 480));
 		m_view->SetCamera(m_camera);
 
-		m_nodes[0] = new game2d::Graph::Node(ce::Vector2<float>(128.f, 128.f));
-		m_nodes[1] = new game2d::Graph::Node(ce::Vector2<float>(256.f, 128.f));
-		m_nodes[2] = new game2d::Graph::Node(ce::Vector2<float>(512.f, 128.f));
-		m_nodes[3] = new game2d::Graph::Node(ce::Vector2<float>(256.f, 256.f));
-		m_nodes[4] = new game2d::Graph::Node(ce::Vector2<float>(512.f, 256.f));
-		m_nodes[5] = new game2d::Graph::Node(ce::Vector2<float>(128.f, 512.f));
-		m_nodes[6] = new game2d::Graph::Node(ce::Vector2<float>(128.f, 256.f));
-		m_nodes[7] = new game2d::Graph::Node(ce::Vector2<float>(128.f, 512.f));
-		m_nodes[8] = new game2d::Graph::Node(ce::Vector2<float>(384.f, 256.f));
-		m_nodes[9] = new game2d::Graph::Node(ce::Vector2<float>(384.f, 512.f));
+		m_nodes[0] = new game2d::Graph::Node(Vector2<float>(128.f, 128.f));
+		m_nodes[1] = new game2d::Graph::Node(Vector2<float>(256.f, 128.f));
+		m_nodes[2] = new game2d::Graph::Node(Vector2<float>(512.f, 128.f));
+		m_nodes[3] = new game2d::Graph::Node(Vector2<float>(256.f, 256.f));
+		m_nodes[4] = new game2d::Graph::Node(Vector2<float>(512.f, 256.f));
+		m_nodes[5] = new game2d::Graph::Node(Vector2<float>(128.f, 512.f));
+		m_nodes[6] = new game2d::Graph::Node(Vector2<float>(128.f, 256.f));
+		m_nodes[7] = new game2d::Graph::Node(Vector2<float>(128.f, 512.f));
+		m_nodes[8] = new game2d::Graph::Node(Vector2<float>(384.f, 256.f));
+		m_nodes[9] = new game2d::Graph::Node(Vector2<float>(384.f, 512.f));
 		m_graph = new game2d::Graph();
 
-		m_pointB = ce::Vector2<float>(256.f, 128.f);
-		m_pointA = ce::Vector2<float>(128.f, 256.f);
+		m_pointB = Vector2<float>(256.f, 128.f);
+		m_pointA = Vector2<float>(128.f, 256.f);
 
-		m_walls[0] = new game2d::PhysicalObject(ce::Vector2<float>(194.f, 194.f), ce::Vector2<float>(100.f, 100.f));
-		m_walls[1] = new game2d::PhysicalObject(ce::Vector2<float>(385.f, 194.f), ce::Vector2<float>(230.f, 100.f));
-		m_walls[2] = new game2d::PhysicalObject(ce::Vector2<float>(260.f, 380.f), ce::Vector2<float>(230.f, 220.f));
+		m_walls[0] = new game2d::PhysicalObject(Vector2<float>(194.f, 194.f), Vector2<float>(100.f, 100.f));
+		m_walls[1] = new game2d::PhysicalObject(Vector2<float>(385.f, 194.f), Vector2<float>(230.f, 100.f));
+		m_walls[2] = new game2d::PhysicalObject(Vector2<float>(260.f, 380.f), Vector2<float>(230.f, 220.f));
 
 		for(int a = 0; a < 10; a++)
 		{
@@ -258,7 +264,9 @@ public:
 			halfExtent = m_view->GetExtent() / 2;
 			center = m_entity->GetPosition();
 
-			m_view->Render(m_canvas);
+			glPushMatrix();
+				m_view->Render(m_canvas);
+			glPopMatrix();
 			glPushMatrix();
 				glColor4ub(255, 0, 0, 255);
 				glTranslatef((float)halfExtent[0], (float)halfExtent[1], 0.f);
@@ -266,14 +274,17 @@ public:
 
 				glBegin(GL_LINES);
 					glVertex2f(m_pointA[0], m_pointA[1]);
-
-					for(std::vector<Vector2<float> >::iterator it = m_path.begin(); it != m_path.end(); it++)
+					if(m_path.empty() == false)
 					{
-						Vector2<float> point = *it;
-						glVertex2f(point[0], point[1]);
-						glVertex2f(point[0], point[1]);
+						Vector2<float> *markNodes = &m_path.front();
+						Vector2<float> *endNodes = markNodes + m_path.size();
+						while(markNodes != endNodes)
+						{
+							Vector2<float> point = *markNodes++;
+							glVertex2f(point[0], point[1]);
+							glVertex2f(point[0], point[1]);
+						}
 					}
-
 					glVertex2f(m_pointB[0], m_pointB[1]);
 				glEnd();
 

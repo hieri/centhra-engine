@@ -238,10 +238,12 @@ void *clientFunc(void *arg)
 
 	bool takenControl = false;
 	vector<Group::Member *> *groupMembers = app->m_group->GetMembers();
-	for(vector<Group::Member *>::iterator it = groupMembers->begin(); it != groupMembers->end(); it++)
+	if(groupMembers->empty() == false)
 	{
-		game2d::PhysicalObject *obj = (game2d::PhysicalObject *)*it;
-		connection.creationQueue.push(obj);
+		Group::Member **markObjects = &groupMembers->front();
+		Group::Member **endObjects = markObjects + groupMembers->size();
+		while(markObjects != endObjects)
+			connection.creationQueue.push((game2d::PhysicalObject *)*markObjects++);
 	}
 	for(map<unsigned long, ClientConnection *>::iterator it = app->m_clientConnectionMap.begin(); it != app->m_clientConnectionMap.end(); it++)
 	{
@@ -343,27 +345,32 @@ void *clientFunc(void *arg)
 			// objects need id's derp
 //			for(map<unsigned long, ClientConnection *>::iterator it = app->m_clientConnectionMap.begin(); it != app->m_clientConnectionMap.end(); it++)
 			vector<Group::Member *> *groupMembers = app->m_group->GetMembers();
-			for(vector<Group::Member *>::iterator it = groupMembers->begin(); it != groupMembers->end(); it++)
+			if(groupMembers->empty() == false)
 			{
-//				ClientConnection *clientConnection = it->second;
-//				game2d::PhysicalObject *obj = (game2d::PhysicalObject *)clientConnection->player;
-				game2d::PhysicalObject *obj = (game2d::PhysicalObject *)*it;
+				Group::Member **markObjects = &groupMembers->front();
+				Group::Member **endObjects = markObjects + groupMembers->size();
+				while(markObjects != endObjects)
+				{
+//					ClientConnection *clientConnection = it->second;
+//					game2d::PhysicalObject *obj = (game2d::PhysicalObject *)clientConnection->player;
+					game2d::PhysicalObject *obj = (game2d::PhysicalObject *)*markObjects++;
 
-				Vector2<float> position = obj->GetPosition();
-				Vector2<float> velocity = obj->GetVelocity();
-				float rotation = obj->GetRotation();
-				Packet update;
-				update.type = Update;
-				update.update.objID = obj->GetID();
-				update.update.posX = position[0];
-				update.update.posY = position[1];
-				update.update.velX = velocity[0];
-				update.update.velY = velocity[1];
-				update.update.rot = rotation;
-				string tempPacket(packetPrefix);
-				tempPacket.append((char *)&update.type, sizeof(unsigned short));
-				tempPacket.append((char *)&update, sizeof(UpdatePacket));
-				client->Write((char *)tempPacket.c_str(), tempPacket.size());
+					Vector2<float> position = obj->GetPosition();
+					Vector2<float> velocity = obj->GetVelocity();
+					float rotation = obj->GetRotation();
+					Packet update;
+					update.type = Update;
+					update.update.objID = obj->GetID();
+					update.update.posX = position[0];
+					update.update.posY = position[1];
+					update.update.velX = velocity[0];
+					update.update.velY = velocity[1];
+					update.update.rot = rotation;
+					string tempPacket(packetPrefix);
+					tempPacket.append((char *)&update.type, sizeof(unsigned short));
+					tempPacket.append((char *)&update, sizeof(UpdatePacket));
+					client->Write((char *)tempPacket.c_str(), tempPacket.size());
+				}
 			}
 		}
 
@@ -467,11 +474,16 @@ int main(int argc, char **argv)
 	}
 
 	physicsThread.Join();
-	for(vector<Thread *>::iterator it = clientThreads.begin(); it != clientThreads.end(); it++)
+	if(clientThreads.empty() == false)
 	{
-		Thread *thread = *it;
-		thread->Join();
-		delete thread;
+		Thread **markThreads = &clientThreads.front();
+		Thread **endThreads = markThreads + clientThreads.size();
+		while(markThreads != endThreads)
+		{
+			Thread *thread = *markThreads++;
+			thread->Join();
+			delete thread;
+		}
 	}
 
 	g_physicsMutex.Destroy();

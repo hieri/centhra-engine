@@ -380,23 +380,31 @@ namespace ce
 							if((maxX - minX) < 0.1f && (maxY - minY) < 0.1f)
 							{
 								Vector2<float> pt = (startPos + endPos) / 2.f;
-
-								if(objects.size())
-									for(vector<game2d::PhysicalObject *>::iterator it = objects.begin(); it != objects.end(); it++)
+								if(objects.empty() == false)
+								{
+									game2d::PhysicalObject **markPhysicalObjects = &objects.front();
+									game2d::PhysicalObject **endPhysicalObjects = markPhysicalObjects + objects.size();
+									while(markPhysicalObjects != endPhysicalObjects)
 									{
-										game2d::PhysicalObject *obj = *it;
+										game2d::PhysicalObject *obj = *markPhysicalObjects++;
 										if(obj->CollidesWith(pt))
 										{
-											m_selection.push_back((game2d::PhysicalObject *)obj);
+											m_selection.push_back(obj);
 											break;
 										}
 									}
+								}
 							}
 							else
 							{
 								m_selection.reserve(objects.size());
-								for(vector<game2d::PhysicalObject *>::iterator it = objects.begin(); it != objects.end(); it++)
-									m_selection.push_back((game2d::PhysicalObject *)*it);
+								if(objects.empty() == false)
+								{
+									game2d::PhysicalObject **markPhysicalObjects = &objects.front();
+									game2d::PhysicalObject **endPhysicalObjects = markPhysicalObjects + objects.size();
+									while(markPhysicalObjects != endPhysicalObjects)
+										m_selection.push_back(*markPhysicalObjects++);
+								}
 							}
 
 							m_isSelecting = false;
@@ -502,8 +510,16 @@ namespace ce
 						if(m_isDragging)
 						{
 							app->LockWorldMutex();
-							for(vector<pair<game2d::PhysicalObject *, Vector2<float> > >::iterator it = m_dragSelection.begin(); it != m_dragSelection.end(); it++)
-								it->first->SetPosition(curPos + it->second);
+							if(m_dragSelection.empty() == false)
+							{
+								pair<game2d::PhysicalObject *, Vector2<float> > *markPhysicalObjects = &m_dragSelection.front();
+								pair<game2d::PhysicalObject *, Vector2<float> > *endPhysicalObjects = markPhysicalObjects + m_dragSelection.size();
+								while(markPhysicalObjects != endPhysicalObjects)
+								{
+									markPhysicalObjects->first->SetPosition(curPos + markPhysicalObjects->second);
+									markPhysicalObjects++;
+								}
+							}
 							app->UnlockWorldMutex();
 						}
 						else if(m_isRotating)
@@ -512,11 +528,17 @@ namespace ce
 							float angleOffset = BaseAngleRadians(atan2f(dif[1], dif[0]) - m_startRotation);
 
 							app->LockWorldMutex();
-							for(vector<RotateDef>::iterator it = m_rotateSelection.begin(); it != m_rotateSelection.end(); it++)
+							if(m_rotateSelection.empty() == false)
 							{
-								it->object->SetRotation(RadiansToDegrees() * BaseAngleRadians(angleOffset + it->angle));
-								float offsetAngle = BaseAngleRadians(angleOffset + it->offsetAngle);
-								it->object->SetPosition(Vector2<float>(cos(offsetAngle), sin(offsetAngle)) * it->offsetLength + m_rotateCenter);
+								RotateDef *markPhysicalObjects = &m_rotateSelection.front();
+								RotateDef *endPhysicalObjects = markPhysicalObjects + m_rotateSelection.size();
+								while(markPhysicalObjects != endPhysicalObjects)
+								{
+									markPhysicalObjects->object->SetRotation(RadiansToDegrees() * BaseAngleRadians(angleOffset + markPhysicalObjects->angle));
+									float offsetAngle = BaseAngleRadians(angleOffset + markPhysicalObjects->offsetAngle);
+									markPhysicalObjects->object->SetPosition(Vector2<float>(cos(offsetAngle), sin(offsetAngle)) * markPhysicalObjects->offsetLength + m_rotateCenter);
+									markPhysicalObjects++;
+								}
 							}
 							app->UnlockWorldMutex();
 						}
@@ -654,8 +676,13 @@ namespace ce
 					if(m_selection.size())
 					{
 						app->LockWorldMutex();
-						for(vector<game2d::PhysicalObject *>::iterator it = m_selection.begin(); it != m_selection.end(); it++)
-							(*it)->Delete();
+						if(m_selection.empty() == false)
+						{
+							game2d::PhysicalObject **markPhysicalObjects = &m_selection.front();
+							game2d::PhysicalObject **endPhysicalObjects = markPhysicalObjects + m_selection.size();
+							while(markPhysicalObjects != endPhysicalObjects)
+								(*markPhysicalObjects++)->Delete();
+						}
 						app->UnlockWorldMutex();
 						m_selection.clear();
 					}
@@ -712,20 +739,24 @@ namespace ce
 						glScalef(viewScale[0], viewScale[1], 1.f);
 
 						glColor4ub(0, 0, 255, 200);
-						for(vector<game2d::PhysicalObject *>::iterator it = m_selection.begin(); it != m_selection.end(); it++)
+						if(m_selection.empty() == false)
 						{
-							game2d::PhysicalObject *object = (game2d::PhysicalObject *)*it;
+							game2d::PhysicalObject **markPhysicalObjects = &m_selection.front();
+							game2d::PhysicalObject **endPhysicalObjects = markPhysicalObjects + m_selection.size();
+							while(markPhysicalObjects != endPhysicalObjects)
+							{
+								game2d::PhysicalObject *object = *markPhysicalObjects++;
+								glPushMatrix();
+									Vector2<float> position = object->GetPosition();
+									Vector2<float> extent = object->GetExtent();
 
-							glPushMatrix();
-								Vector2<float> position = object->GetPosition();
-								Vector2<float> extent = object->GetExtent();
-
-								glTranslatef(position[0], position[1], 0.f);
-								glRotatef(object->GetRotation(), 0.f, 0.f, 1.f);
-								glScalef(extent[0], extent[1], 1.f);
-								glTranslatef(-0.5f, -0.5f, 0.f);
-								RenderSquare();
-							glPopMatrix();
+									glTranslatef(position[0], position[1], 0.f);
+									glRotatef(object->GetRotation(), 0.f, 0.f, 1.f);
+									glScalef(extent[0], extent[1], 1.f);
+									glTranslatef(-0.5f, -0.5f, 0.f);
+									RenderSquare();
+								glPopMatrix();
+							}
 						}
 						glColor4ub(255, 255, 255, 255);
 					}
@@ -795,13 +826,18 @@ namespace ce
 			Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(x, y);
 			m_dragSelection.reserve(m_selection.size());
 			app->LockWorldMutex();
-			for(vector<game2d::PhysicalObject *>::iterator it = m_selection.begin(); it != m_selection.end(); it++)
+			if(m_selection.empty() == false)
 			{
-				game2d::PhysicalObject *obj = *it;
-				obj->SetCollidable(false);
-				obj->SetVelocity(Vector2<float>(0.f, 0.f));
-				obj->SetAngularVelocity(0.f);
-				m_dragSelection.push_back(pair<game2d::PhysicalObject *, Vector2<float> >(obj, obj->GetPosition() - curPos));
+				game2d::PhysicalObject **markPhysicalObjects = &m_selection.front();
+				game2d::PhysicalObject **endPhysicalObjects = markPhysicalObjects + m_selection.size();
+				while(markPhysicalObjects != endPhysicalObjects)
+				{
+					game2d::PhysicalObject *object = *markPhysicalObjects++;
+					object->SetCollidable(false);
+					object->SetVelocity(Vector2<float>(0.f, 0.f));
+					object->SetAngularVelocity(0.f);
+					m_dragSelection.push_back(pair<game2d::PhysicalObject *, Vector2<float> >(object, object->GetPosition() - curPos));
+				}
 			}
 			app->UnlockWorldMutex();
 			m_hover = 0;
@@ -809,8 +845,13 @@ namespace ce
 		}
 		void Editor2DCtrl::StopDragging()
 		{
-			for(vector<game2d::PhysicalObject *>::iterator it = m_selection.begin(); it != m_selection.end(); it++)
-				(*it)->SetCollidable(true);
+			if(m_selection.empty() == false)
+			{
+				game2d::PhysicalObject **markPhysicalObjects = &m_selection.front();
+				game2d::PhysicalObject **endPhysicalObjects = markPhysicalObjects + m_selection.size();
+				while(markPhysicalObjects != endPhysicalObjects)
+					(*markPhysicalObjects++)->SetCollidable(true);
+			}
 			m_dragSelection.clear();
 			m_isDragging = false;
 		}
@@ -824,36 +865,42 @@ namespace ce
 			int N = 0;
 			unsigned short ignoreMask = 0;// game2d::PhysicalObject::Mask_Wall | game2d::PhysicalObject::Mask_Body;
 			app->LockWorldMutex();
-			for(vector<game2d::PhysicalObject *>::iterator it = m_selection.begin(); it != m_selection.end(); it++)
+			if(m_selection.empty() == false)
 			{
-				game2d::PhysicalObject *obj = *it;
-				if(obj->GetTypeMask() & ignoreMask)
-					continue;
-				totalPos += obj->GetPosition();
-				N++;
-			}
+				game2d::PhysicalObject **markPhysicalObjects = &m_selection.front();
+				game2d::PhysicalObject **endPhysicalObjects = markPhysicalObjects + m_selection.size();
+				while(markPhysicalObjects != endPhysicalObjects)
+				{
+					game2d::PhysicalObject *object = *markPhysicalObjects++;
+					if(object->GetTypeMask() & ignoreMask)
+						continue;
+					totalPos += object->GetPosition();
+					N++;
+				}
 
-			m_rotateCenter = totalPos / (float)N;
+				m_rotateCenter = totalPos / (float)N;
 
-			Vector2<float> dif = curPos - m_rotateCenter;
-			m_startRotation = atan2f(dif[1], dif[0]);
+				Vector2<float> dif = curPos - m_rotateCenter;
+				m_startRotation = atan2f(dif[1], dif[0]);
+				Vector2<float> offset;
 
-			Vector2<float> offset;
-			for(vector<game2d::PhysicalObject *>::iterator it = m_selection.begin(); it != m_selection.end(); it++)
-			{
-				game2d::PhysicalObject *obj = *it;
-				if(obj->GetTypeMask() & ignoreMask)
-					continue;
-				obj->SetCollidable(false);
-				obj->SetVelocity(Vector2<float>(0.f, 0.f));
-				obj->SetAngularVelocity(0.f);
-				RotateDef rotateDef;
-				rotateDef.object = obj;
-				offset = obj->GetPosition() - m_rotateCenter;
-				rotateDef.angle = obj->GetRotation() * DegreesToRadians();
-				rotateDef.offsetLength = offset.GetLength();
-				rotateDef.offsetAngle = atan2f(offset[1], offset[0]);
-				m_rotateSelection.push_back(rotateDef);
+				markPhysicalObjects = &m_selection.front();
+				while(markPhysicalObjects != endPhysicalObjects)
+				{
+					game2d::PhysicalObject *object = *markPhysicalObjects++;
+					if(object->GetTypeMask() & ignoreMask)
+						continue;
+					object->SetCollidable(false);
+					object->SetVelocity(Vector2<float>(0.f, 0.f));
+					object->SetAngularVelocity(0.f);
+					RotateDef rotateDef;
+					rotateDef.object = object;
+					offset = object->GetPosition() - m_rotateCenter;
+					rotateDef.angle = object->GetRotation() * DegreesToRadians();
+					rotateDef.offsetLength = offset.GetLength();
+					rotateDef.offsetAngle = atan2f(offset[1], offset[0]);
+					m_rotateSelection.push_back(rotateDef);
+				}
 			}
 			app->UnlockWorldMutex();
 
@@ -862,22 +909,31 @@ namespace ce
 		}
 		void Editor2DCtrl::StopRotating()
 		{
-			for(vector<game2d::PhysicalObject *>::iterator it = m_selection.begin(); it != m_selection.end(); it++)
-				(*it)->SetCollidable(true);
+			if(m_selection.empty() == false)
+			{
+				game2d::PhysicalObject **markPhysicalObjects = &m_selection.front();
+				game2d::PhysicalObject **endPhysicalObjects = markPhysicalObjects + m_selection.size();
+				while(markPhysicalObjects != endPhysicalObjects)
+					(*markPhysicalObjects++)->SetCollidable(true);
+			}
 			m_rotateSelection.clear();
 			m_isRotating = false;
 		}
 		void Editor2DCtrl::CheckHover(Vector2<float> position)
 		{
 			game2d::AppGame2D *app = (game2d::AppGame2D *)App::GetCurrent();
-
-			for(vector<game2d::PhysicalObject *>::iterator it = m_selection.begin(); it != m_selection.end(); it++)
+			if(m_selection.empty() == false)
 			{
-				game2d::PhysicalObject *obj = *it;
-				if(obj->CollidesWith(position))
+				game2d::PhysicalObject **markPhysicalObjects = &m_selection.front();
+				game2d::PhysicalObject **endPhysicalObjects = markPhysicalObjects + m_selection.size();
+				while(markPhysicalObjects != endPhysicalObjects)
 				{
-					m_hover = obj;
-					return;
+					game2d::PhysicalObject *object = *markPhysicalObjects++;
+					if(object->CollidesWith(position))
+					{
+						m_hover = object;
+						return;
+					}
 				}
 			}
 			m_hover = 0;
@@ -1049,8 +1105,13 @@ namespace ce
 			vector<game2d::World::Layer *> *layers = world->GetLayers();
 			m_layerSelection->ClearSelections();
 			unsigned char idx = 0;
-			for(vector<game2d::World::Layer *>::iterator it = layers->begin(); it != layers->end(); it++)
-				m_layerSelection->AddSelection(idx++, (*it)->GetName());
+			if(layers->empty() == false)
+			{
+				game2d::World::Layer **markLayers = &layers->front();
+				game2d::World::Layer **endLayers = markLayers + layers->size();
+				while(markLayers != endLayers)
+					m_layerSelection->AddSelection(idx++, (*markLayers++)->GetName());
+			}
 		}
 		void Editor2DCtrl::SelectLayer(unsigned char layerId)
 		{
@@ -1071,8 +1132,13 @@ namespace ce
 					unsigned char idx = 0;
 					m_tileSetSelection->ClearSelections();
 					//TODO: Use the actual id of the tileset instead of the index
-					for(vector<game2d::TileSet *>::iterator it = tileSets->begin(); it != tileSets->end(); it++)
-						m_tileSetSelection->AddSelection(idx++, (*it)->GetName());
+					if(tileSets->empty() == false)
+					{
+						game2d::TileSet **markTileSets = &tileSets->front();
+						game2d::TileSet **endTileSets = markTileSets + tileSets->size();
+						while(markTileSets != endTileSets)
+							m_tileSetSelection->AddSelection(idx++, (*markTileSets++)->GetName());
+					}
 				}
 				break;
 			}

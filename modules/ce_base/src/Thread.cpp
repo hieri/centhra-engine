@@ -24,9 +24,14 @@ namespace ce
 
 	void Thread::FinalizeDelete()
 	{
-		for(vector<Thread *>::iterator it = g_deadThreads.begin(); it != g_deadThreads.end(); it++)
-			delete *it;
-		g_deadThreads.clear();
+		if(g_deadThreads.empty() == false)
+		{
+			Thread **markThreads = &g_deadThreads.front();
+			Thread **endThreads = markThreads + g_deadThreads.size();
+			while(markThreads != endThreads)
+				delete *markThreads++;
+			g_deadThreads.clear();
+		}
 	}
 	Thread::Thread(void *(*process)(void *))
 	{

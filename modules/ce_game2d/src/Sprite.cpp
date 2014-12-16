@@ -71,8 +71,13 @@ namespace ce
 		}
 		Sprite::~Sprite()
 		{
-			for(vector<Animation *>::iterator it = m_animations.begin(); it != m_animations.end(); it++)
-				delete *it;
+			if(m_animations.empty() == false)
+			{
+				Animation **markAnimations = &m_animations.front();
+				Animation **endAnimations = markAnimations + m_animations.size();
+				while(markAnimations != endAnimations)
+					delete *markAnimations++;
+			}
 		}
 		void Sprite::Draw(int animation, float time)
 		{

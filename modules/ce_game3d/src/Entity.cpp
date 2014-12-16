@@ -22,14 +22,29 @@ namespace ce
 		vector<Entity *> Entity::ms_active, Entity::ms_deleted;
 		void Entity::FinalizeDelete()
 		{
-			for(vector<Entity *>::iterator it = ms_deleted.begin(); it != ms_deleted.end(); it++)
-				delete *it;
-			ms_deleted.clear();
+			if(ms_deleted.empty() == false)
+			{
+				Entity **markEntities = &ms_deleted.front();
+				Entity **endEntities = markEntities + ms_deleted.size();
+				while(markEntities != endEntities)
+					delete *markEntities++;
+				ms_deleted.clear();
+			}
 		}
 		void Entity::Process(float dt)
 		{
-			for(vector<Entity *>::iterator it = ms_active.begin(); it != ms_active.end(); it++)
-				(*it)->OnProcess(dt);
+/*			g_doingProcess = true;
+			for(g_processIterator = ms_active.begin(); g_processIterator != ms_active.end(); g_processIterator++)
+				(*g_processIterator)->OnProcess(dt);
+			g_doingProcess = false;
+			if(ms_pending.empty() == false)
+			{
+				Entity **markEntities = &ms_pending.front();
+				Entity **endEntities = markEntities + ms_pending.size();
+				while(markEntities != endEntities)
+					ms_active.push_back(*markEntities++);
+				ms_pending.clear();
+			}*/
 		}
 
 		Entity::Entity()

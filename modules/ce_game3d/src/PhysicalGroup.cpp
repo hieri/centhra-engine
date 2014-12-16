@@ -27,10 +27,12 @@ namespace ce
 				m_physicsHandler->Render(minX, minY, maxX, maxY);
 			else //TODO: Determine if this is necessary
 			{
-				for(vector<Group::Member *>::iterator it = m_members.begin(); it != m_members.end(); it++)
+				if(m_members.empty() == false)
 				{
-					PhysicalObject *object = (PhysicalObject *)*it;
-					object->Render();
+					Group::Member **markObjects = &m_members.front();
+					Group::Member **endObjects = markObjects + m_members.size();
+					while(markObjects != endObjects)
+						((PhysicalObject *)*markObjects++)->Render();
 				}
 			}
 		}

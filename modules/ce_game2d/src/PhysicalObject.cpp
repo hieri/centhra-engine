@@ -61,7 +61,8 @@ namespace ce
 				else
 					m_id = id;
 
-				//TODO: Expand object vectors
+				if(m_id >= ms_objects.size())
+					ms_objects.resize(ms_objects.size() * 2);
 				ms_objects[m_id] = this;
 
 				m_netID = netID;

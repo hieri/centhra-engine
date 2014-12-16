@@ -51,6 +51,7 @@ namespace ce
 				std::vector<Zone *> &GetZones();
 
 				unsigned int GetCollisionMask() const;
+				unsigned int GetTypeMask() const;
 
 				friend class Zone;
 				friend class Plane;

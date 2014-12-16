@@ -473,14 +473,19 @@ namespace ce
 		void ScrollCtrl::UpdateScroll()
 		{
 			Vector2<int_canvas> wrap;
-			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+			if(m_children.empty() == false)
 			{
-				Control *ctrl = *it;
-				Vector2<int_canvas> farthest = ctrl->GetPosition() + ctrl->GetExtent();
-				if(farthest[0] > wrap[0])
-					wrap[0] = farthest[0];
-				if(farthest[1] > wrap[1])
-					wrap[1] = farthest[1];
+				Control **markControls = &m_children.front();
+				Control **endControls = markControls + m_children.size();
+				while(markControls != endControls)
+				{
+					Control *ctrl = *markControls++;
+					Vector2<int_canvas> farthest = ctrl->GetPosition() + ctrl->GetExtent();
+					if(farthest[0] > wrap[0])
+						wrap[0] = farthest[0];
+					if(farthest[1] > wrap[1])
+						wrap[1] = farthest[1];
+				}
 			}
 			if(wrap[0] > m_extent[0])
 			{
@@ -502,8 +507,13 @@ namespace ce
 
 			UpdateControlZones();
 
-			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-				(*it)->UpdateDimensions();
+			if(m_children.empty() == false)
+			{
+				Control **markControls = &m_children.front();
+				Control **endControls = markControls + m_children.size();
+				while(markControls != endControls)
+					(*markControls++)->UpdateDimensions();
+			}
 		}
 		void ScrollCtrl::UpdateControlZones()
 		{
@@ -591,8 +601,13 @@ namespace ce
 
 			UpdateControlZones();
 
-			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-				(*it)->UpdateDimensions();
+			if(m_children.empty() == false)
+			{
+				Control **markControls = &m_children.front();
+				Control **endControls = markControls + m_children.size();
+				while(markControls != endControls)
+					(*markControls++)->UpdateDimensions();
+			}
 		}
 		bool ScrollCtrl::OnEvent(Event &event)
 		{
@@ -620,8 +635,13 @@ namespace ce
 				}
 				m_scrollPercentage[0] = (float)zone->x / barArea;
 				m_childOffset[0] = (int_canvas)(m_scrollPercentage[0] * -m_scrollExtent[0]);
-				for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-					(*it)->UpdateDimensions();
+				if(m_children.empty() == false)
+				{
+					Control **markControls = &m_children.front();
+					Control **endControls = markControls + m_children.size();
+					while(markControls != endControls)
+						(*markControls++)->UpdateDimensions();
+				}
 			}
 			else if(zone->id == 2)
 			{
@@ -634,8 +654,13 @@ namespace ce
 				}
 				m_scrollPercentage[1] = (float)zone->y / barArea;
 				m_childOffset[1] = (int_canvas)(m_scrollPercentage[1] * -m_scrollExtent[1]);
-				for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-					(*it)->UpdateDimensions();
+				if(m_children.empty() == false)
+				{
+					Control **markControls = &m_children.front();
+					Control **endControls = markControls + m_children.size();
+					while(markControls != endControls)
+						(*markControls++)->UpdateDimensions();
+				}
 			}
 		}
 	}

@@ -179,8 +179,13 @@ namespace ce
 
 			OnDimensionUpdate();
 
-			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-				(*it)->UpdateDimensions();
+			if(m_children.empty() == false)
+			{
+				Control **markControls = &m_children.front();
+				Control **endControls = markControls + m_children.size();
+				while(markControls != endControls)
+					(*markControls++)->UpdateDimensions();
+			}
 		}
 		void Control::OnDimensionUpdate()
 		{
@@ -209,9 +214,14 @@ namespace ce
 				return false;
 			if(IsMember(control))
 				return true;
-			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-				if((*it)->Contains(control))
-					return true;
+			if(m_children.empty() == false)
+			{
+				Control **markControls = &m_children.front();
+				Control **endControls = markControls + m_children.size();
+				while(markControls != endControls)
+					if((*markControls++)->Contains(control))
+						return true;
+			}
 			return false;
 		}
 		bool Control::Contains(Vector2<int_canvas> position)
@@ -283,8 +293,13 @@ namespace ce
 				m_absoluteMatrix = (m_parent->m_absoluteMatrix * Matrix4x4<float>::BuildFromTranslation(m_parent->m_childOffset)) * m_relativeMatrix;
 			else
 				m_absoluteMatrix = m_relativeMatrix;
-			for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-				(*it)->UpdateAbsoluteMatrix();
+			if(m_children.empty() == false)
+			{
+				Control **markControls = &m_children.front();
+				Control **endControls = markControls + m_children.size();
+				while(markControls != endControls)
+					(*markControls++)->UpdateAbsoluteMatrix();
+			}
 		}
 		void Control::Render(UIContext &context)
 		{
@@ -298,8 +313,13 @@ namespace ce
 				Matrix4x4<float> currentMatrix = context.transformation * m_absoluteMatrix;
 				glLoadMatrixf(&currentMatrix[0]);
 				DoRender();
-				for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
-					(*it)->Render(context);
+				if(m_children.empty() == false)
+				{
+					Control **markControls = &m_children.front();
+					Control **endControls = markControls + m_children.size();
+					while(markControls != endControls)
+						(*markControls++)->Render(context);
+				}
 				if(m_hasOverlay)
 				{
 					glLoadMatrixf(&currentMatrix[0]);
@@ -401,18 +421,21 @@ namespace ce
 		}
 		Control *Control::GetFromPosition(Vector2<int_canvas> position, bool recurse)
 		{
-			for(vector<Control *>::reverse_iterator it = m_children.rbegin(); it != m_children.rend(); it++)
+			if(m_children.empty() == false)
 			{
-				Control *ctrl = *it;
-				
-				Vector2<int_canvas> expPos = ctrl->GetExposurePosition();
-				Vector2<int_canvas> expExt = ctrl->GetExposureExtent();
-				if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
-					continue;
-
-				if(recurse)
-					return ctrl->GetFromPosition(position, recurse);
-				return ctrl;
+				Control **markControls = &m_children.back();
+				Control **endControls = markControls - m_children.size();
+				while(markControls != endControls)
+				{
+					Control *ctrl = *markControls--;
+					Vector2<int_canvas> expPos = ctrl->GetExposurePosition();
+					Vector2<int_canvas> expExt = ctrl->GetExposureExtent();
+					if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
+						continue;
+					if(recurse)
+						return ctrl->GetFromPosition(position, recurse);
+					return ctrl;
+				}
 			}
 			return this;
 		}
@@ -487,18 +510,23 @@ namespace ce
 				if(event.base.mask & g_childEventTransferMask)
 				{
 					Vector2<int_canvas> position(event.mouse.x, event.mouse.y);
-					for(vector<Control *>::iterator it = m_children.begin(); it != m_children.end(); it++)
+					if(m_children.empty() == false)
 					{
-						Control *ctrl = *it;
-						if(!ctrl->IsVisible())
-							continue;
-						Vector2<int_canvas> expPos = ctrl->GetExposurePosition();
-						Vector2<int_canvas> expExt = ctrl->GetExposureExtent();
-						if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
-							continue;
-						bool ret = ctrl->ProcessEvent(event);
-						if(!ret)
-							return false;
+						Control **markControls = &m_children.front();
+						Control **endControls = markControls + m_children.size();
+						while(markControls != endControls)
+						{
+							Control *ctrl = *markControls++;
+							if(!ctrl->IsVisible())
+								continue;
+							Vector2<int_canvas> expPos = ctrl->GetExposurePosition();
+							Vector2<int_canvas> expExt = ctrl->GetExposureExtent();
+							if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
+								continue;
+							bool ret = ctrl->ProcessEvent(event);
+							if(!ret)
+								return false;
+						}
 					}
 				}
 
@@ -729,15 +757,19 @@ namespace ce
 		}
 		Control *Control::GetFocusFromPosition(Vector2<int_canvas> position)
 		{
-			for(vector<Control *>::reverse_iterator it = m_children.rbegin(); it != m_children.rend(); it++)
+			if(m_children.empty() == false)
 			{
-				Control *ctrl = *it;
-
-				Vector2<int_canvas> expPos = ctrl->GetExposurePosition();
-				Vector2<int_canvas> expExt = ctrl->GetExposureExtent();
-				if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
-					continue;
-				return ctrl->GetFocusFromPosition(position);
+				Control **markControls = &m_children.back();
+				Control **endControls = markControls - m_children.size();
+				while(markControls != endControls)
+				{
+					Control *ctrl = *markControls--;
+					Vector2<int_canvas> expPos = ctrl->GetExposurePosition();
+					Vector2<int_canvas> expExt = ctrl->GetExposureExtent();
+					if(position[0] < expPos[0] || position[1] < expPos[1] || position[0] > (expPos[0] + expExt[0]) || position[1] > (expPos[1] + expExt[1]))
+						continue;
+					return ctrl->GetFocusFromPosition(position);
+				}
 			}
 			if(m_acceptsFocus)
 				return this;
@@ -784,11 +816,19 @@ namespace ce
 		//- Control Zones -
 		Control::ControlZone *Control::GetControlZoneFromPosition(Vector2<int_canvas> position)
 		{
-			for(vector<ControlZone>::iterator it = m_controlZones.begin(); it != m_controlZones.end(); it++)
+			if(m_controlZones.empty() == false)
 			{
-				if(it->x > position[0] || (it->x + it->width) < position[0] || it->y > position[1] || (it->y + it->height) < position[1])
-					continue;
-				return &(*it);
+				ControlZone *markControlZones = &m_controlZones.front();
+				ControlZone *endControlZones = markControlZones + m_controlZones.size();
+				while(markControlZones != endControlZones)
+				{
+					if(markControlZones->x > position[0] || (markControlZones->x + markControlZones->width) < position[0] || markControlZones->y > position[1] || (markControlZones->y + markControlZones->height) < position[1])
+					{
+						markControlZones++;
+						continue;
+					}
+					return &(*markControlZones);
+				}
 			}
 			return 0;
 		}

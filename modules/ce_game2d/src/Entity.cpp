@@ -21,22 +21,37 @@ namespace ce
 	{
 		vector<Entity *> Entity::ms_active, Entity::ms_deleted, Entity::ms_pending;
 		bool g_doingProcess = false;
-		vector<Entity *>::iterator g_processIterator;
+		Entity **g_markProcess, **g_endProcess;
 		void Entity::FinalizeDelete()
 		{
-			for(vector<Entity *>::iterator it = ms_deleted.begin(); it != ms_deleted.end(); it++)
-				delete *it;
-			ms_deleted.clear();
+			if(ms_deleted.empty() == false)
+			{
+				Entity **markEntities = &ms_deleted.front();
+				Entity **endEntities = markEntities + ms_deleted.size();
+				while(markEntities != endEntities)
+					delete *markEntities++;
+				ms_deleted.clear();
+			}
 		}
 		void Entity::Process(float dt)
 		{
 			g_doingProcess = true;
-			for(g_processIterator = ms_active.begin(); g_processIterator != ms_active.end(); g_processIterator++)
-				(*g_processIterator)->OnProcess(dt);
+			if(ms_active.empty() == false)
+			{
+				g_markProcess = &ms_active.front();
+				g_endProcess = g_markProcess + ms_active.size();
+				while(g_markProcess != g_endProcess)
+					(*g_markProcess++)->OnProcess(dt);
+			}
 			g_doingProcess = false;
-			for(vector<Entity *>::iterator it = ms_pending.begin(); it != ms_pending.end(); it++)
-				ms_active.push_back(*it);
-			ms_pending.clear();
+			if(ms_pending.empty() == false)
+			{
+				Entity **markEntities = &ms_pending.front();
+				Entity **endEntities = markEntities + ms_pending.size();
+				while(markEntities != endEntities)
+					ms_active.push_back(*markEntities++);
+				ms_pending.clear();
+			}
 		}
 
 		Entity::Entity()
@@ -57,9 +72,10 @@ namespace ce
 				m_isDeleted = true;
 				if(g_doingProcess)
 				{
-					g_processIterator = ms_active.erase(g_processIterator);
-					if(g_processIterator != ms_active.begin())
-						g_processIterator--;
+					unsigned long place = g_markProcess - &ms_active.front();
+					ms_active.erase(ms_active.begin() + place);
+					g_markProcess = &ms_active.front() + place;
+					g_endProcess = g_markProcess + ms_active.size();
 				}
 				else
 					ms_active.erase(find(ms_active.begin(), ms_active.end(), this));

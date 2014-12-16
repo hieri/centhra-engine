@@ -57,8 +57,13 @@ namespace ce
 			}
 
 			m_tileSets.reserve(source->m_tileSets.size());
-			for(vector<TileSet *>::iterator it = source->m_tileSets.begin(); it != source->m_tileSets.end(); it++)
-				m_tileSets.push_back(*it);
+			if(source->m_tileSets.empty() == false)
+			{
+				TileSet **markTileSets = &source->m_tileSets.front();
+				TileSet **endTileSets = markTileSets + source->m_tileSets.size();
+				while(markTileSets != endTileSets)
+					m_tileSets.push_back(*markTileSets++);
+			}
 		}
 		Vector2<unsigned short> TileMap::GetSize() const
 		{

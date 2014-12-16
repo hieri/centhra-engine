@@ -30,11 +30,16 @@ namespace ce
 		{
 			TMX::TileSet *resolveTileset(vector<TMX::TileSet *> &ts, unsigned short gid)
 			{
-				for(vector<TMX::TileSet *>::reverse_iterator it = ts.rbegin(); it != ts.rend(); it++)
+				if(ts.empty() == false)
 				{
-					TMX::TileSet *tileSet = *it;
-					if(tileSet->firstGID <= gid)
-						return tileSet;
+					TMX::TileSet **markTileSets = &ts.back();
+					TMX::TileSet **endTileSets = markTileSets - ts.size();
+					while(markTileSets != endTileSets)
+					{
+						TMX::TileSet *tileSet = *markTileSets--;
+						if(tileSet->firstGID <= gid)
+							return tileSet;
+					}
 				}
 				return NULL;
 			}
@@ -79,8 +84,13 @@ namespace ce
 			}
 			TMX::ObjectLayer::~ObjectLayer()
 			{
-				for(vector<ObjectDef *>::iterator it = m_objectDefVec.begin(); it != m_objectDefVec.end(); it++)
-					delete *it;
+				if(m_objectDefVec.empty() == false)
+				{
+					ObjectDef **markObjectDefs = &m_objectDefVec.front();
+					ObjectDef **endObjectDefs = markObjectDefs + m_objectDefVec.size();
+					while(markObjectDefs != endObjectDefs)
+						delete *markObjectDefs++;
+				}
 			}
 
 			TMX::ImageLayer::ImageLayer() : Layer()
@@ -282,14 +292,24 @@ namespace ce
 					for(xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
 						tmx->m_propertyMap[property.attribute("name").as_string()] = property.attribute("value").as_string();
 
-/*				for(vector<Layer *>::iterator it = layerVec.begin(); it != layerVec.end(); it++)
+/*				if(layerVec.empty() == false)
 				{
-					Layer *layer = *it;
-					if(layer->m_type == Layer_Object)
+					Layer **markLayers = &layerVec.front();
+					Layer **endLayers = markLayers + layerVec.size();
+					while(markLayers != endLayers)
 					{
-						ObjectLayer *objectLayer = (ObjectLayer *)layer;
-						for(vector<ObjectDef *>::iterator itB = objectLayer->m_objectDefVec.begin(); itB != objectLayer->m_objectDefVec.end(); itB++)
-							tmx->LoadObject(layer, *itB);
+						Layer *layer = *markLayers++;
+						if(layer->m_type == Layer_Object)
+						{
+							ObjectLayer *objectLayer = (ObjectLayer *)layer;
+							if(objectLayer->m_objectDefVec.empty() == false)
+							{
+								ObjectDef **markObjectDefs = &objectLayer->m_objectDefVec.front();
+								ObjectDef **endObjectDefs = markObjectDefs + objectLayer->m_objectDefVec.size();
+								while(markObjectDefs != endObjectDefs)
+									tmx->LoadObject(layer, *markObjectDefs++);
+							}
+						}
 					}
 				}*/
 
@@ -301,71 +321,92 @@ namespace ce
 			}
 			TMX::~TMX()
 			{
-				for(vector<Layer *>::iterator it = m_layerVec.begin(); it != m_layerVec.end(); it++)
+				if(m_layerVec.empty() == false)
 				{
-					Layer *layer = *it;
-					delete layer;
+					Layer **markLayers = &m_layerVec.front();
+					Layer **endLayers = markLayers + m_layerVec.size();
+					while(markLayers != endLayers)
+						delete *markLayers++;
 				}
-				for(vector<TileSet *>::iterator it = m_tileSetVec.begin(); it != m_tileSetVec.end(); it++)
+				if(m_tileSetVec.empty() == false)
 				{
-					TileSet *tileSet = *it;
-					delete tileSet->tileSet;
-					delete tileSet->image;
-					delete tileSet;
+					TileSet **markTileSets = &m_tileSetVec.front();
+					TileSet **endTileSets = markTileSets + m_tileSetVec.size();
+					while(markTileSets != endTileSets)
+					{
+						TileSet *tileSet = *markTileSets++;
+						delete tileSet->tileSet;
+						delete tileSet->image;
+						delete tileSet;
+					}
 				}
 			}
 			void TMX::PopulateWorld(game2d::World *world)
 			{
 				//- Associate Tile Sets -
-				for(vector<TileSet *>::iterator it = m_tileSetVec.begin(); it != m_tileSetVec.end(); it++)
-					world->AssociateTileSet((*it)->tileSet);
+				if(m_tileSetVec.empty() == false)
+				{
+					TileSet **markTileSets = &m_tileSetVec.front();
+					TileSet **endTileSets = markTileSets + m_tileSetVec.size();
+					while(markTileSets != endTileSets)
+						world->AssociateTileSet((*markTileSets++)->tileSet);
+				}
 
 				//- Generate Layers -
-				int layerIdx = 0;
-				for(vector<Layer *>::iterator it = m_layerVec.begin(); it != m_layerVec.end(); it++)
+				if(m_layerVec.empty() == false)
 				{
-					Layer *layer = *it;
-
-					switch(layer->m_type)
+					int layerIdx = 0;
+					Layer **markLayers = &m_layerVec.front();
+					Layer **endLayers = markLayers + m_layerVec.size();
+					while(markLayers != endLayers)
 					{
-					case Layer_Object:
-					{
-							ObjectLayer *objectLayer = (ObjectLayer *)layer;
-							game2d::World::ObjectLayer *wObjectLayer = world->AddObjectLayer();
-							wObjectLayer->SetName(layer->m_name);
-
-							//- RenderAll: Attempts to render all objects in the World -
-							bool renderAll = false;
-							if(layer->m_propertyMap.size())
-								for(map<string, string>::iterator itB = layer->m_propertyMap.begin(); itB != layer->m_propertyMap.end(); itB++)
-									if(!itB->first.compare("RenderAll"))
-										if(!itB->second.compare("1") || !itB->second.compare("True") || !itB->second.compare("true"))
-											renderAll = true;
-
-							wObjectLayer->SetRenderAll(renderAll);
-
-							//TODO: Account for render mask
-
-							for(vector<ObjectDef *>::iterator it = objectLayer->m_objectDefVec.begin(); it != objectLayer->m_objectDefVec.end(); it++)
-							{
-								game2d::PhysicalObject *obj = LoadObject(*it);
-								if(!obj)
-									continue;
-								obj->SetRenderLayer(wObjectLayer);
-								world->Add(obj);
-							}
-						}
-						break;
-					case Layer_Tile:
+						Layer *layer = *markLayers++;
+						switch(layer->m_type)
 						{
-							TileLayer *tileLayer = (TileLayer *)layer;
-							game2d::World::TileLayer *wTileLayer = world->AddTileLayer(tileLayer->m_tileMap->GetSize(), tileLayer->m_tileMap->GetTileSize());
-							wTileLayer->SetName(layer->m_name);
-							wTileLayer->CopyFrom(tileLayer->m_tileMap);
+						case Layer_Object:
+							{
+								ObjectLayer *objectLayer = (ObjectLayer *)layer;
+								game2d::World::ObjectLayer *wObjectLayer = world->AddObjectLayer();
+								wObjectLayer->SetName(layer->m_name);
+
+								//- RenderAll: Attempts to render all objects in the World -
+								bool renderAll = false;
+								if(layer->m_propertyMap.size())
+									for(map<string, string>::iterator itB = layer->m_propertyMap.begin(); itB != layer->m_propertyMap.end(); itB++)
+										if(!itB->first.compare("RenderAll"))
+											if(!itB->second.compare("1") || !itB->second.compare("True") || !itB->second.compare("true"))
+												renderAll = true;
+
+								wObjectLayer->SetRenderAll(renderAll);
+
+								//TODO: Account for render mask
+
+								if(objectLayer->m_objectDefVec.empty() == false)
+								{
+									ObjectDef **markObjectDefs = &objectLayer->m_objectDefVec.front();
+									ObjectDef **endObjectDefs = markObjectDefs + objectLayer->m_objectDefVec.size();
+									while(markObjectDefs != endObjectDefs)
+									{
+										game2d::PhysicalObject *obj = LoadObject(*markObjectDefs++);
+										if(!obj)
+											continue;
+										obj->SetRenderLayer(wObjectLayer);
+										world->Add(obj);
+									}
+								}
+							}
+							break;
+						case Layer_Tile:
+							{
+								TileLayer *tileLayer = (TileLayer *)layer;
+								game2d::World::TileLayer *wTileLayer = world->AddTileLayer(tileLayer->m_tileMap->GetSize(), tileLayer->m_tileMap->GetTileSize());
+								wTileLayer->SetName(layer->m_name);
+								wTileLayer->CopyFrom(tileLayer->m_tileMap);
+							}
+							break;
 						}
-						break;
+						layerIdx++;
 					}
-					layerIdx++;
 				}
 			}
 			game2d::PhysicalObject *TMX::LoadObject(ObjectDef *object)
@@ -427,10 +468,13 @@ namespace ce
 				}
 
 				//- Tilesets -
+				if(m_tileSetVec.empty() == false)
 				{
-					for(vector<TileSet *>::iterator it = m_tileSetVec.begin(); it != m_tileSetVec.end(); it++)
+					TileSet **markTileSets = &m_tileSetVec.front();
+					TileSet **endTileSets = markTileSets + m_tileSetVec.size();
+					while(markTileSets != endTileSets)
 					{
-						TileSet *tileset = *it;
+						TileSet *tileset = *markTileSets++;
 
 						xml_node xTileset = xMap.append_child("tileset");
 						xTileset.append_attribute("firstgid").set_value(tileset->firstGID);
@@ -448,116 +492,131 @@ namespace ce
 				//- Layers -
 				{
 					int layerIdx = 0;
-					for(vector<Layer *>::iterator it = m_layerVec.begin(); it != m_layerVec.end(); it++)
+					if(m_layerVec.empty() == false)
 					{
-						Layer *layer = *it;
-
-						switch(layer->m_type)
+						Layer **markLayers = &m_layerVec.front();
+						Layer **endLayers = markLayers + m_layerVec.size();
+						while(markLayers != endLayers)
 						{
-						case Layer_Object:
+							Layer *layer = *markLayers++;
+
+							switch(layer->m_type)
 							{
-								xml_node xLayer = xMap.append_child("objectgroup");
-								xLayer.append_attribute("name").set_value(layer->m_name.c_str());
-								xLayer.append_attribute("width").set_value(layer->m_width);
-								xLayer.append_attribute("height").set_value(layer->m_height);
-
-								bool renderView = false;
-								if(layer->m_propertyMap.size())
+							case Layer_Object:
 								{
-									xml_node xProperties = xLayer.append_child("properties");
-									for(map<string, string>::iterator itB = layer->m_propertyMap.begin(); itB != layer->m_propertyMap.end(); itB++)
+									xml_node xLayer = xMap.append_child("objectgroup");
+									xLayer.append_attribute("name").set_value(layer->m_name.c_str());
+									xLayer.append_attribute("width").set_value(layer->m_width);
+									xLayer.append_attribute("height").set_value(layer->m_height);
+
+									bool renderView = false;
+									if(layer->m_propertyMap.size())
 									{
-										xml_node xProperty = xProperties.append_child("property");
-										xProperty.append_attribute("name").set_value(itB->first.c_str());
-										xProperty.append_attribute("value").set_value(itB->second.c_str());
-										if(!itB->first.compare("renderView"))
-											renderView = true;
-									}
-								}
-
-								//TODO: Externalize this, and pass reference to object group
-
-								ObjectLayer *objectLayer = (ObjectLayer *)layer;
-								for(vector<ObjectDef *>::iterator itB = objectLayer->m_objectDefVec.begin(); itB != objectLayer->m_objectDefVec.end(); itB++)
-								{
-									ObjectDef *objectDef = *itB;
-
-									if(!objectDef->m_typeStr.compare("Prop"))// || !objectDef->m_typeStr.compare("Wall"))
-										continue;
-
-									xml_node xObject = xLayer.append_child("object");
-									if(objectDef->m_name.size())
-										xObject.append_attribute("name").set_value(objectDef->m_name.c_str());
-									if(objectDef->m_typeStr.size())
-										xObject.append_attribute("type").set_value(objectDef->m_typeStr.c_str());
-
-									xObject.append_attribute("x").set_value(objectDef->m_x);
-									xObject.append_attribute("y").set_value(objectDef->m_y);
-
-									if(objectDef->m_type == ObjectDef::Object_Rectangle || objectDef->m_type == ObjectDef::Object_Ellipse)
-									{
-										xObject.append_attribute("width").set_value(objectDef->m_width);
-										xObject.append_attribute("height").set_value(objectDef->m_height);
-									}
-
-									if(objectDef->m_propertyMap.size())
-									{
-										xml_node xProperties;
-										for(map<string, string>::iterator itC = objectDef->m_propertyMap.begin(); itC != objectDef->m_propertyMap.end(); itC++)
+										xml_node xProperties = xLayer.append_child("properties");
+										for(map<string, string>::iterator itB = layer->m_propertyMap.begin(); itB != layer->m_propertyMap.end(); itB++)
 										{
-											if(objectDef->m_type == ObjectDef::Object_Polyline)
-												if(!itC->first.compare("points"))
-													continue;
-
-											if(!xProperties)
-												xProperties = xObject.append_child("properties");
 											xml_node xProperty = xProperties.append_child("property");
-											xProperty.append_attribute("name").set_value(itC->first.c_str());
-											xProperty.append_attribute("value").set_value(itC->second.c_str());
+											xProperty.append_attribute("name").set_value(itB->first.c_str());
+											xProperty.append_attribute("value").set_value(itB->second.c_str());
+											if(!itB->first.compare("renderView"))
+												renderView = true;
 										}
 									}
 
-									if(objectDef->m_type == ObjectDef::Object_Polyline)
-									{
-										xml_node xPolyline = xObject.append_child("polyline");
-										xPolyline.append_attribute("points").set_value(objectDef->m_propertyMap["points"].c_str());
-									}
-								}
+									//TODO: Externalize this, and pass reference to object group
 
-								if(renderView)
-									SaveObjects((void *)&xLayer);
-							}
-							break;
-						case Layer_Tile:
-							{
-								xml_node xLayer = xMap.append_child("layer");
-								xLayer.append_attribute("name").set_value(layer->m_name.c_str());
-								xLayer.append_attribute("width").set_value(layer->m_width);
-								xLayer.append_attribute("height").set_value(layer->m_height);
-
-								xml_node xData = xLayer.append_child("data");
-								TileLayer *tileLayer = (TileLayer *)layer;
-								for(unsigned short b = layer->m_height - 1; b < layer->m_height; b--)
-									for(unsigned short a = 0; a < layer->m_width; a++)
+									ObjectLayer *objectLayer = (ObjectLayer *)layer;
+									if(objectLayer->m_objectDefVec.empty() == false)
 									{
-										vector<game2d::ComplexTileMap::Tile *> *tiles = tileLayer->m_tileMap->GetTiles(a, b);
-										unsigned short gid = 0;
-										for(vector<game2d::ComplexTileMap::Tile *>::iterator itB = tiles->begin(); itB != tiles->end(); itB++)
+										ObjectDef **markObjectDefs = &objectLayer->m_objectDefVec.front();
+										ObjectDef **endObjectDefs = markObjectDefs + objectLayer->m_objectDefVec.size();
+										while(markObjectDefs != endObjectDefs)
 										{
-											game2d::ComplexTileMap::Tile *tile = *itB;
-											if(tile->m_layerIdx == layer->m_idx)
+											ObjectDef *objectDef = *markObjectDefs++;
+
+											if(!objectDef->m_typeStr.compare("Prop"))// || !objectDef->m_typeStr.compare("Wall"))
+												continue;
+
+											xml_node xObject = xLayer.append_child("object");
+											if(objectDef->m_name.size())
+												xObject.append_attribute("name").set_value(objectDef->m_name.c_str());
+											if(objectDef->m_typeStr.size())
+												xObject.append_attribute("type").set_value(objectDef->m_typeStr.c_str());
+
+											xObject.append_attribute("x").set_value(objectDef->m_x);
+											xObject.append_attribute("y").set_value(objectDef->m_y);
+
+											if(objectDef->m_type == ObjectDef::Object_Rectangle || objectDef->m_type == ObjectDef::Object_Ellipse)
 											{
-												gid = tile->m_gid;
-												break;
+												xObject.append_attribute("width").set_value(objectDef->m_width);
+												xObject.append_attribute("height").set_value(objectDef->m_height);
+											}
+
+											if(objectDef->m_propertyMap.size())
+											{
+												xml_node xProperties;
+												for(map<string, string>::iterator itC = objectDef->m_propertyMap.begin(); itC != objectDef->m_propertyMap.end(); itC++)
+												{
+													if(objectDef->m_type == ObjectDef::Object_Polyline)
+														if(!itC->first.compare("points"))
+															continue;
+
+													if(!xProperties)
+														xProperties = xObject.append_child("properties");
+													xml_node xProperty = xProperties.append_child("property");
+													xProperty.append_attribute("name").set_value(itC->first.c_str());
+													xProperty.append_attribute("value").set_value(itC->second.c_str());
+												}
+											}
+
+											if(objectDef->m_type == ObjectDef::Object_Polyline)
+											{
+												xml_node xPolyline = xObject.append_child("polyline");
+												xPolyline.append_attribute("points").set_value(objectDef->m_propertyMap["points"].c_str());
 											}
 										}
-										xml_node xTile = xData.append_child("tile");
-										xTile.append_attribute("gid").set_value(gid);
 									}
+
+									if(renderView)
+										SaveObjects((void *)&xLayer);
+								}
+								break;
+							case Layer_Tile:
+								{
+									xml_node xLayer = xMap.append_child("layer");
+									xLayer.append_attribute("name").set_value(layer->m_name.c_str());
+									xLayer.append_attribute("width").set_value(layer->m_width);
+									xLayer.append_attribute("height").set_value(layer->m_height);
+
+									xml_node xData = xLayer.append_child("data");
+									TileLayer *tileLayer = (TileLayer *)layer;
+									for(unsigned short b = layer->m_height - 1; b < layer->m_height; b--)
+										for(unsigned short a = 0; a < layer->m_width; a++)
+										{
+											vector<game2d::ComplexTileMap::Tile *> *tiles = tileLayer->m_tileMap->GetTiles(a, b);
+											unsigned short gid = 0;
+											if(tiles.empty() == false)
+											{
+												game2d::ComplexTileMap::Tile **markTiles = &tiles.front();
+												game2d::ComplexTileMap::Tile **endTiles = markTiles + tiles.size();
+												while(markTiles != endTiles)
+												{
+													game2d::ComplexTileMap::Tile *tile = *markTiles++;
+													if(tile->m_layerIdx == layer->m_idx)
+													{
+														gid = tile->m_gid;
+														break;
+													}
+												}
+											}
+											xml_node xTile = xData.append_child("tile");
+											xTile.append_attribute("gid").set_value(gid);
+										}
+								}
+								break;
 							}
-							break;
+							layerIdx++;
 						}
-						layerIdx++;
 					}
 				}
 

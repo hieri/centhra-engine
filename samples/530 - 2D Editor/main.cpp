@@ -174,34 +174,6 @@ public:
 		else
 			m_camera->SetPosition(m_camera->GetPosition() + dif * dt);
 
-/*		Vector2<float> origin = Vector2<float>(m_entity->GetPosition()[0] + 16.f, m_entity->GetPosition()[1] + 16.f);
-//		origin = Vector2<float>(512.f, 512.f);
-
-		vector<Group::Member *> members = m_group->GetMembers();
-		for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
-		{
-			game2d::PhysicalObject *obj = (game2d::PhysicalObject *)*it;
-			if(obj == m_entity)
-				continue;
-			Vector2<float> pos = obj->GetPosition();
-			//			Vector2<float> vel = Vector2<float>((float)(rand() % 512 - 256), (float)(rand() % 512 - 256));
-			//			Vector2<float> vel = m_randoms[a]->GetVelocity();
-			//			Vector2<float> vel = Vector2<float>(origin[0] - pos[0], origin[1] - pos[1]);
-			Vector2<float> vel = Vector2<float>(origin[1] - pos[1], pos[0] - origin[0]);
-			//			vel /= vel.GetLength();
-			//			vel *= 64.f;
-
-			if(pos[0] > 1008.f && vel[0] > 0)
-				vel[0] *= -1.f;
-			if(pos[0] < 0.f && vel[0] < 0)
-				vel[0] *= -1.f;
-			if(pos[1] > 1008.f && vel[1] > 0)
-				vel[1] *= -1.f;
-			if(pos[1] < 0.f && vel[1] < 0)
-				vel[1] *= -1.f;
-			obj->SetVelocity(vel);
-		}*/
-
 		game2d::Entity::FinalizeDelete();
 		m_world->ProcessPhysics(dt);
 		game2d::Entity::Process(dt);

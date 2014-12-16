@@ -54,31 +54,36 @@ namespace ce
 					maxX = ((focusPosition[0] + focusHalf[0]) + half[0] / viewScale[0]);
 					maxY = ((focusPosition[1] + focusHalf[1]) + half[1] / viewScale[1]);
 
-					for(vector<pair<TileMap *, float> >::iterator it = m_tileMapVec.begin(); it != m_tileMapVec.end(); it++)
+					if(m_tileMapVec.empty() == false)
 					{
-						glPushMatrix();
-						
-						TileMap *tileMap = it->first;
-						float scale = it->second;
-						Vector2<unsigned short> tileSize = tileMap->GetTileSize();
-						int _minX, _minY, _maxX, _maxY;
-						_minX = (int)((minX / tileSize[0]) / scale) - 1;
-						_maxX = (int)((maxX / tileSize[0]) / scale) + 1;
-						_minY = (int)((minY / tileSize[1]) / scale) - 1;
-						_maxY = (int)((maxY / tileSize[1]) / scale) + 1;						
+						pair<TileMap *, float> *markTileMaps = &m_tileMapVec.front();
+						pair<TileMap *, float> *endTileMaps = markTileMaps + m_tileMapVec.size();
+						while(markTileMaps != endTileMaps)
+						{
+							glPushMatrix();
+								TileMap *tileMap = markTileMaps->first;
+								float scale = markTileMaps->second;
+								Vector2<unsigned short> tileSize = tileMap->GetTileSize();
+								int _minX, _minY, _maxX, _maxY;
+								_minX = (int)((minX / tileSize[0]) / scale) - 1;
+								_maxX = (int)((maxX / tileSize[0]) / scale) + 1;
+								_minY = (int)((minY / tileSize[1]) / scale) - 1;
+								_maxY = (int)((maxY / tileSize[1]) / scale) + 1;						
 
-						if(_minX < 0)
-							_minX = 0;
-						if(_minY < 0)
-							_minY = 0;
-						if(_maxX < 0)
-							_maxX = 0;
-						if(_maxY < 0)
-							_maxY = 0;
+								if(_minX < 0)
+									_minX = 0;
+								if(_minY < 0)
+									_minY = 0;
+								if(_maxX < 0)
+									_maxX = 0;
+								if(_maxY < 0)
+									_maxY = 0;
 
-						glScalef(scale, scale, 1.f);
-						tileMap->Render(_minX, _minY, _maxX, _maxY);
-						glPopMatrix();
+								glScalef(scale, scale, 1.f);
+								tileMap->Render(_minX, _minY, _maxX, _maxY);
+							glPopMatrix();
+							markTileMaps++;
+						}
 					}
 
 					glPopMatrix();

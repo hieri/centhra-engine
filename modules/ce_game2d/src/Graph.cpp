@@ -66,12 +66,24 @@ namespace ce
 						pathMap[neighbor] = node;
 						distMap[neighbor] = dist;
 
-						bool added = false;
-						vector<Node *>::iterator it;
-						for(it = queue.begin(); it != queue.end(); it++)
-							if(distMap[*it] > dist)
-								break;
-						queue.insert(it, neighbor);
+						if(queue.empty() == false)
+						{
+							Node **markNodes = &queue.front();
+							Node **endNodes = markNodes + queue.size();
+							while(markNodes != endNodes)
+							{
+								if(distMap[*markNodes] > dist)
+								{
+									queue.insert(queue.begin() + (markNodes - &queue.front()), neighbor);
+									break;
+								}
+								markNodes++;
+							}
+							if(markNodes == endNodes)
+								queue.push_back(neighbor);
+						}
+						else
+							queue.push_back(neighbor);
 					}
 				}
 			}
@@ -96,26 +108,44 @@ namespace ce
 			map<Node *, float> distMap, endDistMap;
 
 			vector<Node *> neighborsA, neighborsB;
-			for(vector<Node *>::iterator it = m_nodes.begin(); it != m_nodes.end(); it++)
+			if(m_nodes.empty() == false)
 			{
-				Node *node = *it;
-				if(!group->SegmentSearch(posA[0], posA[1], node->m_position[0], node->m_position[1], mask, ignore).size())
+				Node **markNodes = &m_nodes.front();
+				Node **endNodes = markNodes + m_nodes.size();
+				while(markNodes != endNodes)
 				{
-					float dist = (posA - node->m_position).GetLength();
-					neighborsA.push_back(node);
-					pathMap[node] = 0;
-					distMap[node] = dist;
+					Node *node = *markNodes++;
+					if(!group->SegmentSearch(posA[0], posA[1], node->m_position[0], node->m_position[1], mask, ignore).size())
+					{
+						float dist = (posA - node->m_position).GetLength();
+						neighborsA.push_back(node);
+						pathMap[node] = 0;
+						distMap[node] = dist;
 
-					vector<Node *>::iterator itB;
-					for(itB = queue.begin(); itB != queue.end(); itB++)
-						if(distMap[*itB] > dist)
-							break;
-					queue.insert(itB, node);
-				}
-				if(!group->SegmentSearch(posB[0], posB[1], node->m_position[0], node->m_position[1], mask, ignore).size())
-				{
-					neighborsB.push_back(node);
-					endDistMap[node] = (posB - node->m_position).GetLength();
+						if(queue.empty() == false)
+						{
+							Node **markNodes = &queue.front();
+							Node **endNodes = markNodes + queue.size();
+							while(markNodes != endNodes)
+							{
+								if(distMap[*markNodes] > dist)
+								{
+									queue.insert(queue.begin() + (markNodes - &queue.front()), node);
+									break;
+								}
+								markNodes++;
+							}
+							if(markNodes == endNodes)
+								queue.push_back(node);
+						}
+						else
+							queue.push_back(node);
+					}
+					if(!group->SegmentSearch(posB[0], posB[1], node->m_position[0], node->m_position[1], mask, ignore).size())
+					{
+						neighborsB.push_back(node);
+						endDistMap[node] = (posB - node->m_position).GetLength();
+					}
 				}
 			}
 
@@ -150,33 +180,50 @@ namespace ce
 						pathMap[neighbor] = node;
 						distMap[neighbor] = dist;
 
-						bool added = false;
-						vector<Node *>::iterator it;
-						for(it = queue.begin(); it != queue.end(); it++)
-							if(distMap[*it] > dist)
-								break;
-						queue.insert(it, neighbor);
+						if(queue.empty() == false)
+						{
+							Node **markNodes = &queue.front();
+							Node **endNodes = markNodes + queue.size();
+							while(markNodes != endNodes)
+							{
+								if(distMap[*markNodes] > dist)
+								{
+									queue.insert(queue.begin() + (markNodes - &queue.front()), neighbor);
+									break;
+								}
+								markNodes++;
+							}
+							if(markNodes == endNodes)
+								queue.push_back(neighbor);
+						}
+						else
+							queue.push_back(neighbor);
 					}
 				}
 			}
 
 			Node *shortest = 0;
 			float shortestDist = 0.f;
-			for(vector<Node *>::iterator it = neighborsB.begin(); it != neighborsB.end(); it++)
+			if(neighborsB.empty() == false)
 			{
-				Node *node = *it;
-				if(shortest)
+				Node **markNodes = &neighborsB.front();
+				Node **endNodes = markNodes + neighborsB.size();
+				while(markNodes != endNodes)
 				{
-					if(shortestDist > distMap[node])
+					Node *node = *markNodes++;
+					if(shortest)
+					{
+						if(shortestDist > distMap[node])
+						{
+							shortest = node;
+							shortestDist = distMap[node];
+						}
+					}
+					else
 					{
 						shortest = node;
 						shortestDist = distMap[node];
 					}
-				}
-				else
-				{
-					shortest = node;
-					shortestDist = distMap[node];
 				}
 			}
 
@@ -196,22 +243,29 @@ namespace ce
 		}
 		void Graph::GenerateNeighbors(PhysicalGroup *group, unsigned int mask)
 		{
-			for(vector<Node *>::iterator it = m_nodes.begin(); it != m_nodes.end(); it++)
-				(*it)->ClearNeighbors();
-
-			for(vector<Node *>::iterator itA = m_nodes.begin(); itA != m_nodes.end(); itA++)
+			if(m_nodes.empty() == false)
 			{
-				Node *nodeA = *itA;
-				for(vector<Node *>::iterator itB = m_nodes.begin(); itB != m_nodes.end(); itB++)
+				Node **markNodesA = &m_nodes.front(), **markNodesB;
+				Node **endNodes = markNodesA + m_nodes.size();
+				while(markNodesA != endNodes)
+					(*markNodesA++)->ClearNeighbors();
+
+				markNodesA = &m_nodes.front();
+				while(markNodesA != endNodes)
 				{
-					Node *nodeB = *itB;
-					if(nodeA != nodeB)
-						if(!nodeA->IsNeighbor(nodeB))
-							if(!group->SegmentSearch(nodeA->m_position[0], nodeA->m_position[1], nodeB->m_position[0], nodeB->m_position[1], mask).size())
-							{
-								nodeA->AddNeighbor(nodeB);
-								nodeB->AddNeighbor(nodeA);
-							}
+					Node *nodeA = *markNodesA++;
+					markNodesB = &m_nodes.front();
+					while(markNodesB != endNodes)
+					{
+						Node *nodeB = *markNodesB++;
+						if(nodeA != nodeB)
+							if(!nodeA->IsNeighbor(nodeB))
+								if(!group->SegmentSearch(nodeA->m_position[0], nodeA->m_position[1], nodeB->m_position[0], nodeB->m_position[1], mask).size())
+								{
+									nodeA->AddNeighbor(nodeB);
+									nodeB->AddNeighbor(nodeA);
+								}
+					}
 				}
 			}
 		}
@@ -245,12 +299,21 @@ namespace ce
 		void Graph::Node::RemoveNeighbor(Node *node)
 		{
 			int a = 0;
-			for(vector<Node *>::iterator it = m_neighbors.begin(); it != m_neighbors.end(); it++, a++)
-				if(node == *it)
+			if(m_neighbors.empty() == false)
+			{
+				Node **markNodes = &m_neighbors.front();
+				Node **endNodes = markNodes + m_neighbors.size();
+				while(markNodes != endNodes)
 				{
-					m_neighbors.erase(it);
-					m_neighborDistances.erase(m_neighborDistances.begin() + a);
+					Node *nodeB = *markNodes++;
+					if(node == nodeB)
+					{
+						m_neighbors.erase(m_neighbors.begin() + a);
+						m_neighborDistances.erase(m_neighborDistances.begin() + a);
+					}
+					a++;
 				}
+			}
 		}
 		bool Graph::Node::IsNeighbor(Node *node) const
 		{

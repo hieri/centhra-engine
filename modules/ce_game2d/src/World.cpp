@@ -168,6 +168,10 @@ namespace ce
 		World::Layer::Layer() : m_index(255), m_type(Layer_Unknown), m_world(0)
 		{
 		}
+		World::Layer::~Layer()
+		{
+
+		}
 		unsigned char World::Layer::GetType() const
 		{
 			return m_type;

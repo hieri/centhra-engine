@@ -39,6 +39,7 @@ namespace ce
 
 			public:
 				Layer();
+				virtual ~Layer();
 
 				unsigned char GetIndex() const;
 				unsigned char GetType() const;

@@ -1004,8 +1004,8 @@ namespace ce
 			m_plane = new Plane(16, 16, 64.f);
 			m_plane->m_handler = this;
 			
-			vector<Group::Member *> members = GetReferenceGroup()->GetMembers();
-			for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
+			vector<Group::Member *> *members = m_referenceGroup->GetMembers();
+			for(vector<Group::Member *>::iterator it = members->begin(); it != members->end(); it++)
 			{
 				PhysicalObject *object = (PhysicalObject *)*it;
 
@@ -1037,8 +1037,8 @@ namespace ce
 		void DefaultPhysicsHandler::Cleanup()
 		{
 			PhysicalGroup *group = GetReferenceGroup();
-			vector<Group::Member *> &members = group->GetMembers();
-			for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
+			vector<Group::Member *> *members = group->GetMembers();
+			for(vector<Group::Member *>::iterator it = members->begin(); it != members->end(); it++)
 			{
 				PhysicalObject *object = (PhysicalObject *)*it;
 				ObjectHandle *handle = (ObjectHandle *)object->GetObjectHandle();

@@ -25,13 +25,8 @@ namespace ce
 		}
 		World::~World()
 		{
-			while(m_layers.size())
-			{
-				delete m_layers.back();
-				m_layers.pop_back();
-			}
-/*			for(vector<Layer *>::iterator it = m_layers.begin(); it != m_layers.end(); it++)
-				delete *it;*/
+			for(vector<Layer *>::iterator it = m_layers.begin(); it != m_layers.end(); it++)
+				delete *it;
 		}
 		void World::Render(float minX, float minY, float maxX, float maxY)
 		{

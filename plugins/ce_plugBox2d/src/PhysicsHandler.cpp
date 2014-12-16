@@ -402,8 +402,8 @@ namespace ce
 */
 				m_b2d_system = new Box2DSystem(Vector2<float>(0, 0.f));
 
-				vector<Group::Member *> members = GetReferenceGroup()->GetMembers();
-				for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
+				vector<Group::Member *> *members = m_referenceGroup->GetMembers();
+				for(vector<Group::Member *>::iterator it = members->begin(); it != members->end(); it++)
 				{
 					game2d::PhysicalObject *object = (game2d::PhysicalObject *)*it;
 					SetupObject(object);
@@ -458,8 +458,9 @@ namespace ce
 				b2World *world = 0;
 				if(m_b2d_system)
 				{
-					vector<Group::Member *> members = GetReferenceGroup()->GetMembers();
-					for(vector<Group::Member *>::iterator it = members.begin(); it != members.end(); it++)
+					vector<Group::Member *> *members = m_referenceGroup->GetMembers();
+					print("Count: %d\n", members->size());
+					for(vector<Group::Member *>::iterator it = members->begin(); it != members->end(); it++)
 					{
 						game2d::PhysicalObject *object = (game2d::PhysicalObject *)*it;
 						CleanupObject(object);

@@ -51,9 +51,9 @@ namespace ce
 	void Group::OnMemberRemoved(Member *member)
 	{
 	}
-	std::vector<Group::Member *> &Group::GetMembers()
+	vector<Group::Member *> *Group::GetMembers()
 	{
-		return m_members;
+		return &m_members;
 	}
 	
 	Group::Member::Member()

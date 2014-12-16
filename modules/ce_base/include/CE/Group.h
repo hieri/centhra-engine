@@ -27,7 +27,7 @@ namespace ce
 		void Add(Member *entity, bool removeFromExistingGroup = true);
 		void Remove(Member *entity);
 		bool IsMember(Member *entity) const;
-		std::vector<Member *> &GetMembers();
+		std::vector<Member *> *GetMembers();
 
 		virtual void OnMemberAdded(Member *entity);
 		virtual void OnMemberRemoved(Member *entity);

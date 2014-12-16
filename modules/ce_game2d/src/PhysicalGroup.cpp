@@ -63,8 +63,8 @@ namespace ce
 			if(m_physicsHandler)
 			{
 				m_physicsHandler->Cleanup();
-				m_physicsHandler = 0;
 			}
+			m_physicsHandler = 0;
 		}
 		vector<PhysicalObject *> PhysicalGroup::BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask, PhysicalObject *ignore)
 		{

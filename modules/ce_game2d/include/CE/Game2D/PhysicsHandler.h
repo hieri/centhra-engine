@@ -12,9 +12,9 @@ namespace ce
 	{
 		class PhysicsHandler
 		{
+		protected:
 			PhysicalGroup *m_referenceGroup;
 
-		protected:
 			virtual void Initialize();
 			virtual void Process(float dt);
 			virtual void Cleanup();
@@ -31,7 +31,7 @@ namespace ce
 			{
 			protected:
 				ObjectHandle(PhysicsHandler *handler, PhysicalObject *object);
-				~ObjectHandle();
+				virtual ~ObjectHandle();
 
 				PhysicsHandler *m_physicsHandler;
 				PhysicalObject *m_object;
@@ -64,7 +64,7 @@ namespace ce
 			};
 			
 			PhysicsHandler();
-			~PhysicsHandler();
+			virtual ~PhysicsHandler();
 
 			PhysicalGroup *GetReferenceGroup() const;
 			virtual void Render(float minX, float minY, float maxX, float maxY);

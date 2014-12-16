@@ -47,7 +47,7 @@ namespace ce
 			void UIRender();
 		};
 		
-		class Prop : public game2d::PhysicalObject
+		class Prop : public PhysicalObject
 		{
 		protected:
 			PropDef *m_propDef;

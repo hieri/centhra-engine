@@ -7,7 +7,7 @@
 #include <CE/Thread.h>
 #include <CE/Frontend.h>
 #include <CE/Game2D.h>
-//#include <CE/Game2D/DefaultPhysicsHandler.h>
+#include <CE/Game2D/DefaultPhysicsHandler.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
 #include <CE/Plugin/Tiled/TMX.h>
 #include <CE/Game2D/AppGame2D.h>
@@ -31,7 +31,7 @@ class App2DEditorSample : public game2d::AppGame2D
 	game2d::PhysicalObject *m_entity, **m_randoms;
 	game2d::Camera *m_camera;
 	ui::CameraView2DCtrl *m_view;
-//	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
+	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 	plugin::box2d::bPhysicsHandler *m_box2dPhysicsHandler;
 	Font *m_font;
 	bool m_isEditMode;
@@ -52,6 +52,7 @@ public:
 	App2DEditorSample() : AppGame2D()
 	{
 		m_canvas = 0;
+		m_defaultPhysicsHandler = 0;
 		m_box2dPhysicsHandler = 0;
 		m_entity = 0;
 		m_camera = 0;
@@ -141,8 +142,10 @@ public:
 			m_randoms[a]->SetRenderLayer(objectLayerA);
 		}
 
-		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
-		m_world->AttachHandler(m_box2dPhysicsHandler);
+//		m_box2dPhysicsHandler = new plugin::box2d::bPhysicsHandler();
+//		m_world->AttachHandler(m_box2dPhysicsHandler);
+		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
+		m_world->AttachHandler(m_defaultPhysicsHandler);
 
 		m_editorScrollImage = Image::CreateFromFile("../res/editorPropScroll.png");
 		m_editorScrollSkin = new ui::Skin(m_editorScrollImage);
@@ -152,7 +155,7 @@ public:
 		if(!parentStart)
 			return false;
 		
-		m_physicsThread->Start(this);
+//		m_physicsThread->Start(this);
 		return true;
 	}
 	void ProcessPhysics(float dt)
@@ -212,7 +215,9 @@ public:
 			float dt = (float)(t - m_lastProcess) / 1000.f;
 			m_lastProcess = t;
 
-		//	ProcessPhysics(dt);
+			LockWorldMutex();
+			ProcessPhysics(dt);
+			UnlockWorldMutex();
 		}
 
 		sleepMS(1);
@@ -220,10 +225,11 @@ public:
 	}
 	void OnStopped()
 	{
-		m_physicsThread->Join();
+//		m_physicsThread->Join();
 
 		m_world->DetachHandler();
-		delete m_box2dPhysicsHandler;
+//		delete m_box2dPhysicsHandler;
+		delete m_defaultPhysicsHandler;
 	
 		delete m_editorCtrl;
 		delete m_view;

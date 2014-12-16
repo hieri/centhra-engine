@@ -237,8 +237,8 @@ void *clientFunc(void *arg)
 	connection.player = player;
 
 	bool takenControl = false;
-	vector<Group::Member *> &groupMembers = app->m_group->GetMembers();
-	for(vector<Group::Member *>::iterator it = groupMembers.begin(); it != groupMembers.end(); it++)
+	vector<Group::Member *> *groupMembers = app->m_group->GetMembers();
+	for(vector<Group::Member *>::iterator it = groupMembers->begin(); it != groupMembers->end(); it++)
 	{
 		game2d::PhysicalObject *obj = (game2d::PhysicalObject *)*it;
 		connection.creationQueue.push(obj);
@@ -342,8 +342,8 @@ void *clientFunc(void *arg)
 
 			// objects need id's derp
 //			for(map<unsigned long, ClientConnection *>::iterator it = app->m_clientConnectionMap.begin(); it != app->m_clientConnectionMap.end(); it++)
-			vector<Group::Member *> &groupMembers = app->m_group->GetMembers();
-			for(vector<Group::Member *>::iterator it = groupMembers.begin(); it != groupMembers.end(); it++)
+			vector<Group::Member *> *groupMembers = app->m_group->GetMembers();
+			for(vector<Group::Member *>::iterator it = groupMembers->begin(); it != groupMembers->end(); it++)
 			{
 //				ClientConnection *clientConnection = it->second;
 //				game2d::PhysicalObject *obj = (game2d::PhysicalObject *)clientConnection->player;

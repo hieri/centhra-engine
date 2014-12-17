@@ -128,11 +128,13 @@ namespace ce
 									event.mouseButton.button = event::MouseButtonRight;
 									break;
 								default:
-									event.mouseButton.button = event::Unknown;
+									event.mouseButton.button = event::NullButton;
 								}
-								event.mouseButton.state = cast->state;
 								event.mouseButton.x = cast->event_x;
 								event.mouseButton.y = cast->event_y;
+								event.mouseButton.modifier = 0;
+								if(cast->state & XCB_MOD_MASK_SHIFT)
+									event.mouseButton.modifier |= event::Mod_Shift;
 							}
 							else if(cast->detail < 6)
 							{
@@ -166,11 +168,13 @@ namespace ce
 								event.mouseButton.button = event::MouseButtonRight;
 								break;
 							default:
-								event.mouseButton.button = event::Unknown;
+								event.mouseButton.button = event::NullButton;
 							}
-							event.mouseButton.state = cast->state;
 							event.mouseButton.x = cast->event_x;
 							event.mouseButton.y = cast->event_y;
+							event.mouseButton.modifier = 0;
+							if(cast->state & XCB_MOD_MASK_SHIFT)
+								event.mouseButton.modifier |= event::Mod_Shift;
 							OnEvent(event);
 							break;
 						}
@@ -269,11 +273,13 @@ namespace ce
 									event.mouseButton.button = event::MouseButtonRight;
 									break;
 								default:
-									event.mouseButton.button = event::Unknown;
+									event.mouseButton.button = event::NullButton;
 								}
-								event.mouseButton.state = xEvent.xbutton.state;
 								event.mouseButton.x = xEvent.xbutton.x;
 								event.mouseButton.y = xEvent.xbutton.y;
+								event.mouseButton.modifier = 0;
+								if(xEvent.xbutton.state & ShiftMask)
+									event.mouseButton.modifier |= event::Mod_Shift;
 							}
 							else if(xEvent.xbutton.button < 6)
 							{
@@ -301,11 +307,13 @@ namespace ce
 								event.mouseButton.button = event::MouseButtonRight;
 								break;
 							default:
-								event.mouseButton.button = event::Unknown;
+								event.mouseButton.button = event::NullButton;
 							}
-							event.mouseButton.state = xEvent.xbutton.state;
 							event.mouseButton.x = xEvent.xbutton.x;
 							event.mouseButton.y = xEvent.xbutton.y;
+							event.mouseButton.modifier = 0;
+							if(xEvent.xbutton.state & ShiftMask)
+								event.mouseButton.modifier |= event::Mod_Shift;
 							OnEvent(event);
 							break;
 						case MotionNotify:

@@ -95,7 +95,7 @@ namespace ce
 	 */
 	typedef struct MouseButtonEvent : BaseMouseEvent
 	{
-		unsigned int button, state, modifier;
+		unsigned int button, modifier;
 	} MouseButtonEvent;
 
 	/**	@brief Mouse Scroll Event Data Structure Class

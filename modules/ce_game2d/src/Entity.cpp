@@ -72,10 +72,19 @@ namespace ce
 				m_isDeleted = true;
 				if(g_doingProcess)
 				{
-					unsigned long place = g_markProcess - &ms_active.front();
+					unsigned long place = g_markProcess - &ms_active.front() - 1;
 					ms_active.erase(ms_active.begin() + place);
-					g_markProcess = &ms_active.front() + place;
-					g_endProcess = g_markProcess + ms_active.size();
+					if(ms_active.empty() == false)
+					{
+						g_markProcess = &ms_active.front();
+						g_endProcess = g_markProcess + ms_active.size();
+						g_markProcess += place;
+					}
+					else
+					{
+						g_markProcess = 0;
+						g_endProcess = g_markProcess;
+					}
 				}
 				else
 					ms_active.erase(find(ms_active.begin(), ms_active.end(), this));

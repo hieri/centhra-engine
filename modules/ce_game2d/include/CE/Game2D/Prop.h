@@ -17,6 +17,7 @@ namespace ce
 
 		class PropDef
 		{
+		protected:
 			static std::map<unsigned short, PropDef *> ms_propDefs;
 			static unsigned short ms_nextPropID;
 
@@ -39,7 +40,7 @@ namespace ce
 			PropDef();
 			~PropDef();
 
-			unsigned short GetPropID() const;
+			unsigned short GetID() const;
 			Vector2<float> GetExtent() const;
 			std::string GetName() const;
 
@@ -54,7 +55,7 @@ namespace ce
 			int m_currentAnimation;
 			float m_animationTime;
 
-			Prop(Vector2<float> position, Vector2<float> extent, PropDef *propDef);
+			Prop(Vector2<float> position, Vector2<float> extent, PropDef *definition);
 
 			virtual void DoRender();
 

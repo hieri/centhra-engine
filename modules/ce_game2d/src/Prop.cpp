@@ -20,7 +20,7 @@ namespace ce
 {
 	namespace game2d
 	{
-		map<unsigned short, PropDef *> PropDef::ms_propDefs;
+		map<unsigned short, PropDef *> PropDef::ms_propDefs = map<unsigned short, PropDef *>();
 		unsigned short PropDef::ms_nextPropID = 0;
 		map<unsigned short, PropDef *> *PropDef::GetPropDefTable()
 		{
@@ -59,7 +59,7 @@ namespace ce
 				getline(lineStream, imageFile, '\t');
 				lineStream >> def->m_extent[0] >> def->m_extent[1];
 				lineStream >> def->m_isStatic >> def->m_hasFixedRotation >> def->m_isCollidable;
-				getline(lineStream, spriteFile, '\t'); //<---- LOLL
+				getline(lineStream, spriteFile, '\t'); //- This is necessary -
 				getline(lineStream, spriteFile, '\t');
 				
 				def->m_image = Image::CreateFromFile(imageFile.c_str());
@@ -94,7 +94,7 @@ namespace ce
 				delete m_sprite;
 			delete m_image;
 		}
-		unsigned short PropDef::GetPropID() const
+		unsigned short PropDef::GetID() const
 		{
 			return m_propID;
 		}
@@ -141,13 +141,13 @@ namespace ce
 		Prop *Spawn(Vector2<float> position);
 		void UIRender();
 
-		Prop::Prop(Vector2<float> position, Vector2<float> extent, PropDef *propDef) : PhysicalObject(position, extent), m_propDef(propDef)
+		Prop::Prop(Vector2<float> position, Vector2<float> extent, PropDef *definition) : PhysicalObject(position, extent), m_propDef(definition)
 		{
 			SetTypeMask(Mask_Prop);
-			if(!propDef->m_isCollidable)
+			if(!definition->m_isCollidable)
 				SetCollisionMask(0);
-			SetStatic(propDef->m_isStatic);
-			SetFixedRotation(propDef->m_hasFixedRotation);
+			SetStatic(definition->m_isStatic);
+			SetFixedRotation(definition->m_hasFixedRotation);
 			m_currentAnimation = 1;
 			m_animationTime = 0.f;
 		}

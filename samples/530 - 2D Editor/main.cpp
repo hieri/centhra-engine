@@ -1,6 +1,7 @@
 //- Standard Library -
 #include <cstdlib>
 #include <ctime>
+#include <cmath>
 
 //- Centhra Engine -
 #include <CE/Base.h>
@@ -10,10 +11,8 @@
 #include <CE/Game2D/DefaultPhysicsHandler.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
 #include <CE/Plugin/Tiled/TMX.h>
-#include <CE/Game2D/AppGame2D.h>
-#include <CE/Game2D/World.h>
-#include <CE/Game2D/Prop.h>
 #include <CE/UI/Editor2D.h>
+#include <CE/Math.h>
 
 #include <CE/UI/ImageCtrl.h>
 
@@ -93,6 +92,7 @@ public:
 		}
 
 		game2d::PropDef::LoadFromFile("../res/sampleProps.txt");
+		game2d::ProjectileDef::LoadFromFile("../res/sampleProjectiles.txt");
 
 		m_tmx = plugin::tiled::TMX::CreateFromFile("../res/Test.tmx");
 		m_tmx->PopulateWorld(m_world);
@@ -289,10 +289,28 @@ public:
 				}
 			break;
 		case event::MouseMotion:
-		case event::MouseButtonDown:
 		case event::MouseButtonUp:
 			if(m_isEditMode)
 				m_editorCtrl->ProcessEvent(event);
+			break;
+		case event::MouseButtonDown:
+			if(m_isEditMode)
+				m_editorCtrl->ProcessEvent(event);
+			else if(event.mouseButton.button == event::MouseButtonLeft || event.mouseButton.button == event::MouseButtonRight)
+			{
+				Vector2<float> pos = GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
+				Vector2<float> dir = pos - m_entity->GetPosition();
+				dir /= dir.GetLength();
+				LockWorldMutex();
+				game2d::Projectile *p = 0;
+				if(event.mouseButton.button == event::MouseButtonLeft)
+					p = game2d::ProjectileDef::GetProjectileDefByName("blueBall")->Spawn(pos, dir, 0, RadiansToDegrees() * atan2(dir[1], dir[0]));
+				else
+					p = game2d::ProjectileDef::GetProjectileDefByName("bullet")->Spawn(pos, dir, 0, RadiansToDegrees() * atan2(dir[1], dir[0]));
+				m_world->Add(p);
+				UnlockWorldMutex();
+//				print("P: %f %f\t%f %f\n", p->GetPosition()[0], p->GetPosition()[1], p->GetVelocity()[0], p->GetVelocity()[1]);
+			}
 			break;
 		case event::PostRender:
 			LockWorldMutex();

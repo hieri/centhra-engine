@@ -23,6 +23,7 @@
 //- Centhra Engine -
 #include <CE/Image.h>
 #include <CE/Base.h>
+#include <CE/Game2D/AppGame2D.h>
 #include <CE/Game2D/Sprite.h>
 #include <CE/Game2D/Projectile.h>
 
@@ -32,105 +33,129 @@ namespace ce
 {
 	namespace game2d
 	{
-		vector<Image *> g_projectileImageTable;
-		typedef struct projectileDefinition
-		{
-			bool hasSprite;
-			string spriteFile, spriteDefinitionFile; Image *image; game2d::Sprite *sprite; Vector2<float> extent, renderScale; float speed; unsigned char damage; bool axisOriented; unsigned short lifeTime; float maxAnimTime;
-		} projectileDefinition;
-		vector<projectileDefinition> g_projectileDefinitionTable;
+		map<unsigned short, ProjectileDef *> ProjectileDef::ms_projectileDefs = map<unsigned short, ProjectileDef *>();
+		unsigned short ProjectileDef::ms_nextProjectileID = 0;
 
+		map<unsigned short, ProjectileDef *> *ProjectileDef::GetProjectileDefTable()
+		{
+			return &ms_projectileDefs;
+		}
+		ProjectileDef *ProjectileDef::GetProjectileDefByID(unsigned short projectileID)
+		{
+			if(ms_projectileDefs.count(projectileID))
+				return ms_projectileDefs[projectileID];
+			return 0;
+		}
+		ProjectileDef *ProjectileDef::GetProjectileDefByName(string name)
+		{
+			for(map<unsigned short, ProjectileDef *>::iterator it = ms_projectileDefs.begin(); it != ms_projectileDefs.end(); it++)
+			{
+				ProjectileDef *projectileDef = it->second;
+				if(!projectileDef->m_name.compare(name))
+					return projectileDef;
+			}
+			return 0;
+		}
 		void ProjectileDef::LoadFromFile(const char *file)
 		{
-	/*		ifstream inFile;
+			ifstream inFile;
 			inFile.open(file);
 
 			string in;
 			while(getline(inFile, in))
 			{
 				stringstream lineStream(in);
-				projectileDefinition def;
-				getline(lineStream, def.spriteFile, '\t');
-				if(!def.spriteFile.compare("//"))
+				ProjectileDef *def = new ProjectileDef();;
+				getline(lineStream, def->m_name, '\t');
+				if(!def->m_name.compare("//"))
 					continue;
-				getline(lineStream, def.spriteDefinitionFile, '\t');
+				string imageFile, spriteFile;
+				getline(lineStream, imageFile, '\t');
 				unsigned short damage;
-				lineStream >> def.extent[0] >> def.extent[1] >> def.renderScale[0] >> def.renderScale[1] >> def.speed >> damage >> def.axisOriented >> def.lifeTime >> def.maxAnimTime;
-				def.damage = (unsigned char)damage;
-				def.hasSprite = def.spriteDefinitionFile.compare("()") != 0;
-				g_projectileDefinitionTable.push_back(def);
+				lineStream >> def->m_extent[0] >> def->m_extent[1] >> def->m_renderScale[0] >> def->m_renderScale[1] >> def->m_speed >> damage >> def->m_isAxisOriented >> def->m_lifeTime >> def->m_maxAnimTime;
+				def->m_damage = (unsigned char)damage;
+
+				getline(lineStream, spriteFile, '\t'); //- This is necessary -
+				getline(lineStream, spriteFile, '\t');
+
+				def->m_image = Image::CreateFromFile(imageFile.c_str());
+				if(spriteFile.length())
+				{
+					def->m_isAnimated = true;
+					def->m_sprite = Sprite::LoadSpriteFromFile(spriteFile.c_str(), def->m_image);
+				}
+
+				def->m_projectileID = ms_nextProjectileID++;
+				ms_projectileDefs[def->m_projectileID] = def;
 			}
 
 			inFile.close();
-			*/
 		}
-
 		void ProjectileDef::Cleanup()
 		{
-/*			if(g_projectileDefinitionTable.empty() == false)
-			{
-				projectileDefinition *markProjDefs = &g_projectileDefinitionTable.front();
-				projectileDefinition *endProjDefs = markProjDefs + g_projectileDefinitionTable.size();
-				while(markProjDefs != endProjDefs)
-				{
-					delete markProjDefs->image;
-					if(markProjDefs->hasSprite)
-						delete markProjDefs->sprite;
-					markProjDefs++;
-				}
-			}
-*/		}
-
-/*		void Projectile::InitAssets()
-		{
-			if(g_projectileDefinitionTable.empty() == false)
-			{
-				projectileDefinition *markProjDefs = &g_projectileDefinitionTable.front();
-				projectileDefinition *endProjDefs = markProjDefs + g_projectileDefinitionTable.size();
-				while(markProjDefs != endProjDefs)
-				{
-					markProjDefs->image = Image::CreateFromFile(markProjDefs->spriteFile.c_str());
-					if(markProjDefs->hasSprite)
-						markProjDefs->sprite = LoadSpriteFromFile(markProjDefs->spriteDefinitionFile.c_str(), markProjDefs->image);
-					markProjDefs++;
-				}
-			}
+			for(map<unsigned short, ProjectileDef *>::iterator it = ms_projectileDefs.begin(); it != ms_projectileDefs.end(); it++)
+				delete it->second;
+			ms_projectileDefs.clear();
 		}
-*/
-//		unsigned short g_projectileColMask = Object::Mask_Body | Object::Mask_Wall;
-		Projectile::Projectile(Vector2<float> position, unsigned char type, Vector2<float> direction, float rotation, PhysicalObject *source) : PhysicalObject(position, g_projectileDefinitionTable[type].extent, true), m_projectileType(type), m_source(source), m_lastBoost(0), m_timeout(0)
+
+		ProjectileDef::ProjectileDef() : m_projectileID(0), m_image(0), m_sprite(0),
+			m_isAnimated(false), m_isAxisOriented(false), m_speed(0.f), m_maxAnimTime(0.f),
+			m_damage(0), m_lifeTime(0)
+		{
+		}
+		ProjectileDef::~ProjectileDef()
+		{
+			if(m_isAnimated)
+				delete m_sprite;
+			delete m_image;
+		}
+		unsigned short ProjectileDef::GetID() const
+		{
+			return m_projectileID;
+		}
+		string ProjectileDef::GetName() const
+		{
+			return m_name;
+		}
+		Projectile *ProjectileDef::Spawn(Vector2<float> position, Vector2<float> direction, PhysicalObject *source, float rotation)
+		{
+			return new Projectile(position, this, direction, rotation, source);
+		}
+
+		Projectile::Projectile(Vector2<float> position, ProjectileDef *definition, Vector2<float> direction, float rotation, PhysicalObject *source)
+			: PhysicalObject(position, definition->m_extent, true),
+			m_projectileDef(definition), m_source(source), m_lastBoost(0), m_timeout(0), m_animTime(0.f)
 		{
 			SetTypeMask(Mask_Projectile);
 			SetCollisionMask(GetCollisionMask() & ~Mask_Projectile);
 
-			SetVelocity(direction * g_projectileDefinitionTable[type].speed);
-			if(!g_projectileDefinitionTable[type].axisOriented)
+			SetFixedRotation(true);
+			SetVelocity(direction * definition->m_speed);
+			if(!definition->m_isAxisOriented)
 				SetRotation(rotation);
-			m_timeout = getRunTimeMS() + g_projectileDefinitionTable[type].lifeTime;
-		}
-		Projectile::~Projectile()
-		{
+			m_timeout = getRunTimeMS() + definition->m_lifeTime;
 		}
 		void Projectile::OnCollision(ce::game2d::PhysicalObject *collider, ce::Vector2<float> pointOfContact)
 		{
 /*			Object *object = (Object *)collider;
-			AppLD30 *app = (AppLD30 *)App::GetCurrent();
+			AppGame2D *app = (AppGame2D *)App::GetCurrent();
 			if(app->m_isServer || app->m_isLocal)
 				if(object->GetTypeMask() & Object::Mask_Body)
-					((Body *)object)->Damage(g_projectileDefinitionTable[m_projectileType].damage, Body::Generic, m_source);*/
+					((Body *)object)->Damage(m_projectileDef->m_damage, Body::Generic, m_source);*/
 			Delete();
 		}
 		void Projectile::OnProcess(float dt)
 		{
 			m_animTime += dt;
-			if(m_animTime > g_projectileDefinitionTable[m_projectileType].maxAnimTime)
-				m_animTime -= g_projectileDefinitionTable[m_projectileType].maxAnimTime;
+			if(m_animTime > m_projectileDef->m_maxAnimTime)
+				m_animTime -= m_projectileDef->m_maxAnimTime;
 
 			unsigned long long t = getRunTimeMS();
 			if(t > m_timeout)
 				Delete();
+			//TODO: Make velocity constant
 			if((t - m_lastBoost) > 500)
-				SetVelocity((GetVelocity() / GetVelocity().GetLength()) * g_projectileDefinitionTable[m_projectileType].speed);
+				SetVelocity((GetVelocity() / GetVelocity().GetLength()) * m_projectileDef->m_speed);
 		}
 		void Projectile::DoRender()
 		{
@@ -142,26 +167,25 @@ namespace ce
 			glScalef(m_extent[0], m_extent[1], 1.f);
 			glTranslatef(-0.5f, -0.5f, 0.f);
 
-			//		g_projectileImageTable[m_projectileType]->Bind();
-			glScalef(g_projectileDefinitionTable[m_projectileType].renderScale[0], g_projectileDefinitionTable[m_projectileType].renderScale[1], 1.f);
+			glScalef(m_projectileDef->m_renderScale[0], m_projectileDef->m_renderScale[1], 1.f);
 			glEnable(GL_TEXTURE_2D);
-			if(g_projectileDefinitionTable[m_projectileType].hasSprite)
-				g_projectileDefinitionTable[m_projectileType].sprite->Draw(0, m_animTime);
+			if(m_projectileDef->m_isAnimated)
+				m_projectileDef->m_sprite->Draw(0, m_animTime);
 			else
 			{
-				g_projectileDefinitionTable[m_projectileType].image->Bind();
+				m_projectileDef->m_image->Bind();
 				glBegin(GL_QUADS);
-				glTexCoord2i(0, 1);
-				glVertex2i(0, 0);
+					glTexCoord2i(0, 1);
+					glVertex2i(0, 0);
 
-				glTexCoord2i(1, 1);
-				glVertex2i(1, 0);
+					glTexCoord2i(1, 1);
+					glVertex2i(1, 0);
 
-				glTexCoord2i(1, 0);
-				glVertex2i(1, 1);
+					glTexCoord2i(1, 0);
+					glVertex2i(1, 1);
 
-				glTexCoord2i(0, 0);
-				glVertex2i(0, 1);
+					glTexCoord2i(0, 0);
+					glVertex2i(0, 1);
 				glEnd();
 			}
 			glDisable(GL_TEXTURE_2D);
@@ -172,32 +196,9 @@ namespace ce
 		}
 		void Projectile::OnAdded(ce::Group *group)
 		{
+			SetCollisionMask(GetCollisionMask());
+			//TODO: Determine if this is necessary
 			SetRotation(GetRotation());
-			//		((plugin::box2d::bPhysicsHandler::bObjectHandle *)GetObjectHandle())->SetFixedRotation(true);
 		}
-
-		//-------------------- EXPLOSIONS???? ----------------
-		/*
-		void Explosion::InitAssets()
-		{
-		}
-		void Explosion::CleanupAssets()
-		{
-		}
-		void Explosion::LoadDefinitionsFromFile(const char *file)
-		{
-		}
-		Explosion::Explosion(ce::Vector2<float> position, unsigned long long timeout) : Object(position, Vector2<float>(1.f, 1.f), true), m_timeout(timeout)
-		{
-		}
-		void Explosion::DoRender()
-		{
-		}
-		void Explosion::OnProcess(float dt)
-		{
-			if(getRunTimeMS() > m_timeout)
-				Kill();
-		}
-		*/
 	}
 }

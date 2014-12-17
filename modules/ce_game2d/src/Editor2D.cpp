@@ -1001,7 +1001,7 @@ namespace ce
 			for(map<unsigned short, game2d::PropDef *>::iterator it = propDefTable->begin(); it != propDefTable->end(); it++)
 			{
 				Vector2<float> extent = it->second->GetExtent();
-				PropSelectCtrl *btn = new PropSelectCtrl(Vector2<int_canvas>(startX, startY), Vector2<int_canvas>(buttonWidth, buttonHeight), it->second->GetPropID(), font);
+				PropSelectCtrl *btn = new PropSelectCtrl(Vector2<int_canvas>(startX, startY), Vector2<int_canvas>(buttonWidth, buttonHeight), it->second->GetID(), font);
 				Add((ui::ButtonCtrl *)btn);
 
 				startY += buttonHeight + padding;

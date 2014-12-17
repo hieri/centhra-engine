@@ -9,6 +9,7 @@ set(INC
 	${INC_DIR}/Game2D/Camera.h
 	${INC_DIR}/Game2D/DefaultPhysicsHandler.h
 	${INC_DIR}/Game2D/Entity.h
+	${INC_DIR}/Game2D/Explosion.h
 	${INC_DIR}/Game2D/Graph.h
 	${INC_DIR}/Game2D/PhysicalGroup.h
 	${INC_DIR}/Game2D/PhysicalObject.h
@@ -31,6 +32,7 @@ set(SRC
 	${SRC_DIR}/DefaultPhysicsHandler.cpp
 	${SRC_DIR}/Editor2D.cpp
 	${SRC_DIR}/Entity.cpp
+	${SRC_DIR}/Explosion.cpp
 	${SRC_DIR}/Graph.cpp
 	${SRC_DIR}/PhysicalGroup.cpp
 	${SRC_DIR}/PhysicalObject.cpp

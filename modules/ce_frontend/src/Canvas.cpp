@@ -109,6 +109,9 @@ namespace ce
 				event.mouseButton.button = event::MouseButtonLeft;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
+				event.mouseButton.modifier = 0;
+				if(wParam & MK_SHIFT)
+					event.mouseButton.modifier |= event::Mod_Shift;
 				app->OnEvent(event);
 				break;
 			case WM_LBUTTONUP:
@@ -117,6 +120,10 @@ namespace ce
 				event.mouseButton.button = event::MouseButtonLeft;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
+				event.mouseButton.modifier = 0;
+				//TODO: Determine if this modifer should carry over from mouse down
+				if(wParam & MK_SHIFT)
+					event.mouseButton.modifier |= event::Mod_Shift;
 				app->OnEvent(event);
 				break;
 			case WM_RBUTTONDOWN:
@@ -125,6 +132,9 @@ namespace ce
 				event.mouseButton.button = event::MouseButtonRight;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
+				event.mouseButton.modifier = 0;
+				if(wParam & MK_SHIFT)
+					event.mouseButton.modifier |= event::Mod_Shift;
 				app->OnEvent(event);
 				break;
 			case WM_RBUTTONUP:
@@ -133,6 +143,9 @@ namespace ce
 				event.mouseButton.button = event::MouseButtonRight;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
+				event.mouseButton.modifier = 0;
+				if(wParam & MK_SHIFT)
+					event.mouseButton.modifier |= event::Mod_Shift;
 				app->OnEvent(event);
 				break;
 			case WM_MBUTTONDOWN:
@@ -141,6 +154,9 @@ namespace ce
 				event.mouseButton.button = event::MouseButtonMiddle;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
+				event.mouseButton.modifier = 0;
+				if(wParam & MK_SHIFT)
+					event.mouseButton.modifier |= event::Mod_Shift;
 				app->OnEvent(event);
 				break;
 			case WM_MBUTTONUP:
@@ -149,6 +165,9 @@ namespace ce
 				event.mouseButton.button = event::MouseButtonMiddle;
 				event.mouseButton.x = LOWORD(lParam);
 				event.mouseButton.y = HIWORD(lParam);
+				event.mouseButton.modifier = 0;
+				if(wParam & MK_SHIFT)
+					event.mouseButton.modifier |= event::Mod_Shift;
 				app->OnEvent(event);
 				break;
 			//TODO: Determine if this should be permanently removed

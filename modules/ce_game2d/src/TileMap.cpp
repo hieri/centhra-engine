@@ -219,5 +219,41 @@ namespace ce
 		{
 			m_bleedLevel = bleedLevel;
 		}
+
+		//- Fill -
+		void TileMap::RecurseFill(unsigned short x, unsigned short y, Vector3<unsigned char> &source, Vector3<unsigned char> &target)
+		{
+			if(m_tiles[x][y] != source)
+				return;
+			m_tiles[x][y] = target;
+			if(x)
+			{
+				RecurseFill(x - 1, y, source, target);
+				if(y)
+					RecurseFill(x - 1, y - 1, source, target);
+				if((y + 1) < m_size[1])
+					RecurseFill(x - 1, y + 1, source, target);
+			}
+			if((x + 1) < m_size[0])
+			{
+				RecurseFill(x + 1, y, source, target);
+				if(y)
+					RecurseFill(x + 1, y - 1, source, target);
+				if((y + 1) < m_size[1])
+					RecurseFill(x + 1, y + 1, source, target);
+			}
+			if(y)
+				RecurseFill(x, y - 1, source, target);
+			if((y + 1) < m_size[1])
+				RecurseFill(x, y + 1, source, target);
+		}
+		void TileMap::FillTiles(unsigned short x, unsigned short y, Vector2<unsigned char> value, unsigned char tileSetIdx)
+		{
+			Vector3<unsigned char> source = m_tiles[x][y];
+			Vector3<unsigned char> target(tileSetIdx, value[0], value[1]);
+			if(source == target)
+				return;
+			RecurseFill(x, y, source, target);
+		}
 	}
 }

@@ -15,7 +15,7 @@ namespace ce
 	{
 		typedef enum EventType
 		{
-			Null,
+			NullEvent,
 			PreRender,
 			Render,
 			PostRender,
@@ -45,11 +45,17 @@ namespace ce
 
 		typedef enum MouseButtonType
 		{
-			Unknown,
+			NullButton,
 			MouseButtonLeft,
 			MouseButtonRight,
 			MouseButtonMiddle
 		} MouseButtonType;
+
+		typedef enum ModifierMask
+		{
+			Base_Mod               = 0,
+			Mod_Shift              = 1 << (Base_Mod + 0)
+		} ModifierMask;
 	}
 
 	/**	@brief Base Event Data Structure Class
@@ -89,7 +95,7 @@ namespace ce
 	 */
 	typedef struct MouseButtonEvent : BaseMouseEvent
 	{
-		unsigned int button, state;
+		unsigned int button, state, modifier;
 	} MouseButtonEvent;
 
 	/**	@brief Mouse Scroll Event Data Structure Class

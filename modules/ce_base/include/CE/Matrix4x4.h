@@ -13,6 +13,7 @@ namespace ce
 {
 	/* 	4x4 Matrix Class
 	 * 	- Data structure holding a 4x4 matrix.
+	 *  - Stored in Column-Major Order
 	 */
 	template<class Type> class Matrix4x4
 	{

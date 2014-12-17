@@ -155,8 +155,11 @@ namespace ce
 					else if(m_mode == Mode_Tile)
 						if(m_currentLayer && m_tileMode == TileMode_None)
 						{
-							if(m_currentTile[0] != 255 || m_currentTile[1] != 255)
+							if(event.mouseButton.modifier == event::Mod_Shift)
 							{
+								if(m_tilePlacementGroup)
+									break;
+
 								Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
 								game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
 								Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
@@ -170,72 +173,93 @@ namespace ce
 								{
 									if(!tileLayer->HasTileSet(m_currentTileSet))
 										tileLayer->AddTileSet(m_currentTileSet);
-									tileLayer->SetTile(x, y, Vector2<unsigned char>(m_currentTile[0], m_currentTile[1]), tileLayer->GetTileSetIndex(m_currentTileSet));
+									tileLayer->FillTiles(x, y, Vector2<unsigned char>(m_currentTile[0], m_currentTile[1]), tileLayer->GetTileSetIndex(m_currentTileSet));
 								}
-								m_tileMode = TileMode_Placing;
-							}
-							else if(m_tilePlacementGroup)
-							{
-								Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
-								game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
-								Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
-								Vector2<unsigned short> size = tileLayer->GetSize();
-								float tileScale = tileLayer->GetScale();
-								float tileWidth = tileScale * tileSize[0];
-								float tileHeight = tileScale * tileSize[1];
-								unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
-								unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
-
-								short startX = (short)x - m_tilePlacementGroupSize[0] / 2;
-								short startY = (short)y - m_tilePlacementGroupSize[1] / 2;
-								short endX = startX + m_tilePlacementGroupSize[0] - 1;
-								short endY = startY + m_tilePlacementGroupSize[1] - 1;
-
-								//- Determine Real Start and End -
-								if(startX > endX)
-									swap(startX, endX);
-								if(startY > endY)
-									swap(startY, endY);
-
-								short originX = startX;
-								short originY = startY;
-
-								//- Limit Selection -
-								if(startX < 0)
-									startX = 0;
-								if(startX >= size[0])
-									startX = size[0] - 1;
-								if(endX < 0)
-									endX = 0;
-								if(endX >= size[0])
-									endX = size[0] - 1;
-								if(startY < 0)
-									startY = 0;
-								if(startY >= size[1])
-									startY = size[1] - 1;
-								if(endY < 0)
-									endY = 0;
-								if(endY >= size[1])
-									endY = size[1] - 1;
-
-								if((originX + m_tilePlacementGroupSize[0]) > 0 && (originY + m_tilePlacementGroupSize[1]) > 0 && originX < (short)size[0] && originY < (short)size[1])
-								{
-									//- Place Selection -
-									for(short a = startX; a <= endX; a++)
-										for(short b = startY; b <= endY; b++)
-										{
-											Vector3<unsigned char> &tile = m_tilePlacementGroup[a - originX][b - originY];
-											if(tile[0] == 255 || tile[1] == 255 || tile[2] == 255)
-												continue;
-											tileLayer->SetTile(a, b, Vector2<unsigned char>(tile[1], tile[2]), tile[0]);
-										}
-								}
-								m_tileMode = TileMode_Placing;
 							}
 							else
 							{
-								m_dragStart = m_curMouse = Vector2<int_canvas>(event.mouseButton.x, event.mouseButton.y);
-								m_isSelecting = true;
+								if(m_currentTile[0] != 255 || m_currentTile[1] != 255)
+								{
+									Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
+									game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
+									Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
+									Vector2<unsigned short> size = tileLayer->GetSize();
+									float tileScale = tileLayer->GetScale();
+									float tileWidth = tileScale * tileSize[0];
+									float tileHeight = tileScale * tileSize[1];
+									unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
+									unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
+									if(x < size[0] && y < size[1])
+									{
+										if(!tileLayer->HasTileSet(m_currentTileSet))
+											tileLayer->AddTileSet(m_currentTileSet);
+										tileLayer->SetTile(x, y, Vector2<unsigned char>(m_currentTile[0], m_currentTile[1]), tileLayer->GetTileSetIndex(m_currentTileSet));
+									}
+									m_tileMode = TileMode_Placing;
+								}
+								else if(m_tilePlacementGroup)
+								{
+									Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
+									game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
+									Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
+									Vector2<unsigned short> size = tileLayer->GetSize();
+									float tileScale = tileLayer->GetScale();
+									float tileWidth = tileScale * tileSize[0];
+									float tileHeight = tileScale * tileSize[1];
+									unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
+									unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
+
+									short startX = (short)x - m_tilePlacementGroupSize[0] / 2;
+									short startY = (short)y - m_tilePlacementGroupSize[1] / 2;
+									short endX = startX + m_tilePlacementGroupSize[0] - 1;
+									short endY = startY + m_tilePlacementGroupSize[1] - 1;
+
+									//- Determine Real Start and End -
+									if(startX > endX)
+										swap(startX, endX);
+									if(startY > endY)
+										swap(startY, endY);
+
+									short originX = startX;
+									short originY = startY;
+
+									//- Limit Selection -
+									if(startX < 0)
+										startX = 0;
+									if(startX >= size[0])
+										startX = size[0] - 1;
+									if(endX < 0)
+										endX = 0;
+									if(endX >= size[0])
+										endX = size[0] - 1;
+									if(startY < 0)
+										startY = 0;
+									if(startY >= size[1])
+										startY = size[1] - 1;
+									if(endY < 0)
+										endY = 0;
+									if(endY >= size[1])
+										endY = size[1] - 1;
+
+									if((originX + m_tilePlacementGroupSize[0]) > 0 && (originY + m_tilePlacementGroupSize[1]) > 0 && originX < (short)size[0] && originY < (short)size[1])
+									{
+										//- Place Selection -
+										for(short a = startX; a <= endX; a++)
+											for(short b = startY; b <= endY; b++)
+											{
+												Vector3<unsigned char> &tile = m_tilePlacementGroup[a - originX][b - originY];
+												if(tile[0] == 255 || tile[1] == 255 || tile[2] == 255)
+													continue;
+												tileLayer->SetTile(a, b, Vector2<unsigned char>(tile[1], tile[2]), tile[0]);
+											}
+									}
+									m_tileMode = TileMode_Placing;
+								}
+								else
+								{
+									m_dragStart = m_curMouse = Vector2<int_canvas>(event.mouseButton.x, event.mouseButton.y);
+									m_isSelecting = true;
+								}
 							}
 						}
 				}
@@ -270,8 +294,14 @@ namespace ce
 							float tileHeight = tileScale * tileSize[1];
 							unsigned short x = (unsigned short)floor(curPos[0] / tileWidth);
 							unsigned short y = (unsigned short)floor(curPos[1] / tileHeight);
-
-							if(m_tilePlacementGroup)
+							if(event.mouseButton.modifier == event::Mod_Shift)
+							{
+								if(m_tilePlacementGroup)
+									break;
+								if(x < size[0] && y < size[1])
+									tileLayer->FillTiles(x, y, Vector2<unsigned char>(255, 255), 255);
+							}
+							else if(m_tilePlacementGroup)
 							{
 								short startX = (short)x - m_tilePlacementGroupSize[0] / 2;
 								short startY = (short)y - m_tilePlacementGroupSize[1] / 2;

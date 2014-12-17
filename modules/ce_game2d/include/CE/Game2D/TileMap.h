@@ -53,6 +53,12 @@ namespace ce
 		public:
 			float GetBleedLevel() const;
 			void SetBleedLevel(float bleedLevel);
+
+			//- Fill -
+		protected:
+			void RecurseFill(unsigned short x, unsigned short y, Vector3<unsigned char> &source, Vector3<unsigned char> &target);
+		public:
+			void FillTiles(unsigned short x, unsigned short y, Vector2<unsigned char> value, unsigned char tileSetIdx);
 		};
 	}
 }

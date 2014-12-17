@@ -172,7 +172,7 @@ public:
 		if(m_camera->GetMode() == game2d::Camera::Mode_Follow)
 			m_entity->SetVelocity(dif);
 		else
-			m_camera->SetPosition(m_camera->GetPosition() + dif * dt);
+			m_camera->SetPosition(m_camera->GetPosition() + dif * dt / m_zoomLevel);
 
 		game2d::Entity::FinalizeDelete();
 		m_world->ProcessPhysics(dt);

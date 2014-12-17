@@ -260,8 +260,9 @@ namespace ce
 		string extension = fileName.substr(lastPeriod + 1, string::npos);
 		if(extension.empty() == false)
 		{
-			char *markChars = &extension.front();
+			char *markChars = &extension[0];
 			char *endChars = markChars + extension.size();
+			//TODO: Fix this warning
 			while(markChars != endChars)
 				*markChars = tolower(*markChars++);
 		}

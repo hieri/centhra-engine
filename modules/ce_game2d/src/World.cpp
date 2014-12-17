@@ -12,6 +12,7 @@
 //- Centhra Engine -
 #include <CE/Game2D/World.h>
 #include <CE/Game2D/PhysicalObject.h>
+#include <CE/Game2D/Wall.h>
 #include <CE/Base.h>
 
 using namespace std;
@@ -85,10 +86,34 @@ namespace ce
 							tileLayer->Render(minX, minY, maxX, maxY, tileLayer->GetScale());
 						}
 						break;
+					case Layer_Wall:
+						{
+							WallLayer *wallLayer = (WallLayer *)layer;
+
+							if(m_members.empty() == false)
+							{
+								Group::Member **markObjects = &m_members.front();
+								Group::Member **endObjects = markObjects + m_members.size();
+								while(markObjects != endObjects)
+								{
+									PhysicalObject *object = (PhysicalObject *)*markObjects++;
+									if(!(Mask_Wall & object->GetTypeMask()))
+										continue;
+									Rect<float> aabb = object->GetAABB();
+									if(aabb[0] > maxX || aabb[1] > maxY || aabb[2] < minX || aabb[3] < minY)
+										continue;
+									object->Render();
+									if(m_renderDebug)
+										object->RenderAABB();
+								}
+							}
+						}
+						break;
 					}
 				}
 			}
 		}
+
 		World::ObjectLayer *World::AddObjectLayer()
 		{
 			ObjectLayer *objectLayer = new ObjectLayer();
@@ -96,6 +121,14 @@ namespace ce
 			objectLayer->m_index = (unsigned char)m_layers.size();
 			m_layers.push_back(objectLayer);
 			return objectLayer;
+		}
+		World::WallLayer *World::AddWallLayer()
+		{
+			WallLayer *wallLayer = new WallLayer();
+			wallLayer->m_world = this;
+			wallLayer->m_index = (unsigned char)m_layers.size();
+			m_layers.push_back(wallLayer);
+			return wallLayer;
 		}
 		World::TileLayer *World::AddTileLayer(Vector2<unsigned short> size, Vector2<unsigned short> tileSize)
 		{
@@ -206,7 +239,7 @@ namespace ce
 
 		//-------------------------------- ObjectLayer --------------------------------
 		World::ObjectLayer::ObjectLayer() : World::Layer(), m_renderAll(false),
-			m_renderMask(65535)
+			m_renderMask(65535 & ~Mask_Wall)
 		{
 			m_type = Layer_Object;
 		}
@@ -230,6 +263,25 @@ namespace ce
 		void World::ObjectLayer::SetRenderMask(unsigned short renderMask)
 		{
 			m_renderMask = renderMask;
+		}
+
+		//-------------------------------- WallLayer --------------------------------
+		World::WallLayer::WallLayer() : World::Layer(), m_wallGrid(0)
+		{
+			m_type = Layer_Wall;
+		}
+		World::WallLayer::~WallLayer()
+		{
+			if(m_wallGrid)
+				delete m_wallGrid;
+		}
+		WallGrid *World::WallLayer::GetWallGrid() const
+		{
+			return m_wallGrid;
+		}
+		void World::WallLayer::SetWallGrid(WallGrid *wallGrid)
+		{
+			m_wallGrid = wallGrid;
 		}
 
 		//-------------------------------- TileLayer --------------------------------

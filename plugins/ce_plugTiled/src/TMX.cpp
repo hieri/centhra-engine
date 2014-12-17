@@ -1,4 +1,5 @@
 //- Standard Library -
+#include <algorithm>
 #include <sstream>
 
 #ifdef _WIN32
@@ -16,6 +17,7 @@
 #include <CE/Base.h>
 #include <CE/Plugin/Tiled/TMX.h>
 #include <CE/Game2D/Prop.h>
+#include <CE/Game2D/Wall.h>
 
 using namespace std;
 using namespace pugi;
@@ -365,33 +367,199 @@ namespace ce
 						{
 						case Layer_Object:
 							{
-								ObjectLayer *objectLayer = (ObjectLayer *)layer;
-								game2d::World::ObjectLayer *wObjectLayer = world->AddObjectLayer();
-								wObjectLayer->SetName(layer->m_name);
-
-								//- RenderAll: Attempts to render all objects in the World -
-								bool renderAll = false;
+								//- Determine if this is a Wall layer -
+								bool isWallLayer = false;
 								if(layer->m_propertyMap.size())
-									for(map<string, string>::iterator itB = layer->m_propertyMap.begin(); itB != layer->m_propertyMap.end(); itB++)
-										if(!itB->first.compare("RenderAll"))
-											if(!itB->second.compare("1") || !itB->second.compare("True") || !itB->second.compare("true"))
-												renderAll = true;
-
-								wObjectLayer->SetRenderAll(renderAll);
-
-								//TODO: Account for render mask
-
-								if(objectLayer->m_objectDefVec.empty() == false)
-								{
-									ObjectDef **markObjectDefs = &objectLayer->m_objectDefVec.front();
-									ObjectDef **endObjectDefs = markObjectDefs + objectLayer->m_objectDefVec.size();
-									while(markObjectDefs != endObjectDefs)
+									if(layer->m_propertyMap.count("IsWallLayer"))
 									{
-										game2d::PhysicalObject *obj = LoadObject(*markObjectDefs++);
-										if(!obj)
-											continue;
-										obj->SetRenderLayer(wObjectLayer);
-										world->Add(obj);
+										string value = layer->m_propertyMap["IsWallLayer"];
+										if(!value.compare("1") || !value.compare("True") || !value.compare("true"))
+											isWallLayer = true;
+									}
+
+								if(isWallLayer)
+								{
+									ObjectLayer *objectLayer = (ObjectLayer *)layer;
+
+									game2d::World::WallLayer *wWallLayer = world->AddWallLayer();
+									wWallLayer->SetName(layer->m_name);
+
+									game2d::WallGrid *wallGrid = new game2d::WallGrid(m_size[0], m_size[1]);
+									wWallLayer->SetWallGrid(wallGrid);
+
+									unsigned short mapHeight = m_size[1] * 32;
+
+									if(objectLayer->m_objectDefVec.empty() == false)
+									{
+										ObjectDef **markObjectDefs = &objectLayer->m_objectDefVec.front();
+										ObjectDef **endObjectDefs = markObjectDefs + objectLayer->m_objectDefVec.size();
+										while(markObjectDefs != endObjectDefs)
+										{
+											ObjectDef *object = *markObjectDefs++;
+
+											if(object->m_type == ObjectDef::Object_Polyline)
+											{
+												if(!object->m_typeStr.compare("Wall"))
+												{
+													string points(object->m_propertyMap["points"]);
+													replace(points.begin(), points.end(), ',', ' ');
+													istringstream pointsStream(points);
+
+													int _x, _y, c = 0;
+													float x, y, lastX, lastY;
+
+													//- Snap object position to grid -
+													object->m_x = (int)(32.f * floor(((float)object->m_x) / 32.f + 0.5f));
+													object->m_y = (int)(32.f * floor(((float)object->m_y) / 32.f + 0.5f));
+
+													unsigned short minX, minY, maxX, maxY;
+
+													while(pointsStream >> _x >> _y)
+													{
+														//- Snap points to grid -
+														_x = (int)(32.f * floor(((float)_x) / 32.f + 0.5f));
+														_y = (int)(32.f * floor(((float)_y) / 32.f + 0.5f));
+
+														x = ((float)(object->m_x + _x)) / 32.f;
+														y = ((float)(mapHeight - object->m_y - _y)) / 32.f;
+
+														//- Populate wall grid -
+														if(c)
+														{
+															if(lastX < x)
+																minX = (unsigned short)lastX;
+															else
+																minX = (unsigned short)x;
+															if(lastY < y)
+																minY = (unsigned short)lastY;
+															else
+																minY = (unsigned short)y;
+															if(lastX > x)
+																maxX = (unsigned short)lastX;
+															else
+																maxX = (unsigned short)x;
+															if(lastY > y)
+																maxY = (unsigned short)lastY;
+															else
+																maxY = (unsigned short)y;
+
+															for(unsigned short a = minX; a <= maxX; a++)
+																for(unsigned short b = minY; b <= maxY; b++)
+																	wallGrid->m_data[a][b] |= 1;
+
+															if(minX == maxX)
+																for(unsigned short b = minY; b < maxY; b++)
+																	if(!(wallGrid->m_data[minX][b] & game2d::WallGrid::Fill))
+																		wallGrid->m_data[minX][b] |= game2d::WallGrid::Vertical;
+															if(minY == maxY)
+																for(unsigned short a = minX; a < maxX; a++)
+																	if(!(wallGrid->m_data[a][minY] & game2d::WallGrid::Fill))
+																		wallGrid->m_data[a][minY] |= game2d::WallGrid::Horizontal;
+
+															if(minX == maxX && minY == maxY)
+																if(!(wallGrid->m_data[minX][minY] & game2d::WallGrid::Fill))
+																	wallGrid->m_data[minX][minY] |= game2d::WallGrid::Post;
+														}
+
+														c++;
+														lastX = x;
+														lastY = y;
+													}
+
+													if(c == 1)
+														wallGrid->m_data[(unsigned short)x][(unsigned short)y] = true;
+												}
+											}
+											else if(object->m_type == ObjectDef::Object_Rectangle)
+											{
+												if(!object->m_typeStr.compare("Wall"))
+												{
+													//- Snap object position to grid -
+													object->m_x = (int)(32.f * floor(((float)object->m_x) / 32.f + 0.5f));
+													object->m_y = (int)(32.f * floor(((float)object->m_y) / 32.f + 0.5f));
+
+													object->m_width = (int)(32.f * floor(((float)object->m_width) / 32.f + 0.5f));
+													object->m_height = (int)(32.f * floor(((float)object->m_height) / 32.f + 0.5f));
+
+													short minX = object->m_x / 32, minY = (mapHeight - object->m_y - object->m_height) / 32;
+													short maxX = minX + (short)(object->m_width / 32), maxY = minY + (short)(object->m_height / 32);
+
+													if(minX == maxX)
+													{
+														if(minY == maxY)
+														{
+															if(!(wallGrid->m_data[minX][minY] & game2d::WallGrid::Fill))
+																wallGrid->m_data[minX][minY] |= game2d::WallGrid::Post;
+														}
+														else
+														{
+															for(unsigned short b = minY; b < maxY; b++)
+																if(!(wallGrid->m_data[minX][b] & game2d::WallGrid::Fill))
+																	wallGrid->m_data[minX][b] |= game2d::WallGrid::Vertical;
+														}
+													}
+													else if(minY == maxY)
+													{
+														for(unsigned short a = minX; a < maxX; a++)
+															if(!(wallGrid->m_data[a][minY] & game2d::WallGrid::Fill))
+																wallGrid->m_data[a][minY] |= game2d::WallGrid::Horizontal;
+													}
+													else
+													{
+														for(short a = minX; a < maxX; a++)
+															for(short b = minY; b < maxY; b++)
+																wallGrid->m_data[a][b] = 1 | game2d::WallGrid::Fill;
+													}
+												}
+											}
+											else if(object->m_type == ObjectDef::Object_Point)
+												if(!object->m_typeStr.compare("Wall"))
+												{
+													//- Snap object position to grid -
+													object->m_x = (int)(32.f * floor(((float)object->m_x) / 32.f + 0.5f));
+													object->m_y = (int)(32.f * floor(((float)object->m_y) / 32.f + 0.5f));
+
+													short X = object->m_x / 32, Y = (mapHeight - object->m_y) / 32;
+													if(!(wallGrid->m_data[X][Y] & game2d::WallGrid::Fill))
+														wallGrid->m_data[X][Y] |= game2d::WallGrid::Post;
+												}
+										}
+									}
+
+									wallGrid->GenerateWalls(world, Vector2<float>(32.f, 32.f));
+								}
+								else
+								{
+									ObjectLayer *objectLayer = (ObjectLayer *)layer;
+									game2d::World::ObjectLayer *wObjectLayer = world->AddObjectLayer();
+									wObjectLayer->SetName(layer->m_name);
+
+									//- RenderAll: Attempts to render all objects in the World -
+									bool renderAll = false;
+									if(layer->m_propertyMap.size())
+										if(layer->m_propertyMap.count("RenderAll"))
+										{
+											string value = layer->m_propertyMap["RenderAll"];
+											if(!value.compare("1") || !value.compare("True") || !value.compare("true"))
+												renderAll = true;
+										}
+
+									wObjectLayer->SetRenderAll(renderAll);
+
+									//TODO: Account for render mask
+
+									if(objectLayer->m_objectDefVec.empty() == false)
+									{
+										ObjectDef **markObjectDefs = &objectLayer->m_objectDefVec.front();
+										ObjectDef **endObjectDefs = markObjectDefs + objectLayer->m_objectDefVec.size();
+										while(markObjectDefs != endObjectDefs)
+										{
+											game2d::PhysicalObject *obj = LoadObject(*markObjectDefs++);
+											if(!obj)
+												continue;
+											obj->SetRenderLayer(wObjectLayer);
+											world->Add(obj);
+										}
 									}
 								}
 							}
@@ -415,7 +583,6 @@ namespace ce
 				unsigned short mapHeight = m_size[1] * 32;
 
 				if(object->m_type == ObjectDef::Object_Point)
-				{
 					if(!object->m_typeStr.compare("Prop"))
 					{
 						game2d::PropDef *propDef = game2d::PropDef::GetPropDefByName(object->m_propertyMap["PropName"]);
@@ -435,7 +602,6 @@ namespace ce
 							prop->SetRotation(rot);
 						return prop;
 					}
-				}
 
 				return 0;
 			}

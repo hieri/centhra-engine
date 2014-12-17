@@ -22,6 +22,7 @@ set(INC
 	${INC_DIR}/Game2D/TileSet.h
 	${INC_DIR}/Game2D/TiledBackground.h
 	${INC_DIR}/Game2D/Trigger.h
+	${INC_DIR}/Game2D/Wall.h
 	${INC_DIR}/Game2D/World.h
 )
 
@@ -45,6 +46,7 @@ set(SRC
 	${SRC_DIR}/TileSet.cpp
 	${SRC_DIR}/TiledBackground.cpp
 	${SRC_DIR}/Trigger.cpp
+	${SRC_DIR}/Wall.cpp
 	${SRC_DIR}/World.cpp
 )
 

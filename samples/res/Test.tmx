@@ -1034,6 +1034,14 @@
    <tile gid="0"/>
   </data>
  </layer>
+ <objectgroup name="Wall Layer 1" width="32" height="32">
+  <properties>
+   <property name="IsWallLayer" value="1"/>
+  </properties>
+  <object type="Wall" x="447" y="575">
+   <polyline points="0,0 0,159 -31,159"/>
+  </object>
+ </objectgroup>
  <objectgroup name="Object Layer 1" width="32" height="32">
   <properties>
    <property name="RenderAll" value="1"/>

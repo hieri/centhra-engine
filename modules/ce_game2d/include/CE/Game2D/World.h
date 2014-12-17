@@ -13,6 +13,8 @@ namespace ce
 {
 	namespace game2d
 	{
+		class WallGrid;
+
 		class World : public PhysicalGroup
 		{
 		public:
@@ -27,7 +29,8 @@ namespace ce
 			{
 				Layer_Unknown,
 				Layer_Object,
-				Layer_Tile
+				Layer_Tile,
+				Layer_Wall
 			} LayerType;
 
 			class Layer
@@ -75,6 +78,22 @@ namespace ce
 				friend class World;
 			};
 
+			//- WallLayer: Renders the Walls -
+		public:
+			class WallLayer : public Layer
+			{
+				WallGrid *m_wallGrid;
+
+			public:
+				WallLayer();
+				~WallLayer();
+				
+				WallGrid *GetWallGrid() const;
+				void SetWallGrid(WallGrid *wallGrid);
+
+				friend class World;
+			};
+
 			//- TileLayer: Renders TileMap -
 		public:
 			class TileLayer : public Layer, public TileMap
@@ -98,6 +117,7 @@ namespace ce
 			};
 
 			ObjectLayer *AddObjectLayer();
+			WallLayer *AddWallLayer();
 			TileLayer *AddTileLayer(Vector2<unsigned short> size, Vector2<unsigned short> tileSize);
 			Layer *GetLayer(unsigned char layerIdx) const;
 			void RemoveLayer(unsigned char layerIdx);

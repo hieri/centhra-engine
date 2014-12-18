@@ -68,53 +68,55 @@ namespace ce
 	{
 		App *app = App::GetCurrent();
 
-		HANDLE dwDirectoryHandle = CreateFile(m_path.c_str(),
-			FILE_LIST_DIRECTORY,
-			FILE_SHARE_WRITE | FILE_SHARE_READ | FILE_SHARE_DELETE,
-			NULL,
-			OPEN_EXISTING,
-			FILE_FLAG_BACKUP_SEMANTICS,
-			NULL);
+		#ifdef _WIN32
+			HANDLE dwDirectoryHandle = CreateFile(m_path.c_str(),
+				FILE_LIST_DIRECTORY,
+				FILE_SHARE_WRITE | FILE_SHARE_READ | FILE_SHARE_DELETE,
+				NULL,
+				OPEN_EXISTING,
+				FILE_FLAG_BACKUP_SEMANTICS,
+				NULL);
 
-		if(dwDirectoryHandle == INVALID_HANDLE_VALUE)
-		{
-			setError("Directory::WatchForUpdates: Invalid directory handle.\n");
-			return;
-		}
-		if((dwDirectoryHandle == NULL))
-		{
-			setError("Directory::WatchForUpdates: Directory handle is undefined.\n");
-			return;
-		}
-		
-		//TODO: Find optimal size for this
-		FILE_NOTIFY_INFORMATION strFileNotifyInfo[20];
-		DWORD dwBytesReturned = 0;
-		while(true)
-		{
-			memset(&strFileNotifyInfo, 0, sizeof(strFileNotifyInfo));
-			if(ReadDirectoryChangesW(dwDirectoryHandle, (LPVOID)&strFileNotifyInfo, sizeof(strFileNotifyInfo), FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE, &dwBytesReturned, 0, 0) == FALSE)
+			if(dwDirectoryHandle == INVALID_HANDLE_VALUE)
 			{
-				setError("Directory::WatchForUpdates: ReadDirectoryChangesW failed.\n");
+				setError("Directory::WatchForUpdates: Invalid directory handle.\n");
 				return;
 			}
-
-			if(!app->IsRunning() || !m_isMonitoring)
-				return;
-
-			string targetFile;
-			unsigned short size = (unsigned short)strFileNotifyInfo[0].FileNameLength / 2;
-			targetFile.reserve(size);
-			for(unsigned short a = 0; a < size; a++)
+			if((dwDirectoryHandle == NULL))
 			{
-				if((char)strFileNotifyInfo[0].FileName[a] == '~')
-					break;
-				targetFile.push_back((char)strFileNotifyInfo[0].FileName[a]);
+				setError("Directory::WatchForUpdates: Directory handle is undefined.\n");
+				return;
 			}
+			
+			//TODO: Find optimal size for this
+			FILE_NOTIFY_INFORMATION strFileNotifyInfo[20];
+			DWORD dwBytesReturned = 0;
+			while(true)
+			{
+				memset(&strFileNotifyInfo, 0, sizeof(strFileNotifyInfo));
+				if(ReadDirectoryChangesW(dwDirectoryHandle, (LPVOID)&strFileNotifyInfo, sizeof(strFileNotifyInfo), FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE, &dwBytesReturned, 0, 0) == FALSE)
+				{
+					setError("Directory::WatchForUpdates: ReadDirectoryChangesW failed.\n");
+					return;
+				}
 
-			if(m_files.count(targetFile))
-				m_files[targetFile]->Refresh();
-		}
+				if(!app->IsRunning() || !m_isMonitoring)
+					return;
+
+				string targetFile;
+				unsigned short size = (unsigned short)strFileNotifyInfo[0].FileNameLength / 2;
+				targetFile.reserve(size);
+				for(unsigned short a = 0; a < size; a++)
+				{
+					if((char)strFileNotifyInfo[0].FileName[a] == '~')
+						break;
+					targetFile.push_back((char)strFileNotifyInfo[0].FileName[a]);
+				}
+
+				if(m_files.count(targetFile))
+					m_files[targetFile]->Refresh();
+			}
+		#endif
 	}
 
 	//---------------------------- File ----------------------------

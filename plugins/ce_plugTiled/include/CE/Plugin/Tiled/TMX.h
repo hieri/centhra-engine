@@ -24,7 +24,7 @@ namespace ce
 					unsigned short firstGID, tileWidth, tileHeight, imageWidth, imageHeight;
 					Image *image;
 					game2d::TileSet *tileSet;
-				} TileSet;
+				} TileSetDef;
 
 				typedef enum LayerType
 				{
@@ -100,9 +100,7 @@ namespace ce
 				~TMX();
 
 				void PopulateWorld(game2d::World *world);
-
-				//TODO: Export world as TMX
-				void SaveToFile(const char *file);
+				void ExportWorldToFile(game2d::World *world, const char *file);
 
 				virtual game2d::PhysicalObject *LoadObject(ObjectDef *object);
 				virtual void SaveObjects(void *groupLayer);
@@ -111,7 +109,8 @@ namespace ce
 				std::string m_file, m_orientation, m_version;
 				Vector2<unsigned short> m_size, m_tileSize;
 				std::vector<Layer *> m_layerVec;
-				std::vector<TileSet *> m_tileSetVec;
+				std::vector<TileSetDef *> m_tileSetVec;
+				std::map<game2d::TileSet *, TileSetDef *> m_tileSetMap;
 				std::map<std::string, std::string> m_propertyMap;
 			};
 		}

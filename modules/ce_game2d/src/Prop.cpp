@@ -148,6 +148,10 @@ namespace ce
 			m_currentAnimation = 1;
 			m_animationTime = 0.f;
 		}
+		PropDef *Prop::GetPropDef() const
+		{
+			return m_propDef;
+		}
 		void Prop::OnProcess(float dt)
 		{
 			if(m_propDef->m_isAnimated)

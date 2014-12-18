@@ -49,6 +49,13 @@ namespace ce
 				std::string GetName() const;
 				void SetName(std::string name);
 
+				//- User Data -
+			protected:
+				void *m_userData;
+			public:
+				void *GetUserData() const;
+				void SetUserData(void *userData);
+
 				friend class World;
 			};
 		protected:

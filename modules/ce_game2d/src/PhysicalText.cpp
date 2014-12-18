@@ -55,7 +55,7 @@ namespace ce
 		{
 			va_list	ap;
 			va_start(ap, format);
-			m_text = formatString(format, ap);
+			m_text = formatStringList(format, ap);
 			va_end(ap);
 		}
 		string PhysicalText::GetText() const

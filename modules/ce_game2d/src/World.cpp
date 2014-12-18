@@ -213,7 +213,7 @@ namespace ce
 		}
 
 		//-------------------------------- Layer --------------------------------
-		World::Layer::Layer() : m_index(255), m_type(Layer_Unknown), m_world(0)
+		World::Layer::Layer() : m_index(255), m_type(Layer_Unknown), m_world(0), m_userData(0)
 		{
 		}
 		World::Layer::~Layer()
@@ -235,6 +235,16 @@ namespace ce
 		void World::Layer::SetName(string name)
 		{
 			m_name = name;
+		}
+
+		//- User Data -
+		void *World::Layer::GetUserData() const
+		{
+			return m_userData;
+		}
+		void World::Layer::SetUserData(void *userData)
+		{
+			m_userData = userData;
 		}
 
 		//-------------------------------- ObjectLayer --------------------------------

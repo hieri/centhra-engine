@@ -259,6 +259,9 @@ public:
 			case Key_D:
 				d = true;
 				break;
+			case Key_BracketRight:
+				m_tmx->ExportWorldToFile(m_world, "../res/Test.tmx");
+				break;
 			}
 			break;
 		case event::KeyUp:

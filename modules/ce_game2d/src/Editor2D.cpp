@@ -123,6 +123,7 @@ namespace ce
 								Vector2<float> pos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
 								app->LockWorldMutex();
 								game2d::Prop *prop = propDef->Spawn(pos);
+								prop->SetRenderLayer((game2d::World::ObjectLayer *)m_currentLayer);
 								game2d::Camera::GetCurrent()->GetFocusGroup()->Add(prop);
 								app->UnlockWorldMutex();
 							}

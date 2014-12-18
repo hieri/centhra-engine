@@ -368,7 +368,7 @@ namespace ce
 					{
 						wall = new Wall(Vector2<float>((float)a * scale[0], (float)b * scale[1]), Vector2<float>(g_doublePostThickness * scale[0], g_doublePostThickness * scale[1]));
 						group->Add(wall);
-					}	
+					}
 
 			CalculateObstructionPoints(scale);
 		}

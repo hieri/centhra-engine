@@ -40,7 +40,8 @@ namespace ce
 	void error(const char *format, ...);
 	void print(const char *format, ...);
 	void warn(const char *format, ...);
-	std::string formatString(const char *format, va_list args, unsigned short size = 128);
+	std::string formatStringList(const char *format, va_list args, unsigned short size = 128);
+	std::string formatString(const char *format, ...);
 
 	//- Version -
 	unsigned int getVersionMajor();

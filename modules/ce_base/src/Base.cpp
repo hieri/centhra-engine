@@ -35,7 +35,7 @@ namespace ce
 {
 	string g_error = "";
 
-	string formatString(const char *format, va_list args, unsigned short size)
+	string formatStringList(const char *format, va_list args, unsigned short size)
 	{
 		char *buffer = new char[size + 1];
 		#ifdef _WIN32
@@ -46,6 +46,14 @@ namespace ce
 		string str(buffer);
 		delete [] buffer;
 		return str;
+	}
+	string formatString(const char *format, ...)
+	{
+		va_list	ap;
+		va_start(ap, format);
+		string msg = formatStringList(format, ap);
+		va_end(ap);
+		return msg;
 	}
 
 	bool m_verboseLogging = false;
@@ -65,7 +73,7 @@ namespace ce
 	{
 		va_list	ap;
 		va_start(ap, format);
-		g_error = string(formatString(format, ap));
+		g_error = string(formatStringList(format, ap));
 		va_end(ap);
 
 		if(m_verboseLogging)
@@ -158,7 +166,7 @@ namespace ce
 	{
 		va_list	ap;
 		va_start(ap, format);
-		string msg = formatString(format, ap);
+		string msg = formatStringList(format, ap);
 		App *current = App::GetCurrent();
 		if(current)
 			current->OnError(msg.c_str());
@@ -173,7 +181,7 @@ namespace ce
 	{
 		va_list	ap;
 		va_start(ap, format);
-		string msg = formatString(format, ap);
+		string msg = formatStringList(format, ap);
 		App *current = App::GetCurrent();
 		if(current)
 			current->OnPrint(msg.c_str());
@@ -188,7 +196,7 @@ namespace ce
 	{
 		va_list	ap;
 		va_start(ap, format);
-		string msg = formatString(format, ap);
+		string msg = formatStringList(format, ap);
 		App *current = App::GetCurrent();
 		if(current)
 			current->OnWarn(msg.c_str());

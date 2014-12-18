@@ -30,22 +30,22 @@ namespace ce
 	{
 		namespace tiled
 		{
-			TMX::TileSet *resolveTileset(vector<TMX::TileSet *> &ts, unsigned short gid)
+			TMX::TileSetDef *resolveTileset(vector<TMX::TileSetDef *> &ts, unsigned short gid)
 			{
 				if(ts.empty() == false)
 				{
-					TMX::TileSet **markTileSets = &ts.back();
-					TMX::TileSet **endTileSets = markTileSets - ts.size();
+					TMX::TileSetDef **markTileSets = &ts.back();
+					TMX::TileSetDef **endTileSets = markTileSets - ts.size();
 					while(markTileSets != endTileSets)
 					{
-						TMX::TileSet *tileSet = *markTileSets--;
+						TMX::TileSetDef *tileSet = *markTileSets--;
 						if(tileSet->firstGID <= gid)
 							return tileSet;
 					}
 				}
 				return NULL;
 			}
-			Vector2<unsigned char> gidToCoord(unsigned short gid, TMX::TileSet *ts)
+			Vector2<unsigned char> gidToCoord(unsigned short gid, TMX::TileSetDef *ts)
 			{
 				Vector2<unsigned char> size = ts->tileSet->GetSize();
 
@@ -57,7 +57,7 @@ namespace ce
 
 				return Vector2<unsigned char>(x, y);
 			}
-			unsigned short coordToGid(Vector2<unsigned char> coord, TMX::TileSet *ts)
+			unsigned short coordToGid(Vector2<unsigned char> coord, TMX::TileSetDef *ts)
 			{
 				return coord[0] + coord[1] * ts->tileSet->GetSize()[0] + ts->firstGID;
 			}
@@ -132,7 +132,7 @@ namespace ce
 				unsigned short tileHeight = xMap.attribute("tileheight").as_uint();
 				Vector2<unsigned short> tileSize(tileWidth, tileHeight);
 
-				vector<TileSet *> tilesets;
+				vector<TileSetDef *> tilesets;
 				vector<Layer *> layerVec;
 				for(xml_node xNode = xMap.first_child(); xNode; xNode = xNode.next_sibling())
 				{
@@ -141,7 +141,7 @@ namespace ce
 					unsigned short idx = layerVec.size();
 					if(!name.compare("tileset"))
 					{
-						TileSet *ts = new TileSet();
+						TileSetDef *ts = new TileSetDef();
 						ts->name = xNode.attribute("name").as_string();
 						ts->file = xNode.child("image").attribute("source").as_string();
 						ts->firstGID = xNode.attribute("firstgid").as_uint();
@@ -166,7 +166,7 @@ namespace ce
 							unsigned short gid = tile.attribute("gid").as_uint();
 							if(gid)
 							{
-								TileSet *ts = resolveTileset(tilesets, gid);
+								TileSetDef *ts = resolveTileset(tilesets, gid);
 								if(ts)
 								{
 									//TODO: Add tilesets ahead of time and use their indices
@@ -289,6 +289,17 @@ namespace ce
 				tmx->m_orientation = string(xMap.attribute("orientation").as_string());
 				tmx->m_version = string(xMap.attribute("version").as_string());
 
+				if(tilesets.empty() == false)
+				{
+					TileSetDef **markTileSetDefs = &tilesets.front();
+					TileSetDef **endTileSetDefs = markTileSetDefs + tilesets.size();
+					while(markTileSetDefs != endTileSetDefs)
+					{
+						TileSetDef *ts = *markTileSetDefs++;
+						tmx->m_tileSetMap[ts->tileSet] = ts;
+					}
+				}
+
 				xml_node properties = xMap.child("properties");
 				if(properties)
 					for(xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
@@ -332,11 +343,11 @@ namespace ce
 				}
 				if(m_tileSetVec.empty() == false)
 				{
-					TileSet **markTileSets = &m_tileSetVec.front();
-					TileSet **endTileSets = markTileSets + m_tileSetVec.size();
+					TileSetDef **markTileSets = &m_tileSetVec.front();
+					TileSetDef **endTileSets = markTileSets + m_tileSetVec.size();
 					while(markTileSets != endTileSets)
 					{
-						TileSet *tileSet = *markTileSets++;
+						TileSetDef *tileSet = *markTileSets++;
 						delete tileSet->tileSet;
 						delete tileSet->image;
 						delete tileSet;
@@ -348,8 +359,8 @@ namespace ce
 				//- Associate Tile Sets -
 				if(m_tileSetVec.empty() == false)
 				{
-					TileSet **markTileSets = &m_tileSetVec.front();
-					TileSet **endTileSets = markTileSets + m_tileSetVec.size();
+					TileSetDef **markTileSets = &m_tileSetVec.front();
+					TileSetDef **endTileSets = markTileSets + m_tileSetVec.size();
 					while(markTileSets != endTileSets)
 						world->AssociateTileSet((*markTileSets++)->tileSet);
 				}
@@ -380,8 +391,8 @@ namespace ce
 								if(isWallLayer)
 								{
 									ObjectLayer *objectLayer = (ObjectLayer *)layer;
-
 									game2d::World::WallLayer *wWallLayer = world->AddWallLayer();
+									wWallLayer->SetUserData(layer);
 									wWallLayer->SetName(layer->m_name);
 
 									game2d::WallGrid *wallGrid = new game2d::WallGrid(m_size[0], m_size[1]);
@@ -443,31 +454,15 @@ namespace ce
 															else
 																maxY = (unsigned short)y;
 
-															for(unsigned short a = minX; a <= maxX; a++)
-																for(unsigned short b = minY; b <= maxY; b++)
-																	wallGrid->SetPoint(a, b, wallGrid->GetPoint(a, b) | 1);
-
 															if(minX == maxX)
 																for(unsigned short b = minY; b < maxY; b++)
-																{
-																	unsigned char point = wallGrid->GetPoint(minX, b);
-																	if(!(point & game2d::WallGrid::Fill))
-																		wallGrid->SetPoint(minX, b, point | game2d::WallGrid::Vertical);
-																}
+																	wallGrid->SetVertical(minX, b, true);
 															if(minY == maxY)
 																for(unsigned short a = minX; a < maxX; a++)
-																{
-																	unsigned char point = wallGrid->GetPoint(a, minY);
-																	if(!(point & game2d::WallGrid::Fill))
-																		wallGrid->SetPoint(a, minY, point | game2d::WallGrid::Horizontal);
-																}
+																	wallGrid->SetHorizontal(a, minY, true);
 
 															if(minX == maxX && minY == maxY)
-															{
-																unsigned char point = wallGrid->GetPoint(minX, minY);
-																if(!(point & game2d::WallGrid::Fill))
-																	wallGrid->SetPoint(minX, minY, point | game2d::WallGrid::Post);
-															}
+																wallGrid->SetPost(minX, minY, true);
 														}
 
 														c++;
@@ -496,28 +491,21 @@ namespace ce
 													if(minX == maxX)
 													{
 														if(minY == maxY)
-														{
-															if(!(wallGrid->m_data[minX][minY] & game2d::WallGrid::Fill))
-																wallGrid->m_data[minX][minY] |= game2d::WallGrid::Post;
-														}
+															wallGrid->SetPost(minX, minY, true);
 														else
-														{
 															for(unsigned short b = minY; b < maxY; b++)
-																if(!(wallGrid->m_data[minX][b] & game2d::WallGrid::Fill))
-																	wallGrid->m_data[minX][b] |= game2d::WallGrid::Vertical;
-														}
+																wallGrid->SetVertical(minX, b, true);
 													}
 													else if(minY == maxY)
 													{
 														for(unsigned short a = minX; a < maxX; a++)
-															if(!(wallGrid->m_data[a][minY] & game2d::WallGrid::Fill))
-																wallGrid->m_data[a][minY] |= game2d::WallGrid::Horizontal;
+															wallGrid->SetHorizontal(a, minY, true);
 													}
 													else
 													{
 														for(short a = minX; a < maxX; a++)
 															for(short b = minY; b < maxY; b++)
-																wallGrid->m_data[a][b] = 1 | game2d::WallGrid::Fill;
+																wallGrid->SetFill(a, b, true);
 													}
 												}
 											}
@@ -529,8 +517,7 @@ namespace ce
 													object->m_y = (int)(32.f * floor(((float)object->m_y) / 32.f + 0.5f));
 
 													short X = object->m_x / 32, Y = (mapHeight - object->m_y) / 32;
-													if(!(wallGrid->m_data[X][Y] & game2d::WallGrid::Fill))
-														wallGrid->m_data[X][Y] |= game2d::WallGrid::Post;
+													wallGrid->SetPost(X, Y, true);
 												}
 										}
 									}
@@ -541,6 +528,7 @@ namespace ce
 								{
 									ObjectLayer *objectLayer = (ObjectLayer *)layer;
 									game2d::World::ObjectLayer *wObjectLayer = world->AddObjectLayer();
+									wObjectLayer->SetUserData(layer);
 									wObjectLayer->SetName(layer->m_name);
 
 									//- RenderAll: Attempts to render all objects in the World -
@@ -577,6 +565,7 @@ namespace ce
 							{
 								TileLayer *tileLayer = (TileLayer *)layer;
 								game2d::World::TileLayer *wTileLayer = world->AddTileLayer(tileLayer->m_tileMap->GetSize(), tileLayer->m_tileMap->GetTileSize());
+								wTileLayer->SetUserData(layer);
 								wTileLayer->SetName(layer->m_name);
 								wTileLayer->CopyFrom(tileLayer->m_tileMap);
 							}
@@ -614,9 +603,13 @@ namespace ce
 
 				return 0;
 			}
-			void TMX::SaveToFile(const char *file)
+			void TMX::ExportWorldToFile(game2d::World *world, const char *file)
 			{
-/*				xml_document doc;
+				print("Exporting World to <%s>...\n", file);
+
+				unsigned short mapHeight = m_size[1] * 32;
+
+				xml_document doc;
 //				doc.append_attribute("encoding").set_value("UTF-8");
 				
 				xml_node xMap = doc.append_child("map");
@@ -645,11 +638,11 @@ namespace ce
 				//- Tilesets -
 				if(m_tileSetVec.empty() == false)
 				{
-					TileSet **markTileSets = &m_tileSetVec.front();
-					TileSet **endTileSets = markTileSets + m_tileSetVec.size();
+					TileSetDef **markTileSets = &m_tileSetVec.front();
+					TileSetDef **endTileSets = markTileSets + m_tileSetVec.size();
 					while(markTileSets != endTileSets)
 					{
-						TileSet *tileset = *markTileSets++;
+						TileSetDef *tileset = *markTileSets++;
 
 						xml_node xTileset = xMap.append_child("tileset");
 						xTileset.append_attribute("firstgid").set_value(tileset->firstGID);
@@ -667,123 +660,270 @@ namespace ce
 				//- Layers -
 				{
 					int layerIdx = 0;
-					if(m_layerVec.empty() == false)
+					vector<game2d::World::Layer *> *layers = world->GetLayers();
+					if(layers->empty() == false)
 					{
-						Layer **markLayers = &m_layerVec.front();
-						Layer **endLayers = markLayers + m_layerVec.size();
+						game2d::World::Layer **markLayers = &layers->front();
+						game2d::World::Layer **endLayers = markLayers + layers->size();
 						while(markLayers != endLayers)
 						{
-							Layer *layer = *markLayers++;
-
-							switch(layer->m_type)
+							game2d::World::Layer *wlayer = *markLayers++;
+							unsigned char type = wlayer->GetType();
+							switch(type)
 							{
-							case Layer_Object:
+							case game2d::World::Layer_Object:
 								{
-									xml_node xLayer = xMap.append_child("objectgroup");
-									xLayer.append_attribute("name").set_value(layer->m_name.c_str());
-									xLayer.append_attribute("width").set_value(layer->m_width);
-									xLayer.append_attribute("height").set_value(layer->m_height);
+									//TODO: Determine saveable objects
+									game2d::World::ObjectLayer *wObjectLayer = (game2d::World::ObjectLayer *)wlayer;
 
-									bool renderView = false;
-									if(layer->m_propertyMap.size())
+									xml_node xLayer = xMap.append_child("objectgroup");
+									xLayer.append_attribute("name").set_value(wlayer->GetName().c_str());
+									xLayer.append_attribute("width").set_value(m_size[0]);
+									xLayer.append_attribute("height").set_value(m_size[1]);
+
+									if(wObjectLayer->IsRenderingAll())
 									{
 										xml_node xProperties = xLayer.append_child("properties");
-										for(map<string, string>::iterator itB = layer->m_propertyMap.begin(); itB != layer->m_propertyMap.end(); itB++)
-										{
-											xml_node xProperty = xProperties.append_child("property");
-											xProperty.append_attribute("name").set_value(itB->first.c_str());
-											xProperty.append_attribute("value").set_value(itB->second.c_str());
-											if(!itB->first.compare("renderView"))
-												renderView = true;
-										}
+										xml_node xProperty = xProperties.append_child("property");
+										xProperty.append_attribute("name").set_value("RenderAll");
+										xProperty.append_attribute("value").set_value("1");
 									}
 
-									//TODO: Externalize this, and pass reference to object group
-
-									ObjectLayer *objectLayer = (ObjectLayer *)layer;
-									if(objectLayer->m_objectDefVec.empty() == false)
+									vector<Group::Member *> *objects = world->GetMembers();
+									if(objects->empty() == false)
 									{
-										ObjectDef **markObjectDefs = &objectLayer->m_objectDefVec.front();
-										ObjectDef **endObjectDefs = markObjectDefs + objectLayer->m_objectDefVec.size();
-										while(markObjectDefs != endObjectDefs)
+										Group::Member **markObjects = &objects->front();
+										Group::Member **endObjects = markObjects + objects->size();
+										while(markObjects != endObjects)
 										{
-											ObjectDef *objectDef = *markObjectDefs++;
-
-											if(!objectDef->m_typeStr.compare("Prop"))// || !objectDef->m_typeStr.compare("Wall"))
-												continue;
-
-											xml_node xObject = xLayer.append_child("object");
-											if(objectDef->m_name.size())
-												xObject.append_attribute("name").set_value(objectDef->m_name.c_str());
-											if(objectDef->m_typeStr.size())
-												xObject.append_attribute("type").set_value(objectDef->m_typeStr.c_str());
-
-											xObject.append_attribute("x").set_value(objectDef->m_x);
-											xObject.append_attribute("y").set_value(objectDef->m_y);
-
-											if(objectDef->m_type == ObjectDef::Object_Rectangle || objectDef->m_type == ObjectDef::Object_Ellipse)
+											game2d::PhysicalObject *object = (game2d::PhysicalObject *)*markObjects++;
+											if(object->GetRenderLayer() == wObjectLayer)
 											{
-												xObject.append_attribute("width").set_value(objectDef->m_width);
-												xObject.append_attribute("height").set_value(objectDef->m_height);
-											}
-
-											if(objectDef->m_propertyMap.size())
-											{
-												xml_node xProperties;
-												for(map<string, string>::iterator itC = objectDef->m_propertyMap.begin(); itC != objectDef->m_propertyMap.end(); itC++)
+												unsigned int typeMask = object->GetTypeMask();
+												Vector2<float> position = object->GetPosition();
+												if(typeMask & game2d::Mask_Prop)
 												{
-													if(objectDef->m_type == ObjectDef::Object_Polyline)
-														if(!itC->first.compare("points"))
-															continue;
+													xml_node xObject = xLayer.append_child("object");
+													xObject.append_attribute("type").set_value("Prop");
+													xObject.append_attribute("x").set_value((short)position[0]);
+													xObject.append_attribute("y").set_value(mapHeight - (short)position[1]);
 
-													if(!xProperties)
-														xProperties = xObject.append_child("properties");
-													xml_node xProperty = xProperties.append_child("property");
-													xProperty.append_attribute("name").set_value(itC->first.c_str());
-													xProperty.append_attribute("value").set_value(itC->second.c_str());
-												}
-											}
-
-											if(objectDef->m_type == ObjectDef::Object_Polyline)
-											{
-												xml_node xPolyline = xObject.append_child("polyline");
-												xPolyline.append_attribute("points").set_value(objectDef->m_propertyMap["points"].c_str());
-											}
-										}
-									}
-
-									if(renderView)
-										SaveObjects((void *)&xLayer);
-								}
-								break;
-							case Layer_Tile:
-								{
-									xml_node xLayer = xMap.append_child("layer");
-									xLayer.append_attribute("name").set_value(layer->m_name.c_str());
-									xLayer.append_attribute("width").set_value(layer->m_width);
-									xLayer.append_attribute("height").set_value(layer->m_height);
-
-									xml_node xData = xLayer.append_child("data");
-									TileLayer *tileLayer = (TileLayer *)layer;
-									for(unsigned short b = layer->m_height - 1; b < layer->m_height; b--)
-										for(unsigned short a = 0; a < layer->m_width; a++)
-										{
-											vector<game2d::ComplexTileMap::Tile *> *tiles = tileLayer->m_tileMap->GetTiles(a, b);
-											unsigned short gid = 0;
-											if(tiles.empty() == false)
-											{
-												game2d::ComplexTileMap::Tile **markTiles = &tiles.front();
-												game2d::ComplexTileMap::Tile **endTiles = markTiles + tiles.size();
-												while(markTiles != endTiles)
-												{
-													game2d::ComplexTileMap::Tile *tile = *markTiles++;
-													if(tile->m_layerIdx == layer->m_idx)
+													xml_node xProperties = xObject.append_child("properties");
 													{
-														gid = tile->m_gid;
-														break;
+														xml_node xProperty = xProperties.append_child("property");
+														xProperty.append_attribute("name").set_value("PropName");
+														xProperty.append_attribute("value").set_value(((game2d::Prop *)object)->GetPropDef()->GetName().c_str());
+													}
+													float rotation = object->GetRotation();
+													if(rotation != 0.f)
+													{
+														xml_node xProperty = xProperties.append_child("property");
+														xProperty.append_attribute("name").set_value("Rotation");
+														xProperty.append_attribute("value").set_value(rotation);
 													}
 												}
 											}
+										}
+									}
+								}
+								break;
+							case game2d::World::Layer_Wall:
+								{
+									game2d::World::WallLayer *wWallLayer = (game2d::World::WallLayer *)wlayer;
+									Vector2<float> scale(32.f, 32.f);
+
+									xml_node xLayer = xMap.append_child("objectgroup");
+									xLayer.append_attribute("name").set_value(wlayer->GetName().c_str());
+									xLayer.append_attribute("width").set_value(m_size[0]);
+									xLayer.append_attribute("height").set_value(m_size[1]);
+
+									{
+										xml_node xProperties = xLayer.append_child("properties");
+										xml_node xProperty = xProperties.append_child("property");
+										xProperty.append_attribute("name").set_value("IsWallLayer");
+										xProperty.append_attribute("value").set_value("1");
+									}
+
+									game2d::WallGrid *wallGrid = wWallLayer->GetWallGrid();
+									unsigned short start = 0, length = 0;
+									bool isPlacing = false;
+
+									//- Fill -
+									for(unsigned short b = 0; b <= wallGrid->m_height; b++)
+										for(unsigned short a = 0; a <= wallGrid->m_width; a++)
+										{
+											if(wallGrid->m_data[a][b] & game2d::WallGrid::Fill && !(wallGrid->m_data[a][b] & game2d::WallGrid::Done))
+											{
+												unsigned short w = 0, h = 0, _w = 0, _h = 0;
+												unsigned short limit = 0;
+												bool valid = true, hasLimit = false;
+												for(unsigned short _b = b; _b <= wallGrid->m_height; _b++)
+												{
+													_h = _b - b;
+													for(unsigned short _a = a; _a <= wallGrid->m_width; _a++)
+													{
+														if(_b == b && _a == a)
+															continue;
+														_w = _a - a;
+														if(hasLimit)
+														{
+															//- Don't go farther than the predetermined width -
+															if(_w > w)
+																break;
+															//- Stop entirely if we can't go further -
+															if(!(wallGrid->m_data[_a][_b] & game2d::WallGrid::Fill) || wallGrid->m_data[_a][_b] & game2d::WallGrid::Done)
+															{
+																valid = false;
+																break;
+															}
+														}
+														else
+														{
+															//- Extend as far right as possible -
+															if(!(wallGrid->m_data[_a][_b] & game2d::WallGrid::Fill) || wallGrid->m_data[_a][_b] & game2d::WallGrid::Done)
+															{
+																w = _a - a - 1;
+																hasLimit = true;
+																break;
+															}
+															if(_a == wallGrid->m_width)
+															{
+																w = _a - a;
+																hasLimit = true;
+																break;
+															}
+														}
+													}
+//													if(!w)
+//														break;
+													if(!valid)
+														break;
+													if(_h > h)
+														h = _h;
+												}
+												for(unsigned short _b = b; _b <= (b + h); _b++)
+													for(unsigned short _a = a; _a <= (a + w); _a++)
+														wallGrid->m_data[_a][_b] |= game2d::WallGrid::Done;
+												w++;
+												h++;
+
+												xml_node xObject = xLayer.append_child("object");
+												xObject.append_attribute("type").set_value("Wall");
+												xObject.append_attribute("x").set_value((short)((float)a * scale[0]));
+												xObject.append_attribute("y").set_value(mapHeight - (short)((float)(b + h) * scale[1]));
+
+												xObject.append_attribute("width").set_value((short)((float)w * scale[0]));
+												xObject.append_attribute("height").set_value((short)((float)h * scale[1]));
+											}
+										}
+									for(unsigned short b = 0; b <= wallGrid->m_height; b++)
+										for(unsigned short a = 0; a <= wallGrid->m_width; a++)
+											if(wallGrid->m_data[a][b] & game2d::WallGrid::Done)
+												wallGrid->m_data[a][b] &= ~game2d::WallGrid::Done;
+
+									//- game2d::WallGrid::Vertical -
+									for(unsigned short a = 0; a <= wallGrid->m_width; a++)
+										for(unsigned short b = 0; b <= wallGrid->m_height; b++)
+										{
+											if(isPlacing)
+											{
+												if(!(wallGrid->m_data[a][b] & game2d::WallGrid::Vertical))
+												{
+													isPlacing = false;
+													length = b - start;
+													if(!length)
+														continue;
+
+													xml_node xObject = xLayer.append_child("object");
+													xObject.append_attribute("type").set_value("Wall");
+													xObject.append_attribute("x").set_value((short)((float)a * scale[0]));
+													xObject.append_attribute("y").set_value(mapHeight - (short)((float)b * scale[1]));
+
+													xml_node xPolyline = xObject.append_child("polyline");
+													string points = formatString("0,0 0,%d", (short)((float)length * scale[1]));
+													xPolyline.append_attribute("points").set_value(points.c_str());
+												}
+											}
+											else
+											{
+												if(wallGrid->m_data[a][b] & game2d::WallGrid::Vertical)
+												{
+													start = b;
+													isPlacing = true;
+												}
+											}
+										}
+
+									//- game2d::WallGrid::Horizontal -
+									for(unsigned short b = 0; b <= wallGrid->m_height; b++)
+										for(unsigned short a = 0; a <= wallGrid->m_width; a++)
+										{
+											if(isPlacing)
+											{
+												if(!(wallGrid->m_data[a][b] & game2d::WallGrid::Horizontal))
+												{
+													isPlacing = false;
+													length = a - start;
+													if(!length)
+														continue;
+
+													xml_node xObject = xLayer.append_child("object");
+													xObject.append_attribute("type").set_value("Wall");
+													xObject.append_attribute("x").set_value((short)((float)(a - length) * scale[0]));
+													xObject.append_attribute("y").set_value(mapHeight - (short)((float)b * scale[1]));
+
+													xml_node xPolyline = xObject.append_child("polyline");
+													string points = formatString("0,0 %d,0", (short)((float)length * scale[0]));
+													xPolyline.append_attribute("points").set_value(points.c_str());
+												}
+											}
+											else
+											{
+												if(wallGrid->m_data[a][b] & game2d::WallGrid::Horizontal)
+												{
+													start = a;
+													isPlacing = true;
+												}
+											}
+										}
+
+									//- Post -
+									for(unsigned short b = 0; b <= wallGrid->m_height; b++)
+										for(unsigned short a = 0; a <= wallGrid->m_width; a++)
+											if(wallGrid->m_data[a][b] & game2d::WallGrid::Post)
+											{
+												xml_node xObject = xLayer.append_child("object");
+												xObject.append_attribute("type").set_value("Wall");
+												xObject.append_attribute("x").set_value((short)((float)a * scale[0]));
+												xObject.append_attribute("y").set_value(mapHeight - (short)((float)b * scale[1]));
+											}
+
+								}
+								break;
+							case game2d::World::Layer_Tile:
+								{
+									game2d::World::TileLayer *wTileLayer = (game2d::World::TileLayer *)wlayer;
+									Vector2<unsigned short> size = wTileLayer->GetSize();
+
+									xml_node xLayer = xMap.append_child("layer");
+									xLayer.append_attribute("name").set_value(wlayer->GetName().c_str());
+									xLayer.append_attribute("width").set_value(m_size[0]);
+									xLayer.append_attribute("height").set_value(m_size[1]);
+
+									xml_node xData = xLayer.append_child("data");
+									for(unsigned short b = size[1] - 1; b < size[1]; b--)
+										for(unsigned short a = 0; a < size[0]; a++)
+										{
+											Vector3<unsigned char> tile = wTileLayer->GetTile(a, b);
+											unsigned short gid;
+											if(tile[0] == 255 || tile[1] == 255 || tile[2] == 255)
+												gid = 0;
+											else
+											{
+												TileSetDef *ts = m_tileSetMap[wTileLayer->GetTileSet(tile[0])];
+												gid = coordToGid(Vector2<unsigned char>(tile[1], tile[2]), ts);
+											}
+
 											xml_node xTile = xData.append_child("tile");
 											xTile.append_attribute("gid").set_value(gid);
 										}
@@ -795,7 +935,7 @@ namespace ce
 					}
 				}
 
-				doc.save_file(file, " ", 1U, pugi::encoding_utf8);*/
+				doc.save_file(file, " ", 1U, pugi::encoding_utf8);
 			}
 			void TMX::SaveObjects(void *groupLayer)
 			{

@@ -63,6 +63,7 @@ namespace ce
 
 		public:
 			virtual void OnProcess(float dt);
+			PropDef *GetPropDef() const;
 		};
 	}
 }

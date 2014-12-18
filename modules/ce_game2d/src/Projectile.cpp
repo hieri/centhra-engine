@@ -194,10 +194,5 @@ namespace ce
 
 			glDisable(GL_BLEND);
 		}
-		void Projectile::OnAdded(Group *group)
-		{
-			//TODO: Determine if this is necessary
-			SetRotation(GetRotation());
-		}
 	}
 }

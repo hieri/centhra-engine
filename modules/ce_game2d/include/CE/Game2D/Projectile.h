@@ -61,7 +61,6 @@ namespace ce
 
 		public:
 			virtual void OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact);
-			virtual void OnAdded(Group *group);
 		};
 	}
 }

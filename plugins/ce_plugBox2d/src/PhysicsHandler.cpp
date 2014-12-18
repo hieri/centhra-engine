@@ -266,6 +266,7 @@ namespace ce
 				bd.angularDamping = 0.7f;
 				bd.userData = this;
 				bd.fixedRotation = object->HasFixedRotation();
+				bd.angle = degToRad * object->GetRotation();
 
 				if(object->IsTrigger())
 				{

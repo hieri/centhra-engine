@@ -2,8 +2,10 @@
 #define _CE_BASE_RECT_H_
 
 //- Standard Library 
-#include <cassert>
-#include <math.h>
+#include <cmath>
+#ifdef _DEBUG
+	#include <cassert>
+#endif
 
 namespace ce
 {
@@ -71,12 +73,16 @@ namespace ce
 		}
 		inline Type &operator[](int i)
 		{
-			assert(i >= 0 && i < 4);
+			#ifdef _DEBUG
+				assert(i >= 0 && i < 4);
+			#endif
 			return m_data[i];
 		}
 		inline Type operator[](int i) const
 		{
-			assert(i >= 0 && i < 4);
+			#ifdef _DEBUG
+				assert(i >= 0 && i < 4);
+			#endif
 			return m_data[i];
 		}
 		inline bool operator==(const Rect &v) const

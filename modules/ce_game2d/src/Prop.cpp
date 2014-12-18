@@ -21,18 +21,18 @@ namespace ce
 	namespace game2d
 	{
 		map<unsigned short, PropDef *> PropDef::ms_propDefs = map<unsigned short, PropDef *>();
-		unsigned short PropDef::ms_nextPropID = 0;
-		map<unsigned short, PropDef *> *PropDef::GetPropDefTable()
+		unsigned short PropDef::ms_nextID = 0;
+		map<unsigned short, PropDef *> *PropDef::GetDefTable()
 		{
 			return &ms_propDefs;
 		}
-		PropDef *PropDef::GetPropDefByID(unsigned short propID)
+		PropDef *PropDef::GetDefByID(unsigned short propID)
 		{
 			if(ms_propDefs.count(propID))
 				return ms_propDefs[propID];
 			return 0;
 		}
-		PropDef *PropDef::GetPropDefByName(string name)
+		PropDef *PropDef::GetDefByName(string name)
 		{
 			for(map<unsigned short, PropDef *>::iterator it = ms_propDefs.begin(); it != ms_propDefs.end(); it++)
 			{
@@ -69,8 +69,8 @@ namespace ce
 					def->m_sprite = Sprite::LoadSpriteFromFile(spriteFile.c_str(), def->m_image);
 				}
 
-				def->m_propID = ms_nextPropID++;
-				ms_propDefs[def->m_propID] = def;
+				def->m_id = ms_nextID++;
+				ms_propDefs[def->m_id] = def;
 			}
 
 			inFile.close();
@@ -83,7 +83,7 @@ namespace ce
 		}
 		PropDef::PropDef()
 		{
-			m_propID = 0;
+			m_id = 0;
 			m_isAnimated = m_isStatic = m_hasFixedRotation = m_isCollidable = false;
 			m_image = 0;
 			m_sprite = 0;
@@ -96,7 +96,7 @@ namespace ce
 		}
 		unsigned short PropDef::GetID() const
 		{
-			return m_propID;
+			return m_id;
 		}
 		Vector2<float> PropDef::GetExtent() const
 		{
@@ -137,9 +137,6 @@ namespace ce
 			glDisable(GL_TEXTURE_2D);
 			glDisable(GL_BLEND);
 		}
-
-		Prop *Spawn(Vector2<float> position);
-		void UIRender();
 
 		Prop::Prop(Vector2<float> position, Vector2<float> extent, PropDef *definition) : PhysicalObject(position, extent), m_propDef(definition)
 		{

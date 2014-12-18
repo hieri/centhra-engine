@@ -2,8 +2,10 @@
 #define _CE_BASE_QUATERNION_H_
 
 //- Standard Library -
-#include <cassert>
-#include <math.h>
+#include <cmath>
+#ifdef _DEBUG
+	#include <cassert>
+#endif
 
 //- Centhra Engine -
 #include <CE/Matrix4x4.h>
@@ -231,12 +233,16 @@ namespace ce
 		}
 		inline Type &operator[](int i)
 		{
-			assert(i >= 0 && i < 4);
+			#ifdef _DEBUG
+				assert(i >= 0 && i < 4);
+			#endif
 			return m_data[i];
 		}
 		inline Type operator[](int i) const
 		{
-			assert(i >= 0 && i < 4);
+			#ifdef _DEBUG
+				assert(i >= 0 && i < 4);
+			#endif
 			return m_data[i];
 		}
 		inline Quaternion operator+(const Quaternion &v) const

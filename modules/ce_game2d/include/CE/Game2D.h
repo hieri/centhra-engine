@@ -16,6 +16,7 @@
 
 #include <CE/Game2D/PhysicsHandler.h>
 
+#include <CE/Game2D/Explosion.h>
 #include <CE/Game2D/PhysicalText.h>
 #include <CE/Game2D/Projectile.h>
 #include <CE/Game2D/TileMap.h>

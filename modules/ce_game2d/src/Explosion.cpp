@@ -1,30 +1,18 @@
+//- Standard Library -
+#include <fstream>
+#include <sstream>
+
 #ifdef _WIN32
-	//- Windows -
-	#include <Windows.h>
+//- Windows -
+#include <Windows.h>
 #endif
 
 //- OpenGL -
 #include <GL/gl.h>
 
-#ifdef _WIN32
-	#include <GL/glext.h>
-	#include <GL/wglext.h>
-	#define glGetProcAddress wglGetProcAddress
-#elif __linux__
-	#include <GL/glx.h>
-	#define glGetProcAddress glXGetProcAddress
-#endif
-
-//- Standard Library -
-#include <vector>
-#include <fstream>
-#include <sstream>
-
 //- Centhra Engine -
-#include <CE/Image.h>
-#include <CE/Base.h>
-#include <CE/Game2D/Sprite.h>
 #include <CE/Game2D/Explosion.h>
+#include <CE/Base.h>
 
 using namespace std;
 
@@ -32,26 +20,157 @@ namespace ce
 {
 	namespace game2d
 	{
-		//-------------------- EXPLOSIONS???? ----------------
-		void Explosion::InitAssets()
+		map<unsigned short, ExplosionDef *> ExplosionDef::ms_explosionDefs = map<unsigned short, ExplosionDef *>();
+		unsigned short ExplosionDef::ms_nextID = 0;
+		map<unsigned short, ExplosionDef *> *ExplosionDef::GetDefTable()
+		{
+			return &ms_explosionDefs;
+		}
+		ExplosionDef *ExplosionDef::GetDefByID(unsigned short explosionID)
+		{
+			if(ms_explosionDefs.count(explosionID))
+				return ms_explosionDefs[explosionID];
+			return 0;
+		}
+		ExplosionDef *ExplosionDef::GetDefByName(string name)
+		{
+			for(map<unsigned short, ExplosionDef *>::iterator it = ms_explosionDefs.begin(); it != ms_explosionDefs.end(); it++)
+			{
+				ExplosionDef *explosionDef = it->second;
+				if(!explosionDef->m_name.compare(name))
+					return explosionDef;
+			}
+			return 0;
+		}
+		void ExplosionDef::LoadFromFile(const char *file)
+		{
+			ifstream inFile;
+			inFile.open(file);
+
+			string in;
+			while(getline(inFile, in))
+			{
+				stringstream lineStream(in);
+				ExplosionDef *def = new ExplosionDef();;
+				getline(lineStream, def->m_name, '\t');
+				if(!def->m_name.compare("//"))
+					continue;
+				string imageFile, spriteFile;
+				getline(lineStream, imageFile, '\t');
+				unsigned short damage;
+				lineStream >> def->m_extent[0] >> def->m_extent[1] >> def->m_renderScale[0] >> def->m_renderScale[1] >> damage >> def->m_isAxisOriented >> def->m_lifeTime >> def->m_maxAnimTime;
+				def->m_damage = (unsigned char)damage;
+
+				getline(lineStream, spriteFile, '\t'); //- This is necessary -
+				getline(lineStream, spriteFile, '\t');
+
+				def->m_image = Image::CreateFromFile(imageFile.c_str());
+				if(spriteFile.length())
+				{
+					def->m_isAnimated = true;
+					def->m_sprite = Sprite::LoadSpriteFromFile(spriteFile.c_str(), def->m_image);
+				}
+
+				def->m_id = ms_nextID++;
+				ms_explosionDefs[def->m_id] = def;
+			}
+
+			inFile.close();
+		}
+		void ExplosionDef::Cleanup()
+		{
+			for(map<unsigned short, ExplosionDef *>::iterator it = ms_explosionDefs.begin(); it != ms_explosionDefs.end(); it++)
+				delete it->second;
+			ms_explosionDefs.clear();
+		}
+		ExplosionDef::ExplosionDef() : m_id(0), m_image(0), m_sprite(0),
+			m_isAnimated(false), m_isAxisOriented(false), m_maxAnimTime(0.f),
+			m_damage(0), m_lifeTime(0)
 		{
 		}
-		void Explosion::CleanupAssets()
+		ExplosionDef::~ExplosionDef()
 		{
+			if(m_isAnimated)
+				delete m_sprite;
+			delete m_image;
 		}
-		void Explosion::LoadDefinitionsFromFile(const char *file)
+		unsigned short ExplosionDef::GetID() const
 		{
+			return m_id;
 		}
-		Explosion::Explosion(ce::Vector2<float> position, unsigned long long timeout) : PhysicalObject(position, Vector2<float>(1.f, 1.f), true), m_timeout(timeout)
+		Vector2<float> ExplosionDef::GetExtent() const
 		{
+			return m_extent;
 		}
-		void Explosion::DoRender()
+		string ExplosionDef::GetName() const
 		{
+			return m_name;
+		}
+		Explosion *ExplosionDef::Spawn(Vector2<float> position)
+		{
+			return new Explosion(position, m_extent, this);
+		}
+
+		Explosion::Explosion(Vector2<float> position, Vector2<float> extent, ExplosionDef *definition, float rotation) : PhysicalObject(position, extent), m_explosionDef(definition)
+		{
+			SetTypeMask(Mask_Explosion);
+			SetCollisionMask(GetCollisionMask() & ~(Mask_Explosion | Mask_Projectile));
+
+			SetFixedRotation(true);
+			if(!definition->m_isAxisOriented)
+				SetRotation(rotation);
+			m_timeout = getRunTimeMS() + definition->m_lifeTime;
+			m_animTime = 0.f;
 		}
 		void Explosion::OnProcess(float dt)
 		{
-			if(getRunTimeMS() > m_timeout)
+			m_animTime += dt;
+//			print("Proc: %f\t%f\t%f\n", dt, m_animTime, m_explosionDef->m_maxAnimTime);
+			if(m_animTime > m_explosionDef->m_maxAnimTime)
+				m_animTime -= m_explosionDef->m_maxAnimTime;
+
+			unsigned long long t = getRunTimeMS();
+			if(t >= m_timeout)
 				Delete();
+		}
+		void Explosion::OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact)
+		{
+			//TODO: Deal damage and/or apply impulse
+			SetCollisionMask(0);
+		}
+		void Explosion::DoRender()
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			glTranslatef(m_position[0], m_position[1], 0.f);
+			glRotatef(m_rotation, 0.f, 0.f, 1.f);
+			glScalef(m_extent[0], m_extent[1], 1.f);
+			glTranslatef(-0.5f, -0.5f, 0.f);
+
+			glEnable(GL_TEXTURE_2D);
+			if(m_explosionDef->m_isAnimated)
+				m_explosionDef->m_sprite->Draw(0, m_animTime);
+			else
+			{
+				m_explosionDef->m_image->Bind();
+				glBegin(GL_QUADS);
+				glTexCoord2i(0, 1);
+				glVertex2i(0, 0);
+
+				glTexCoord2i(1, 1);
+				glVertex2i(1, 0);
+
+				glTexCoord2i(1, 0);
+				glVertex2i(1, 1);
+
+				glTexCoord2i(0, 0);
+				glVertex2i(0, 1);
+				glEnd();
+			}
+			glDisable(GL_TEXTURE_2D);
+
+			glDisable(GL_BLEND);
 		}
 	}
 }

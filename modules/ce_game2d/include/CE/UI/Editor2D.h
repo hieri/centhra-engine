@@ -1,6 +1,9 @@
 #ifndef _CE_GAME2D_EDITOR2D_H_
 #define _CE_GAME2D_EDITOR2D_H_
 
+//- Standard Library -
+#include <vector>
+
 //- Centhra Engine -
 #include <CE/UI/Control.h>
 #include <CE/UI/ColorCtrl.h>
@@ -12,6 +15,8 @@
 
 namespace ce
 {
+	using namespace std;
+
 	namespace ui
 	{
 		class Editor2DCtrl : public ui::Control
@@ -171,12 +176,6 @@ namespace ce
 				Mode_Wall
 			} EditorMode;
 			void SetMode(unsigned char mode);
-
-			//- Camera Control -
-		protected:
-			float m_zoom, m_minZoom, m_maxZoom;
-			bool m_freeCam;
-		public:
 		};
 	}
 }

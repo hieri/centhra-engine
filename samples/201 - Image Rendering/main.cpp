@@ -17,12 +17,14 @@ class AppImageRenderingSample : public AppFrontend
 {
 	Canvas *m_canvas;
 	Image *m_image;
+	Directory *m_directory;
 
 public:
 	AppImageRenderingSample()
 	{
 		m_canvas = 0;
 		m_image = 0;
+		m_directory = 0;
 	}
 	bool OnStart()
 	{
@@ -34,6 +36,9 @@ public:
 		print("Loading <../res/centhra.png>\n");
 		m_image = Image::CreateFromFile("../res/centhra.png");
 
+		m_directory = Directory::GetFromPath("../res/");
+		m_directory->SetMonitoring(true);
+
 		if(m_image)
 		{
 			Vector2<unsigned int> imageSize = m_image->GetSize();
@@ -41,18 +46,19 @@ public:
 		}
 		else
 			print("  Unable to load image.\n");
-
 		return true;
 	}
 	bool OnProcess()
 	{
-		sleepMS(1);
+		sleepMS(15);
 		return true;
 	}
 	void OnStopped()
 	{
-		delete m_canvas;
 		delete m_image;
+		Image::Cleanup();
+
+		delete m_canvas;
 	}
 	bool OnEvent(Event &event)
 	{

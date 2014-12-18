@@ -1,12 +1,12 @@
 #ifndef _CE_GAME2D_PHYSICALTEXT_H_
 #define _CE_GAME2D_PHYSICALTEXT_H_
 
+//- Standard Library -
+#include <string>
+
 //- Centhra Engine -
 #include <CE/Font.h>
 #include <CE/Game2D/PhysicalObject.h>
-
-//- Standard Library -
-#include <string>
 
 namespace ce
 {

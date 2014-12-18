@@ -6,11 +6,13 @@
 
 namespace ce
 {
+	using namespace std;
+
 	class Plugin
 	{
 	protected:
 		bool m_isRunning;
-		std::string m_name;
+		string m_name;
 		unsigned int m_type;
 
 		Plugin();

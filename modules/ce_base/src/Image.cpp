@@ -14,6 +14,7 @@
 #include <CE/Base.h>
 #include <CE/Image.h>
 #include <CE/Plugin.h>
+#include <CE/Mutex.h>
 
 //TODO: create Image Loader abstraction
 //TODO: externalize DevIL support into a plugin (ce_plugDevIL)
@@ -22,23 +23,25 @@ using namespace std;
 
 namespace ce
 {
+	Mutex g_imageMutex;
+
 	bool Image::Init()
 	{
 		Plugin::InitializeByType(Plugin::Image);
 
 		ilInit();
 		iluInit();
+
+		g_imageMutex.Init();
 		return true;
 	}
-
-	Image *Image::CreateFromFile(const char *file)
+	void Image::Cleanup()
 	{
-		if(!fileExists(file))
-		{
-			setError("Image::CreateFromFile: File does not exist <%s>.", file);
-			return 0;
-		}
+		g_imageMutex.Destroy();
+	}
 
+	bool Image::LoadFromFile(const char *file)
+	{
 		unsigned int ilImage;
 		ilGenImages(1, &ilImage);
 		ilBindImage(ilImage);
@@ -47,7 +50,7 @@ namespace ce
 		{
 			ilDeleteImages(1, &ilImage);
 			setError("ilLoadImage: %s", iluErrorString(ilGetError()));
-			return 0;
+			return false;
 		}
 
 		unsigned int bytesPerPixel = ilGetInteger(IL_IMAGE_BPP);
@@ -55,34 +58,53 @@ namespace ce
 		bool conversion = false;
 		switch(bytesPerPixel)
 		{
-			case 3:
-				conversion = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE) != 0;
-				textureFormat = GL_RGB;
-				break;
-			case 4:
-				conversion = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE) != 0;
-				textureFormat = GL_RGBA;
-				break;
-			default:
-				ilDeleteImages(1, &ilImage);
-				setError("Image::CreateFromFile: Format not supported for <%s>", file);
-				return 0;
+		case 3:
+			conversion = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE) != 0;
+			textureFormat = GL_RGB;
+			break;
+		case 4:
+			conversion = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE) != 0;
+			textureFormat = GL_RGBA;
+			break;
+		default:
+			ilDeleteImages(1, &ilImage);
+			setError("Image::CreateFromFile: Format not supported for <%s>", file);
+			return false;
 		}
 
 		if(!conversion)
 		{
 			ilDeleteImages(1, &ilImage);
 			setError("ilConvertImage: %s", iluErrorString(ilGetError()));
-			return 0;
+			return false;
 		}
 
 		int width = ilGetInteger(IL_IMAGE_WIDTH);
 		int height = ilGetInteger(IL_IMAGE_HEIGHT);
 
+		m_bytesPerPixel = bytesPerPixel;
+		m_ilImage = ilImage;
+		m_size = Vector2<unsigned int>(width, height);
+
+		File *fileObj = new File(file);
+		fileObj->SetObject(this);
+
+		return true;
+	}
+	Image *Image::CreateFromFile(const char *file)
+	{
+		if(!fileExists(file))
+		{
+			setError("Image::CreateFromFile: File does not exist <%s>.", file);
+			return 0;
+		}
+
 		Image *image = new Image;
-		image->m_bytesPerPixel = bytesPerPixel;
-		image->m_ilImage = ilImage;
-		image->m_size = Vector2<unsigned int>(width, height);
+		if(!image->LoadFromFile(file))
+		{
+			delete image;
+			return 0;
+		}
 		return image;
 	}
 	Image *Image::CreateFromMemory(const unsigned char *memory, unsigned int size)
@@ -181,10 +203,27 @@ namespace ce
 
 		return image;
 	}
-	Image::Image()
+	Image::Image() : File::FileObject()
 	{
 		m_glTexture = 0;
 		m_ilImage = 0;
+	}
+	void Image::OnFileChange()
+	{
+		if(m_ilImage)
+		{
+			ilBindImage(0);
+			ilDeleteImages(1, &m_ilImage);
+			m_ilImage = 0;
+		}
+		g_imageMutex.Lock();
+			if(m_glTexture)
+			{
+				glDeleteTextures(1, &m_glTexture);
+				m_glTexture = 0;
+			}
+			LoadFromFile(m_file->GetFilePath().c_str());
+		g_imageMutex.Unlock();
 	}
 	Image::~Image()
 	{
@@ -196,6 +235,7 @@ namespace ce
 	void Image::Bind()
 	{
 		//- Create OpenGL Texture -
+		g_imageMutex.Lock();
 		if(!m_glTexture)
 		{
 			ilBindImage(m_ilImage);
@@ -207,6 +247,7 @@ namespace ce
 		}
 		else
 			glBindTexture(GL_TEXTURE_2D, m_glTexture);
+		g_imageMutex.Unlock();
 	}
 	Color Image::GetPixel(unsigned int x, unsigned int y) const
 	{

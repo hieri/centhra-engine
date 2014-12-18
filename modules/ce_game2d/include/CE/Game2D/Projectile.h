@@ -14,9 +14,9 @@ namespace ce
 		{
 		protected:
 			static std::map<unsigned short, ProjectileDef *> ms_projectileDefs;
-			static unsigned short ms_nextProjectileID;
+			static unsigned short ms_nextID;
 
-			unsigned short m_projectileID;
+			unsigned short m_id;
 			std::string m_name, m_sourceFile, m_spriteFile;
 			Image *m_image;
 			Sprite *m_sprite;
@@ -29,9 +29,9 @@ namespace ce
 			friend class Projectile;
 
 		public:
-			static std::map<unsigned short, ProjectileDef *> *GetProjectileDefTable();
-			static ProjectileDef *GetProjectileDefByID(unsigned short projectileID);
-			static ProjectileDef *GetProjectileDefByName(std::string name);
+			static std::map<unsigned short, ProjectileDef *> *GetDefTable();
+			static ProjectileDef *GetDefByID(unsigned short projectileID);
+			static ProjectileDef *GetDefByName(std::string name);
 			static void LoadFromFile(const char *file);
 			static void Cleanup();
 
@@ -47,6 +47,8 @@ namespace ce
 		class Projectile : public PhysicalObject
 		{
 		protected:
+			friend class ProjectileDef;
+
 			ProjectileDef *m_projectileDef;
 			PhysicalObject *m_source;
 			unsigned long long m_timeout, m_lastBoost;
@@ -56,8 +58,6 @@ namespace ce
 
 			virtual void DoRender();
 			virtual void OnProcess(float dt);
-
-			friend class ProjectileDef;
 
 		public:
 			virtual void OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact);

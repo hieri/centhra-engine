@@ -7,6 +7,7 @@ set(INC
 	${INC_DIR}/Base.h
 	${INC_DIR}/Color.h
 	${INC_DIR}/ConfigBase.h
+	${INC_DIR}/File.h
 	${INC_DIR}/FloatTable.h
 	${INC_DIR}/Font.h
 	${INC_DIR}/Group.h
@@ -28,6 +29,7 @@ set(SRC
 	${SRC_DIR}/App.cpp
 	${SRC_DIR}/Audio.cpp
 	${SRC_DIR}/Base.cpp
+	${SRC_DIR}/File.cpp
 	${SRC_DIR}/FloatTable.cpp
 	${SRC_DIR}/Font.cpp
 	${SRC_DIR}/Group.cpp

@@ -2,8 +2,10 @@
 #define _CE_BASE_VECTOR3_H_
 
 //- Standard Library 
-#include <cassert>
-#include <math.h>
+#include <cmath>
+#ifdef _DEBUG
+	#include <cassert>
+#endif
 
 namespace ce
 {
@@ -75,12 +77,16 @@ namespace ce
 		}
 		inline Type &operator[](int i)
 		{
-			assert(i >= 0 && i < 3);
+			#ifdef _DEBUG
+				assert(i >= 0 && i < 3);
+			#endif
 			return m_data[i];
 		}
 		inline Type operator[](int i) const
 		{
-			assert(i >= 0 && i < 3);
+			#ifdef _DEBUG
+				assert(i >= 0 && i < 3);
+			#endif
 			return m_data[i];
 		}
 		inline Vector3 operator+(const Vector3 &v) const

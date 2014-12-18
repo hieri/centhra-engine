@@ -39,7 +39,6 @@ namespace ce
 
 			std::vector<ObstructionPoint> m_obstructionPoints;
 
-
 			friend class Wall;
 
 		public:

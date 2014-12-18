@@ -4,7 +4,6 @@
 namespace ce
 {
 	void RenderPrimitiveCleanup();
-
 	void RenderSquare();
 }
 

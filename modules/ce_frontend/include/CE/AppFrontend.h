@@ -1,13 +1,13 @@
 #ifndef _CE_APP_FRONTEND_H_
 #define _CE_APP_FRONTEND_H_
 
+//- Standard Library -
+#include <map>
+
 //- Centhra Engine -
 #include <CE/App.h>
 #include <CE/ConfigFrontend.h>
 #include <CE/Event.h>
-
-//- Standard Library -
-#include <map>
 
 namespace ce
 {
@@ -28,7 +28,7 @@ namespace ce
 			#if CE_FRONTEND_USEXCB
 				void *m_xcbConnection;
 			#endif
-			std::map<int, Canvas *> m_canvasMap;
+			map<int, Canvas *> m_canvasMap;
 		#endif
 
 		#if CE_FRONTEND_USEWIN

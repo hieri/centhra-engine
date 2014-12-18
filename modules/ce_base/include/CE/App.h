@@ -1,11 +1,6 @@
 #ifndef _CE_BASE_APP_H_
 #define _CE_BASE_APP_H_
 
-//- Standard Library -
-#include <map>
-#include <string>
-#include <vector>
-
 //- Centhra Engine -
 #include <CE/ConfigBase.h>
 

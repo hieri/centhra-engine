@@ -93,9 +93,12 @@ public:
 
 		game2d::PropDef::LoadFromFile("../res/sampleProps.txt");
 		game2d::ProjectileDef::LoadFromFile("../res/sampleProjectiles.txt");
+		game2d::ExplosionDef::LoadFromFile("../res/sampleExplosions.txt");
 
 		m_tmx = plugin::tiled::TMX::CreateFromFile("../res/Test.tmx");
 		m_tmx->PopulateWorld(m_world);
+
+		Directory::GetFromPath("../res/")->SetMonitoring(true);
 
 		game2d::World::ObjectLayer *objectLayerA = (game2d::World::ObjectLayer *)m_world->GetLayer(1);
 
@@ -214,6 +217,7 @@ public:
 
 		RenderPrimitiveCleanup();
 		game2d::PropDef::Cleanup();
+		Image::Cleanup();
 
 		delete m_editorScrollSkin;
 		delete m_editorScrollImage;
@@ -296,18 +300,26 @@ public:
 		case event::MouseButtonDown:
 			if(m_isEditMode)
 				m_editorCtrl->ProcessEvent(event);
-			else if(event.mouseButton.button == event::MouseButtonLeft || event.mouseButton.button == event::MouseButtonRight)
+			else
 			{
 				Vector2<float> pos = GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
 				Vector2<float> dir = pos - m_entity->GetPosition();
 				dir /= dir.GetLength();
 				LockWorldMutex();
-				game2d::Projectile *p = 0;
-				if(event.mouseButton.button == event::MouseButtonLeft)
-					p = game2d::ProjectileDef::GetProjectileDefByName("blueBall")->Spawn(pos, dir, 0, RadiansToDegrees() * atan2(dir[1], dir[0]));
+				if(event.mouseButton.button == event::MouseButtonLeft || event.mouseButton.button == event::MouseButtonRight)
+				{
+					game2d::Projectile *p = 0;
+					if(event.mouseButton.button == event::MouseButtonLeft)
+						p = game2d::ProjectileDef::GetDefByName("blueBall")->Spawn(pos, dir, 0, RadiansToDegrees() * atan2(dir[1], dir[0]));
+					else
+						p = game2d::ProjectileDef::GetDefByName("bullet")->Spawn(pos, dir, 0, RadiansToDegrees() * atan2(dir[1], dir[0]));
+					m_world->Add(p);
+				}
 				else
-					p = game2d::ProjectileDef::GetProjectileDefByName("bullet")->Spawn(pos, dir, 0, RadiansToDegrees() * atan2(dir[1], dir[0]));
-				m_world->Add(p);
+				{
+					game2d::Explosion *e = game2d::ExplosionDef::GetDefByName("boom")->Spawn(pos);
+					m_world->Add(e);
+				}
 				UnlockWorldMutex();
 //				print("P: %f %f\t%f %f\n", p->GetPosition()[0], p->GetPosition()[1], p->GetVelocity()[0], p->GetVelocity()[1]);
 			}

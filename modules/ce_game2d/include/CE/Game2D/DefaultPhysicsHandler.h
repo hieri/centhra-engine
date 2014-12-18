@@ -13,6 +13,8 @@
 
 namespace ce
 {
+	using namespace std;
+
 	namespace game2d
 	{
 		class DefaultPhysicsHandler : public PhysicsHandler

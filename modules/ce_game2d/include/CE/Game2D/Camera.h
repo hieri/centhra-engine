@@ -4,8 +4,6 @@
 //- Centhra Engine -
 #include <CE/Game2D/PhysicalObject.h>
 
-// camera may need to have its own position
-// should handle freecam internally
 namespace ce
 {
 	namespace game2d

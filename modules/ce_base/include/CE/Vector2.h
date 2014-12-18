@@ -2,8 +2,10 @@
 #define _CE_BASE_VECTOR2_H_
 
 //- Standard Library 
-#include <cassert>
-#include <math.h>
+#include <cmath>
+#ifdef _DEBUG
+	#include <cassert>
+#endif
 
 namespace ce
 {
@@ -83,7 +85,9 @@ namespace ce
 		 */
 		inline Type &operator[](int i)
 		{
-			assert(i >= 0 && i < 2);
+			#ifdef _DEBUG
+				assert(i >= 0 && i < 2);
+			#endif
 			return m_data[i];
 		}
 
@@ -91,7 +95,9 @@ namespace ce
 		 */
 		inline Type const &operator[](int i) const
 		{
-			assert(i >= 0 && i < 2);
+			#ifdef _DEBUG
+				assert(i >= 0 && i < 2);
+			#endif
 			return m_data[i];
 		}
 

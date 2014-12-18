@@ -1,6 +1,9 @@
 #ifndef _CE_GAME2D_PHYSICALOBJECT_H_
 #define _CE_GAME2D_PHYSICALOBJECT_H_
 
+//- Standard Library -
+#include <vector>
+
 //- Centhra Engine -
 #include <CE/Color.h>
 #include <CE/Rect.h>
@@ -20,7 +23,8 @@ namespace ce
 			Mask_Wall       = 1 << (Base_Object + 1),
 			Mask_Prop       = 1 << (Base_Object + 2),
 			Mask_Projectile = 1 << (Base_Object + 3),
-			Next_Object     = 4
+			Mask_Explosion  = 1 << (Base_Object + 4),
+			Next_Object     = 5
 		} ObjectTypeMask;
 
 		class PhysicalGroup;

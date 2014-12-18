@@ -43,10 +43,10 @@ namespace ce
 		unsigned char m_type;
 
 	public:
-		static void ProcessPacket(char *start, PacketBuffer *buffer, ce::Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
+		static void ProcessPacket(char *start, PacketBuffer *buffer, Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
 
 		PacketHandler(unsigned char type);
-		virtual void OnProcess(char *data, PacketBuffer *buffer, ce::Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
+		virtual void OnProcess(char *data, PacketBuffer *buffer, Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
 	};
 	class PacketHandler_ServerInfo : public PacketHandler
 	{
@@ -56,7 +56,7 @@ namespace ce
 		static unsigned short Create(PacketBuffer *buffer);
 
 		PacketHandler_ServerInfo(unsigned char type);
-		virtual void OnProcess(char *data, PacketBuffer *buffer, ce::Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
+		virtual void OnProcess(char *data, PacketBuffer *buffer, Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
 	};
 	class PacketHandler_ClientJoin : public PacketHandler
 	{
@@ -66,7 +66,7 @@ namespace ce
 		static unsigned short Create(PacketBuffer *buffer);
 
 		PacketHandler_ClientJoin(unsigned char type);
-		virtual void OnProcess(char *data, PacketBuffer *buffer, ce::Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
+		virtual void OnProcess(char *data, PacketBuffer *buffer, Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
 	};
 	class PacketHandler_ClientDisconnect : public PacketHandler
 	{
@@ -76,7 +76,7 @@ namespace ce
 		static unsigned short Create(PacketBuffer *buffer);
 
 		PacketHandler_ClientDisconnect(unsigned char type);
-		virtual void OnProcess(char *data, PacketBuffer *buffer, ce::Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
+		virtual void OnProcess(char *data, PacketBuffer *buffer, Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
 	};
 	class PacketHandler_Ping : public PacketHandler
 	{
@@ -86,7 +86,7 @@ namespace ce
 		static unsigned short Create(PacketBuffer *buffer, unsigned short id);
 
 		PacketHandler_Ping(unsigned char type);
-		virtual void OnProcess(char *data, PacketBuffer *buffer, ce::Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
+		virtual void OnProcess(char *data, PacketBuffer *buffer, Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
 	};
 	class PacketHandler_Pong : public PacketHandler
 	{
@@ -96,7 +96,7 @@ namespace ce
 		static unsigned short Create(PacketBuffer *buffer, unsigned short id);
 
 		PacketHandler_Pong(unsigned char type);
-		virtual void OnProcess(char *data, PacketBuffer *buffer, ce::Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
+		virtual void OnProcess(char *data, PacketBuffer *buffer, Socket *socket, void *sockAddr, int sockAddrLen, void *client = 0);
 	};
 
 	void *serverProcessFunc(void *arg);
@@ -104,19 +104,19 @@ namespace ce
 	class Server
 	{
 		static bool ms_isRunning;
-		static ce::Thread *ms_listenThread;
+		static Thread *ms_listenThread;
 		static unsigned short ms_port;
 
 	public:
 		static PacketBuffer *ms_packetBuffer;
-		static ce::Socket *ms_socket;
-		static ce::Mutex ms_commMutex;
+		static Socket *ms_socket;
+		static Mutex ms_commMutex;
 
 		class Client
 		{
 			std::string m_id;
 			bool m_isAlive;
-			ce::Thread *m_connectionThread;
+			Thread *m_connectionThread;
 			std::deque<std::string> m_incomingPackets;
 			unsigned long long m_lastCommTime;
 
@@ -157,14 +157,14 @@ namespace ce
 	class Client
 	{
 		static bool ms_isRunning;
-		static ce::Thread *ms_connectionThread;
+		static Thread *ms_connectionThread;
 		static std::string ms_address;
 		static unsigned short ms_port;
 
 	public:
 		static void *ms_sockAddr;
 		static int ms_sockAddrLen;
-		static ce::Socket *ms_socket;
+		static Socket *ms_socket;
 
 		static bool Connect(std::string address, unsigned short port);
 		static bool IsRunning();

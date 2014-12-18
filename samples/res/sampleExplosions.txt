@@ -1,0 +1,2 @@
+//	TypeName | Image File | Extent (meters) | Render Scale | Damage | AxisOriented | LifeTimeMS | MaxAnimTime | Sprite File
+boom	../res/boom.png	50 50	1 1	5	0	600	0.8	../res/boomSprite.txt

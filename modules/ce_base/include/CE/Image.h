@@ -1,18 +1,16 @@
 #ifndef _CE_BASE_IMAGE_H_
 #define _CE_BASE_IMAGE_H_
 
-//- Standard Library -
-#include <map>
-
 //- Centhra Engine -
 #include <CE/Color.h>
+#include <CE/File.h>
 #include <CE/Vector2.h>
 
 namespace ce
 {
 	/**	@brief Image Data Structure Class
 	 */
-	class Image
+	class Image : public File::FileObject
 	{
 		unsigned char m_bytesPerPixel;
 		unsigned int m_glTexture, m_ilImage;
@@ -20,11 +18,16 @@ namespace ce
 
 		Image();
 
+		virtual void OnFileChange();
+
+		bool LoadFromFile(const char *file);
+
 	public:
 		/**	@brief Initializes the registered image loaders.
 		 *	@return Whether or not the image loader initialization succeeded.
 		 */
 		static bool Init();
+		static void Cleanup();
 
 		/**	@brief File Constructor.
 		 *	@param file Path to image file.

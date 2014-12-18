@@ -29,8 +29,8 @@ namespace ce
 //			void DetachHandler();
 //			PhysicsHandler *GetPhysicsHandler() const;
 
-//			std::vector<PhysicalObject *> BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask = -1, PhysicalObject *ignore = 0);
-//			std::vector<PhysicalObject *> SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, PhysicalObject *ignore = 0);
+//			vector<PhysicalObject *> BoxSearch(float minX, float minY, float maxX, float maxY, unsigned int mask = -1, PhysicalObject *ignore = 0);
+//			vector<PhysicalObject *> SegmentSearch(float startX, float startY, float endX, float endY, unsigned int mask = -1, PhysicalObject *ignore = 0);
 
 			virtual void OnMemberAdded(Group::Member *entity);
 			virtual void OnMemberRemoved(Group::Member *entity);

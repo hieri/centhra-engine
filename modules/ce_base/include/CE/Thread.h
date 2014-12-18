@@ -2,7 +2,7 @@
 #define _CE_BASE_THREAD_H_
 
 //- Standard Library -
-#include <stdlib.h>
+#include <cstdlib>
 
 //- Centhra Engine -
 #include <CE/ConfigBase.h>

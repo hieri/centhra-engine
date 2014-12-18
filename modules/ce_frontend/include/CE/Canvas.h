@@ -1,13 +1,13 @@
 #ifndef _CE_CANVAS_H_
 #define _CE_CANVAS_H_
 
+//- Standard Library -
+#include <string>
+
 //- Centhra Engine -
 #include <CE/ConfigFrontend.h>
 #include <CE/Event.h>
 #include <CE/Matrix4x4.h>
-
-//- Standard Library -
-#include <string>
 
 namespace ce
 {

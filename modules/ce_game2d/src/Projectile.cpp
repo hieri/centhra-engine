@@ -34,19 +34,19 @@ namespace ce
 	namespace game2d
 	{
 		map<unsigned short, ProjectileDef *> ProjectileDef::ms_projectileDefs = map<unsigned short, ProjectileDef *>();
-		unsigned short ProjectileDef::ms_nextProjectileID = 0;
+		unsigned short ProjectileDef::ms_nextID = 0;
 
-		map<unsigned short, ProjectileDef *> *ProjectileDef::GetProjectileDefTable()
+		map<unsigned short, ProjectileDef *> *ProjectileDef::GetDefTable()
 		{
 			return &ms_projectileDefs;
 		}
-		ProjectileDef *ProjectileDef::GetProjectileDefByID(unsigned short projectileID)
+		ProjectileDef *ProjectileDef::GetDefByID(unsigned short projectileID)
 		{
 			if(ms_projectileDefs.count(projectileID))
 				return ms_projectileDefs[projectileID];
 			return 0;
 		}
-		ProjectileDef *ProjectileDef::GetProjectileDefByName(string name)
+		ProjectileDef *ProjectileDef::GetDefByName(string name)
 		{
 			for(map<unsigned short, ProjectileDef *>::iterator it = ms_projectileDefs.begin(); it != ms_projectileDefs.end(); it++)
 			{
@@ -85,8 +85,8 @@ namespace ce
 					def->m_sprite = Sprite::LoadSpriteFromFile(spriteFile.c_str(), def->m_image);
 				}
 
-				def->m_projectileID = ms_nextProjectileID++;
-				ms_projectileDefs[def->m_projectileID] = def;
+				def->m_id = ms_nextID++;
+				ms_projectileDefs[def->m_id] = def;
 			}
 
 			inFile.close();
@@ -98,7 +98,7 @@ namespace ce
 			ms_projectileDefs.clear();
 		}
 
-		ProjectileDef::ProjectileDef() : m_projectileID(0), m_image(0), m_sprite(0),
+		ProjectileDef::ProjectileDef() : m_id(0), m_image(0), m_sprite(0),
 			m_isAnimated(false), m_isAxisOriented(false), m_speed(0.f), m_maxAnimTime(0.f),
 			m_damage(0), m_lifeTime(0)
 		{
@@ -111,7 +111,7 @@ namespace ce
 		}
 		unsigned short ProjectileDef::GetID() const
 		{
-			return m_projectileID;
+			return m_id;
 		}
 		string ProjectileDef::GetName() const
 		{
@@ -127,7 +127,7 @@ namespace ce
 			m_projectileDef(definition), m_source(source), m_lastBoost(0), m_timeout(0), m_animTime(0.f)
 		{
 			SetTypeMask(Mask_Projectile);
-			SetCollisionMask(GetCollisionMask() & ~Mask_Projectile);
+			SetCollisionMask(GetCollisionMask() & ~(Mask_Explosion | Mask_Projectile));
 
 			SetFixedRotation(true);
 			SetVelocity(direction * definition->m_speed);
@@ -196,7 +196,6 @@ namespace ce
 		}
 		void Projectile::OnAdded(Group *group)
 		{
-			SetCollisionMask(GetCollisionMask());
 			//TODO: Determine if this is necessary
 			SetRotation(GetRotation());
 		}

@@ -19,9 +19,9 @@ namespace ce
 		{
 		protected:
 			static std::map<unsigned short, PropDef *> ms_propDefs;
-			static unsigned short ms_nextPropID;
+			static unsigned short ms_nextID;
 
-			unsigned short m_propID;
+			unsigned short m_id;
 			Image *m_image;
 			Sprite *m_sprite;
 			std::string m_name, m_sourceFile;
@@ -31,9 +31,9 @@ namespace ce
 			friend class Prop;
 
 		public:
-			static std::map<unsigned short, PropDef *> *GetPropDefTable();
-			static PropDef *GetPropDefByID(unsigned short propID);
-			static PropDef *GetPropDefByName(std::string name);
+			static std::map<unsigned short, PropDef *> *GetDefTable();
+			static PropDef *GetDefByID(unsigned short propID);
+			static PropDef *GetDefByName(std::string name);
 			static void LoadFromFile(const char *file);
 			static void Cleanup();
 

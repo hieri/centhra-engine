@@ -117,7 +117,7 @@ namespace ce
 					{
 						if(m_propPlaceID != -1)
 						{
-							game2d::PropDef *propDef = game2d::PropDef::GetPropDefByID(m_propPlaceID);
+							game2d::PropDef *propDef = game2d::PropDef::GetDefByID(m_propPlaceID);
 							if(propDef)
 							{
 								Vector2<float> pos = app->GetWorldPositionFromCanvasPosition(event.mouseButton.x, event.mouseButton.y);
@@ -1319,7 +1319,7 @@ namespace ce
 		}
 		void Editor2DCtrl::PropSelectorCtrl::GenerateButtons(Font *font)
 		{
-			map<unsigned short, game2d::PropDef *> *propDefTable = game2d::PropDef::GetPropDefTable();
+			map<unsigned short, game2d::PropDef *> *propDefTable = game2d::PropDef::GetDefTable();
 			int_canvas padding = 8, buttonWidth = 214, buttonHeight = 48;
 			int_canvas startX = padding;
 			int_canvas startY = padding;
@@ -1342,7 +1342,7 @@ namespace ce
 		}
 		Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl::PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID, Font *font) : ButtonCtrl(position, extent), ColorCtrl(position, extent, g_propSelectDefault), m_propID(propID)
 		{
-			m_propDef = game2d::PropDef::GetPropDefByID(propID);
+			m_propDef = game2d::PropDef::GetDefByID(propID);
 			SetOnButtonDown(Editor_PropSelectBtnDown);
 
 			ui::TextCtrl *propLabel = new ui::TextCtrl(Vector2<int_canvas>(52, 14), Vector2<int_canvas>(256, 20), font, m_propDef->GetName().c_str());

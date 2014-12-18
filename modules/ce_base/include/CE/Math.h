@@ -1,7 +1,6 @@
 #ifndef _CE_BASE_MATH_H_
 #define _CE_BASE_MATH_H_
 
-
 namespace ce
 {
 	float DegreesToRadians();

@@ -1,9 +1,6 @@
 #ifndef _CE_GAME2D_APPGAME2D_H_
 #define _CE_GAME2D_APPGAME2D_H_
 
-//- Standard Library -
-#include <vector>
-
 //- Centhra Engine -
 #include <CE/Vector2.h>
 #include <CE/Frontend.h>

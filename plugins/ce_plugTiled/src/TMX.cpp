@@ -115,7 +115,7 @@ namespace ce
 				xml_document doc;
 				xml_parse_result res = doc.load_file(file);
 
-				string prefix = filePath(file);
+				string prefix = fileBase(file);
 
 				if(!res)
 				{
@@ -594,7 +594,7 @@ namespace ce
 				if(object->m_type == ObjectDef::Object_Point)
 					if(!object->m_typeStr.compare("Prop"))
 					{
-						game2d::PropDef *propDef = game2d::PropDef::GetPropDefByName(object->m_propertyMap["PropName"]);
+						game2d::PropDef *propDef = game2d::PropDef::GetDefByName(object->m_propertyMap["PropName"]);
 						if(!propDef)
 							return 0;
 						game2d::Prop *prop = propDef->Spawn(Vector2<float>((float)(object->m_x), (float)(mapHeight - object->m_y)));

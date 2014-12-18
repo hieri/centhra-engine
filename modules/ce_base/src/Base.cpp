@@ -90,9 +90,9 @@ namespace ce
 	string fileExt(const char *file)
 	{
 		string str(file);
-		return str.substr(str.find_last_of(".") + 1);
+		return str.substr(str.find_last_of(".") + 1);	
 	}
-	string filePath(const char *file)
+	string fileBase(const char *file)
 	{
 		string str(file);
 		int a,b,c;
@@ -111,6 +111,19 @@ namespace ce
 		while((idx = str.find("/./")) != string::npos)
 			str = str.replace(idx, 3, "/");
 		return str;
+	}
+	string fileName(const char *file)
+	{
+		string str(file);
+
+		int idx = 0;
+		while((idx = str.find("\\")) != string::npos)
+			str = str.replace(idx, 1, "/");
+		
+		return str.substr(str.find_last_of("/") + 1);
+		//TODO: Distinguish between fileName and nameAndExt
+//		string nameAndExt = str.substr(str.find_last_of("/") + 1);
+//		return nameAndExt.substr(0, nameAndExt.find_last_of("."));
 	}
 	bool createFolder(const char *folder)
 	{

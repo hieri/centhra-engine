@@ -1,8 +1,10 @@
 #ifndef _CE_BASE_MATRIX4X4_H_
 #define _CE_BASE_MATRIX4X4_H_
 
-//- Standard Library -
-#include <cassert>
+#ifdef _DEBUG
+	//- Standard Library -
+	#include <cassert>
+#endif
 
 //- Centhra Engine -
 #include <CE/ConfigBase.h>
@@ -83,12 +85,16 @@ namespace ce
 		}
 		inline Type &operator[](int i)
 		{
-			assert(i >= 0 && i < 16);
+			#ifdef _DEBUG
+				assert(i >= 0 && i < 16);
+			#endif
 			return m_data[i];
 		}
 		inline Type operator[](int i) const
 		{
-			assert(i >= 0 && i < 16);
+			#ifdef _DEBUG
+				assert(i >= 0 && i < 16);
+			#endif
 			return m_data[i];
 		}
 		inline Matrix4x4 operator*(const Matrix4x4 &m) const

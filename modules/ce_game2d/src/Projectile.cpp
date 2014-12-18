@@ -135,7 +135,7 @@ namespace ce
 				SetRotation(rotation);
 			m_timeout = getRunTimeMS() + definition->m_lifeTime;
 		}
-		void Projectile::OnCollision(ce::game2d::PhysicalObject *collider, ce::Vector2<float> pointOfContact)
+		void Projectile::OnCollision(PhysicalObject *collider, Vector2<float> pointOfContact)
 		{
 /*			Object *object = (Object *)collider;
 			AppGame2D *app = (AppGame2D *)App::GetCurrent();
@@ -194,7 +194,7 @@ namespace ce
 
 			glDisable(GL_BLEND);
 		}
-		void Projectile::OnAdded(ce::Group *group)
+		void Projectile::OnAdded(Group *group)
 		{
 			SetCollisionMask(GetCollisionMask());
 			//TODO: Determine if this is necessary

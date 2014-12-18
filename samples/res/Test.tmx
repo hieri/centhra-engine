@@ -1041,6 +1041,7 @@
   <object type="Wall" x="447" y="575">
    <polyline points="0,0 0,159 -31,159"/>
   </object>
+  <object type="Wall" x="320" y="700" width="63" height="36"/>
  </objectgroup>
  <objectgroup name="Object Layer 1" width="32" height="32">
   <properties>

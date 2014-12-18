@@ -36,6 +36,18 @@ namespace ce
 		{
 			return g_wallThickness;
 		}
+		float Wall::GetDoubleWallThickness()
+		{
+			return g_doubleWallThickness;
+		}
+		float Wall::GetPostThickness()
+		{
+			return g_postThickness;
+		}
+		float Wall::GetDoublePostThickness()
+		{
+			return g_doublePostThickness;
+		}
 
 	/*	Mask_Object = 1 << (Base_Object + 0),
 			Mask_Wall = 1 << (Base_Object + 1),
@@ -69,7 +81,7 @@ namespace ce
 			glScalef(m_extent[0], m_extent[1], 1.f);
 
 			glColor3ub(255, 0, 0);
-	//		glColor3ub(200, 200, 15);
+//			glColor3ub(150, 100, 125);
 
 			glBegin(GL_QUADS);
 				glTexCoord2i(0, 1);
@@ -104,73 +116,132 @@ namespace ce
 				delete [] m_data[a];
 			delete [] m_data;
 		}
+		unsigned short WallGrid::GetWidth() const
+		{
+			return m_width;
+		}
+		unsigned short WallGrid::GetHeight() const
+		{
+			return m_height;
+		}
+		bool WallGrid::SetHorizontal(unsigned short x, unsigned short y, bool state)
+		{
+			if(state)
+			{
+				if(!(m_data[x][y] & Horizontal))
+				{
+					m_data[x][y] |= 1 | Horizontal;
+					return true;
+				}
+			}
+			else
+			{
+				if((m_data[x][y] & Horizontal))
+				{
+					m_data[x][y] &= ~Horizontal;
+					if(m_data[x][y] == 1)
+						m_data[x][y] = 0;
+					return true;
+				}
+			}
+			return false;
+		}
+		bool WallGrid::SetVertical(unsigned short x, unsigned short y, bool state)
+		{
+			if(state)
+			{
+				if(!(m_data[x][y] & Vertical))
+				{
+					m_data[x][y] |= 1 | Vertical;
+					return true;
+				}
+			}
+			else
+			{
+				if((m_data[x][y] & Vertical))
+				{
+					m_data[x][y] &= ~Vertical;
+					if(m_data[x][y] == 1)
+						m_data[x][y] = 0;
+					return true;
+				}
+			}
+			return false;
+		}
+		bool WallGrid::SetPost(unsigned short x, unsigned short y, bool state)
+		{
+			if(state)
+			{
+				if(!(m_data[x][y] & Post))
+				{
+					m_data[x][y] |= 1 | Post;
+					return true;
+				}
+			}
+			else
+			{
+				if((m_data[x][y] & Post))
+				{
+					m_data[x][y] &= ~Post;
+					if(m_data[x][y] == 1)
+						m_data[x][y] = 0;
+					return true;
+				}
+			}
+			return false;
+		}
+		bool WallGrid::SetFill(unsigned short x, unsigned short y, bool state)
+		{
+			if(state)
+			{
+				if(!(m_data[x][y] & Fill))
+				{
+					m_data[x][y] |= 1 | Fill;
+					return true;
+				}
+			}
+			else
+			{
+				if((m_data[x][y] & Fill))
+				{
+					m_data[x][y] &= ~Fill;
+					if(m_data[x][y] == 1)
+						m_data[x][y] = 0;
+					return true;
+				}
+			}
+			return false;
+		}
+		bool WallGrid::IsHorizontal(unsigned short x, unsigned short y) const
+		{
+			return (m_data[x][y] & Horizontal) != 0;
+		}
+		bool WallGrid::IsVertical(unsigned short x, unsigned short y) const
+		{
+			return (m_data[x][y] & Vertical) != 0;
+		}
+		bool WallGrid::IsPost(unsigned short x, unsigned short y) const
+		{
+			return (m_data[x][y] & Post) != 0;
+		}
+		bool WallGrid::IsFill(unsigned short x, unsigned short y) const
+		{
+			return (m_data[x][y] & Fill) != 0;
+		}
+		unsigned char WallGrid::GetPoint(unsigned short x, unsigned short y) const
+		{
+			return m_data[x][y];
+		}
+		void WallGrid::SetPoint(unsigned short x, unsigned short y, unsigned char point)
+		{
+			m_data[x][y] = point;
+		}
 		void WallGrid::GenerateWalls(PhysicalGroup *group, Vector2<float> scale)
 		{
 			unsigned short start = 0, length = 0;
 			bool isPlacing = false;
 			Wall *wall = 0;
 
-			//- Vertical -
-			for(unsigned short a = 0; a <= m_width; a++)
-				for(unsigned short b = 0; b <= m_height; b++)
-				{
-					if(isPlacing)
-					{
-						if(!(m_data[a][b] & Vertical))
-						{
-							isPlacing = false;
-							length = b - start;
-							if(!length)
-								continue;
-							for(unsigned short c = start; c < b; c++)
-								m_data[a][c] |= Done;
-							wall = new Wall(Vector2<float>((float)a * scale[0], ((float)length / 2.f + (float)start) * scale[1]), Vector2<float>(g_doubleWallThickness * scale[0], ((float)length + g_doubleWallThickness) * scale[1]));
-							group->Add(wall);
-						}
-					}
-					else
-					{
-						if(m_data[a][b] & Vertical)
-						{
-							start = b;
-							isPlacing = true;
-						}
-					}
-				}
-			//- Horizontal -
-			for(unsigned short b = 0; b <= m_height; b++)
-				for(unsigned short a = 0; a <= m_width; a++)
-				{
-					if(isPlacing)
-					{
-						if(!(m_data[a][b] & Horizontal))
-						{
-							isPlacing = false;
-							length = a - start;
-							if(!length)
-								if(m_data[start][b] & Done)
-									continue;
-							wall = new Wall(Vector2<float>(((float)length / 2.f + (float)start) * scale[0], (float)b * scale[1]), Vector2<float>(((float)length + g_doubleWallThickness) * scale[0], g_doubleWallThickness * scale[1]));
-							group->Add(wall);
-						}
-					}
-					else
-					{
-						if(m_data[a][b] & Horizontal)
-						{
-							start = a;
-							isPlacing = true;
-						}
-					}
-				}
-			//- Post -
-			for(unsigned short b = 0; b <= m_height; b++)
-				for(unsigned short a = 0; a <= m_width; a++)
-					if(m_data[a][b] & Post)
-					{
-						wall = new Wall(Vector2<float>((float)a * scale[0], (float)b * scale[1]), Vector2<float>(g_doublePostThickness * scale[0], g_doublePostThickness * scale[1]));
-						group->Add(wall);
-					}
 			//- Fill -
 			for(unsigned short b = 0; b <= m_height; b++)
 				for(unsigned short a = 0; a <= m_width; a++)
@@ -190,8 +261,10 @@ namespace ce
 								_w = _a - a;
 								if(hasLimit)
 								{
-									if(_w >= w)
+									//- Don't go farther than the predetermined width -
+									if(_w > w)
 										break;
+									//- Stop entirely if we can't go further -
 									if(!(m_data[_a][_b] & Fill) || m_data[_a][_b] & Done)
 									{
 										valid = false;
@@ -200,6 +273,7 @@ namespace ce
 								}
 								else
 								{
+									//- Extend as far right as possible -
 									if(!(m_data[_a][_b] & Fill) || m_data[_a][_b] & Done)
 									{
 										w = _a - a - 1;
@@ -214,8 +288,8 @@ namespace ce
 									}
 								}
 							}
-							if(!w)
-								break;
+//							if(!w)
+//								break;
 							if(!valid)
 								break;
 							if(_h > h)
@@ -225,7 +299,7 @@ namespace ce
 							for(unsigned short _a = a; _a <= (a + w); _a++)
 								m_data[_a][_b] |= Done;
 						w++;
-						h++;				
+						h++;
 						wall = new Wall(Vector2<float>(((float)a + (((float)w) / 2.f)) * scale[0], ((float)b + (((float)h) / 2.f)) * scale[1]), Vector2<float>(((float)w + g_doubleWallThickness) * scale[0], ((float)h + g_doubleWallThickness) * scale[1]));
 						group->Add(wall);
 					}
@@ -233,7 +307,68 @@ namespace ce
 			for(unsigned short b = 0; b <= m_height; b++)
 				for(unsigned short a = 0; a <= m_width; a++)
 					if(m_data[a][b] & Done)
-						m_data[a][b] &= ~Done;		
+						m_data[a][b] &= ~Done;
+
+			//- Vertical -
+			for(unsigned short a = 0; a <= m_width; a++)
+				for(unsigned short b = 0; b <= m_height; b++)
+				{
+					if(isPlacing)
+					{
+						if(!(m_data[a][b] & Vertical))
+						{
+							isPlacing = false;
+							length = b - start;
+							if(!length)
+								continue;
+							wall = new Wall(Vector2<float>((float)a * scale[0], ((float)length / 2.f + (float)start) * scale[1]), Vector2<float>(g_doubleWallThickness * scale[0], ((float)length + g_doubleWallThickness) * scale[1]));
+							group->Add(wall);
+						}
+					}
+					else
+					{
+						if(m_data[a][b] & Vertical)
+						{
+							start = b;
+							isPlacing = true;
+						}
+					}
+				}
+
+			//- Horizontal -
+			for(unsigned short b = 0; b <= m_height; b++)
+				for(unsigned short a = 0; a <= m_width; a++)
+				{
+					if(isPlacing)
+					{
+						if(!(m_data[a][b] & Horizontal))
+						{
+							isPlacing = false;
+							length = a - start;
+							if(!length)
+								continue;
+							wall = new Wall(Vector2<float>(((float)length / 2.f + (float)start) * scale[0], (float)b * scale[1]), Vector2<float>(((float)length + g_doubleWallThickness) * scale[0], g_doubleWallThickness * scale[1]));
+							group->Add(wall);
+						}
+					}
+					else
+					{
+						if(m_data[a][b] & Horizontal)
+						{
+							start = a;
+							isPlacing = true;
+						}
+					}
+				}
+
+			//- Post -
+			for(unsigned short b = 0; b <= m_height; b++)
+				for(unsigned short a = 0; a <= m_width; a++)
+					if(m_data[a][b] & Post)
+					{
+						wall = new Wall(Vector2<float>((float)a * scale[0], (float)b * scale[1]), Vector2<float>(g_doublePostThickness * scale[0], g_doublePostThickness * scale[1]));
+						group->Add(wall);
+					}	
 
 			CalculateObstructionPoints(scale);
 		}

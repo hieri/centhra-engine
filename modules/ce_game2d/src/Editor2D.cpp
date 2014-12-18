@@ -14,6 +14,7 @@
 #include <CE/UI/Editor2D.h>
 #include <CE/RenderPrimitives.h>
 #include <CE/Game2D/AppGame2D.h>
+#include <CE/Game2D/Wall.h>
 #include <CE/Math.h>
 
 using namespace std;
@@ -53,7 +54,7 @@ namespace ce
 		Editor2DCtrl::Editor2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, Skin *scrollSkin)
 			: ui::Control(position, extent), m_isSelecting(false), m_isDragging(false), m_isRotating(false), m_tileMode(TileMode_None),
 			m_mode(0), m_propPlaceID(-1), m_hover(0), m_font(font), m_currentLayer(0), m_currentTileSet(0), m_tilePlacementGroup(0),
-			m_currentTile(255, 255)
+			m_currentTile(255, 255), m_wallState(WallState_None), m_wallSize(1.f, 1.f), m_wallPlace(false)
 		{
 			m_eventMask |= event::Mask_MouseButtonDown | event::Mask_MouseButtonUp | event::Mask_MouseMotion | event::Mask_KeyDown | event::Mask_KeyUp;
 
@@ -153,6 +154,7 @@ namespace ce
 						m_isSelecting = true;
 					}
 					else if(m_mode == Mode_Tile)
+					{
 						if(m_currentLayer && m_tileMode == TileMode_None)
 						{
 							if(event.mouseButton.modifier == event::Mod_Shift)
@@ -262,6 +264,7 @@ namespace ce
 								}
 							}
 						}
+					}
 				}
 				else if(event.mouseButton.button == event::MouseButtonRight)
 				{
@@ -350,6 +353,7 @@ namespace ce
 					}
 				}
 				else if(event.mouseButton.button == event::MouseButtonMiddle)
+				{
 					if(m_mode == Mode_Tile)
 						if(m_tileMode == TileMode_None)
 						{
@@ -384,6 +388,50 @@ namespace ce
 							else
 								m_currentTile = Vector2<unsigned char>(255, 255);
 						}
+				}
+				if(m_mode == Mode_Wall && (event.mouseButton.button == event::MouseButtonLeft || event.mouseButton.button == event::MouseButtonRight))
+				{
+					Vector2<float> scale(32.f, 32.f);
+					float tolerance = 0.25f;
+					Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
+					bool isVertical = false;
+					bool isHorizontal = false;
+					bool isFill = false;
+
+					m_wallPlace = event.mouseButton.button == event::MouseButtonLeft;
+
+					float edgeX = curPos[0] / scale[0];
+					float edgeY = curPos[1] / scale[1];
+
+					//- Determine Type of Wall -
+					curPos[0] = curPos[0] / scale[0] - floor(edgeX);
+					if(curPos[0] > tolerance && (1.f - curPos[0]) > tolerance)
+						isHorizontal = true;
+					curPos[1] = curPos[1] / scale[1] - floor(edgeY);
+					if(curPos[1] > tolerance && (1.f - curPos[1]) > tolerance)
+						isVertical = true;
+
+					float maxFill = 0.5f + tolerance;
+					float minFill = 0.5f - tolerance;
+					if(curPos[0] > minFill && curPos[0] < maxFill && curPos[1] > minFill && curPos[1] < maxFill)
+						isFill = true;
+
+					//- Determine Position -
+					if((!(isVertical && isHorizontal) || isFill) && edgeX >= 0.f && edgeY >= 0.f)
+					{
+						if(isFill)
+							m_wallState = WallState_Fill;
+						else if(isVertical)
+							m_wallState = WallState_Vertical;
+						else if(isHorizontal)
+							m_wallState = WallState_Horizontal;
+						else
+							m_wallState = WallState_Post;
+
+						m_isDragging = true;
+						m_dragWorldStart = Vector2<float>(floor(edgeX + tolerance), floor(edgeY + tolerance));
+					}
+				}
 				break;
 			case event::MouseButtonUp:
 				if(m_mode == Mode_Object || m_mode == Mode_Prop)
@@ -402,9 +450,9 @@ namespace ce
 							maxX = max(startPos[0], endPos[0]);
 							maxY = max(startPos[1], endPos[1]);
 
-							unsigned short ignoreMask = 0;// game2d::PhysicalObject::Mask_Wall;
+							unsigned short ignoreMask = game2d::Mask_Wall;
 
-							vector<game2d::PhysicalObject *> objects = game2d::Camera::GetCurrent()->GetFocusGroup()->BoxSearch(minX, minY, maxX, maxY, m_mode == Mode_Object ? (-1 & ~ignoreMask) : game2d::Mask_Prop);
+							vector<game2d::PhysicalObject *> objects = game2d::Camera::GetCurrent()->GetFocusGroup()->BoxSearch(minX, minY, maxX, maxY, m_mode == Mode_Object ? (65535 & ~ignoreMask) : game2d::Mask_Prop);
 							m_selection.clear();
 
 							if((maxX - minX) < 0.1f && (maxY - minY) < 0.1f)
@@ -528,6 +576,138 @@ namespace ce
 					else if(event.mouseButton.button == event::MouseButtonRight && m_tileMode == TileMode_Deleting)
 						m_tileMode = TileMode_None;
 				}
+				else if(m_mode == Mode_Wall)
+				{
+					if(m_isDragging && ((event.mouseButton.button == event::MouseButtonLeft && m_wallPlace) || (event.mouseButton.button == event::MouseButtonRight && !m_wallPlace)))
+					{
+						Vector2<float> scale(32.f, 32.f);
+						float tolerance = 0.25f;
+						Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
+
+						float edgeX = curPos[0] / scale[0];
+						float edgeY = curPos[1] / scale[1];
+
+						float roundX = floor(edgeX + tolerance);
+						float roundY = floor(edgeY + tolerance);
+
+						float minX = min(roundX, m_dragWorldStart[0]);
+						float minY = min(roundY, m_dragWorldStart[1]);
+						float maxX = max(roundX, m_dragWorldStart[0]);
+						float maxY = max(roundY, m_dragWorldStart[1]);
+
+						unsigned short _minX, _minY, _maxX, _maxY;
+
+						game2d::WallGrid *wallGrid = ((game2d::World::WallLayer *)m_currentLayer)->GetWallGrid();
+						unsigned short width = wallGrid->GetWidth();
+						unsigned short height = wallGrid->GetHeight();
+						float fWidth = (float)width;
+						float fHeight = (float)height;
+
+						bool valid = true;
+
+						if(minX < 0.f)
+							_minX = 0;
+						else if(minX >= fWidth)
+						{
+							if(m_wallState == WallState_Horizontal || m_wallState == WallState_Fill || minX > fWidth)
+								valid = false;
+							else
+								_minX = width;
+						}
+						else
+							_minX = (unsigned short)minX;
+						if(minY < 0.f)
+							_minY = 0;
+						else if(minY >= fHeight)
+						{
+							if(m_wallState == WallState_Vertical || m_wallState == WallState_Fill || minY > fHeight)
+								valid = false;
+							else
+								_minY = height;
+						}
+						else
+							_minY = (unsigned short)minY;
+
+						if(maxX < 0.f)
+							valid = false;
+						else if(maxX >= fWidth)
+						{
+							if(m_wallState == WallState_Horizontal || m_wallState == WallState_Fill)
+								_maxX = width - 1;
+							else
+								_maxX = width;
+						}
+						else
+							_maxX = (unsigned short)maxX;
+						if(maxY < 0.f)
+							valid = false;
+						else if(maxY >= fHeight)
+						{
+							if(m_wallState == WallState_Vertical || m_wallState == WallState_Fill)
+								_maxY = height - 1;
+							else
+								_maxY = height;
+						}
+						else
+							_maxY = (unsigned short)maxY;
+
+						if(m_wallState == WallState_Vertical)
+						{
+							if(m_dragWorldStart[0] < 0.f || m_dragWorldStart[0] > fWidth)
+								valid = false;
+							else
+								_minX = _maxX = (unsigned short)m_dragWorldStart[0];
+						}
+						else if(m_wallState == WallState_Horizontal)
+						{
+							if(m_dragWorldStart[1] < 0.f || m_dragWorldStart[1] > fHeight)
+								valid = false;
+							else
+								_minY = _maxY = (unsigned short)m_dragWorldStart[1];
+						}
+
+						if(valid)
+						{
+							bool changed = false;
+							for(unsigned short x = _minX; x <= _maxX; x++)
+								for(unsigned short y = _minY; y <= _maxY; y++)
+								{
+									if(m_wallState == WallState_Fill)
+										changed = wallGrid->SetFill(x, y, m_wallPlace) || changed;
+									else if(m_wallState == WallState_Vertical)
+										changed = wallGrid->SetVertical(x, y, m_wallPlace) || changed;
+									else if(m_wallState == WallState_Horizontal)
+										changed = wallGrid->SetHorizontal(x, y, m_wallPlace) || changed;
+									else
+										changed = wallGrid->SetPost(x, y, m_wallPlace) || changed;
+								}
+
+							if(changed)
+							{
+								app->LockWorldMutex();
+								game2d::World *world = (game2d::World *)game2d::Camera::GetCurrent()->GetFocusGroup();
+								vector<Group::Member *> *objects = world->GetMembers();
+								if(objects->empty() == false)
+								{
+									Group::Member **markObjects = &objects->front();
+									Group::Member **endObjects = markObjects + objects->size();
+									while(markObjects != endObjects)
+									{
+										game2d::PhysicalObject *object = (game2d::PhysicalObject *)*markObjects++;
+										if(object->GetTypeMask() & game2d::Mask_Wall)
+											object->Delete();
+									}
+								}
+								wallGrid->GenerateWalls(world, Vector2<float>(32.f, 32.f));
+								app->UnlockWorldMutex();
+							}
+						}
+
+						m_isDragging = false;
+						m_wallState = WallState_None;
+						m_wallSize = Vector2<float>(1.f, 1.f);
+					}
+				}
 				break;
 			case event::MouseMotion:
 				if(m_isSelecting)
@@ -577,8 +757,9 @@ namespace ce
 					}
 				}
 				else if(m_mode == Mode_Tile)
+				{
 					if(m_currentLayer)
-					{ 
+					{
 						Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
 						game2d::World::TileLayer *tileLayer = (game2d::World::TileLayer *)m_currentLayer;
 						Vector2<unsigned short> tileSize = tileLayer->GetTileSize();
@@ -697,6 +878,100 @@ namespace ce
 								tileLayer->SetTile(x, y, Vector2<unsigned char>(255, 255), 255);
 						}
 					}
+				}
+				else if(m_mode == Mode_Wall)
+				{
+					Vector2<float> scale(32.f, 32.f);
+					float tolerance = 0.25f;
+					Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
+
+					float edgeX = curPos[0] / scale[0];
+					float edgeY = curPos[1] / scale[1];
+
+					if(m_isDragging)
+					{
+						float roundX = floor(edgeX + tolerance);
+						float roundY = floor(edgeY + tolerance);
+
+						float minX = min(roundX, m_dragWorldStart[0]);
+						float minY = min(roundY, m_dragWorldStart[1]);
+						float maxX = max(roundX, m_dragWorldStart[0]);
+						float maxY = max(roundY, m_dragWorldStart[1]);
+
+						if(m_wallState == WallState_Fill)
+						{
+							m_wallSize[0] = maxX - minX + 1.f;
+							m_wallSize[1] = maxY - minY + 1.f;
+							m_wallPos = Vector2<float>((minX + m_wallSize[0] / 2.f) * scale[0], (minY + m_wallSize[1] / 2.f) * scale[1]);
+						}
+						else if(m_wallState == WallState_Vertical)
+						{
+							m_wallSize[0] = 1.f;
+							m_wallSize[1] = maxY - minY + 1.f;
+							m_wallPos = Vector2<float>(m_dragWorldStart[0] * scale[0], (minY + m_wallSize[1] / 2.f) * scale[1]);
+						}
+						else if(m_wallState == WallState_Horizontal)
+						{
+							m_wallSize[0] = maxX - minX + 1.f;
+							m_wallSize[1] = 1.f;
+							m_wallPos = Vector2<float>((minX + m_wallSize[0] / 2.f) * scale[0], m_dragWorldStart[1] * scale[1]);
+						}
+						else
+						{
+							m_wallSize[0] = maxX - minX + 1.f;
+							m_wallSize[1] = maxY - minY + 1.f;
+							m_wallPos = Vector2<float>(minX * scale[0], minY * scale[1]);
+						}
+					}
+					else
+					{
+						bool isVertical = false;
+						bool isHorizontal = false;
+						bool isFill = false;
+
+						//- Determine Type of Wall -
+						curPos[0] = curPos[0] / scale[0] - floor(edgeX);
+						if(curPos[0] > tolerance && (1.f - curPos[0]) > tolerance)
+							isHorizontal = true;
+						curPos[1] = curPos[1] / scale[1] - floor(edgeY);
+						if(curPos[1] > tolerance && (1.f - curPos[1]) > tolerance)
+							isVertical = true;
+
+						float maxFill = 0.5f + tolerance;
+						float minFill = 0.5f - tolerance;
+						if(curPos[0] > minFill && curPos[0] < maxFill && curPos[1] > minFill && curPos[1] < maxFill)
+							isFill = true;
+
+						//- Determine Position -
+						if(!(isVertical && isHorizontal) || isFill)
+						{
+							float roundX = floor(edgeX + tolerance);
+							float roundY = floor(edgeY + tolerance);
+							if(isFill)
+							{
+								m_wallState = WallState_Fill;
+								m_wallPos = Vector2<float>((roundX + 0.5f) * scale[0], (roundY + 0.5f) * scale[1]);
+							}
+							else if(isVertical)
+							{
+								m_wallState = WallState_Vertical;
+								m_wallPos = Vector2<float>(roundX * scale[0], (roundY + 0.5f) * scale[1]);
+							}
+							else if(isHorizontal)
+							{
+								m_wallState = WallState_Horizontal;
+								m_wallPos = Vector2<float>((roundX + 0.5f) * scale[0], roundY * scale[1]);
+							}
+							else
+							{
+								m_wallState = WallState_Post;
+								m_wallPos = Vector2<float>(roundX * scale[0], roundY * scale[1]);
+							}
+						}
+						else
+							m_wallState = WallState_None;
+					}
+				}
 				break;
 			case event::KeyDown:
 				break;
@@ -844,6 +1119,56 @@ namespace ce
 							glPopMatrix();
 						}
 					}
+				}
+				else if(m_mode == Mode_Wall && m_wallState != WallState_None)
+				{
+					glPushMatrix();
+						glTranslatef(0.f, (float)m_extent[1], 0.f);
+						glScalef(1.f, -1.f, 1.f);
+						Vector2<float> focalPoint = camera->GetFocalPoint();
+						Vector2<int_canvas> viewExtent = currentViewport->GetExtent();
+						Vector2<float> half((float)viewExtent[0] / 2.f, (float)viewExtent[1] / 2.f);
+						Vector2<float> viewScale = currentViewport->GetViewScale();
+						glTranslatef(half[0] - viewScale[0] * focalPoint[0], half[1] - viewScale[1] * focalPoint[1], 0.f);
+						glScalef(viewScale[0], viewScale[1], 1.f);
+
+						glColor4ub(0, 0, 255, 200);
+						Vector2<float> scale(32.f, 32.f);
+						glTranslatef(m_wallPos[0], m_wallPos[1], 0.f);
+						if(m_wallState == WallState_Post)
+						{
+							unsigned short w = (unsigned short)m_wallSize[0];
+							unsigned short h = (unsigned short)m_wallSize[1];
+							for(unsigned short x = 0; x < w; x++)
+							{
+								glPushMatrix();
+								for(unsigned short y = 0; y < h; y++)
+								{
+									glPushMatrix();
+										glScalef(game2d::Wall::GetDoublePostThickness() * scale[0], game2d::Wall::GetDoublePostThickness() * scale[1], 1.f);
+										glTranslatef(-0.5f, -0.5f, 0.f);
+										RenderSquare();
+									glPopMatrix();
+									glTranslatef(0.f, scale[1], 0.f);
+								}
+								glPopMatrix();
+								glTranslatef(scale[0], 0.f, 0.f);
+							}
+						}
+						else
+						{
+							if(m_wallState == WallState_Fill)
+								glScalef(((float)m_wallSize[0] + game2d::Wall::GetDoubleWallThickness()) * scale[0], ((float)m_wallSize[1] + game2d::Wall::GetDoubleWallThickness()) * scale[1], 1.f);
+							else if(m_wallState == WallState_Vertical)
+								glScalef(game2d::Wall::GetDoubleWallThickness() * scale[0], ((float)m_wallSize[1] + game2d::Wall::GetDoubleWallThickness()) * scale[1], 1.f);
+							else if(m_wallState == WallState_Horizontal)
+								glScalef(((float)m_wallSize[0] + game2d::Wall::GetDoubleWallThickness()) * scale[0], game2d::Wall::GetDoubleWallThickness() * scale[1], 1.f);
+							glTranslatef(-0.5f, -0.5f, 0.f);
+							RenderSquare();
+						}
+
+						glColor4ub(255, 255, 255, 255);
+					glPopMatrix();
 				}
 
 			glPopMatrix();
@@ -1170,6 +1495,9 @@ namespace ce
 							m_tileSetSelection->AddSelection(idx++, (*markTileSets++)->GetName());
 					}
 				}
+				break;
+			case game2d::World::Layer_Wall:
+				SetMode(Mode_Wall);
 				break;
 			}
 

@@ -445,20 +445,29 @@ namespace ce
 
 															for(unsigned short a = minX; a <= maxX; a++)
 																for(unsigned short b = minY; b <= maxY; b++)
-																	wallGrid->m_data[a][b] |= 1;
+																	wallGrid->SetPoint(a, b, wallGrid->GetPoint(a, b) | 1);
 
 															if(minX == maxX)
 																for(unsigned short b = minY; b < maxY; b++)
-																	if(!(wallGrid->m_data[minX][b] & game2d::WallGrid::Fill))
-																		wallGrid->m_data[minX][b] |= game2d::WallGrid::Vertical;
+																{
+																	unsigned char point = wallGrid->GetPoint(minX, b);
+																	if(!(point & game2d::WallGrid::Fill))
+																		wallGrid->SetPoint(minX, b, point | game2d::WallGrid::Vertical);
+																}
 															if(minY == maxY)
 																for(unsigned short a = minX; a < maxX; a++)
-																	if(!(wallGrid->m_data[a][minY] & game2d::WallGrid::Fill))
-																		wallGrid->m_data[a][minY] |= game2d::WallGrid::Horizontal;
+																{
+																	unsigned char point = wallGrid->GetPoint(a, minY);
+																	if(!(point & game2d::WallGrid::Fill))
+																		wallGrid->SetPoint(a, minY, point | game2d::WallGrid::Horizontal);
+																}
 
 															if(minX == maxX && minY == maxY)
-																if(!(wallGrid->m_data[minX][minY] & game2d::WallGrid::Fill))
-																	wallGrid->m_data[minX][minY] |= game2d::WallGrid::Post;
+															{
+																unsigned char point = wallGrid->GetPoint(minX, minY);
+																if(!(point & game2d::WallGrid::Fill))
+																	wallGrid->SetPoint(minX, minY, point | game2d::WallGrid::Post);
+															}
 														}
 
 														c++;

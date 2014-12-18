@@ -16,6 +16,9 @@ namespace ce
 
 		public:
 			static float GetWallThickness();
+			static float GetDoubleWallThickness();
+			static float GetPostThickness();
+			static float GetDoublePostThickness();
 
 			Wall(Vector2<float> position, Vector2<float> extent);
 			virtual ~Wall();
@@ -28,7 +31,20 @@ namespace ce
 		{
 			void CalculateObstructionPoints(Vector2<float> scale);
 
+			typedef struct ObstructionPoint
+			{
+				Vector2<float> position;
+				bool positiveX, positiveY;
+			} ObstructionPoint;
+
+			std::vector<ObstructionPoint> m_obstructionPoints;
+
+
+			friend class Wall;
+
 		public:
+			unsigned char **m_data;
+			unsigned short m_width, m_height;
 			typedef enum Type
 			{
 				Horizontal = 2,
@@ -38,19 +54,24 @@ namespace ce
 				Done = 32
 			} Type;
 
-			typedef struct ObstructionPoint
-			{
-				Vector2<float> position;
-				bool positiveX, positiveY;
-			} ObstructionPoint;
-
-			std::vector<ObstructionPoint> m_obstructionPoints;
-
-			unsigned char **m_data;
-			unsigned short m_width, m_height;
-
 			WallGrid(unsigned short width, unsigned short height);
 			~WallGrid();
+
+			unsigned short GetWidth() const;
+			unsigned short GetHeight() const;
+
+			bool SetHorizontal(unsigned short x, unsigned short y, bool state);
+			bool SetVertical(unsigned short x, unsigned short y, bool state);
+			bool SetPost(unsigned short x, unsigned short y, bool state);
+			bool SetFill(unsigned short x, unsigned short y, bool state);
+
+			bool IsHorizontal(unsigned short x, unsigned short y) const;
+			bool IsVertical(unsigned short x, unsigned short y) const;
+			bool IsPost(unsigned short x, unsigned short y) const;
+			bool IsFill(unsigned short x, unsigned short y) const;
+
+			unsigned char GetPoint(unsigned short x, unsigned short y) const;
+			void SetPoint(unsigned short x, unsigned short y, unsigned char point);
 			void GenerateWalls(PhysicalGroup *group, Vector2<float> scale);
 		};
 	}

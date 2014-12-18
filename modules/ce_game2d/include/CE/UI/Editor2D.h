@@ -96,6 +96,21 @@ namespace ce
 		public:
 			void SelectTileSet(unsigned char tileSetId);
 
+			//- Walls -
+		protected:
+			typedef enum WallEditState
+			{
+				WallState_None,
+				WallState_Post,
+				WallState_Vertical,
+				WallState_Horizontal,
+				WallState_Fill
+			} WallEditState;
+			Vector2<float> m_wallPos;
+			unsigned char m_wallState;
+			Vector2<float> m_wallSize;
+			bool m_wallPlace;
+
 			//- Standard -
 		protected:
 			game2d::PhysicalObject *m_hover;
@@ -111,6 +126,7 @@ namespace ce
 			std::vector<RotateDef> m_rotateSelection;
 			Vector2<float> m_rotateCenter;
 			Vector2<int_canvas> m_dragStart, m_curMouse;
+			Vector2<float> m_dragWorldStart;
 			float m_startRotation;
 			bool m_isDragging, m_isSelecting, m_isRotating;
 

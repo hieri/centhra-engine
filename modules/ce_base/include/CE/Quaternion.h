@@ -3,9 +3,7 @@
 
 //- Standard Library -
 #include <cmath>
-#ifdef _DEBUG
-	#include <cassert>
-#endif
+#include <cassert>
 
 //- Centhra Engine -
 #include <CE/Matrix4x4.h>
@@ -233,16 +231,12 @@ namespace ce
 		}
 		inline Type &operator[](int i)
 		{
-			#ifdef _DEBUG
-				assert(i >= 0 && i < 4);
-			#endif
+			assert(i >= 0 && i < 4);
 			return m_data[i];
 		}
 		inline Type operator[](int i) const
 		{
-			#ifdef _DEBUG
-				assert(i >= 0 && i < 4);
-			#endif
+			assert(i >= 0 && i < 4);
 			return m_data[i];
 		}
 		inline Quaternion operator+(const Quaternion &v) const

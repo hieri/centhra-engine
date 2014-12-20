@@ -3,9 +3,7 @@
 
 //- Standard Library 
 #include <cmath>
-#ifdef _DEBUG
-	#include <cassert>
-#endif
+#include <cassert>
 
 namespace ce
 {
@@ -85,9 +83,7 @@ namespace ce
 		 */
 		inline Type &operator[](int i)
 		{
-			#ifdef _DEBUG
-				assert(i >= 0 && i < 2);
-			#endif
+			assert(i >= 0 && i < 2);
 			return m_data[i];
 		}
 
@@ -95,9 +91,7 @@ namespace ce
 		 */
 		inline Type const &operator[](int i) const
 		{
-			#ifdef _DEBUG
-				assert(i >= 0 && i < 2);
-			#endif
+			assert(i >= 0 && i < 2);
 			return m_data[i];
 		}
 

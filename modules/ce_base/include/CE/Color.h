@@ -1,10 +1,8 @@
 #ifndef _CE_BASE_COLOR_H_
 #define _CE_BASE_COLOR_H_
 
-#ifdef _DEBUG
-	//- Standard Library -
-	#include <cassert>
-#endif
+//- Standard Library -
+#include <cassert>
 
 namespace ce
 {
@@ -108,9 +106,7 @@ namespace ce
 		 */
 		inline unsigned char &operator[](int i)
 		{
-			#ifdef _DEBUG
-				assert(i >= 0 && i < 4);
-			#endif
+			assert(i >= 0 && i < 4);
 			return m_data[i];
 		}
 
@@ -118,9 +114,7 @@ namespace ce
 		 */
 		inline unsigned char const &operator[](int i) const
 		{
-			#ifdef _DEBUG
-				assert(i >= 0 && i < 4);
-			#endif
+			assert(i >= 0 && i < 4);
 			return m_data[i];
 		}
 

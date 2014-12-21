@@ -66,8 +66,18 @@ namespace ce
 		{
 			if(m_mode == Mode_Follow)
 				if(m_focus)
-					return m_focus->GetPosition();
+					return m_focus->GetPosition() + m_offset;
 			return m_position;
+		}
+
+		//- Offset -
+		Vector2<float> Camera::GetOffset() const
+		{
+			return m_offset;
+		}
+		void Camera::SetOffset(Vector2<float> offset)
+		{
+			m_offset = offset;
 		}
 	}
 }

@@ -392,7 +392,8 @@ namespace ce
 				}
 				if(m_mode == Mode_Wall && (event.mouseButton.button == event::MouseButtonLeft || event.mouseButton.button == event::MouseButtonRight))
 				{
-					Vector2<float> scale(32.f, 32.f);
+					float s = ((game2d::World::WallLayer *)m_currentLayer)->GetScale() * 32.f;
+					Vector2<float> scale(s, s);
 					float tolerance = 0.25f;
 					Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
 					bool isVertical = false;
@@ -581,7 +582,8 @@ namespace ce
 				{
 					if(m_isDragging && ((event.mouseButton.button == event::MouseButtonLeft && m_wallPlace) || (event.mouseButton.button == event::MouseButtonRight && !m_wallPlace)))
 					{
-						Vector2<float> scale(32.f, 32.f);
+						float s = ((game2d::World::WallLayer *)m_currentLayer)->GetScale() * 32.f;
+						Vector2<float> scale(s, s);
 						float tolerance = 0.25f;
 						Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
 
@@ -699,7 +701,8 @@ namespace ce
 											object->Delete();
 									}
 								}
-								wallGrid->GenerateWalls(world, Vector2<float>(32.f, 32.f));
+								float scale = ((game2d::World::WallLayer *)m_currentLayer)->GetScale() * 32.f;
+								wallGrid->GenerateWalls(world, Vector2<float>(scale, scale));
 								app->UnlockWorldMutex();
 							}
 						}
@@ -882,7 +885,8 @@ namespace ce
 				}
 				else if(m_mode == Mode_Wall)
 				{
-					Vector2<float> scale(32.f, 32.f);
+					float s = ((game2d::World::WallLayer *)m_currentLayer)->GetScale() * 32.f;
+					Vector2<float> scale(s, s);
 					float tolerance = 0.25f;
 					Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(event.mouseMotion.x, event.mouseMotion.y);
 
@@ -1134,7 +1138,8 @@ namespace ce
 						glScalef(viewScale[0], viewScale[1], 1.f);
 
 						glColor4ub(0, 0, 255, 200);
-						Vector2<float> scale(32.f, 32.f);
+						float s = ((game2d::World::WallLayer *)m_currentLayer)->GetScale() * 32.f;
+						Vector2<float> scale(s, s);
 						glTranslatef(m_wallPos[0], m_wallPos[1], 0.f);
 						if(m_wallState == WallState_Post)
 						{

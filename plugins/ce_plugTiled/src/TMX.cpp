@@ -394,6 +394,7 @@ namespace ce
 									game2d::World::WallLayer *wWallLayer = world->AddWallLayer();
 									wWallLayer->SetUserData(layer);
 									wWallLayer->SetName(layer->m_name);
+									wWallLayer->SetScale(1.f / 32.f * scale[1]);
 
 									game2d::WallGrid *wallGrid = new game2d::WallGrid(m_size[0], m_size[1]);
 									wWallLayer->SetWallGrid(wallGrid);

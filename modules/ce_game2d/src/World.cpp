@@ -276,7 +276,7 @@ namespace ce
 		}
 
 		//-------------------------------- WallLayer --------------------------------
-		World::WallLayer::WallLayer() : World::Layer(), m_wallGrid(0)
+		World::WallLayer::WallLayer() : World::Layer(), m_wallGrid(0), m_scale(1.f)
 		{
 			m_type = Layer_Wall;
 		}
@@ -292,6 +292,16 @@ namespace ce
 		void World::WallLayer::SetWallGrid(WallGrid *wallGrid)
 		{
 			m_wallGrid = wallGrid;
+		}
+
+		//- Scale -
+		float World::WallLayer::GetScale() const
+		{
+			return m_scale;
+		}
+		void World::WallLayer::SetScale(float scale)
+		{
+			m_scale = scale;
 		}
 
 		//-------------------------------- TileLayer --------------------------------

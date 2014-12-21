@@ -51,6 +51,13 @@ namespace ce
 		public:
 			//- Returns focus position if following focus -
 			Vector2<float> GetFocalPoint();
+
+			//- Offset -
+		protected:
+			Vector2<float> m_offset;
+		public:
+			Vector2<float> GetOffset() const;
+			void SetOffset(Vector2<float> offset);
 		};
 	}
 }

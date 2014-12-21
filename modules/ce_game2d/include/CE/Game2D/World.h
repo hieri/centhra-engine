@@ -99,6 +99,13 @@ namespace ce
 				void SetWallGrid(WallGrid *wallGrid);
 
 				friend class World;
+
+				//- Scale -
+			protected:
+				float m_scale;
+			public:
+				float GetScale() const;
+				void SetScale(float scale);
 			};
 
 			//- TileLayer: Renders TileMap -

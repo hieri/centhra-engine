@@ -38,7 +38,6 @@ namespace ce
 					Vector2<float> half((float)m_extent[0] / 2.f, (float)m_extent[1] / 2.f);
 					glTranslatef(half[0] - m_viewScale[0] * focalPoint[0], -half[1] - m_viewScale[1] * focalPoint[1], 0.f);
 					glScalef(m_viewScale[0], m_viewScale[1], 1.f);
-
 					m_camera->GetFocusGroup()->Render((focalPoint[0]) - half[0] / m_viewScale[0], (focalPoint[1]) - half[1] / m_viewScale[1], (focalPoint[0]) + half[0] / m_viewScale[0], (focalPoint[1]) + half[1] / m_viewScale[1]);
 				glPopMatrix();
 			}

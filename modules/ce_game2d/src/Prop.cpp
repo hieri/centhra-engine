@@ -47,21 +47,31 @@ namespace ce
 			ifstream inFile;
 			inFile.open(file);
 
-			string in;
+			string in, imageFile, spriteFile;
 			while(getline(inFile, in))
 			{
+				//- Get name, single word only -
 				stringstream lineStream(in);
-				PropDef *def = new PropDef();;
-				getline(lineStream, def->m_name, '\t');
+				PropDef *def = new PropDef();
+				lineStream >> def->m_name;
+
+				//- Continue if line is a comment -
 				if(!def->m_name.compare("//"))
 					continue;
-				string imageFile, spriteFile;
-				getline(lineStream, imageFile, '\t');
+
+				//- Image File -
+				getline(lineStream, imageFile, '\"'); //- Flush previous content -
+				getline(lineStream, imageFile, '\"');
+
+				//- Attributes -
 				lineStream >> def->m_extent[0] >> def->m_extent[1];
 				lineStream >> def->m_isStatic >> def->m_hasFixedRotation >> def->m_isCollidable;
-				getline(lineStream, spriteFile, '\t'); //- This is necessary -
-				getline(lineStream, spriteFile, '\t');
-				
+
+				//- Read the sprite file -
+				getline(lineStream, spriteFile, '\"'); //- Flush previous content -
+				getline(lineStream, spriteFile, '\"');
+
+				//- Create assets -
 				def->m_image = Image::CreateFromFile(imageFile.c_str());
 				if(spriteFile.length())
 				{
@@ -69,6 +79,7 @@ namespace ce
 					def->m_sprite = Sprite::LoadSpriteFromFile(spriteFile.c_str(), def->m_image);
 				}
 
+				//- Assign id and store to definition map -
 				def->m_id = ms_nextID++;
 				ms_propDefs[def->m_id] = def;
 			}

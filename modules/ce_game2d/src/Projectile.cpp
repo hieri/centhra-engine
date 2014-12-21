@@ -61,23 +61,33 @@ namespace ce
 			ifstream inFile;
 			inFile.open(file);
 
-			string in;
+			string in, imageFile, spriteFile;
+			unsigned short damage;
+
 			while(getline(inFile, in))
 			{
+				//- Get name, single word only -
 				stringstream lineStream(in);
-				ProjectileDef *def = new ProjectileDef();;
-				getline(lineStream, def->m_name, '\t');
+				ProjectileDef *def = new ProjectileDef();
+				lineStream >> def->m_name;
+
+				//- Continue if line is a comment -
 				if(!def->m_name.compare("//"))
 					continue;
-				string imageFile, spriteFile;
-				getline(lineStream, imageFile, '\t');
-				unsigned short damage;
+
+				//- Image File -
+				getline(lineStream, imageFile, '\"'); //- Flush previous content -
+				getline(lineStream, imageFile, '\"');
+
+				//- Attributes -
 				lineStream >> def->m_extent[0] >> def->m_extent[1] >> def->m_renderScale[0] >> def->m_renderScale[1] >> def->m_speed >> damage >> def->m_isAxisOriented >> def->m_lifeTime >> def->m_maxAnimTime;
 				def->m_damage = (unsigned char)damage;
 
-				getline(lineStream, spriteFile, '\t'); //- This is necessary -
-				getline(lineStream, spriteFile, '\t');
+				//- Read the sprite file -
+				getline(lineStream, spriteFile, '\"'); //- Flush previous content -
+				getline(lineStream, spriteFile, '\"');
 
+				//- Create assets -
 				def->m_image = Image::CreateFromFile(imageFile.c_str());
 				if(spriteFile.length())
 				{
@@ -85,6 +95,7 @@ namespace ce
 					def->m_sprite = Sprite::LoadSpriteFromFile(spriteFile.c_str(), def->m_image);
 				}
 
+				//- Assign id and store to definition map -
 				def->m_id = ms_nextID++;
 				ms_projectileDefs[def->m_id] = def;
 			}

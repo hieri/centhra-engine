@@ -220,6 +220,7 @@ public:
 		RenderPrimitiveCleanup();
 		game2d::PropDef::Cleanup();
 		Image::Cleanup();
+		File::Cleanup();
 
 		delete m_editorScrollSkin;
 		delete m_editorScrollImage;

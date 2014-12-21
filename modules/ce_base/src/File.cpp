@@ -11,6 +11,8 @@
 
 using namespace std;
 
+//TODO: Implement subdirectories
+
 namespace ce
 {
 	void *monitorFunc(void *arg)
@@ -25,6 +27,10 @@ namespace ce
 	void File::Cleanup()
 	{
 		//- Delete all directories and their files -
+		map<string, Directory *>::iterator markDirectories = Directory::ms_directoryMap.begin(), endDirectories = Directory::ms_directoryMap.end();
+		while(markDirectories != endDirectories)
+			delete (markDirectories++)->second;
+		Directory::ms_directoryMap.clear();
 	}
 
 	//---------------------------- Directory ----------------------------
@@ -41,7 +47,12 @@ namespace ce
 	}
 	Directory::~Directory()
 	{
-		delete m_monitorThread;
+		map<string, File *>::iterator markFiles = m_files.begin(), endFiles = m_files.end();
+		while(markFiles != endFiles)
+			delete (markFiles++)->second;
+
+		//TODO: Interrupt monitoring thread
+//		delete m_monitorThread;
 	}
 	string Directory::GetPath() const
 	{

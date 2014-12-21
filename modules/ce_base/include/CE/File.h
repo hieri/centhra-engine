@@ -27,11 +27,6 @@ namespace ce
 
 		std::string GetPath() const;
 
-		//- Subdirectories -
-	protected:
-		std::map<std::string, Directory *> m_subDirectories;
-	public:
-
 		//- Files -
 	protected:
 		std::map<std::string, File *> m_files;

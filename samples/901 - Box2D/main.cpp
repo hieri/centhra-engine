@@ -6,7 +6,6 @@
 #include <CE/Base.h>
 #include <CE/Thread.h>
 #include <CE/Mutex.h>
-#include <CE/Frontend.h>
 #include <CE/Game2D.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
 
@@ -17,7 +16,7 @@ using namespace ce;
 void *physicsFunc(void *arg);
 Mutex physicsMutex;
 
-class AppBox2DSample : public AppFrontend
+class AppBox2DSample : public AppGame2D
 {
 	Canvas *m_canvas;
 	game2d::PhysicalGroup *m_group;
@@ -31,7 +30,7 @@ class AppBox2DSample : public AppFrontend
 public:
 	Thread* m_physicsThread;
 
-	AppBox2DSample()
+	AppBox2DSample() : AppGame2D()
 	{
 		m_canvas = 0;
 		m_box2dPhysicsHandler = 0;
@@ -50,6 +49,10 @@ public:
 	}
 	bool OnStart()
 	{
+		bool result = AppGame2D::OnStart();
+		if(!result)
+			return false;
+
 		srand((unsigned int)time(NULL));
 
 		m_canvas = Canvas::Create(640, 480, "901 - Box2D");
@@ -167,6 +170,8 @@ public:
 		delete [] m_randoms;
 		delete m_group;
 		delete m_canvas;
+
+		AppGame2D::OnStopped();
 	}
 	bool OnEvent(Event &event)
 	{

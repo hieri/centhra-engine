@@ -58,12 +58,6 @@ namespace ce
 		{
 			m_eventMask |= event::Mask_MouseButtonDown | event::Mask_MouseButtonUp | event::Mask_MouseMotion | event::Mask_KeyDown | event::Mask_KeyUp;
 
-			//- Menu Bar -
-/*			m_modeObjectBtn = new ui::TextButtonCtrl(Vector2<int_canvas>(32, 0), Vector2<int_canvas>(76, 22), m_font, "Object", Color(255, 255, 255), Color(63, 63, 63));
-			m_modePropBtn = new ui::TextButtonCtrl(Vector2<int_canvas>(124, 0), Vector2<int_canvas>(51, 22), m_font, "Prop", Color(255, 255, 255), Color(63, 63, 63));
-			m_modeTileBtn = new ui::TextButtonCtrl(Vector2<int_canvas>(191, 0), Vector2<int_canvas>(51, 22), m_font, "Tile", Color(255, 255, 255), Color(63, 63, 63));
-			m_modeWallBtn = new ui::TextButtonCtrl(Vector2<int_canvas>(258, 0), Vector2<int_canvas>(51, 22), m_font, "Wall", Color(255, 255, 255), Color(63, 63, 63));
-*/
 			//- Prop Selection -
 			m_propSelectorCtrl = new PropSelectorCtrl(Vector2<int_canvas>(extent[0] - 246, 0), Vector2<int_canvas>(230, 120), scrollSkin);
 			m_propSelectorCtrl->SetAnchor(ui::Control::Anchor_Right);
@@ -81,20 +75,18 @@ namespace ce
 			Add(m_tileSetSelection);
 
 			//- Mode Selection -
-			m_objectModeSelection = new ui::TextDropDownCtrl(Vector2<int_canvas>(232, 0), Vector2<int_canvas>(100, 22), m_font, 100, "Mode");
+			m_objectModeSelection = new ui::TextDropDownCtrl(Vector2<int_canvas>(280, 0), Vector2<int_canvas>(100, 22), m_font, 100, "Mode");
 			m_objectModeSelection->SetOnSelection(Editor_OnObjectModeSelect);
 			m_objectModeSelection->AddSelection(0, "Object");
 			m_objectModeSelection->AddSelection(1, "Prop");
 			Add(m_objectModeSelection);
 
 			//- Layer Selection -
-			m_layerSelection = new ui::TextDropDownCtrl(Vector2<int_canvas>(16, 0), Vector2<int_canvas>(200, 22), m_font, 200, "Select Layer");
+			m_layerSelection = new ui::TextDropDownCtrl(Vector2<int_canvas>(64, 0), Vector2<int_canvas>(200, 22), m_font, 200, "Select Layer");
 			m_layerSelection->SetOnSelection(Editor_OnLayerSelect);
 			UpdateLayerSelection();
 			Add(m_layerSelection);
 			m_layerSelection->Select(0);
-
-//			SetMode(Mode_None);
 		}
 		void Editor2DCtrl::OnAdded(Control *parent)
 		{

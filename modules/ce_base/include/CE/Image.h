@@ -19,7 +19,6 @@ namespace ce
 		Image();
 
 		virtual void OnFileChange();
-
 		bool LoadFromFile(const char *file);
 
 	public:

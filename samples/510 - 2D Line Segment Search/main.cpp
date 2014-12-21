@@ -20,7 +20,7 @@
 
 using namespace ce;
 
-class App2DLineSegmentSearchSample : public AppFrontend
+class App2DLineSegmentSearchSample : public AppGame2D
 {
 	Canvas *m_canvas;
 	game2d::PhysicalGroup *m_group;
@@ -34,7 +34,7 @@ class App2DLineSegmentSearchSample : public AppFrontend
 	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 
 public:
-	App2DLineSegmentSearchSample()
+	App2DLineSegmentSearchSample() : AppGame2D()
 	{
 		m_canvas = 0;
 		m_group = 0;
@@ -50,8 +50,12 @@ public:
 	~App2DLineSegmentSearchSample()
 	{
 	}
-	void OnStarted()
+	bool OnStart()
 	{
+		bool result = AppGame2D::OnStart();
+		if(!result)
+			return false;
+
 		srand((unsigned int)time(NULL));
 		m_canvas = Canvas::Create(640, 480, "510 - 2D Line Segment Search");
 		m_group = new game2d::PhysicalGroup();
@@ -89,6 +93,8 @@ public:
 
 		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
 		m_group->AttachHandler(m_defaultPhysicsHandler);
+
+		return true;
 	}
 	bool OnProcess()
 	{
@@ -147,6 +153,7 @@ public:
 		delete m_group;
 		game2d::Entity::FinalizeDelete();
 		delete m_canvas;
+		AppGame2D::OnStopped();
 	}
 
 	bool OnEvent(Event &event)

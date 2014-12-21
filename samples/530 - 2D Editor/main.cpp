@@ -7,6 +7,7 @@
 #include <CE/Base.h>
 #include <CE/Thread.h>
 #include <CE/Frontend.h>
+#include <CE/Counter.h>
 #include <CE/Game2D.h>
 #include <CE/Game2D/DefaultPhysicsHandler.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
@@ -23,6 +24,8 @@ using namespace std;
 
 void *physicsFunc(void *arg);
 
+//#define RENDER_PROFILE
+
 class App2DEditorSample : public AppGame2D
 {
 	Canvas *m_canvas;
@@ -37,6 +40,9 @@ class App2DEditorSample : public AppGame2D
 	bool w,a,s,d;
 	unsigned long long m_lastProcess;
 
+	Counter m_fpsCounter;
+	ui::TextCtrl *m_fpsDisplay;
+
 	float m_zoomLevel;
 
 	plugin::tiled::TMX *m_tmx;
@@ -48,7 +54,7 @@ class App2DEditorSample : public AppGame2D
 public:
 	Thread* m_physicsThread;
 
-	App2DEditorSample() : AppGame2D()
+	App2DEditorSample() : AppGame2D(), m_fpsCounter(1000), m_fpsDisplay(0)
 	{
 		m_canvas = 0;
 		m_defaultPhysicsHandler = 0;
@@ -78,6 +84,9 @@ public:
 		srand((unsigned int)time(NULL));
 
 		m_canvas = Canvas::Create(640, 480, "530 - 2D Editor");
+		#ifdef RENDER_PROFILE
+			m_canvas->SetVSync(false);
+		#endif
 
 		Image::Init();
 		Font::Init();
@@ -151,6 +160,7 @@ public:
 
 		m_editorScrollImage = Image::CreateFromFile("../res/editorPropScroll.png");
 		m_editorScrollSkin = new ui::Skin(m_editorScrollImage);
+		m_fpsDisplay = new ui::TextCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(256, 32), m_font);
 		m_editorCtrl = new ui::Editor2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(m_canvas->GetWidth(), m_canvas->GetHeight()), m_font, m_editorScrollSkin);
 
 		bool parentStart = AppGame2D::OnStart();
@@ -183,18 +193,9 @@ public:
 	}
 	bool OnProcess()
 	{
-		unsigned long long t = GetRunTimeMS();
-		if((t - m_lastProcess) > 15)
-		{
-			float dt = (float)(t - m_lastProcess) / 1000.f;
-			m_lastProcess = t;
-
-/*			LockWorldMutex();
-			ProcessPhysics(dt);
-			UnlockWorldMutex();*/
-		}
-
-		sleepMS(1);
+		#ifndef RENDER_PROFILE
+			sleepMS(1);
+		#endif
 		return true;
 	}
 	void OnStopped()
@@ -205,6 +206,7 @@ public:
 		delete m_box2dPhysicsHandler;
 //		delete m_defaultPhysicsHandler;
 	
+		delete m_fpsDisplay;
 		delete m_editorCtrl;
 		delete m_view;
 		delete m_camera;
@@ -225,6 +227,7 @@ public:
 		delete m_canvas;
 		AppGame2D::OnStopped();
 	}
+	unsigned long g_fpsCount = 0;
 	bool OnEvent(Event &event)
 	{
 		switch(event.type)
@@ -243,6 +246,8 @@ public:
 				}
 				m_camera->SetMode(m_isEditMode ? game2d::Camera::Mode_Free : game2d::Camera::Mode_Follow);
 			}
+			else if(event.key.keyCode == Key_F11)
+				m_canvas->SetFullscreen(!m_canvas->IsFullscreen());
 			if(m_isEditMode)
 				m_editorCtrl->ProcessEvent(event);
 			switch(event.key.keyCode)
@@ -334,6 +339,13 @@ public:
 			if(m_isEditMode)
 				if(m_editorCtrl)
 					m_editorCtrl->Render(m_canvas);
+			if(m_fpsDisplay)
+			{
+				m_fpsCounter.Increment();
+				if(m_fpsCounter.PopCount(event.base.timeMS, g_fpsCount))
+					m_fpsDisplay->SetText("%d", g_fpsCount);
+				m_fpsDisplay->Render(m_canvas);
+			}
 			UnlockWorldMutex();
 			break;
 		case event::WindowResize:

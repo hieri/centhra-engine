@@ -12,7 +12,7 @@ namespace ce
 {
 	namespace game2d
 	{
-		class Sprite
+		class Sprite : public File::FileObject
 		{
 			class Animation
 			{
@@ -26,7 +26,8 @@ namespace ce
 			};
 
 			Image *m_source;
-
+			virtual void OnFileChange();
+			bool LoadFromFile(const char *file);
 		public:
 			static Sprite *LoadSpriteFromFile(const char *file, Image *image);
 

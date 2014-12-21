@@ -10,7 +10,6 @@
 #include <CE/Socket.h>
 #include <CE/Thread.h>
 #include <CE/Mutex.h>
-#include <CE/Frontend.h>
 #include <CE/Game2D.h>
 #include <CE/Game2D/DefaultPhysicsHandler.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
@@ -66,7 +65,7 @@ Mutex g_physicsMutex;
 
 class ClientConnection;
 
-class App2DServerSample : public AppFrontend
+class App2DServerSample : public AppGame2D
 {
 	unsigned long long m_lastProcess;
 	game2d::PhysicalObject **m_randoms;
@@ -77,7 +76,7 @@ public:
 	plugin::box2d::bPhysicsHandler *m_box2dPhysicsHandler;
 	map<unsigned long, ClientConnection *> m_clientConnectionMap;
 
-	App2DServerSample()
+	App2DServerSample() : AppGame2D()
 	{
 		m_group = 0;
 		m_defaultPhysicsHandler = 0;
@@ -90,6 +89,10 @@ public:
 	}
 	bool OnStart()
 	{
+		bool result = AppGame2D::OnStart();
+		if(!result)
+			return false;
+
 		m_group = new game2d::PhysicalGroup();
 //		m_defaultPhysicsHandler = new game2d::DefaultPhysicsHandler();
 //		m_group->AttachHandler(m_defaultPhysicsHandler);
@@ -177,6 +180,8 @@ public:
 		for(int a = 0; a < NUMRANDOMS; a++)
 			delete m_randoms[a];
 		delete [] m_randoms;
+
+		AppGame2D::OnStopped();
 	}
 };
 

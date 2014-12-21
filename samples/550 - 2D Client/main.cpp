@@ -10,7 +10,6 @@
 #include <CE/Thread.h>
 #include <CE/Mutex.h>
 #include <CE/Socket.h>
-#include <CE/Frontend.h>
 #include <CE/Game2D.h>
 #include <CE/Game2D/DefaultPhysicsHandler.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
@@ -64,7 +63,7 @@ typedef union Packet
 	ControlPacket control;
 } Packet;
 
-class App2DClientSample : public AppFrontend
+class App2DClientSample : public AppGame2D
 {
 	Canvas *m_canvas;
 	ui::CameraView2DCtrl *m_view;
@@ -80,7 +79,7 @@ public:
 	Vector2<float> m_targetMotion;
 	game2d::Camera *m_camera;
 
-	App2DClientSample()
+	App2DClientSample() : AppGame2D()
 	{
 		m_canvas = 0;
 		m_defaultPhysicsHandler = 0;
@@ -101,6 +100,10 @@ public:
 	}
 	bool OnStart()
 	{
+		bool result = AppGame2D::OnStart();
+		if(!result)
+			return false;
+
 		m_canvas = Canvas::Create(320, 240, "550 - 2D Client");
 
 		m_group = new game2d::PhysicalGroup();
@@ -177,6 +180,8 @@ public:
 		delete m_entity;
 		delete m_group;
 		delete m_canvas;
+
+		AppGame2D::OnStopped();
 	}
 	bool OnEvent(Event &event)
 	{

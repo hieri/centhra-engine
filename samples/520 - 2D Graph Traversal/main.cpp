@@ -12,7 +12,6 @@
 
 //- Centhra Engine -
 #include <CE/Base.h>
-#include <CE/Frontend.h>
 #include <CE/Game2D.h>
 #include <CE/Game2D/DefaultPhysicsHandler.h>
 
@@ -68,7 +67,7 @@ public:
 	}
 };
 
-class App2DGraphTraversalSample : public AppFrontend
+class App2DGraphTraversalSample : public AppGame2D
 {
 	Canvas *m_canvas;
 	game2d::PhysicalGroup *m_group;
@@ -85,7 +84,7 @@ class App2DGraphTraversalSample : public AppFrontend
 	unsigned long long m_lastProcess;
 
 public:
-	App2DGraphTraversalSample()
+	App2DGraphTraversalSample() : AppGame2D()
 	{
 		m_canvas = 0;
 		m_camera = 0;
@@ -100,8 +99,12 @@ public:
 	~App2DGraphTraversalSample()
 	{
 	}
-	void OnStarted()
+	bool OnStart()
 	{
+		bool result = AppGame2D::OnStart();
+		if(!result)
+			return false;
+
 		srand((unsigned int)time(NULL));
 		m_canvas = Canvas::Create(640, 480, "520 - 2D Graph Traversal");
 		m_group = new game2d::PhysicalGroup();
@@ -153,6 +156,8 @@ public:
 		m_pointB = Vector2<float>(512.f, 512.f);
 		if(m_group->SegmentSearch(m_pointA[0], m_pointA[1], m_pointB[0], m_pointB[1], 1).size())
 			m_path = m_graph->FindPath(m_pointA, m_pointB, 1, m_group);
+
+		return true;
 	}
 	bool OnProcess()
 	{
@@ -199,6 +204,7 @@ public:
 		delete m_group;
 		game2d::Entity::FinalizeDelete();
 		delete m_canvas;
+		AppGame2D::OnStopped();
 	}
 	bool OnEvent(Event &event)
 	{

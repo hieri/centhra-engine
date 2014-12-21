@@ -86,9 +86,6 @@ namespace ce
 		m_ilImage = ilImage;
 		m_size = Vector2<unsigned int>(width, height);
 
-		File *fileObj = new File(file);
-		fileObj->SetObject(this);
-
 		return true;
 	}
 	Image *Image::CreateFromFile(const char *file)
@@ -105,6 +102,10 @@ namespace ce
 			delete image;
 			return 0;
 		}
+
+		File *fileObj = new File(file);
+		fileObj->SetObject(image);
+
 		return image;
 	}
 	Image *Image::CreateFromMemory(const unsigned char *memory, unsigned int size)

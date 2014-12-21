@@ -11,6 +11,7 @@
 #include <GL/gl.h>
 
 //- Centhra Engine -
+#include <CE/Game2D/AppGame2D.h>
 #include <CE/Game2D/Sprite.h>
 #include <CE/Base.h>
 
@@ -20,17 +21,32 @@ namespace ce
 {
 	namespace game2d
 	{
-		Sprite *Sprite::LoadSpriteFromFile(const char *file, Image *image)
+		void Sprite::OnFileChange()
 		{
+			AppGame2D *app = (AppGame2D *)App::GetCurrent();
+			app->LockWorldMutex();
+			LoadFromFile(m_file->GetFilePath().c_str());
+			app->UnlockWorldMutex();
+		}
+		bool Sprite::LoadFromFile(const char *file)
+		{
+			if(m_animations.empty() == false)
+			{
+				Animation **markAnimations = &m_animations.front();
+				Animation **endAnimations = markAnimations + m_animations.size();
+				while(markAnimations != endAnimations)
+					delete *markAnimations++;
+				m_animations.clear();
+			}
+
 			ifstream inFile;
 			inFile.open(file);
 
-			Sprite *sprite = new Sprite(image);
 			string in;
 			unsigned short minX, minY, maxX, maxY, stepX, stepY, numFrames;
 			float *frameTimes, duration;
 
-			Vector2<unsigned int> imageSize = image->GetSize();
+			Vector2<unsigned int> imageSize = m_source->GetSize();
 			while(getline(inFile, in))
 			{
 				stringstream lineStream(in);
@@ -42,10 +58,20 @@ namespace ce
 				frameTimes = new float[numFrames];
 				for(unsigned short a = 0; a < numFrames; a++)
 					lineStream >> frameTimes[a];
-				sprite->AddAnimation(Vector2<float>(((float)minX) / imageSize[0], ((float)minY) / imageSize[1]), Vector2<float>(((float)maxX) / imageSize[0], ((float)maxY) / imageSize[1]), Vector2<float>(((float)stepX) / imageSize[0], ((float)stepY) / imageSize[1]), frameTimes, numFrames, duration);
+				AddAnimation(Vector2<float>(((float)minX) / imageSize[0], ((float)minY) / imageSize[1]), Vector2<float>(((float)maxX) / imageSize[0], ((float)maxY) / imageSize[1]), Vector2<float>(((float)stepX) / imageSize[0], ((float)stepY) / imageSize[1]), frameTimes, numFrames, duration);
 				delete [] frameTimes;
 			}
 			inFile.close();
+			return true;
+		}
+		Sprite *Sprite::LoadSpriteFromFile(const char *file, Image *image)
+		{
+			Sprite *sprite = new Sprite(image);
+			sprite->LoadFromFile(file);
+
+			File *fileObj = new File(file);
+			fileObj->SetObject(sprite);
+
 			return sprite;
 		}
 
@@ -65,7 +91,7 @@ namespace ce
 			delete [] m_frameTimes;
 		}
 
-		Sprite::Sprite(Image *source)
+		Sprite::Sprite(Image *source) : File::FileObject()
 		{
 			m_source = source;
 		}

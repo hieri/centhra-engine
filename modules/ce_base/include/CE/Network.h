@@ -50,9 +50,8 @@ namespace ce
 	};
 	class PacketHandler_ServerInfo : public PacketHandler
 	{
-		static unsigned char ms_type;
-
 	public:
+		static unsigned char ms_type;
 		static unsigned short Create(PacketBuffer *buffer);
 
 		PacketHandler_ServerInfo(unsigned char type);
@@ -160,13 +159,14 @@ namespace ce
 		static Thread *ms_connectionThread;
 		static std::string ms_address;
 		static unsigned short ms_port;
+		static unsigned long long ms_timeout;
 
 	public:
 		static void *ms_sockAddr;
 		static int ms_sockAddrLen;
 		static Socket *ms_socket;
 
-		static bool Connect(std::string address, unsigned short port);
+		static bool Connect(std::string address, unsigned short port, unsigned long long timeout);
 		static bool IsRunning();
 		static void Disconnect();
 

@@ -336,6 +336,7 @@ namespace ce
 	{
 		if(!client)
 			return;
+
 		unsigned short aliasSize = 0;
 		memcpy(&aliasSize, &data[1], 2);
 		string clientName(&data[3], aliasSize);
@@ -522,7 +523,6 @@ namespace ce
 		string idStr, packetContainer;
 		unsigned long long lastTimeoutCheck, lastUpdate, t;
 		lastTimeoutCheck = lastUpdate = getRunTimeMS();
-
 		while(app->IsRunning() && Server::ms_isRunning)
 		{
 			t = getRunTimeMS();
@@ -664,22 +664,11 @@ namespace ce
 	unsigned short Client::ms_port = 0;
 	void *Client::ms_sockAddr = 0;
 	int Client::ms_sockAddrLen = 0;
+	unsigned long long Client::ms_timeout;
 	void *clientProcessFunc(void *arg)
 	{
-		unsigned long long lastProcess = getRunTimeMS();
-
 		App *app = App::GetCurrent();
 		Network *net = (Network *)Network::GetCurrent();
-
-		Client::ms_socket->SendTo((char *)g_clientIntro.c_str(), g_clientIntro.length(), Client::ms_sockAddr, Client::ms_sockAddrLen);
-
-		if(false)
-		{
-			string aliasMsg = "A:";
-			aliasMsg.append(net->m_alias);
-			aliasMsg.push_back('\n');
-			Client::ms_socket->SendTo((char *)aliasMsg.c_str(), aliasMsg.length(), Client::ms_sockAddr, Client::ms_sockAddrLen);
-		}
 
 		char recvBuff[257];
 		memset(recvBuff, 0, 257);
@@ -697,6 +686,50 @@ namespace ce
 		PacketBuffer packetBuffer(CE_PACKET_BUFFER_SIZE, CE_PACKET_LIBRARY_SIZE);
 		unsigned short packetIdx = 0;
 
+		//- Attempt to establish a connection -
+		unsigned long long timeoutEnd = t + Client::ms_timeout;
+		while(app->IsRunning() && Client::ms_isRunning)
+		{
+			Client::ms_socket->SendTo((char *)g_clientIntro.c_str(), g_clientIntro.length(), Client::ms_sockAddr, Client::ms_sockAddrLen);
+			sleepMS(250);
+
+			recvBuffLen = Client::ms_socket->RecvFrom(recvBuff, 256, &recvAddr, &recvAddrLen);
+			if(recvBuffLen > 0)
+			{
+				idStr.resize(recvAddrLen);
+				memcpy(&idStr[0], &recvAddr, recvAddrLen);
+
+				if(!serverIdStr.compare(idStr))
+				{
+					PacketHandler::ProcessPacket(recvBuff, &packetBuffer, Client::ms_socket, Client::ms_sockAddr, Client::ms_sockAddrLen);
+					lastCommTime = t;
+					if((unsigned char)*recvBuff == PacketHandler_ServerInfo::ms_type)
+						break;
+				}
+			}
+
+			sleepMS(250);
+
+			if(getRunTimeMS() > timeoutEnd)
+			{
+				//- Call timeout callback -
+				print("Connection Timeout\n");
+				Thread::Exit();
+				return 0;
+			}
+		}
+
+		net->OnConnectionAccepted();
+
+		if(false)
+		{
+			string aliasMsg = "A:";
+			aliasMsg.append(net->m_alias);
+			aliasMsg.push_back('\n');
+			Client::ms_socket->SendTo((char *)aliasMsg.c_str(), aliasMsg.length(), Client::ms_sockAddr, Client::ms_sockAddrLen);
+		}
+
+		//- Process realtime packets -
 		while(app->IsRunning() && Client::ms_isRunning)
 		{
 			t = getRunTimeMS();
@@ -743,7 +776,7 @@ namespace ce
 		Thread::Exit();
 		return 0;
 	}
-	bool Client::Connect(string address, unsigned short port)
+	bool Client::Connect(string address, unsigned short port, unsigned long long timeout)
 	{
 		if(ms_isRunning)
 			return false;
@@ -775,14 +808,12 @@ namespace ce
 		ms_socket = Socket::Create(Socket::IP4, Socket::Datagram, Socket::UDP, false);
 		ms_sockAddr = (void *)stSockAddr;
 		ms_sockAddrLen = sizeof(*stSockAddr);
+		ms_timeout = timeout;
 
 		ms_address = address;
 		ms_port = port;
 
 		ms_connectionThread = new Thread(clientProcessFunc);
-
-		Network *net = (Network *)Network::GetCurrent();
-		net->OnConnectionAccepted();
 
 		ms_isRunning = true;
 		ms_connectionThread->Start(0);

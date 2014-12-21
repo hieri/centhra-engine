@@ -31,15 +31,17 @@ namespace ce
 		{
 			void CalculateObstructionPoints(Vector2<float> scale);
 
+		public:
 			typedef struct ObstructionPoint
 			{
 				Vector2<float> position;
 				bool positiveX, positiveY;
 			} ObstructionPoint;
-
+		protected:
 			std::vector<ObstructionPoint> m_obstructionPoints;
-
 			friend class Wall;
+		public:
+			std::vector<ObstructionPoint> *GetObstructionPoints();
 
 		public:
 			unsigned char **m_data;

@@ -99,7 +99,7 @@ namespace ce
 				TMX();
 				~TMX();
 
-				void PopulateWorld(game2d::World *world);
+				void PopulateWorld(game2d::World *world, Vector2<float> scale = Vector2<float>(1.f, 1.f));
 				void ExportWorldToFile(game2d::World *world, const char *file);
 
 				virtual game2d::PhysicalObject *LoadObject(ObjectDef *object);

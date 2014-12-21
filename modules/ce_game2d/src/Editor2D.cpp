@@ -103,7 +103,7 @@ namespace ce
 		}
 		bool Editor2DCtrl::OnEvent(Event &event)
 		{
-			game2d::AppGame2D *app = (game2d::AppGame2D *)App::GetCurrent();
+			AppGame2D *app = (AppGame2D *)App::GetCurrent();
 			switch(event.type)
 			{
 			case event::MouseButtonDown:
@@ -1016,7 +1016,7 @@ namespace ce
 		}
 		void Editor2DCtrl::DoRender()
 		{
-			game2d::AppGame2D *app = (game2d::AppGame2D *)App::GetCurrent();
+			AppGame2D *app = (AppGame2D *)App::GetCurrent();
 			game2d::Camera *camera = game2d::Camera::GetCurrent();
 			ui::CameraView2DCtrl *currentViewport = app->GetCurrentViewport();
 
@@ -1178,7 +1178,7 @@ namespace ce
 		}
 		void Editor2DCtrl::StartDragging(int_canvas x, int_canvas y)
 		{
-			game2d::AppGame2D *app = (game2d::AppGame2D *)App::GetCurrent();
+			AppGame2D *app = (AppGame2D *)App::GetCurrent();
 			Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(x, y);
 			m_dragSelection.reserve(m_selection.size());
 			app->LockWorldMutex();
@@ -1213,7 +1213,7 @@ namespace ce
 		}
 		void Editor2DCtrl::StartRotating(int_canvas x, int_canvas y)
 		{
-			game2d::AppGame2D *app = (game2d::AppGame2D *)App::GetCurrent();
+			AppGame2D *app = (AppGame2D *)App::GetCurrent();
 			m_rotateSelection.reserve(m_selection.size());
 			Vector2<float> totalPos;
 			Vector2<float> curPos = app->GetWorldPositionFromCanvasPosition(x, y);
@@ -1277,7 +1277,7 @@ namespace ce
 		}
 		void Editor2DCtrl::CheckHover(Vector2<float> position)
 		{
-			game2d::AppGame2D *app = (game2d::AppGame2D *)App::GetCurrent();
+			AppGame2D *app = (AppGame2D *)App::GetCurrent();
 			if(m_selection.empty() == false)
 			{
 				game2d::PhysicalObject **markPhysicalObjects = &m_selection.front();

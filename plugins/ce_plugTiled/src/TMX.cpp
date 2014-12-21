@@ -354,7 +354,7 @@ namespace ce
 					}
 				}
 			}
-			void TMX::PopulateWorld(game2d::World *world)
+			void TMX::PopulateWorld(game2d::World *world, Vector2<float> scale)
 			{
 				//- Associate Tile Sets -
 				if(m_tileSetVec.empty() == false)
@@ -522,7 +522,7 @@ namespace ce
 										}
 									}
 
-									wallGrid->GenerateWalls(world, Vector2<float>(32.f, 32.f));
+									wallGrid->GenerateWalls(world, scale);
 								}
 								else
 								{
@@ -568,6 +568,8 @@ namespace ce
 								wTileLayer->SetUserData(layer);
 								wTileLayer->SetName(layer->m_name);
 								wTileLayer->CopyFrom(tileLayer->m_tileMap);
+								//TODO: Account for horizontal scale
+								wTileLayer->SetScale(1.f / 32.f * scale[1]);
 							}
 							break;
 						}

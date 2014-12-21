@@ -70,7 +70,7 @@ namespace ce
 				def->m_damage = (unsigned char)damage;
 
 				//- Read the sprite file -
-				getline(lineStream, spriteFile, '\"'); //- This is necessary -
+				getline(lineStream, spriteFile, '\"'); //- Flush previous content -
 				getline(lineStream, spriteFile, '\"');
 
 				//- Create assets -

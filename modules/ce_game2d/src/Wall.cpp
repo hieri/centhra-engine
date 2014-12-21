@@ -592,5 +592,9 @@ namespace ce
 					}
 				}
 		}
+		vector<WallGrid::ObstructionPoint> *WallGrid::GetObstructionPoints()
+		{
+			return &m_obstructionPoints;
+		}
 	}
 }

@@ -23,7 +23,7 @@ using namespace std;
 
 void *physicsFunc(void *arg);
 
-class App2DEditorSample : public game2d::AppGame2D
+class App2DEditorSample : public AppGame2D
 {
 	Canvas *m_canvas;
 	game2d::World *m_world;
@@ -96,7 +96,7 @@ public:
 		game2d::ExplosionDef::LoadFromFile("../res/sampleExplosions.txt");
 
 		m_tmx = plugin::tiled::TMX::CreateFromFile("../res/Test.tmx");
-		m_tmx->PopulateWorld(m_world);
+		m_tmx->PopulateWorld(m_world, Vector2<float>(32.f, 32.f));
 
 		Directory::GetFromPath("../res/")->SetMonitoring(true);
 
@@ -153,7 +153,7 @@ public:
 		m_editorScrollSkin = new ui::Skin(m_editorScrollImage);
 		m_editorCtrl = new ui::Editor2DCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(m_canvas->GetWidth(), m_canvas->GetHeight()), m_font, m_editorScrollSkin);
 
-		bool parentStart = game2d::AppGame2D::OnStart();
+		bool parentStart = AppGame2D::OnStart();
 		if(!parentStart)
 			return false;
 		
@@ -223,7 +223,7 @@ public:
 		delete m_editorScrollImage;
 		delete m_font;
 		delete m_canvas;
-		game2d::AppGame2D::OnStopped();
+		AppGame2D::OnStopped();
 	}
 	bool OnEvent(Event &event)
 	{

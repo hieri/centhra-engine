@@ -41,7 +41,7 @@ using namespace std;
 
 namespace ce
 {
-	//TODO: Replace this with cleaner fix, source: http://stackoverflow.com/questions/15370033/how-to-use-inet-pton-with-the-mingw-compiler
+	//TODO: Replace this with cleaner fix, source: http://stackoverflow.com/questions/15370033/how-to-Use-inet-pton-with-the-mingw-compiler
 #ifdef __MINGW32__
 	#define NS_INADDRSZ  4
 	#define NS_IN6ADDRSZ 16
@@ -210,9 +210,9 @@ namespace ce
 	unsigned char g_lastClientPingID = 0;
 
 	/*	-------------------------- Packet Buffer --------------------------
-	All packets use a shared buffer. Once a packet is queued, its
+	All packets Use a shared buffer. Once a packet is queued, its
 	contents are stored in the buffer while its location and size
-	is stored in the library.
+	are stored in the library.
 	*/
 	PacketBuffer::PacketBuffer(unsigned short bufferSize, unsigned short librarySize) : m_bufferSize(bufferSize), m_librarySize(librarySize), m_nextIndex(0), m_edge(0)
 	{

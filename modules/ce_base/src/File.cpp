@@ -28,6 +28,7 @@ namespace ce
 	{
 		//- Delete all directories and their files -
 		map<string, Directory *>::iterator markDirectories = Directory::ms_directoryMap.begin(), endDirectories = Directory::ms_directoryMap.end();
+
 		while(markDirectories != endDirectories)
 			delete (markDirectories++)->second;
 		Directory::ms_directoryMap.clear();
@@ -146,7 +147,7 @@ namespace ce
 	}
 	File::~File()
 	{
-		//- Remove from directory -
+		//TODO: Remove from directory
 	}
 	void File::Refresh()
 	{

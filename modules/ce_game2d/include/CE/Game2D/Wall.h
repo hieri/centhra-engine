@@ -11,9 +11,6 @@ namespace ce
 	{
 		class Wall : public PhysicalObject
 		{
-		protected:
-			virtual void DoRender();
-
 		public:
 			static float GetWallThickness();
 			static float GetDoubleWallThickness();

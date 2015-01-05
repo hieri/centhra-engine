@@ -20,7 +20,11 @@ set(INC
 	${INC_DIR}/Plugin.h
 	${INC_DIR}/Quaternion.h
 	${INC_DIR}/Rect.h
+	${INC_DIR}/RenderContext.h
+	${INC_DIR}/Renderer.h
+	${INC_DIR}/Shader.h
 	${INC_DIR}/Socket.h
+	${INC_DIR}/Sprite.h
 	${INC_DIR}/Thread.h
 	${INC_DIR}/Vector2.h
 	${INC_DIR}/Vector3.h
@@ -40,7 +44,9 @@ set(SRC
 	${SRC_DIR}/Mutex.cpp
 	${SRC_DIR}/Network.cpp
 	${SRC_DIR}/Plugin.cpp
+	${SRC_DIR}/Renderer.cpp
 	${SRC_DIR}/Socket.cpp
+	${SRC_DIR}/Sprite.cpp
 	${SRC_DIR}/Thread.cpp
 )
 
@@ -362,6 +368,27 @@ endif(NOT OPENAL_FOUND)
 list(APPEND LIB ${OPENAL_LIBRARY})
 list(APPEND INCLUDE ${OPENAL_INCLUDE_DIR})
 
+# OpenGL Extensions
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	set(T_GLEXT_FILE "${PROJECT_SOURCE_DIR}/external/opengl/include/GL/glext.h")
+	set(T_WGLEXT_FILE "${PROJECT_SOURCE_DIR}/external/opengl/include/GL/wglext.h")
+
+	if(NOT EXISTS ${T_GLEXT_FILE})
+		message("Downloading glext.h...")
+		set(T_GLEXT_URL "http://www.opengl.org/registry/oldspecs/glext.h")
+		file(DOWNLOAD "${T_GLEXT_URL}" "${T_GLEXT_FILE}")
+	endif()
+
+	if(NOT EXISTS ${T_WGLEXT_FILE})
+		message("Downloading wglext.h...")
+		set(T_WGLEXT_URL "http://www.opengl.org/registry/oldspecs/wglext.h")
+		file(DOWNLOAD "${T_WGLEXT_URL}" "${T_WGLEXT_FILE}")
+	endif()
+endif()
+
+find_package(OpenGL REQUIRED)
+list(APPEND INCLUDE ${OPENGL_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/external/opengl/include)
+
 configure_file(${INC_DIR}/ConfigBase.h.in ${INC_DIR}/ConfigBase.h)
 
 list(REMOVE_DUPLICATES INCLUDE)
@@ -377,5 +404,5 @@ set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PR
 set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPTU_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/lib)
 set_target_properties(${TARGET} PROPERTIES DEBUG_POSTFIX -d)
 target_include_directories(${TARGET} PUBLIC ${INCLUDE})
-target_link_libraries(${TARGET} ${LIB})
+target_Link_libraries(${TARGET} ${LIB})
 set(CE_BASE_INCLUDE_DIRS ${INCLUDE} CACHE PATH "ce_base include directories.")

@@ -7,6 +7,7 @@
 #include <CE/Thread.h>
 #include <CE/Mutex.h>
 #include <CE/Game2D.h>
+#include <CE/Renderer.h>
 #include <CE/Game2D/DefaultPhysicsHandler.h>
 
 using namespace ce;

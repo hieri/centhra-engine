@@ -24,7 +24,8 @@
 #include <CE/Image.h>
 #include <CE/Base.h>
 #include <CE/Game2D/AppGame2D.h>
-#include <CE/Game2D/Sprite.h>
+#include <CE/Sprite.h>
+#include <CE/Renderer.h>
 #include <CE/Game2D/Projectile.h>
 
 using namespace std;
@@ -168,42 +169,36 @@ namespace ce
 			if((t - m_lastBoost) > 500)
 				SetVelocity((GetVelocity() / GetVelocity().GetLength()) * m_projectileDef->m_speed);
 		}
-		void Projectile::DoRender()
+		void Projectile::DoRender(RenderContext &context)
 		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			if(m_mvChanged)
+				CalculateModelViewMatrix();
 
-			glTranslatef(m_position[0], m_position[1], 0.f);
-			glRotatef(m_rotation, 0.f, 0.f, 1.f);
-			glScalef(m_extent[0], m_extent[1], 1.f);
-			glTranslatef(-0.5f, -0.5f, 0.f);
-
-			glScalef(m_projectileDef->m_renderScale[0], m_projectileDef->m_renderScale[1], 1.f);
-			glEnable(GL_TEXTURE_2D);
+			ShaderProgram::TexturedProgram *program = 0;
+			if(context.useShaders)
+				program = UseTexturedProgram();
+			if(program != 0)
+			{
+				//-------------------------- OpenGL 2.1 w/ GLSL 1.2 --------------------------
+				Matrix4x4<float> mvpMatrix = context.mvpMatrix * m_modelViewMatrix;
+				mvpMatrix *= Matrix4x4<float>::BuildFromScale(Vector3<float>(m_projectileDef->m_renderScale[0], m_projectileDef->m_renderScale[1], 1.f));
+				glUniformMatrix4fv(program->mvpMatrix, 1, GL_FALSE, &mvpMatrix[0]);
+			}
+			else
+			{
+				//-------------------------- OpenGL 1.0 --------------------------
+				Matrix4x4<float> mvMatrix = context.modelViewMatrix * m_modelViewMatrix;
+				mvMatrix *= Matrix4x4<float>::BuildFromScale(Vector3<float>(m_projectileDef->m_renderScale[0], m_projectileDef->m_renderScale[1], 1.f));
+				glLoadMatrixf(&mvMatrix[0]);
+				glColor4ub(255, 255, 255, 255);
+			}
 			if(m_projectileDef->m_isAnimated)
-				m_projectileDef->m_sprite->Draw(0, m_animTime);
+				m_projectileDef->m_sprite->Draw(context, 0, m_animTime);
 			else
 			{
 				m_projectileDef->m_image->Bind();
-				glBegin(GL_QUADS);
-					glTexCoord2i(0, 1);
-					glVertex2i(0, 0);
-
-					glTexCoord2i(1, 1);
-					glVertex2i(1, 0);
-
-					glTexCoord2i(1, 0);
-					glVertex2i(1, 1);
-
-					glTexCoord2i(0, 0);
-					glVertex2i(0, 1);
-				glEnd();
+				RenderSquareTexturedFull(context);
 			}
-			glDisable(GL_TEXTURE_2D);
-
-			glColor3ub(255, 255, 255);
-
-			glDisable(GL_BLEND);
 		}
 	}
 }

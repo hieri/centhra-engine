@@ -117,6 +117,11 @@ namespace ce
 
 			return mat;
 		}
+		inline Matrix4x4 &operator*=(const Matrix4x4 &m)
+		{
+			*this = *this * m;
+			return *this;
+		}
 		inline Matrix4x4 &Transpose()
 		{
 			Type tempData[16];

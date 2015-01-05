@@ -15,7 +15,7 @@ namespace ce
 			unsigned short m_maxSize;
 
 		protected:
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 
 		public:
 			TextEditCtrl(Vector2<short> position, Vector2<short> extent, Font *font, unsigned short maxSize, const char *text = "", Color color = Color());

@@ -11,7 +11,7 @@
 
 //- Centhra Engine -
 #include <CE/UI/TextDropDownCtrl.h>
-#include <CE/RenderPrimitives.h>
+#include <CE/Renderer.h>
 #include <CE/Base.h>
 
 using namespace std;
@@ -100,9 +100,9 @@ namespace ce
 				SetExtent(Vector2<int_canvas>(m_extent[0], 0));
 		}
 		//TODO: Remove static padding of 2px
-		void TextDropDownCtrl::TextDropDownSelectCtrl::DoRender()
+		void TextDropDownCtrl::TextDropDownSelectCtrl::DoRender(RenderContext &context)
 		{
-			ColorCtrl::DoRender();
+			ColorCtrl::DoRender(context);
 
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -166,7 +166,7 @@ namespace ce
 				if(m_selector->IsVisible())
 					m_selector->SetPosition(m_absolutePosition + Vector2<int_canvas>(0, m_extent[1]));
 		}
-		void TextDropDownCtrl::DoRender()
+		void TextDropDownCtrl::DoRender(RenderContext &context)
 		{
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -174,9 +174,9 @@ namespace ce
 				glColor4ub(255, 0, 0, 63);
 				glPushMatrix();
 					glScalef((float)m_extent[0], (float)m_extent[1], 0.f);
-					RenderSquare();
+					RenderSquare(context);
 				glPopMatrix();
-				TextCtrl::DoRender();
+				TextCtrl::DoRender(context);
 				glColor4ub(255, 255, 255, 255);
 			glPopMatrix();
 			glDisable(GL_BLEND);

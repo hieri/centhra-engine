@@ -1049,7 +1049,7 @@
   </properties>
   <object type="Prop" x="591" y="730">
    <properties>
-    <property name="PropName" value="samplePropA"/>
+    <property name="PropName" value="samplePropB"/>
    </properties>
   </object>
   <object type="Prop" x="662" y="680">

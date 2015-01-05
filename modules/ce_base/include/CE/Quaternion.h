@@ -120,23 +120,23 @@ namespace ce
 
 			Type data[16];
 			data[0] = 1 - 2 * (yy + zz);
-			data[1] = 2 * (xy - wz);
-			data[2] = 2 * (zx + wy);
-			data[3] = 0.f;
-
-			data[4] = 2 * (xy + wz);
-			data[5] = 1 - 2 * (xx + zz);
-			data[6] = 2 * (yz - wx);
-			data[7] = 0.f;
-
-			data[8] = 2 * (zx - wy);
-			data[9] = 2 * (yz + wx);
-			data[10] = 1 - 2 * (xx + yy);
-			data[11] = 0.f;
-
+			data[4] = 2 * (xy - wz);
+			data[8] = 2 * (zx + wy);
 			data[12] = 0.f;
+
+			data[1] = 2 * (xy + wz);
+			data[5] = 1 - 2 * (xx + zz);
+			data[9] = 2 * (yz - wx);
 			data[13] = 0.f;
+
+			data[2] = 2 * (zx - wy);
+			data[6] = 2 * (yz + wx);
+			data[10] = 1 - 2 * (xx + yy);
 			data[14] = 0.f;
+
+			data[3] = 0.f;
+			data[7] = 0.f;
+			data[11] = 0.f;
 			data[15] = 1.f;
 
 			return Matrix4x4<Type>(data);
@@ -157,23 +157,23 @@ namespace ce
 
 			Type data[16];
 			data[0] = 1 - 2 * (yy + zz);
-			data[4] = 2 * (xy - wz);
-			data[8] = 2 * (zx + wy);
-			data[12] = 0.f;
-
-			data[1] = 2 * (xy + wz);
-			data[5] = 1 - 2 * (xx + zz);
-			data[9] = 2 * (yz - wx);
-			data[13] = 0.f;
-
-			data[2] = 2 * (zx - wy);
-			data[6] = 2 * (yz + wx);
-			data[10] = 1 - 2 * (xx + yy);
-			data[14] = 0.f;
-
+			data[1] = 2 * (xy - wz);
+			data[2] = 2 * (zx + wy);
 			data[3] = 0.f;
+
+			data[4] = 2 * (xy + wz);
+			data[5] = 1 - 2 * (xx + zz);
+			data[6] = 2 * (yz - wx);
 			data[7] = 0.f;
+
+			data[8] = 2 * (zx - wy);
+			data[9] = 2 * (yz + wx);
+			data[10] = 1 - 2 * (xx + yy);
 			data[11] = 0.f;
+
+			data[12] = 0.f;
+			data[13] = 0.f;
+			data[14] = 0.f;
 			data[15] = 1.f;
 
 			return Matrix4x4<Type>(data);

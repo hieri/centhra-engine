@@ -30,7 +30,7 @@ namespace ce
 			m_font = font;
 			m_text = text;
 		}
-		void PhysicalText::DoRender()
+		void PhysicalText::DoRender(RenderContext &context)
 		{
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

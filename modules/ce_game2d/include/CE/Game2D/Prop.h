@@ -7,7 +7,7 @@
 
 //- Centhra Engine -
 #include <CE/Game2D/PhysicalObject.h>
-#include <CE/Game2D/Sprite.h>
+#include <CE/Sprite.h>
 
 namespace ce
 {
@@ -57,7 +57,7 @@ namespace ce
 
 			Prop(Vector2<float> position, Vector2<float> extent, PropDef *definition);
 
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 
 			friend class PropDef;
 

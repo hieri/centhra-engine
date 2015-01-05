@@ -301,7 +301,7 @@ namespace ce
 					(*markControls++)->UpdateAbsoluteMatrix();
 			}
 		}
-		void Control::Render(UIContext &context)
+		void Control::Render(RenderContext &context)
 		{
 			bool noParent = !m_parent;
 			if(context.isCanvas && noParent)
@@ -310,9 +310,7 @@ namespace ce
 			{
 				if(context.isCanvas)
 					glScissor(m_exposedPosition[0], context.height - m_exposedPosition[1] - m_exposedExtent[1], m_exposedExtent[0], m_exposedExtent[1]);
-				Matrix4x4<float> currentMatrix = context.transformation * m_absoluteMatrix;
-				glLoadMatrixf(&currentMatrix[0]);
-				DoRender();
+				DoRender(context);
 				if(m_children.empty() == false)
 				{
 					Control **markControls = &m_children.front();
@@ -322,7 +320,6 @@ namespace ce
 				}
 				if(m_hasOverlay)
 				{
-					glLoadMatrixf(&currentMatrix[0]);
 					if(context.isCanvas)
 						glScissor(m_exposedPosition[0], context.height - m_exposedPosition[1] - m_exposedExtent[1], m_exposedExtent[0], m_exposedExtent[1]);
 					DoOverlay();
@@ -333,14 +330,21 @@ namespace ce
 		}
 		void Control::Render(Canvas *canvas)
 		{
-			UIContext context;
+			RenderContext context;
 			context.width = canvas->GetWidth();
 			context.height = canvas->GetHeight();
 			context.isCanvas = true;
-			context.transformation = canvas->GetModelViewMatrix();
+			context.useShaders = true;
+			context.projectionMatrix = canvas->GetProjectionMatrix();
+			context.modelViewMatrix = Matrix4x4<float>();
+			context.mvpMatrix = Matrix4x4<float>();
+			if(context.useShaders == false)
+				glEnableClientState(GL_VERTEX_ARRAY);
 			Render(context);
+			if(context.useShaders == false)
+				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
-		void Control::DoRender()
+		void Control::DoRender(RenderContext &context)
 		{
 		}
 		void Control::DoOverlay()

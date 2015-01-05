@@ -56,7 +56,7 @@ namespace ce
 
 			Projectile(Vector2<float> position, ProjectileDef *definition, Vector2<float> direction, float rotation, PhysicalObject *source);
 
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 			virtual void OnProcess(float dt);
 
 		public:

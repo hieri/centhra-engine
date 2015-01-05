@@ -34,7 +34,7 @@ namespace ce
 					delete *mark++;
 			}
 		}
-		void World::Render(float minX, float minY, float maxX, float maxY)
+		void World::Render(float minX, float minY, float maxX, float maxY, RenderContext &context)
 		{
 			Vector2<float> center((minX + maxX) / 2.f, (minY + maxY) / 2.f);
 
@@ -68,9 +68,9 @@ namespace ce
 									Rect<float> aabb = object->GetAABB();
 									if(aabb[0] > maxX || aabb[1] > maxY || aabb[2] < minX || aabb[3] < minY)
 										continue;
-									object->Render();
+									object->Render(context);
 									if(m_renderDebug)
-										object->RenderAABB();
+										object->RenderAABB(context);
 								}
 							}
 
@@ -82,6 +82,9 @@ namespace ce
 						break;
 					case Layer_Tile:
 						{
+							//TODO: Toggle for shaders
+//							if(context.useShaders)
+								glLoadMatrixf(&context.modelViewMatrix[0]);
 							TileLayer *tileLayer = (TileLayer *)layer;
 							tileLayer->Render(minX, minY, maxX, maxY, tileLayer->GetScale());
 						}
@@ -102,9 +105,9 @@ namespace ce
 									Rect<float> aabb = object->GetAABB();
 									if(aabb[0] > maxX || aabb[1] > maxY || aabb[2] < minX || aabb[3] < minY)
 										continue;
-									object->Render();
+									object->Render(context);
 									if(m_renderDebug)
-										object->RenderAABB();
+										object->RenderAABB(context);
 								}
 							}
 						}

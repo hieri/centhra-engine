@@ -7,6 +7,7 @@
 //- Centhra Engine -
 #include <CE/Color.h>
 #include <CE/Rect.h>
+#include <CE/RenderContext.h>
 #include <CE/Vector2.h>
 #include <CE/Game2D/Entity.h>
 #include <CE/Game2D/PhysicsHandler.h>
@@ -45,7 +46,7 @@ namespace ce
 			unsigned int m_typeMask, m_collisionMask;
 			bool m_isTrigger, m_isStatic, m_hasFixedRotation;
 
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 
 		public:
 			static unsigned short DEFAULT_ID;
@@ -55,8 +56,8 @@ namespace ce
 			PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id = DEFAULT_ID, unsigned short netID = DEFAULT_ID, bool noID = false);
 			virtual ~PhysicalObject();
 
-			void Render();
-			void RenderAABB();
+			void Render(RenderContext &context);
+			void RenderAABB(RenderContext &context);
 			bool IsStatic() const;
 			bool HasFixedRotation() const;
 			float GetRotation() const;
@@ -121,6 +122,21 @@ namespace ce
 		public:
 			World::ObjectLayer *GetRenderLayer() const;
 			void SetRenderLayer(World::ObjectLayer *layer);
+
+			//- Model View Matrix -
+		protected:
+			Matrix4x4<float> m_modelViewMatrix;
+			bool m_mvChanged;
+		public:
+			void CalculateModelViewMatrix();
+			inline Matrix4x4<float> GetModelViewMatrix() const
+			{
+				return m_modelViewMatrix;
+			}
+			inline bool MVChanged() const
+			{
+				return m_mvChanged;
+			}
 		};
 	}
 }

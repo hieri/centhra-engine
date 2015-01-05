@@ -6,8 +6,10 @@
 
 //- Centhra Engine -
 #include <CE/Group.h>
-#include <CE/Game2D/Entity.h>
+#include <CE/Matrix4x4.h>
+#include <CE/RenderContext.h>
 #include <CE/Vector2.h>
+#include <CE/Game2D/Entity.h>
 
 namespace ce
 {
@@ -26,7 +28,7 @@ namespace ce
 			virtual ~PhysicalGroup();
 			
 			void ProcessPhysics(float dt);
-			virtual void Render(float minX, float minY, float maxX, float maxY);
+			virtual void Render(float minX, float minY, float maxX, float maxY, RenderContext &context);
 
 			void AttachHandler(PhysicsHandler *handler);
 			void DetachHandler();

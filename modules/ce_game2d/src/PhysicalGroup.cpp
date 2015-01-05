@@ -27,7 +27,7 @@ namespace ce
 			if(m_physicsHandler)
 				m_physicsHandler->Process(dt);
 		}
-		void PhysicalGroup::Render(float minX, float minY, float maxX, float maxY)
+		void PhysicalGroup::Render(float minX, float minY, float maxX, float maxY, RenderContext &context)
 		{
 			if(m_members.empty() == false)
 			{
@@ -38,9 +38,9 @@ namespace ce
 					PhysicalObject *object = (PhysicalObject *)*markObjects++;
 					if(object->m_aabb[0] > maxX || object->m_aabb[1] > maxY || object->m_aabb[2] < minX || object->m_aabb[3] < minY)
 						continue;
-					object->Render();
+					object->Render(context);
 					if(m_renderDebug)
-						object->RenderAABB();
+						object->RenderAABB(context);
 				}
 			}
 

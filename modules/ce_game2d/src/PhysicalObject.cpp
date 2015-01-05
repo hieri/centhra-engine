@@ -12,13 +12,20 @@
 
 //- Centhra Engine 
 #include <CE/Base.h>
-#include <CE/RenderPrimitives.h>
+#include <CE/Renderer.h>
+#include <CE/Quaternion.h>
 #include <CE/Game2D/PhysicalObject.h>
 
 using namespace std;
 
 namespace ce
 {
+	void printMatrix(Matrix4x4<float> &mat)
+	{
+		for(int a = 0; a < 4; a++)
+			print("%f\t%f\t%f\t%f\n", mat[a], mat[4 + a], mat[8 + a], mat[12 + a]);
+		print("\n");
+	}
 	namespace game2d
 	{
 		unsigned short PhysicalObject::ms_lastID = 65535;
@@ -39,7 +46,8 @@ namespace ce
 			return ms_netObjects[id];
 		}
 
-		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id, unsigned short netID, bool noID) : m_isCollidable(true), m_hasFixedRotation(false), m_renderLayer(0)
+		PhysicalObject::PhysicalObject(Vector2<float> position, Vector2<float> extent, unsigned short id, unsigned short netID, bool noID) : m_isCollidable(true), m_hasFixedRotation(false), m_renderLayer(0),
+			m_mvChanged(true)
 		{
 			m_rotation = m_angularVelocity = 0.f;
 			m_position = position;
@@ -78,13 +86,11 @@ namespace ce
 			if(m_parentGroup)
 				m_parentGroup->Remove(this);
 		}
-		void PhysicalObject::Render()
+		void PhysicalObject::Render(RenderContext &context)
 		{
-			glPushMatrix();
-			DoRender();
-			glPopMatrix();
+			DoRender(context);
 		}
-		void PhysicalObject::RenderAABB()
+		void PhysicalObject::RenderAABB(RenderContext &context)
 		{
 			glPushMatrix();
 				glColor4ub(0, 255, 0, 255);
@@ -97,21 +103,31 @@ namespace ce
 				glColor3ub(255, 255, 255);
 			glPopMatrix();
 		}
-		void PhysicalObject::DoRender()
+		void PhysicalObject::DoRender(RenderContext &context)
 		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			if(m_mvChanged)
+				CalculateModelViewMatrix();
 
-			glColor4ub(m_color[0], m_color[1], m_color[2], m_color[3]);
-//			glTranslatef(m_position[0], m_position[1], -m_position[1]);
-			glTranslatef(m_position[0], m_position[1], 0.f);
-			glRotatef(m_rotation, 0.f, 0.f, 1.f);
-			glScalef(m_extent[0], m_extent[1], 1.f);
-			glTranslatef(-0.5f, -0.5f, 0.f);
-			RenderSquare();
-			glColor3ub(255, 255, 255);
-
-			glDisable(GL_BLEND);
+			ConfigGeneric();
+			ShaderProgram::GenericProgram *program = 0;
+			if(context.useShaders)
+				program = UseGenericProgram();
+			if(program != 0)
+			{
+				//-------------------------- OpenGL 2.1 w/ GLSL 1.2 --------------------------
+				//TODO: Switch to float based coloring??
+				Matrix4x4<float> mvpMatrix = context.mvpMatrix * m_modelViewMatrix;
+				glUniformMatrix4fv(program->mvpMatrix, 1, GL_FALSE, &mvpMatrix[0]);
+				glUniform4f(program->color, (float)m_color[0] / 255.f, (float)m_color[1] / 255.f, (float)m_color[2] / 255.f, (float)m_color[3] / 255.f);
+			}
+			else
+			{
+				//-------------------------- OpenGL 1.0 --------------------------
+				Matrix4x4<float> mvMatrix = context.modelViewMatrix * m_modelViewMatrix;
+				glLoadMatrixf(&mvMatrix[0]);
+				glColor4ub(m_color[0], m_color[1], m_color[2], m_color[3]);
+			}
+			RenderSquare(context);
 		}
 		Vector2<float> PhysicalObject::GetExtent() const
 		{
@@ -137,25 +153,24 @@ namespace ce
 		{
 			m_extent = extent;
 			OnSetExtent();
-			
 			if(updateHandle)
 				if(m_objectHandle)
 					m_objectHandle->OnSetExtent();
+			m_mvChanged = true;
 		}
 		void PhysicalObject::SetPosition(Vector2<float> position, bool updateHandle)
 		{
 			m_position = position;
 			OnSetPosition();
-
 			if(updateHandle)
 				if(m_objectHandle)
 					m_objectHandle->OnSetPosition();
+			m_mvChanged = true;
 		}
 		void PhysicalObject::SetVelocity(Vector2<float> velocity, bool updateHandle)
 		{
 			m_velocity = velocity;
 			OnSetVelocity();
-			
 			if(updateHandle)
 				if(m_objectHandle)
 					m_objectHandle->OnSetVelocity();
@@ -164,16 +179,15 @@ namespace ce
 		{
 			m_rotation = rotation;
 			OnSetRotation();
-			
 			if(updateHandle)
 				if(m_objectHandle)
 					m_objectHandle->OnSetRotation();
+			m_mvChanged = true;
 		}
 		void PhysicalObject::SetAngularVelocity(float angularVelocity, bool updateHandle)
 		{
 			m_angularVelocity = angularVelocity;
 			OnSetAngularVelocity();
-			
 			if(updateHandle)
 				if(m_objectHandle)
 					m_objectHandle->OnSetAngularVelocity();
@@ -332,6 +346,17 @@ namespace ce
 		Rect<float> PhysicalObject::GetAABB() const
 		{
 			return m_aabb;
+		}
+
+		//- Model View Matrix -
+		void PhysicalObject::CalculateModelViewMatrix()
+		{
+			Quaternion<float> rotation(0.f, 0.f, m_rotation, true);
+			m_modelViewMatrix = Matrix4x4<float>::BuildFromTranslation(Vector3<float>(m_position[0], m_position[1], 0.f));
+			m_modelViewMatrix *= rotation.GetMatrix4x4();
+			m_modelViewMatrix *= Matrix4x4<float>::BuildFromScale(Vector3<float>(m_extent[0], m_extent[1], 1.f));
+			m_modelViewMatrix *= Matrix4x4<float>::BuildFromTranslation(Vector3<float>(-0.5f, -0.5f, 0.f));
+			m_mvChanged = false;
 		}
 	}
 }

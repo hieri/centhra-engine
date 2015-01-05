@@ -17,7 +17,7 @@
 //- Centhra Engine -
 #include <CE/UI/ScrollCtrl.h>
 #include <CE/Base.h>
-#include <CE/RenderPrimitives.h>
+#include <CE/Renderer.h>
 
 using namespace std;
 
@@ -46,7 +46,7 @@ namespace ce
 			m_controlZones.push_back(horizontalScroll);
 			m_controlZones.push_back(verticalScroll);
 		}
-		void ScrollCtrl::DoRender()
+		void ScrollCtrl::DoRender(RenderContext &context)
 		{
 			glPushMatrix();
 				Vector2<int_canvas> size = GetExtent();
@@ -149,12 +149,12 @@ namespace ce
 			glPushMatrix();
 				glTranslatef((float)m_controlZones[0].x, (float)m_controlZones[0].y, 0.f);
 				glScalef((float)m_controlZones[0].width, (float)m_controlZones[0].height, 1.f);
-				RenderSquare();
+				RenderSquare(context);
 			glPopMatrix();
 			glPushMatrix();
 				glTranslatef((float)m_controlZones[1].x, (float)m_controlZones[1].y, 0.f);
 				glScalef((float)m_controlZones[1].width, (float)m_controlZones[1].height, 1.f);
-				RenderSquare();
+				RenderSquare(context);
 			glPopMatrix();
 		}
 		void ScrollCtrl::DoOverlay()

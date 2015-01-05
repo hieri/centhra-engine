@@ -14,6 +14,7 @@
 #include <CE/Plugin/Tiled/TMX.h>
 #include <CE/UI/Editor2D.h>
 #include <CE/Math.h>
+#include <CE/Renderer.h>
 
 #include <CE/UI/ImageCtrl.h>
 
@@ -127,7 +128,7 @@ public:
 
 		m_view->SetViewScale(Vector2<float>(m_zoomLevel, m_zoomLevel));
 
-		m_entity->SetCollisionMask(0);
+//		m_entity->SetCollisionMask(0);
 
 		m_randoms = new game2d::PhysicalObject *[NUMRANDOMS];
 		bool randBuff[4096];
@@ -225,6 +226,7 @@ public:
 		delete m_editorScrollSkin;
 		delete m_editorScrollImage;
 		delete m_font;
+
 		delete m_canvas;
 		AppGame2D::OnStopped();
 	}
@@ -249,6 +251,13 @@ public:
 			}
 			else if(event.key.keyCode == Key_F11)
 				m_canvas->SetFullscreen(!m_canvas->IsFullscreen());
+			else if(event.key.keyCode == Key_F1)
+			{
+				Image *screen = Image::CreateFromScreen(Vector2<unsigned int>(0, 0), Vector2<unsigned int>(m_canvas->GetWidth(), m_canvas->GetHeight()));
+				screen->SaveToFile("screenshot.png");
+				print("Screenshot saved to \'screenshot.png\'.\n");
+				delete screen;
+			}
 			if(m_isEditMode)
 				m_editorCtrl->ProcessEvent(event);
 			switch(event.key.keyCode)

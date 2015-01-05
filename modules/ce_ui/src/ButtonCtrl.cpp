@@ -46,7 +46,7 @@ namespace ce
 				}
 			}
 		}
-		void ButtonCtrl::DoRender()
+		void ButtonCtrl::DoRender(RenderContext &context)
 		{
 			glPushMatrix();
 				glColor4ub(255, 255, 0, 255);

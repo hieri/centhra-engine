@@ -8,6 +8,7 @@
 
 //- Centhra Engine -
 #include <CE/UI/ColorCtrl.h>
+#include <CE/Renderer.h>
 #include <CE/Base.h>
 
 using namespace std;
@@ -29,22 +30,43 @@ namespace ce
 		{
 			return m_color;
 		}
-		void ColorCtrl::DoRender()
+		void ColorCtrl::DoRender(RenderContext &context)
 		{
-			glPushMatrix();
-				glColor4ubv(&m_color[0]);
+/*			ShaderProgram *genericProgram = 0;
+			if(context.useShaders)
+				genericProgram = ShaderProgram::GetGenericProgram();
+			if(genericProgram)
+			{
+				Matrix4x4<float> mvpMatrix = context.projectionMatrix * m_absoluteMatrix;
+				//-------------------------- OpenGL 2.1 w/ GLSL 1.2 --------------------------
 				glEnable(GL_BLEND);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				glScalef((float)m_extent[0], (float)m_extent[1], 0.f);
-				glBegin(GL_QUADS);
-					glVertex2i(0, 0);
-					glVertex2i(1, 0);
-					glVertex2i(1, 1);
-					glVertex2i(0, 1);
-				glEnd();
+
+				genericProgram->Use();
+					int mvpMatrixLoc = genericProgram->GetUniformLocation("mvpMatrix");
+					glUniformMatrix4fv(mvpMatrixLoc, 1, GL_FALSE, &mvpMatrix[0]);
+					int colorLoc = genericProgram->GetUniformLocation("color");
+					//TODO: Switch to float based coloring??
+					glUniform4f(colorLoc, (float)m_color[0] / 255.f, (float)m_color[1] / 255.f, (float)m_color[2] / 255.f, (float)m_color[3] / 255.f);
+					RenderSquare(context);
+				genericProgram->Unuse();
+
 				glDisable(GL_BLEND);
-				glColor4ub(255, 255, 255, 255);
-			glPopMatrix();
+			}
+			else*/
+			{
+				//-------------------------- OpenGL 1.0 --------------------------
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+				glColor4ub(m_color[0], m_color[1], m_color[2], m_color[3]);
+
+				glLoadMatrixf(&m_absoluteMatrix[0]);
+				RenderSquare(context);
+				glColor3ub(255, 255, 255);
+
+				glDisable(GL_BLEND);
+			}
 		}
 	}
 }

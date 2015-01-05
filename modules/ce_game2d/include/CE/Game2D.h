@@ -12,7 +12,6 @@
 #include <CE/UI/CameraView2DCtrl.h>
 
 #include <CE/Game2D/Graph.h>
-#include <CE/Game2D/Sprite.h>
 
 #include <CE/Game2D/PhysicsHandler.h>
 

@@ -2,7 +2,7 @@
 #define _CE_GAME2D_EXPLOSION_H_
 
 //- Centhra Engine -
-#include <CE/Game2D/Sprite.h>
+#include <CE/Sprite.h>
 #include <CE/Game2D/PhysicalObject.h>
 
 namespace ce
@@ -55,7 +55,7 @@ namespace ce
 			unsigned long long m_timeout;
 			float m_animTime;
 
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 			virtual void OnProcess(float dt);
 
 		public:

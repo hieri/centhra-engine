@@ -12,7 +12,7 @@
 //- Centhra Engine -
 #include <CE/Base.h>
 #include <CE/UI/Editor2D.h>
-#include <CE/RenderPrimitives.h>
+#include <CE/Renderer.h>
 #include <CE/Game2D/AppGame2D.h>
 #include <CE/Game2D/Wall.h>
 #include <CE/Math.h>
@@ -1010,7 +1010,7 @@ namespace ce
 
 			return Control::OnEvent(event);
 		}
-		void Editor2DCtrl::DoRender()
+		void Editor2DCtrl::DoRender(RenderContext &context)
 		{
 			AppGame2D *app = (AppGame2D *)App::GetCurrent();
 			game2d::Camera *camera = game2d::Camera::GetCurrent();
@@ -1025,7 +1025,7 @@ namespace ce
 					glTranslatef((float)m_dragStart[0], (float)(m_dragStart[1]), 0.f);
 					glScalef((float)(m_curMouse[0] - m_dragStart[0]), -(float)(m_dragStart[1] - m_curMouse[1]), 1.f);
 					glColor4ub(0, 0, 255, 200);
-					RenderSquare();
+					RenderSquare(context);
 				}
 				if(m_mode == Mode_Object || m_mode == Mode_Prop)
 				{
@@ -1056,7 +1056,7 @@ namespace ce
 									glRotatef(object->GetRotation(), 0.f, 0.f, 1.f);
 									glScalef(extent[0], extent[1], 1.f);
 									glTranslatef(-0.5f, -0.5f, 0.f);
-									RenderSquare();
+									RenderSquare(context);
 								glPopMatrix();
 							}
 						}
@@ -1145,7 +1145,7 @@ namespace ce
 									glPushMatrix();
 										glScalef(game2d::Wall::GetDoublePostThickness() * scale[0], game2d::Wall::GetDoublePostThickness() * scale[1], 1.f);
 										glTranslatef(-0.5f, -0.5f, 0.f);
-										RenderSquare();
+										RenderSquare(context);
 									glPopMatrix();
 									glTranslatef(0.f, scale[1], 0.f);
 								}
@@ -1162,7 +1162,7 @@ namespace ce
 							else if(m_wallState == WallState_Horizontal)
 								glScalef(((float)m_wallSize[0] + game2d::Wall::GetDoubleWallThickness()) * scale[0], game2d::Wall::GetDoubleWallThickness() * scale[1], 1.f);
 							glTranslatef(-0.5f, -0.5f, 0.f);
-							RenderSquare();
+							RenderSquare(context);
 						}
 
 						glColor4ub(255, 255, 255, 255);
@@ -1346,9 +1346,9 @@ namespace ce
 			ui::TextCtrl *propLabel = new ui::TextCtrl(Vector2<int_canvas>(52, 14), Vector2<int_canvas>(256, 20), font, m_propDef->GetName().c_str());
 			ButtonCtrl::Add(propLabel);
 		}
-		void Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl::DoRender()
+		void Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl::DoRender(RenderContext &context)
 		{
-			ColorCtrl::DoRender();
+			ColorCtrl::DoRender(context);
 
 			glPushMatrix();
 				glScalef((float)ButtonCtrl::m_extent[1], (float)ButtonCtrl::m_extent[1], 0.f);
@@ -1439,7 +1439,7 @@ namespace ce
 			SetOnButtonDown(Editor_TileSelectBtnDown);
 			SetOnButtonUp(Editor_TileSelectBtnUp);
 		}
-		void Editor2DCtrl::TileSelectorCtrl::TileSelectCtrl::DoRender()
+		void Editor2DCtrl::TileSelectorCtrl::TileSelectCtrl::DoRender(RenderContext &context)
 		{
 			glPushMatrix();
 				glScalef((float)ButtonCtrl::m_extent[1], (float)ButtonCtrl::m_extent[1], 0.f);

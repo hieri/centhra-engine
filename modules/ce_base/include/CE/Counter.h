@@ -1,5 +1,5 @@
-#ifndef _CE_COUNTER_H_
-#define _CE_COUNTER_H_
+#ifndef _CE_BASE_COUNTER_H_
+#define _CE_BASE_COUNTER_H_
 
 namespace ce
 {

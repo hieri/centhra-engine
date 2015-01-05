@@ -14,12 +14,12 @@ namespace ce
 		class Entity : public Group::Member
 		{
 			static std::vector<Entity *> ms_active, ms_deleted, ms_pending;
-
 			bool m_isDeleted;
 
 		protected:
 			virtual void DoRender();
 			virtual void OnDelete();
+			virtual void OnProcess(float dt);
 
 		public:
 			static void FinalizeDelete();
@@ -31,8 +31,6 @@ namespace ce
 			bool IsDeleted() const;
 			void Delete();
 			void Render();
-
-			virtual void OnProcess(float dt);
 		};
 	}
 }

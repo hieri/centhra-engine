@@ -29,7 +29,7 @@ namespace ce
 				class PropSelectCtrl : public ui::ButtonCtrl, public ui::ColorCtrl
 				{
 				protected:
-					virtual void DoRender();
+					virtual void DoRender(RenderContext &context);
 
 				public:
 					unsigned short m_propID;
@@ -60,7 +60,7 @@ namespace ce
 				class TileSelectCtrl : public ui::ButtonCtrl, public ui::ColorCtrl
 				{
 				protected:
-					virtual void DoRender();
+					virtual void DoRender(RenderContext &context);
 
 				public:
 					unsigned char m_tileX, m_tileY;
@@ -138,7 +138,7 @@ namespace ce
 			Font *m_font;
 
 		protected:
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 
 			void StartDragging(int_canvas x, int_canvas y);
 			void StopDragging();

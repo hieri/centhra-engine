@@ -1,5 +1,5 @@
-#ifndef _CE_FLOAT_TABLE_H_
-#define _CE_FLOAT_TABLE_H_
+#ifndef _CE_BASE_FLOAT_TABLE_H_
+#define _CE_BASE_FLOAT_TABLE_H_
 
 namespace ce
 {

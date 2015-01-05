@@ -17,7 +17,7 @@
 
 //- Centhra Engine -
 #include <CE/UI/TextCtrl.h>
-#include <CE/RenderPrimitives.h>
+#include <CE/Renderer.h>
 #include <CE/Base.h>
 
 using namespace std;
@@ -55,18 +55,18 @@ namespace ce
 		{
 			return m_text.c_str();
 		}
-		void TextCtrl::DoRender()
+		void TextCtrl::DoRender(RenderContext &context)
 		{
 /*			glPushMatrix();
 				glColor4ub(0, 255, 0, 127);
 				glScalef(m_extent[0], m_extent[1], 1.f);
-				RenderSquare();
+				RenderSquare(context);
 			glPopMatrix();*/
-			glPushMatrix();
+/*			glPushMatrix();
 				glColor4ubv(&m_color[0]);
 				m_font->DrawStringUI(m_text.c_str(), 0);
 				glColor4ub(255, 255, 255, 255);
-			glPopMatrix();
+			glPopMatrix();*/
 		}
 
 		//- Text Wrap -

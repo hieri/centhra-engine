@@ -14,7 +14,7 @@ namespace ce
 		protected:
 			Color m_backgroundColor;
 
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 
 		public:
 			TextButtonCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, const char *text = "", Color color = Color(), Color backgroundColor = Color());

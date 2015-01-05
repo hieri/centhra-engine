@@ -87,12 +87,15 @@ namespace ce
 		float GetHorizontalDPI() const;
 		float GetVerticalDPI() const;
 
-		//- Model View -
+		//- Projection Matrix -
 	protected:
-		Matrix4x4<float> m_modelViewMatrix;
-		void UpdateModelViewMatrix();
+		Matrix4x4<float> m_projectionMatrix;
+		void UpdateProjectionMatrix();
 	public:
-		Matrix4x4<float> GetModelViewMatrix() const;
+		inline Matrix4x4<float> GetProjectionMatrix() const
+		{
+			return m_projectionMatrix;
+		}
 	};
 }
 

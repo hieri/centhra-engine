@@ -9,7 +9,6 @@ set(INC
 	${INC_DIR}/Frontend.h
 	${INC_DIR}/Keyboard.h
 	${INC_DIR}/KeyCode.h
-	${INC_DIR}/RenderPrimitives.h
 	${INC_DIR}/ScanCode.h
 )
 
@@ -17,7 +16,6 @@ set(SRC
 	${SRC_DIR}/AppFrontend.cpp
 	${SRC_DIR}/Canvas.cpp
 	${SRC_DIR}/Keyboard.cpp
-	${SRC_DIR}/RenderPrimitives.cpp
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -35,23 +33,6 @@ else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()
 
 configure_file(${INC_DIR}/ConfigFrontend.h.in ${INC_DIR}/ConfigFrontend.h)
-
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	set(T_GLEXT_FILE "${PROJECT_SOURCE_DIR}/external/`/include/GL/glext.h")
-	set(T_WGLEXT_FILE "${PROJECT_SOURCE_DIR}/external/opengl/include/GL/wglext.h")
-
-	if(NOT EXISTS ${T_GLEXT_FILE})
-		message("Downloading glext.h...")
-		set(T_GLEXT_URL "http://www.opengl.org/registry/oldspecs/glext.h")
-		file(DOWNLOAD "${T_GLEXT_URL}" "${T_GLEXT_FILE}")
-	endif()
-
-	if(NOT EXISTS ${T_WGLEXT_FILE})
-		message("Downloading wglext.h...")
-		set(T_WGLEXT_URL "http://www.opengl.org/registry/oldspecs/wglext.h")
-		file(DOWNLOAD "${T_WGLEXT_URL}" "${T_WGLEXT_FILE}")
-	endif()
-endif()
 
 set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(LIB "")

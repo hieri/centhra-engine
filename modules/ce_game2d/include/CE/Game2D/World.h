@@ -21,7 +21,7 @@ namespace ce
 			World();
 			~World();
 
-			void Render(float minX, float minY, float maxX, float maxY);
+			void Render(float minX, float minY, float maxX, float maxY, RenderContext &context);
 
 			//- Layers -
 		public:

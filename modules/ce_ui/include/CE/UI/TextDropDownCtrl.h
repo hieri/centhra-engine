@@ -21,7 +21,7 @@ namespace ce
 				Font *m_font;
 				unsigned short m_hoverIdx;
 
-				virtual void DoRender();
+				virtual void DoRender(RenderContext &context);
 	
 				friend class TextDropDownCtrl;
 
@@ -44,7 +44,7 @@ namespace ce
 			int_canvas m_selectorWidth;
 			std::string m_placeHolder;
 
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 
 		public:
 			TextDropDownCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, int_canvas selectorWidth, const char *text = "", Color color = Color());

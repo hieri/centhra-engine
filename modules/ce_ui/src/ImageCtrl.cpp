@@ -29,7 +29,7 @@ namespace ce
 		{
 			return m_image;
 		}
-		void ImageCtrl::DoRender()
+		void ImageCtrl::DoRender(RenderContext &context)
 		{
 			glPushMatrix();
 				glColor4ubv(&m_color[0]);

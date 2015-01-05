@@ -8,13 +8,16 @@
 #include <CE/Mutex.h>
 #include <CE/Game2D.h>
 #include <CE/Plugin/Box2D/PhysicsHandler.h>
+#include <CE/Renderer.h>
 
 using namespace ce;
 
-#define NUMRANDOMS 256 
+#define NUMRANDOMS 256
 
 void *physicsFunc(void *arg);
 Mutex physicsMutex;
+
+//#define RENDER_PROFILE
 
 class AppBox2DSample : public AppGame2D
 {
@@ -53,9 +56,14 @@ public:
 		if(!result)
 			return false;
 
+		setVerboseLogging(true);
 		srand((unsigned int)time(NULL));
 
 		m_canvas = Canvas::Create(640, 480, "901 - Box2D");
+		#ifdef RENDER_PROFILE
+			m_canvas->SetVSync(false);
+		#endif
+
 		m_group = new game2d::PhysicalGroup();
 		m_entity = new game2d::PhysicalObject(Vector2<float>(512.f, 512.f), Vector2<float>(32.f, 32.f));
 		m_group->Add(m_entity);
@@ -111,7 +119,6 @@ public:
 			dif[0] += 1.f;
 		dif *= 256.f;
 		m_entity->SetVelocity(dif);
-
 		
 		Vector2<float> origin = Vector2<float>(m_entity->GetPosition()[0], m_entity->GetPosition()[1]);
 //		origin = Vector2<float>(512.f, 512.f);
@@ -149,8 +156,10 @@ public:
 
 		//	ProcessPhysics(dt);
 		}
-
-		sleepMS(1);
+		
+		#ifndef RENDER_PROFILE
+			sleepMS(1);
+		#endif
 		return true;
 	}
 	void OnStopped()
@@ -169,6 +178,7 @@ public:
 			delete m_randoms[a];
 		delete [] m_randoms;
 		delete m_group;
+
 		delete m_canvas;
 
 		AppGame2D::OnStopped();

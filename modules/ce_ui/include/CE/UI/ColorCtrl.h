@@ -17,7 +17,7 @@ namespace ce
 		protected:
 			Color m_color;
 
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 
 		public:
 			ColorCtrl(Vector2<short> position, Vector2<short> extent, Color color = Color());

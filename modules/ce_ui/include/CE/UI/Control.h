@@ -12,6 +12,7 @@
 #include <CE/Event.h>
 #include <CE/Matrix4x4.h>
 #include <CE/Vector2.h>
+#include <CE/RenderContext.h>
 
 namespace ce
 {
@@ -168,17 +169,11 @@ namespace ce
 		public:
 			void UpdateRelativeMatrix(bool updateAbsolute = true);
 			void UpdateAbsoluteMatrix();
-			typedef struct UIContext
-			{
-				int_canvas width, height;
-				bool isCanvas;
-				Matrix4x4<float> transformation;
-			} UIContext;
-			void Render(UIContext &context);
+			void Render(RenderContext &context);
 			void Render(Canvas *canvas);
 		protected:
 			//- Render Under Children -
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 			//- Render Over Children -
 			bool m_hasOverlay;
 			virtual void DoOverlay();

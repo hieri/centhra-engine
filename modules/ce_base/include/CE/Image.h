@@ -81,6 +81,11 @@ namespace ce
 		 *	@return Whether or not the saving succeeded.
 		 */
 		bool SaveToFile(const char *file) const;
+
+		inline unsigned int GetTextureID() const
+		{
+			return m_glTexture;
+		}
 	};
 }
 

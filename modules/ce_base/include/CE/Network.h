@@ -1,5 +1,5 @@
-#ifndef _CE_NETWORK_H_
-#define _CE_NETWORK_H_
+#ifndef _CE_BASE_NETWORK_H_
+#define _CE_BASE_NETWORK_H_
 
 //- Standard Library -
 #include <vector>

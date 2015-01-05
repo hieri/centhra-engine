@@ -21,7 +21,7 @@ namespace ce
 			bool m_horizontalScroll, m_verticalScroll;
 			int vBackWidth, hBackHeight;
 
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 			virtual void DoOverlay();
 
 			void Scroll(Vector2<int_canvas> amt);

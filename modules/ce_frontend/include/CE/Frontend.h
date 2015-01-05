@@ -10,7 +10,6 @@
 #include <CE/ScanCode.h>
 #include <CE/Keyboard.h>
 
-#include <CE/RenderPrimitives.h>
 #include <CE/AppFrontend.h>
 
 #endif

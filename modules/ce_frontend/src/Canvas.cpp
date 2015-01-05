@@ -19,6 +19,7 @@
 #include <CE/AppFrontend.h>
 #include <CE/Canvas.h>
 #include <CE/Keyboard.h>
+#include <CE/Renderer.h>
 
 #ifdef _WIN32
 	#include <GL/glext.h>
@@ -633,7 +634,15 @@ namespace ce
 		canvas->UpdateViewport(width, height);
 		canvas->SetVSync(canvas->m_vsync);
 
+		//- OpenGL Initialization -
 		glClearColor(0.f, 0.f, 0.f, 1.f);
+
+		LoadExtensions();
+		glActiveTexture(GL_TEXTURE0);
+
+		//TODO: Determine if this is bad practice (probably is)
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		return canvas;
 	}
@@ -850,17 +859,18 @@ namespace ce
 		m_width = width;
 		m_height = height;
 
+		//TODO: Handle OpenGL version selection
 		glViewport(0, 0, width, height);
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluOrtho2D(0.f, (float)width, 0.f, (float)height);
+		gluOrtho2D(0.f, (float)width, (float)height, 0.f);
 //		glOrtho(0.f, (float)width, 0.f, (float)height, 0.f, 10000.f);
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		UpdateModelViewMatrix();
+		UpdateProjectionMatrix();
 	}
 	void Canvas::SetVSync(bool vsync)
 	{
@@ -934,13 +944,11 @@ namespace ce
 		return m_verticalDpi;
 	}
 
-	//- Model View -
-	void Canvas::UpdateModelViewMatrix()
+	//- Projection Matrix -
+	void Canvas::UpdateProjectionMatrix()
 	{
-		m_modelViewMatrix = Matrix4x4<float>::BuildFromTranslation(Vector2<int_canvas>(0, m_height)) * Matrix4x4<float>::BuildFromScale(Vector2<int_canvas>(1, -1));
-	}
-	Matrix4x4<float> Canvas::GetModelViewMatrix() const
-	{
-		return m_modelViewMatrix;
+		//- Convert to UI Coordinate System: Anchor to Top-Left and make Y negative -
+		m_projectionMatrix = Matrix4x4<float>::BuildFromTranslation(Vector2<int_canvas>(-1, 1));
+		m_projectionMatrix = m_projectionMatrix * Matrix4x4<float>::BuildFromScale(Vector3<float>(2.f / GetWidth(), -2.f / GetHeight(), -1.f));
 	}
 }

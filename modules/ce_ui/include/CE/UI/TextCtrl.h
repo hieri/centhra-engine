@@ -18,7 +18,7 @@ namespace ce
 			std::string m_text;
 			Font *m_font;
 
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 
 		public:
 			TextCtrl(Vector2<short> position, Vector2<short> extent, Font *font, const char *text = "", Color color = Color());

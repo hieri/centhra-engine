@@ -430,6 +430,12 @@ namespace ce
 				b2Body *body = world->GetBodyList();
 				for(unsigned int a = 0; a < count; a++)
 				{
+					if(!body->IsAwake())
+					{
+						body = body->GetNext();
+						continue;
+					}
+
 					bPhysicsHandler::bObjectHandle *objectHandle = (bPhysicsHandler::bObjectHandle *)body->GetUserData();
 					b2Vec2 pos = body->GetPosition();
 					float rot = body->GetAngle();

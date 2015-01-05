@@ -18,7 +18,7 @@ namespace ce
 			Font *m_font;
 
 		protected:
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 
 		public:
 			PhysicalText(Vector2<float> position, Vector2<float> extent, Font *font, std::string text = "");

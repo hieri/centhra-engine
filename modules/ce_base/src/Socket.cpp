@@ -27,7 +27,7 @@
 
 namespace ce
 {
-	//TODO: Replace this with cleaner fix, source: http://stackoverflow.com/questions/15370033/how-to-use-inet-pton-with-the-mingw-compiler
+	//TODO: Replace this with cleaner fix, source: http://stackoverflow.com/questions/15370033/how-to-Use-inet-pton-with-the-mingw-compiler
 #ifdef __MINGW32__
 	#define NS_INADDRSZ  4
 	#define NS_IN6ADDRSZ 16

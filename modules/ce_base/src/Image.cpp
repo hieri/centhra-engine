@@ -197,7 +197,7 @@ namespace ce
 	{
 		Vector2<unsigned int> size = end - start;
 		char *pixels = new char[3 * size[0] * size[1]];
-		glReadPixels(start[0], start[1], size[0], size[1], GL_RGB, GL_BYTE, pixels);
+		glReadPixels(start[0], start[1], size[0], size[1], GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
 		Image *image = CreateFromPixels(pixels, 3, size);
 		delete [] pixels;

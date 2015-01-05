@@ -2,6 +2,7 @@
 #define _CE_GAME2D_CAMERA_H_
 
 //- Centhra Engine -
+#include <CE/Matrix4x4.h>
 #include <CE/Game2D/PhysicalObject.h>
 
 namespace ce
@@ -58,6 +59,18 @@ namespace ce
 		public:
 			Vector2<float> GetOffset() const;
 			void SetOffset(Vector2<float> offset);
+
+			//- View Matrix -
+		protected:
+			Matrix4x4<float> m_viewMatrix;
+			bool m_vmChanged;
+		public:
+			bool VMChanged() const;
+			void CalculateViewMatrix();
+			inline Matrix4x4<float> GetViewMatrix() const
+			{
+				return m_viewMatrix;
+			}
 		};
 	}
 }

@@ -14,7 +14,7 @@ namespace ce
 		protected:
 			Image *m_image;
 
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 
 		public:
 			ImageCtrl(Vector2<short> position, Vector2<short> extent, Image *image, Color color = Color());

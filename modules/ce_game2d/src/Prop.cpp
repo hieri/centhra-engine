@@ -2,16 +2,10 @@
 #include <fstream>
 #include <sstream>
 
-#ifdef _WIN32
-	//- Windows -
-	#include <Windows.h>
-#endif
-
-//- OpenGL -
-#include <GL/gl.h>
-
 //- Centhra Engine -
 #include <CE/Game2D/Prop.h>
+#include <CE/Renderer.h>
+#include <CE/Quaternion.h>
 #include <CE/Base.h>
 
 using namespace std;
@@ -123,11 +117,11 @@ namespace ce
 		}
 		void PropDef::UIRender()
 		{
-			glEnable(GL_BLEND);
+/*			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_TEXTURE_2D);
 			if(m_isAnimated)
-				m_sprite->Draw(0, 0.f);
+				m_sprite->Draw(0, 0, 0.f);
 			else
 			{
 				m_image->Bind();
@@ -146,7 +140,7 @@ namespace ce
 				glEnd();
 			}
 			glDisable(GL_TEXTURE_2D);
-			glDisable(GL_BLEND);
+			glDisable(GL_BLEND);*/
 		}
 
 		Prop::Prop(Vector2<float> position, Vector2<float> extent, PropDef *definition) : PhysicalObject(position, extent), m_propDef(definition)
@@ -168,39 +162,34 @@ namespace ce
 			if(m_propDef->m_isAnimated)
 				m_animationTime = m_propDef->m_sprite->GetAnimationTime(m_currentAnimation, m_animationTime + dt);
 		}
-		void Prop::DoRender()
+		void Prop::DoRender(RenderContext &context)
 		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			if(m_mvChanged)
+				CalculateModelViewMatrix();
 
-			glTranslatef(m_position[0], m_position[1], 0.f);
-			glRotatef(m_rotation, 0.f, 0.f, 1.f);
-			glScalef(m_extent[0], m_extent[1], 1.f);
-			glTranslatef(-0.5f, -0.5f, 0.f);
-
-			glEnable(GL_TEXTURE_2D);
+			ShaderProgram::TexturedProgram *program = 0;
+			if(context.useShaders)
+				program = UseTexturedProgram();
+			if(program != 0)
+			{
+				//-------------------------- OpenGL 2.1 w/ GLSL 1.2 --------------------------
+				Matrix4x4<float> mvpMatrix = context.mvpMatrix * m_modelViewMatrix;
+				glUniformMatrix4fv(program->mvpMatrix, 1, GL_FALSE, &mvpMatrix[0]);
+			}
+			else
+			{
+				//-------------------------- OpenGL 1.0 --------------------------
+				Matrix4x4<float> mvMatrix = context.modelViewMatrix * m_modelViewMatrix;
+				glLoadMatrixf(&mvMatrix[0]);
+				glColor4ub(255, 255, 255, 255);
+			}
 			if(m_propDef->m_isAnimated)
-				m_propDef->m_sprite->Draw(m_currentAnimation, m_animationTime);
+				m_propDef->m_sprite->Draw(context, m_currentAnimation, m_animationTime);
 			else
 			{
 				m_propDef->m_image->Bind();
-				glBegin(GL_QUADS);
-					glTexCoord2i(0, 1);
-					glVertex2i(0, 0);
-
-					glTexCoord2i(1, 1);
-					glVertex2i(1, 0);
-
-					glTexCoord2i(1, 0);
-					glVertex2i(1, 1);
-
-					glTexCoord2i(0, 0);
-					glVertex2i(0, 1);
-				glEnd();
+				RenderSquareTexturedFull(context);
 			}
-			glDisable(GL_TEXTURE_2D);
-
-			glDisable(GL_BLEND);
 		}
 	}
 }

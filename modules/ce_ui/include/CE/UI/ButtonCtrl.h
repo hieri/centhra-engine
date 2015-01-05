@@ -28,7 +28,7 @@ namespace ce
 			bool (*m_OnButtonUp)(ButtonCtrl *ctrl);
 
 		protected:
-			virtual void DoRender();
+			virtual void DoRender(RenderContext &context);
 
 		public:
 			ButtonCtrl(Vector2<short> position, Vector2<short> extent);

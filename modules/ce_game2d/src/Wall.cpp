@@ -49,17 +49,11 @@ namespace ce
 			return g_doublePostThickness;
 		}
 
-	/*	Mask_Object = 1 << (Base_Object + 0),
-			Mask_Wall = 1 << (Base_Object + 1),
-			Mask_Prop = 1 << (Base_Object + 2),
-			Mask_Projectile = 1 << (Base_Object + 3),
-			Next_Object
-
-			*/
 		unsigned short g_wallColMask = Mask_Object | Mask_Wall | Mask_Prop | Mask_Projectile;
 
 		Wall::Wall(Vector2<float> position, Vector2<float> extent) : PhysicalObject(position, extent)
 		{
+			m_color = Color(255, 0, 0, 255);
 			SetTypeMask(Mask_Wall);
 			SetCollisionMask(g_wallColMask);
 			SetStatic(true);
@@ -74,30 +68,6 @@ namespace ce
 		void Wall::OnAdded(Group *group)
 		{
 			SetFixedRotation(true);
-		}
-		void Wall::DoRender()
-		{
-			glTranslatef(m_position[0], m_position[1], 0.f);
-			glScalef(m_extent[0], m_extent[1], 1.f);
-
-			glColor3ub(255, 0, 0);
-//			glColor3ub(150, 100, 125);
-
-			glBegin(GL_QUADS);
-				glTexCoord2i(0, 1);
-				glVertex2f(-0.5f, -0.5f);
-
-				glTexCoord2i(1, 1);
-				glVertex2f(0.5f, -0.5f);
-
-				glTexCoord2i(1, 0);
-				glVertex2f(0.5f, 0.5f);
-
-				glTexCoord2i(0, 0);
-				glVertex2f(-0.5f, 0.5f);
-			glEnd();
-
-			glColor3ub(255, 255, 255);
 		}
 
 		WallGrid::WallGrid(unsigned short width, unsigned short height) : m_width(width), m_height(height)

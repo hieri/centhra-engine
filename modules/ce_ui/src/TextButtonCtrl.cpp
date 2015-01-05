@@ -8,7 +8,7 @@
 
 //- Centhra Engine -
 #include <CE/UI/TextButtonCtrl.h>
-#include <CE/RenderPrimitives.h>
+#include <CE/Renderer.h>
 #include <CE/Base.h>
 
 using namespace std;
@@ -23,15 +23,15 @@ namespace ce
 		{
 			ButtonCtrl::m_type = Type_TextButtonCtrl;
 		}
-		void TextButtonCtrl::DoRender()
+		void TextButtonCtrl::DoRender(RenderContext &context)
 		{
 			glPushMatrix();
 				glColor4ubv(&m_backgroundColor[0]);
 				glPushMatrix();
 					glScalef((float)ButtonCtrl::m_extent[0], (float)ButtonCtrl::m_extent[1], 0.f);
-					RenderSquare();
+					RenderSquare(context);
 				glPopMatrix();
-				TextCtrl::DoRender();
+				TextCtrl::DoRender(context);
 				glColor4ub(255, 255, 255, 255);
 			glPopMatrix();
 		}

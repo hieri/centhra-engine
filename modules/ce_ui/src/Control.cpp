@@ -334,15 +334,16 @@ namespace ce
 			context.width = canvas->GetWidth();
 			context.height = canvas->GetHeight();
 			context.isCanvas = true;
-			context.useShaders = true;
+			context.useShaders = false;
 			context.projectionMatrix = canvas->GetProjectionMatrix();
 			context.modelViewMatrix = Matrix4x4<float>();
+			//TODO: Use projection matrix as default for mvpMatrix
 			context.mvpMatrix = Matrix4x4<float>();
 			if(context.useShaders == false)
 				glEnableClientState(GL_VERTEX_ARRAY);
 			Render(context);
 			if(context.useShaders == false)
-				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+				glDisableClientState(GL_VERTEX_ARRAY);
 		}
 		void Control::DoRender(RenderContext &context)
 		{

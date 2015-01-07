@@ -53,7 +53,7 @@ namespace ce
 
 		Wall::Wall(Vector2<float> position, Vector2<float> extent) : PhysicalObject(position, extent)
 		{
-			m_color = Color(255, 0, 0, 255);
+			m_color = Color<float>(1.f, 0.f, 0.f, 1.f);
 			SetTypeMask(Mask_Wall);
 			SetCollisionMask(g_wallColMask);
 			SetStatic(true);

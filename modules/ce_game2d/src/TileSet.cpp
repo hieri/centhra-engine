@@ -45,7 +45,8 @@ namespace ce
 		}
 		void TileSet::Render(unsigned char x, unsigned char y)
 		{
-			if(x < m_size[0] && y < m_size[1])
+			//TODO: Update rendering
+/*			if(x < m_size[0] && y < m_size[1])
 			{
 				unsigned int _x, _y, _X, _Y;
 				_x = x * m_tileSize[0];
@@ -60,10 +61,6 @@ namespace ce
 				ty = ((float)_y) / ((float)tileSetImageSize[1]);
 				tX = ((float)_X) / ((float)tileSetImageSize[0]);
 				tY = ((float)_Y) / ((float)tileSetImageSize[1]);
-
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				glEnable(GL_TEXTURE_2D);
 
 					m_sourceImage->Bind();
 					glBegin(GL_QUADS);
@@ -80,12 +77,12 @@ namespace ce
 						glVertex2i(0, 0);
 					glEnd();
 
-				glDisable(GL_TEXTURE_2D);
-				glDisable(GL_BLEND);
-			}
+			}*/
 		}
 		void TileSet::UIRender(unsigned char x, unsigned char y)
 		{
+			//TODO: Update rendering
+			/*
 			if(x < m_size[0] && y < m_size[1])
 			{
 				unsigned int _x, _y, _X, _Y;
@@ -102,9 +99,6 @@ namespace ce
 				tX = ((float)_X) / ((float)tileSetImageSize[0]);
 				tY = ((float)_Y) / ((float)tileSetImageSize[1]);
 
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				glEnable(GL_TEXTURE_2D);
 
 					m_sourceImage->Bind();
 					glBegin(GL_QUADS);
@@ -121,9 +115,7 @@ namespace ce
 						glVertex2i(0, 0);
 					glEnd();
 
-				glDisable(GL_TEXTURE_2D);
-				glDisable(GL_BLEND);
-			}
+			}*/
 		}
 	}
 }

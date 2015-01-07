@@ -18,7 +18,7 @@ namespace ce
 			virtual void DoRender(RenderContext &context);
 
 		public:
-			TextEditCtrl(Vector2<short> position, Vector2<short> extent, Font *font, unsigned short maxSize, const char *text = "", Color color = Color());
+			TextEditCtrl(Vector2<short> position, Vector2<short> extent, Font *font, unsigned short maxSize, const char *text = "", Color<float> color = Color<float>(1.f, 1.f, 1.f, 1.f));
 			virtual ~TextEditCtrl();
 
 			virtual bool OnEvent(Event &event);

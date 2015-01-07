@@ -11,7 +11,7 @@ namespace ce
 		Trigger::Trigger(Vector2<float> position, Vector2<float> extent) : PhysicalObject(position, extent)
 		{
 			m_isTrigger = true;
-			m_color = Color(255, 255, 255, 50);
+			m_color = Color<float>(1.f, 1.f, 1.f, 0.2f);
 		}
 		void Trigger::OnObjectEnter(PhysicalObject *object)
 		{

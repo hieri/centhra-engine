@@ -45,7 +45,7 @@ namespace ce
 			std::string GetName() const;
 
 			Prop *Spawn(Vector2<float> position);
-			void UIRender();
+			void UIRender(RenderContext &context);
 		};
 		
 		class Prop : public PhysicalObject

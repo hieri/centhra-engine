@@ -25,7 +25,7 @@ namespace ce
 			PhysicsHandler::ObjectHandle *m_objectHandle;
 
 		protected:
-			Color m_color; //TODO: Remove this after finished
+			Color<float> m_color; //TODO: Remove this after finished
 			unsigned int m_collisionMask;
 			bool m_isTrigger, m_isStatic;
 

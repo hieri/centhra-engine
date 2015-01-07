@@ -32,20 +32,18 @@ namespace ce
 		}
 		void PhysicalText::DoRender(RenderContext &context)
 		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+			//TODO: Update rendering
+/*		
 			glPushMatrix();
 				glColor4ubv(&m_color[0]);
 				glTranslatef(m_position[0], m_position[1], 0.f);
 				glRotatef(m_rotation, 0.f, 0.f, 1.f);
 				//TODO: Handle scale properly
 				//glScalef(m_extent[0], m_extent[1], 1.f);
-				m_font->DrawString(m_text.c_str());
+				m_font->DrawString(context, m_text.c_str());
 				glColor4ub(255, 255, 255, 255);
 			glPopMatrix();
-
-			glDisable(GL_BLEND);
+*/
 		}
 		void PhysicalText::SetText(string text)
 		{

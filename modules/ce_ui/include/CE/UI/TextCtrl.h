@@ -21,12 +21,19 @@ namespace ce
 			virtual void DoRender(RenderContext &context);
 
 		public:
-			TextCtrl(Vector2<short> position, Vector2<short> extent, Font *font, const char *text = "", Color color = Color());
+			TextCtrl(Vector2<short> position, Vector2<short> extent, Font *font, const char *text = "", Color<float> textColor = Color<float>(1.f, 1.f, 1.f, 1.f), Color<float> backgroundColor = Color<float>(0.f, 0.f, 0.f, 0.f));
 			
 			Font *GetFont() const;
 			void SetFont(Font *font);
 			const char *GetText() const;
 			void SetText(const char *format, ...);
+
+			//- Text Color -
+		protected:
+			Color<float> m_textColor;
+		public:
+			Color<float> GetTextColor() const;
+			void SetTextColor(Color<float> textColor);
 
 			//- Text Wrap -
 		protected:

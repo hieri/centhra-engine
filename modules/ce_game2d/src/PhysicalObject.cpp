@@ -52,7 +52,7 @@ namespace ce
 			m_rotation = m_angularVelocity = 0.f;
 			m_position = position;
 			m_extent = extent;
-			m_color = Color(rand() % 256,  rand() % 256, rand() % 256);
+			m_color = Color<float>((float)(rand() % 256) / 255.f, (float)(rand() % 256) / 255.f, (float)(rand() % 256) / 255.f, 1.f);
 			m_velocity = Vector2<float>(0.f, 0.f);
 			m_typeMask = Mask_Object;
 			m_collisionMask = m_actualCollisionMask = 65535;
@@ -115,17 +115,16 @@ namespace ce
 			if(program != 0)
 			{
 				//-------------------------- OpenGL 2.1 w/ GLSL 1.2 --------------------------
-				//TODO: Switch to float based coloring??
 				Matrix4x4<float> mvpMatrix = context.mvpMatrix * m_modelViewMatrix;
 				glUniformMatrix4fv(program->mvpMatrix, 1, GL_FALSE, &mvpMatrix[0]);
-				glUniform4f(program->color, (float)m_color[0] / 255.f, (float)m_color[1] / 255.f, (float)m_color[2] / 255.f, (float)m_color[3] / 255.f);
+				glUniform4fv(program->color, 1, &m_color[0]);
 			}
 			else
 			{
 				//-------------------------- OpenGL 1.0 --------------------------
 				Matrix4x4<float> mvMatrix = context.modelViewMatrix * m_modelViewMatrix;
 				glLoadMatrixf(&mvMatrix[0]);
-				glColor4ub(m_color[0], m_color[1], m_color[2], m_color[3]);
+				glColor4fv(&m_color[0]);
 			}
 			RenderSquare(context);
 		}

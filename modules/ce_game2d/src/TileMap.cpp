@@ -11,6 +11,7 @@
 
 //- Centhra Engine -
 #include <CE/Game2D/TileMap.h>
+#include <CE/Renderer.h>
 #include <CE/Base.h>
 
 using namespace std;
@@ -75,7 +76,7 @@ namespace ce
 		}
 		void TileMap::Render(float minX, float minY, float maxX, float maxY, float scale)
 		{
-			glPushMatrix();
+/*			glPushMatrix();
 
 			int _minX, _minY, _maxX, _maxY;
 			_minX = (int)((minX / m_tileSize[0]) / scale) - 1;
@@ -95,10 +96,11 @@ namespace ce
 			glScalef(scale, scale, 1.f);
 			Render(_minX, _minY, _maxX, _maxY);
 
-			glPopMatrix();
+			glPopMatrix();*/
 		}
 		void TileMap::Render(unsigned short minX, unsigned short minY, unsigned short maxX, unsigned short maxY)
 		{
+/*			//TODO: Update rendering
 			glPushMatrix();
 
 			if(minX >= m_size[0])
@@ -110,7 +112,7 @@ namespace ce
 			if(maxY >= m_size[1])
 				maxY = m_size[1] - 1;
 
-			glEnable(GL_TEXTURE_2D);
+			ConfigTextured();
 
 			Image *lastImage = 0;
 			glBegin(GL_QUADS);
@@ -169,8 +171,7 @@ namespace ce
 				}
 			glEnd();
 
-			glDisable(GL_TEXTURE_2D);
-			glPopMatrix();
+			glPopMatrix();*/
 		}
 
 		//- Tiles -

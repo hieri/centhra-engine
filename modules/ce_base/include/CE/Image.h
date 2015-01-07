@@ -69,7 +69,7 @@ namespace ce
 		 *	@param y Y coordinate of the pixel.
 		 *	@return Color value of the pixel.
 		 */
-		Color GetPixel(unsigned int x, unsigned int y) const;
+		Color<unsigned char> GetPixel(unsigned int x, unsigned int y) const;
 
 		/**	@brief Returns the size of the image.
 		 *	@return Size of the image.

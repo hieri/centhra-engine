@@ -19,14 +19,14 @@ namespace ce
 
 	namespace ui
 	{
-		class Editor2DCtrl : public ui::Control
+		class Editor2DCtrl : public Control
 		{
 			//- Prop Selector -
 		protected:
-			class PropSelectorCtrl : public ui::ScrollCtrl
+			class PropSelectorCtrl : public ScrollCtrl
 			{
 			public:
-				class PropSelectCtrl : public ui::ButtonCtrl, public ui::ColorCtrl
+				class PropSelectCtrl : public ButtonCtrl, public IBackgroundColor
 				{
 				protected:
 					virtual void DoRender(RenderContext &context);
@@ -47,17 +47,17 @@ namespace ce
 				PropSelectCtrl *m_lastSelection;
 			};
 			
-			friend bool Editor_PropSelectBtnDown(ui::ButtonCtrl *button);
+			friend bool Editor_PropSelectBtnDown(ButtonCtrl *button);
 
 			PropSelectorCtrl *m_propSelectorCtrl;
 			short m_propPlaceID;
 
 			//- Tile Selector -
 		protected:
-			class TileSelectorCtrl : public ui::ScrollCtrl
+			class TileSelectorCtrl : public ScrollCtrl
 			{
 			public:
-				class TileSelectCtrl : public ui::ButtonCtrl, public ui::ColorCtrl
+				class TileSelectCtrl : public ButtonCtrl, public ColorCtrl
 				{
 				protected:
 					virtual void DoRender(RenderContext &context);
@@ -79,11 +79,11 @@ namespace ce
 			friend class TileSelectorCtrl;
 			friend class TileSelectorCtrl::TileSelectCtrl;
 
-			friend bool Editor_TileSelectBtnDown(ui::ButtonCtrl *button);
+			friend bool Editor_TileSelectBtnDown(ButtonCtrl *button);
 
 			TileSelectorCtrl *m_tileSelectorCtrl;
-			ui::TextDropDownCtrl *m_tileSetSelection;
-			friend bool Editor_TileSetSelection(ui::TextDropDownCtrl *ctrl, unsigned char id);
+			TextDropDownCtrl *m_tileSetSelection;
+			friend bool Editor_TileSetSelection(TextDropDownCtrl *ctrl, unsigned char id);
 			game2d::TileSet *m_currentTileSet;
 
 			typedef enum TileMode
@@ -154,9 +154,9 @@ namespace ce
 
 			//- Layer Selection -
 		protected:
-			ui::TextDropDownCtrl *m_layerSelection;
+			TextDropDownCtrl *m_layerSelection;
 			game2d::World::Layer *m_currentLayer;
-			friend bool Editor_OnLayerSelect(ui::TextDropDownCtrl *ctrl, unsigned char id);
+			friend bool Editor_OnLayerSelect(TextDropDownCtrl *ctrl, unsigned char id);
 		public:
 			void UpdateLayerSelection();
 			void SelectLayer(unsigned char layerId);
@@ -164,8 +164,8 @@ namespace ce
 			//- Mode Selection -
 		protected:
 			unsigned char m_mode;
-			ui::TextDropDownCtrl *m_objectModeSelection;
-			friend bool Editor_OnObjectModeSelect(ui::TextDropDownCtrl *ctrl, unsigned char id);
+			TextDropDownCtrl *m_objectModeSelection;
+			friend bool Editor_OnObjectModeSelect(TextDropDownCtrl *ctrl, unsigned char id);
 		public:
 			typedef enum EditorMode
 			{

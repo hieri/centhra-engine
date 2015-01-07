@@ -27,12 +27,12 @@ namespace ce
 {
 	namespace ui
 	{
-		bool Editor_OnLayerSelect(ui::TextDropDownCtrl *ctrl, unsigned char id)
+		bool Editor_OnLayerSelect(TextDropDownCtrl *ctrl, unsigned char id)
 		{
 			((Editor2DCtrl *)ctrl->GetParent())->SelectLayer(id);
 			return false;
 		}
-		bool Editor_OnObjectModeSelect(ui::TextDropDownCtrl *ctrl, unsigned char id)
+		bool Editor_OnObjectModeSelect(TextDropDownCtrl *ctrl, unsigned char id)
 		{
 			switch(id)
 			{
@@ -45,14 +45,14 @@ namespace ce
 			}
 			return false;
 		}
-		bool Editor_TileSetSelection(ui::TextDropDownCtrl *ctrl, unsigned char id)
+		bool Editor_TileSetSelection(TextDropDownCtrl *ctrl, unsigned char id)
 		{
 			((Editor2DCtrl *)ctrl->GetParent())->SelectTileSet(id);
 			return false;
 		}
 
 		Editor2DCtrl::Editor2DCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, Skin *scrollSkin)
-			: ui::Control(position, extent), m_isSelecting(false), m_isDragging(false), m_isRotating(false), m_tileMode(TileMode_None),
+			: Control(position, extent), m_isSelecting(false), m_isDragging(false), m_isRotating(false), m_tileMode(TileMode_None),
 			m_mode(0), m_propPlaceID(-1), m_hover(0), m_font(font), m_currentLayer(0), m_currentTileSet(0), m_tilePlacementGroup(0),
 			m_currentTile(255, 255), m_wallState(WallState_None), m_wallSize(1.f, 1.f), m_wallPlace(false)
 		{
@@ -60,29 +60,29 @@ namespace ce
 
 			//- Prop Selection -
 			m_propSelectorCtrl = new PropSelectorCtrl(Vector2<int_canvas>(extent[0] - 246, 0), Vector2<int_canvas>(230, 120), scrollSkin);
-			m_propSelectorCtrl->SetAnchor(ui::Control::Anchor_Right);
+			m_propSelectorCtrl->SetAnchor(Control::Anchor_Right);
 			m_propSelectorCtrl->GenerateButtons(m_font);
 			Add(m_propSelectorCtrl);
 
 			//- Tile Set & Tile Selection -
 			m_tileSelectorCtrl = new TileSelectorCtrl(Vector2<int_canvas>(extent[0] - 246, 22), Vector2<int_canvas>(230, 120), scrollSkin);
-			m_tileSelectorCtrl->SetAnchor(ui::Control::Anchor_Right);
+			m_tileSelectorCtrl->SetAnchor(Control::Anchor_Right);
 			Add(m_tileSelectorCtrl);
 
-			m_tileSetSelection = new ui::TextDropDownCtrl(Vector2<int_canvas>(extent[0] - 246, 0), Vector2<int_canvas>(230, 22), m_font, 200, "Select Tile Set");
-			m_tileSetSelection->SetAnchor(ui::Control::Anchor_Right);
+			m_tileSetSelection = new TextDropDownCtrl(Vector2<int_canvas>(extent[0] - 246, 0), Vector2<int_canvas>(230, 22), m_font, 200, "Select Tile Set");
+			m_tileSetSelection->SetAnchor(Control::Anchor_Right);
 			m_tileSetSelection->SetOnSelection(Editor_TileSetSelection);
 			Add(m_tileSetSelection);
 
 			//- Mode Selection -
-			m_objectModeSelection = new ui::TextDropDownCtrl(Vector2<int_canvas>(280, 0), Vector2<int_canvas>(100, 22), m_font, 100, "Mode");
+			m_objectModeSelection = new TextDropDownCtrl(Vector2<int_canvas>(280, 0), Vector2<int_canvas>(100, 22), m_font, 100, "Mode");
 			m_objectModeSelection->SetOnSelection(Editor_OnObjectModeSelect);
 			m_objectModeSelection->AddSelection(0, "Object");
 			m_objectModeSelection->AddSelection(1, "Prop");
 			Add(m_objectModeSelection);
 
 			//- Layer Selection -
-			m_layerSelection = new ui::TextDropDownCtrl(Vector2<int_canvas>(64, 0), Vector2<int_canvas>(200, 22), m_font, 200, "Select Layer");
+			m_layerSelection = new TextDropDownCtrl(Vector2<int_canvas>(64, 0), Vector2<int_canvas>(200, 22), m_font, 200, "Select Layer");
 			m_layerSelection->SetOnSelection(Editor_OnLayerSelect);
 			UpdateLayerSelection();
 			Add(m_layerSelection);
@@ -1012,12 +1012,10 @@ namespace ce
 		}
 		void Editor2DCtrl::DoRender(RenderContext &context)
 		{
+/*			//TODO: Update rendering
 			AppGame2D *app = (AppGame2D *)App::GetCurrent();
 			game2d::Camera *camera = game2d::Camera::GetCurrent();
-			ui::CameraView2DCtrl *currentViewport = app->GetCurrentViewport();
-
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			CameraView2DCtrl *currentViewport = app->GetCurrentViewport();
 
 			glPushMatrix();
 				if(m_isSelecting)
@@ -1169,9 +1167,7 @@ namespace ce
 					glPopMatrix();
 				}
 
-			glPopMatrix();
-
-			glDisable(GL_BLEND);
+			glPopMatrix();*/
 		}
 		void Editor2DCtrl::StartDragging(int_canvas x, int_canvas y)
 		{
@@ -1293,7 +1289,7 @@ namespace ce
 		}
 
 		//- Prop Selector -
-		Color g_propSelectDefault(0, 0, 0, 127), g_propSelectHighlight(0, 255, 0, 63);
+		Color<float> g_propSelectDefault(0.f, 0.f, 0.f, 0.5f), g_propSelectHighlight(0.f, 1.f, 0.f, 0.25f);
 		Editor2DCtrl::PropSelectorCtrl::PropSelectorCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Skin *skin) : ScrollCtrl(position, extent, skin), m_lastSelection(0)
 		{
 		}
@@ -1304,13 +1300,13 @@ namespace ce
 			{
 				editor->m_propPlaceID = -1;
 				m_lastSelection = 0;
-				btn->SetColor(g_propSelectDefault);
+				btn->SetBackgroundColor(g_propSelectDefault);
 			}
 			else
 			{
 				if(m_lastSelection)
-					m_lastSelection->SetColor(g_propSelectDefault);
-				btn->SetColor(g_propSelectHighlight);
+					m_lastSelection->SetBackgroundColor(g_propSelectDefault);
+				btn->SetBackgroundColor(g_propSelectHighlight);
 				editor->m_propPlaceID = btn->m_propID;
 				m_lastSelection = btn;
 			}
@@ -1325,39 +1321,80 @@ namespace ce
 			{
 				Vector2<float> extent = it->second->GetExtent();
 				PropSelectCtrl *btn = new PropSelectCtrl(Vector2<int_canvas>(startX, startY), Vector2<int_canvas>(buttonWidth, buttonHeight), it->second->GetID(), font);
-				Add((ui::ButtonCtrl *)btn);
+				Add((ColorCtrl *)btn);
 
 				startY += buttonHeight + padding;
 			}
 			UpdateDimensions();
 		}
 
-		bool Editor_PropSelectBtnDown(ui::ButtonCtrl *button)
+		bool Editor_PropSelectBtnDown(ButtonCtrl *button)
 		{
 			Editor2DCtrl::PropSelectorCtrl *selector = (Editor2DCtrl::PropSelectorCtrl *)button->GetParent();
 			selector->OnSelect((Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl *)button);
 			return false;
 		}
-		Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl::PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID, Font *font) : ButtonCtrl(position, extent), ColorCtrl(position, extent, g_propSelectDefault), m_propID(propID)
+		Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl::PropSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, unsigned short propID, Font *font) : ButtonCtrl(position, extent), IBackgroundColor(g_propSelectDefault), m_propID(propID)
 		{
 			m_propDef = game2d::PropDef::GetDefByID(propID);
 			SetOnButtonDown(Editor_PropSelectBtnDown);
 
-			ui::TextCtrl *propLabel = new ui::TextCtrl(Vector2<int_canvas>(52, 14), Vector2<int_canvas>(256, 20), font, m_propDef->GetName().c_str());
-			ButtonCtrl::Add(propLabel);
+			TextCtrl *propLabel = new TextCtrl(Vector2<int_canvas>(52, 14), Vector2<int_canvas>(256, 20), font, m_propDef->GetName().c_str());
+			Add(propLabel);
 		}
 		void Editor2DCtrl::PropSelectorCtrl::PropSelectCtrl::DoRender(RenderContext &context)
 		{
-			ColorCtrl::DoRender(context);
+			//- Render Background -
+			{
+				ConfigGeneric();
+				ShaderProgram::GenericProgram *program = 0;
+				if(context.useShaders)
+					program = UseGenericProgram();
+				if(program != 0)
+				{
+					Matrix4x4<float> mvpMatrix = context.projectionMatrix * m_absoluteMatrix;
+					mvpMatrix *= Matrix4x4<float>::BuildFromScale(m_extent);
+					glUniformMatrix4fv(program->mvpMatrix, 1, GL_FALSE, &mvpMatrix[0]);
+					glUniform4fv(program->color, 1, &m_backgroundColor[0]);
+				}
+				else
+				{
+					Matrix4x4<float> mvMatrix = context.modelViewMatrix * m_absoluteMatrix;
+					mvMatrix *= Matrix4x4<float>::BuildFromScale(m_extent);
+					glLoadMatrixf(&mvMatrix[0]);
+					glColor4fv(&m_backgroundColor[0]);
+				}
+				RenderSquare(context);
+			}
 
-			glPushMatrix();
-				glScalef((float)ButtonCtrl::m_extent[1], (float)ButtonCtrl::m_extent[1], 0.f);
-				m_propDef->UIRender();
-			glPopMatrix();
+			//- Render Foreground -
+			{
+				Matrix4x4<float> transformation = Matrix4x4<float>::BuildFromScale(Vector2<int_canvas>(m_extent[1], m_extent[1]));
+				transformation *= Matrix4x4<float>::BuildFromTranslation(Vector2<int_canvas>(0, 1));
+				transformation *= Matrix4x4<float>::BuildFromScale(Vector2<int_canvas>(1, -1));
+
+				ShaderProgram::TexturedProgram *program = 0;
+				if(context.useShaders)
+					program = UseTexturedProgram();
+				if(program != 0)
+				{
+					Matrix4x4<float> mvpMatrix = context.projectionMatrix * m_absoluteMatrix;
+					mvpMatrix *= transformation;
+					glUniformMatrix4fv(program->mvpMatrix, 1, GL_FALSE, &mvpMatrix[0]);
+				}
+				else
+				{
+					Matrix4x4<float> mvMatrix = context.modelViewMatrix * m_absoluteMatrix;
+					mvMatrix *= transformation;
+					glLoadMatrixf(&mvMatrix[0]);
+					glColor4ub(255, 255, 255, 255);
+				}
+				m_propDef->UIRender(context);
+			}
 		}
 
 		//- Tile Set & Tile Selector -
-		Color g_tileSelectDefault(255, 255, 255, 255), g_tileSelectHighlight(127, 255, 127, 255);
+		Color<float> g_tileSelectDefault(1.f, 1.f, 1.f, 1.f), g_tileSelectHighlight(0.5f, 1.f, 0.5f, 1.f);
 		void Editor2DCtrl::SelectTileSet(unsigned char tileSetId)
 		{
 			ClearTilePlacementGroup();
@@ -1391,13 +1428,13 @@ namespace ce
 			{
 				editor->m_currentTile = Vector2<unsigned char>(255, 255);
 				m_lastSelection = 0;
-				btn->SetColor(g_tileSelectDefault);
+				btn->SetBackgroundColor(g_tileSelectDefault);
 			}
 			else
 			{
 				if(m_lastSelection)
-					m_lastSelection->SetColor(g_tileSelectDefault);
-				btn->SetColor(g_tileSelectHighlight);
+					m_lastSelection->SetBackgroundColor(g_tileSelectDefault);
+				btn->SetBackgroundColor(g_tileSelectHighlight);
 				editor->m_currentTile = tile;
 				m_lastSelection = btn;
 			}
@@ -1415,20 +1452,20 @@ namespace ce
 			for(unsigned char x = 0; x < size[0]; x++)
 				{
 					TileSelectCtrl *btn = new TileSelectCtrl(Vector2<int_canvas>(x * buttonWidth + (x + 1) * padding, y * buttonHeight + (y + 1) * padding), Vector2<int_canvas>(buttonWidth, buttonHeight), x, y, font);
-					btn->SetColor((x == currentTile[0] && y == currentTile[1]) ? g_tileSelectHighlight : g_tileSelectDefault);
-					Add((ui::ButtonCtrl *)btn);
-					((ButtonCtrl *)btn)->UpdateAbsoluteMatrix();
+					btn->SetBackgroundColor((x == currentTile[0] && y == currentTile[1]) ? g_tileSelectHighlight : g_tileSelectDefault);
+					Add((ColorCtrl *)btn);
+					((ColorCtrl *)btn)->UpdateAbsoluteMatrix();
 				}
 			}
 		}
 
-		bool Editor_TileSelectBtnDown(ui::ButtonCtrl *button)
+		bool Editor_TileSelectBtnDown(ButtonCtrl *button)
 		{
 			Editor2DCtrl::TileSelectorCtrl *selector = (Editor2DCtrl::TileSelectorCtrl *)button->GetParent();
 			selector->OnSelect((Editor2DCtrl::TileSelectorCtrl::TileSelectCtrl *)button);
 			return false;
 		}
-		bool Editor_TileSelectBtnUp(ui::ButtonCtrl *button)
+		bool Editor_TileSelectBtnUp(ButtonCtrl *button)
 		{
 			return false;
 		}
@@ -1441,12 +1478,13 @@ namespace ce
 		}
 		void Editor2DCtrl::TileSelectorCtrl::TileSelectCtrl::DoRender(RenderContext &context)
 		{
-			glPushMatrix();
+			//TODO: Update rendering
+/*			glPushMatrix();
 				glScalef((float)ButtonCtrl::m_extent[1], (float)ButtonCtrl::m_extent[1], 0.f);
 				glColor4ubv(&m_color[0]);
 				((Editor2DCtrl *)ButtonCtrl::GetParent()->GetParent())->m_currentTileSet->UIRender(m_tileX, m_tileY);
 				glColor4ub(255, 255, 255, 255);
-			glPopMatrix();
+			glPopMatrix();*/
 		}
 
 		//------------------- Layer Selection --------------

@@ -20,15 +20,13 @@ namespace ce
 {
 	namespace ui
 	{
-		TextDropDownCtrl::TextDropDownSelectCtrl::TextDropDownSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, TextDropDownCtrl *source, Color color)
-			: ColorCtrl(position, extent, color), m_source(source), m_font(font), m_hoverIdx(65535)
+		TextDropDownCtrl::TextDropDownSelectCtrl::TextDropDownSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, TextDropDownCtrl *source, Color<float> textColor, Color<float> backgroundColor)
+			: ColorCtrl(position, extent, backgroundColor), m_source(source), m_font(font), m_hoverIdx(65535)
 		{
 			m_type = Type_TextDropDownCtrl;
 			m_eventMask |= event::Mask_MouseButtonDown | event::Mask_MouseButtonUp | event::Mask_MouseMotion;
 
 			m_hasControlZones = true;
-
-			m_color = Color(0, 255, 0, 63);
 		}
 		TextDropDownCtrl::TextDropDownSelectCtrl::~TextDropDownSelectCtrl()
 		{
@@ -75,7 +73,7 @@ namespace ce
 			ControlZone zone;
 			memset(&zone, 0, sizeof(zone));
 			
-			unsigned short selectionHeight = m_font->GetCharHeight() + 4;
+			unsigned short selectionHeight = m_font->GetCharSize() + 4;
 			unsigned short idx = 0;
 			if(m_source->m_selections.empty() == false)
 			{
@@ -102,10 +100,66 @@ namespace ce
 		//TODO: Remove static padding of 2px
 		void TextDropDownCtrl::TextDropDownSelectCtrl::DoRender(RenderContext &context)
 		{
+			//TODO: Refer to previous context mvp matrix
+			RenderContext currentContext = context;
+
+			//- Render Background -
 			ColorCtrl::DoRender(context);
 
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			//- Render Text -
+			{
+				unsigned short idx = 0;
+				ShaderProgram::TexturedProgram *program = 0;
+				if(context.useShaders)
+					program = UseTexturedProgram();
+				if(program != 0)
+				{
+					glUniform4f(program->color, 1.f, 1.f, 1.f, 1.f);
+					currentContext.mvpMatrix = context.projectionMatrix * m_absoluteMatrix;
+					currentContext.mvpMatrix *= Matrix4x4<float>::BuildFromTranslation(Vector2<int_canvas>(2, 2));
+					if(m_source->m_selections.empty() == false)
+					{
+						pair<unsigned char, string> *markOptions = &m_source->m_selections.front();
+						pair<unsigned char, string> *endOptions = markOptions + m_source->m_selections.size();
+						while(markOptions != endOptions)
+						{
+							if(idx)
+								currentContext.mvpMatrix *= Matrix4x4<float>::BuildFromTranslation(Vector2<int_canvas>(0, m_font->GetCharSize() + 4));
+							if(idx == m_hoverIdx)
+								glUniform4f(program->color, 0.f, 1.f, 0.f, 1.f);
+							m_font->DrawStringUI(currentContext, (markOptions++)->second.c_str(), 0);
+							if(idx == m_hoverIdx)
+								glUniform4f(program->color, 1.f, 1.f, 1.f, 1.f);
+							idx++;
+						}
+					}
+				}
+				else
+				{
+					glLoadMatrixf(&m_absoluteMatrix[0]);
+					glPushMatrix();
+					glColor4ub(255, 255, 255, 255);
+
+					if(m_source->m_selections.empty() == false)
+					{
+						pair<unsigned char, string> *markOptions = &m_source->m_selections.front();
+						pair<unsigned char, string> *endOptions = markOptions + m_source->m_selections.size();
+						while(markOptions != endOptions)
+						{
+							if(idx)
+								glTranslatef(0.f, (float)m_font->GetCharSize() + 4.f, 0.f);
+							if(idx == m_hoverIdx)
+								glColor4ub(0, 255, 0, 255);
+							m_font->DrawStringUI(currentContext, (markOptions++)->second.c_str(), 0);
+							if(idx == m_hoverIdx)
+								glColor4ub(255, 255, 255, 255);
+							idx++;
+						}
+					}
+					glPopMatrix();
+				}
+			}
+			/*
 			glPushMatrix();
 				unsigned short idx = 0;
 				glTranslatef(2.f, 2.f, 0.f);
@@ -116,10 +170,10 @@ namespace ce
 					while(markOptions != endOptions)
 					{
 						if(idx)
-							glTranslatef(0.f, (float)m_font->GetCharHeight() + 4.f, 0.f);
+							glTranslatef(0.f, (float)m_font->GetCharSize() + 4.f, 0.f);
 						if(idx == m_hoverIdx)
 							glColor4ub(0, 255, 0, 255);
-						m_font->DrawStringUI((markOptions++)->second.c_str(), 0);
+						m_font->DrawStringUI(context, (markOptions++)->second.c_str(), 0);
 						if(idx == m_hoverIdx)
 							glColor4ub(255, 255, 255, 255);
 						idx++;
@@ -127,18 +181,17 @@ namespace ce
 				}
 
 				glColor4ub(255, 255, 255, 255);
-			glPopMatrix();
-			glDisable(GL_BLEND);
+			glPopMatrix();*/
 		}
 
-		TextDropDownCtrl::TextDropDownCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, int_canvas selectorWidth, const char *text, Color color)
-			: TextCtrl(position, extent, font, text, color), m_selectionIdx(65535), m_placeHolder(text),
+		TextDropDownCtrl::TextDropDownCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, int_canvas selectorWidth, const char *text, Color<float> textColor, Color<float> backgroundColor)
+			: TextCtrl(position, extent, font, text, textColor, backgroundColor), m_selectionIdx(65535), m_placeHolder(text),
 			m_OnSelection(0), m_selectorWidth(selectorWidth)
 		{
 			m_type = Type_TextDropDownCtrl;
 			m_eventMask |= event::Mask_MouseButtonDown | event::Mask_MouseButtonUp;
 
-			m_selector = new TextDropDownSelectCtrl(position, Vector2<int_canvas>(selectorWidth, 0), font, this, color);
+			m_selector = new TextDropDownSelectCtrl(position, Vector2<int_canvas>(selectorWidth, 0), font, this, textColor);
 			m_selector->SetVisible(false);
 		}
 		TextDropDownCtrl::~TextDropDownCtrl()
@@ -166,21 +219,6 @@ namespace ce
 				if(m_selector->IsVisible())
 					m_selector->SetPosition(m_absolutePosition + Vector2<int_canvas>(0, m_extent[1]));
 		}
-		void TextDropDownCtrl::DoRender(RenderContext &context)
-		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glPushMatrix();
-				glColor4ub(255, 0, 0, 63);
-				glPushMatrix();
-					glScalef((float)m_extent[0], (float)m_extent[1], 0.f);
-					RenderSquare(context);
-				glPopMatrix();
-				TextCtrl::DoRender(context);
-				glColor4ub(255, 255, 255, 255);
-			glPopMatrix();
-			glDisable(GL_BLEND);
-		}
 		bool TextDropDownCtrl::OnEvent(Event &event)
 		{
 			switch(event.type)
@@ -204,13 +242,6 @@ namespace ce
 							m_selector->CaptureEvent(event::MouseButtonDown);
 							m_selector->CaptureEvent(event::MouseMotion);
 						}
-					}
-					else
-					{
-						m_selector = new TextDropDownSelectCtrl(m_position, Vector2<int_canvas>(m_selectorWidth, 0), m_font, this, m_color);
-						m_selector->SetVisible(false);
-						if(m_parent)
-							GetRoot()->Add(m_selector);
 					}
 				}
 				return false;

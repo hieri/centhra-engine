@@ -115,32 +115,17 @@ namespace ce
 		{
 			return new Prop(position, m_extent, this);
 		}
-		void PropDef::UIRender()
+		void PropDef::UIRender(RenderContext &context)
 		{
-/*			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glEnable(GL_TEXTURE_2D);
+			ConfigTextured();
+
 			if(m_isAnimated)
-				m_sprite->Draw(0, 0, 0.f);
+				m_sprite->Draw(context, 0, 0.f);
 			else
 			{
 				m_image->Bind();
-				glBegin(GL_QUADS);
-					glTexCoord2i(0, 1);
-					glVertex2i(0, 1);
-
-					glTexCoord2i(1, 1);
-					glVertex2i(1, 1);
-
-					glTexCoord2i(1, 0);
-					glVertex2i(1, 0);
-
-					glTexCoord2i(0, 0);
-					glVertex2i(0, 0);
-				glEnd();
+				RenderSquareTexturedFull(context);
 			}
-			glDisable(GL_TEXTURE_2D);
-			glDisable(GL_BLEND);*/
 		}
 
 		Prop::Prop(Vector2<float> position, Vector2<float> extent, PropDef *definition) : PhysicalObject(position, extent), m_propDef(definition)
@@ -167,18 +152,18 @@ namespace ce
 			if(m_mvChanged)
 				CalculateModelViewMatrix();
 
+			ConfigTextured();
+
 			ShaderProgram::TexturedProgram *program = 0;
 			if(context.useShaders)
 				program = UseTexturedProgram();
 			if(program != 0)
 			{
-				//-------------------------- OpenGL 2.1 w/ GLSL 1.2 --------------------------
 				Matrix4x4<float> mvpMatrix = context.mvpMatrix * m_modelViewMatrix;
 				glUniformMatrix4fv(program->mvpMatrix, 1, GL_FALSE, &mvpMatrix[0]);
 			}
 			else
 			{
-				//-------------------------- OpenGL 1.0 --------------------------
 				Matrix4x4<float> mvMatrix = context.modelViewMatrix * m_modelViewMatrix;
 				glLoadMatrixf(&mvMatrix[0]);
 				glColor4ub(255, 255, 255, 255);

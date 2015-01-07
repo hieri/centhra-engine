@@ -34,26 +34,20 @@ public:
 	{
 		m_canvas = Canvas::Create(640, 480, "300 - User Interface");
 
-		Font::Init();
 		Image::Init();
-		m_font = Font::CreateFromFile("../res/FreeMono.ttf");
-		if(m_font)
-		{
-			m_font->SetDPI(m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
-			m_font->SetCharacterDimensions(14);
-		}
+		Font::Init();
+		m_font = Font::CreateFromFile("../res/FreeMono.ttf", 14, m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
 
 		m_rootCtrl = new ui::Control(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(1280, 720));
 		
 		{
 //			m_rootCtrl->Add(new ui::ColorCtrl(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(64, 64), Color(255, 0, 0)));
 			
-/*			{
-				ui::TextCtrl *textCtrl = new ui::TextCtrl(Vector2<int_canvas>(64, 0), Vector2<int_canvas>(256, 64), m_font, "Igggg\nIgggg\nIgggg", Color(255, 0, 0));
+			{
+				ui::TextCtrl *textCtrl = new ui::TextCtrl(Vector2<int_canvas>(64, 0), Vector2<int_canvas>(256, 64), m_font, "Igggg\nIgggg\nIgggg", Color<float>(1.f, 1.f, 1.f, 1.f));
 				textCtrl->SetWrapping(true);
 				m_rootCtrl->Add(textCtrl);
 			}
-			*/
 
 /*			ui::Control *random = new ui::ColorCtrl(Vector2<int_canvas>(64, 64), Vector2<int_canvas>(64, 64), Color(255, 255, 0));
 			m_rootCtrl->Add(random);
@@ -75,10 +69,10 @@ public:
 			m_rootCtrl->Add(testScroll);
 
 			for(int a = 0; a < 4; a++)
-				testScroll->Add(new ui::TextEditCtrl(Vector2<int_canvas>(0, 64 + a * 24), Vector2<int_canvas>(257, 128), m_font, 128, "A: ", Color(0, 255, 0)));
+				testScroll->Add(new ui::TextEditCtrl(Vector2<int_canvas>(0, 64 + a * 24), Vector2<int_canvas>(257, 128), m_font, 128, "A: ", Color<float>(0.f, 1.f, 0.f, 1.f)));
 			for(int a = 0; a < 4; a++)
 			{
-				ui::Control *ctrl = new ui::TextEditCtrl(Vector2<int_canvas>(300, 364 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color(0, 255, 0));
+				ui::Control *ctrl = new ui::TextEditCtrl(Vector2<int_canvas>(300, 364 + a * 24), Vector2<int_canvas>(400, 128), m_font, 128, "A: ", Color<float>(0.f, 1.f, 0.f, 1.f));
 				testScroll->Add(ctrl);
 			}
 

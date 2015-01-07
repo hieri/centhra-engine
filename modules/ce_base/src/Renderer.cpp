@@ -90,12 +90,18 @@ namespace ce
 	void BindVBO(unsigned int vbo)
 	{
 		if(g_lastVBO != vbo)
+		{
 			glBindBuffer(0x8892, vbo);
+			g_lastVBO = vbo;
+		}
 	}
 	void BindEBO(unsigned int ebo)
 	{
 		if(g_lastEBO != ebo)
+		{
 			glBindBuffer(0x8893, ebo);
+			g_lastEBO = ebo;
+		}
 	}
 	void ConfigGeneric()
 	{
@@ -111,7 +117,7 @@ namespace ce
 		if(g_useGeneric == true)
 		{
 			glEnable(GL_TEXTURE_2D);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+//			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			g_useGeneric = false;
 		}
 	}
@@ -145,9 +151,6 @@ namespace ce
 	{
 		if(!g_squareEBO)
 		{
-			glGenBuffers(1, &g_squareEBO);
-			BindEBO(g_squareEBO);
-
 			unsigned int size = 6; // 2 * 3
 			unsigned char *ebo = new unsigned char[size];
 
@@ -159,6 +162,8 @@ namespace ce
 			ebo[4] = 2;
 			ebo[5] = 3;
 
+			glGenBuffers(1, &g_squareEBO);
+			BindEBO(g_squareEBO);
 			glBufferData(0x8893, size, ebo, 0x88E4);
 			delete[] ebo;
 		}
@@ -171,9 +176,6 @@ namespace ce
 		{
 			if(!g_extensionsLoaded)
 				LoadExtensions();
-
-			glGenBuffers(1, &g_squareVBO);
-			BindVBO(g_squareVBO);
 
 			unsigned int size = 8; // 4 * 2
 			float *vbo = new float[size];
@@ -190,6 +192,8 @@ namespace ce
 			vbo[6] = 0.f;
 			vbo[7] = 1.f;
 
+			glGenBuffers(1, &g_squareVBO);
+			BindVBO(g_squareVBO);
 			glBufferData(0x8892, size * 4, vbo, 0x88E4);
 			delete [] vbo;
 		}
@@ -219,9 +223,6 @@ namespace ce
 			if(!g_extensionsLoaded)
 				LoadExtensions();
 
-			glGenBuffers(1, &g_squareTexturedVBO);
-			BindVBO(g_squareTexturedVBO);
-
 			unsigned int size = 16; // 4 * 4
 			float *vbo = new float[size];
 
@@ -245,13 +246,14 @@ namespace ce
 			vbo[14] = 0.f;
 			vbo[15] = 0.f;
 
+			glGenBuffers(1, &g_squareTexturedVBO);
+			BindVBO(g_squareTexturedVBO);
 			glBufferData(0x8892, size * 4, vbo, 0x88E4);
 			delete[] vbo;
 		}
 		BindVBO(g_squareTexturedVBO);
 		BindSquareEBO();
 
-		glEnable(GL_TEXTURE_2D);
 		if(context.useShaders)
 		{
 			ShaderProgram::TexturedProgram *program = ShaderProgram::GetTexturedProgram();
@@ -267,7 +269,6 @@ namespace ce
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
-		glDisable(GL_TEXTURE_2D);
 	}
 
 	//----------------------------- Shader -----------------------------
@@ -455,10 +456,11 @@ namespace ce
 					}\
 				";
 				const char *fragment = "\
+					uniform vec4 col;\
 					uniform sampler2D tex;\
 					void main()\
 					{\
-						gl_FragColor = texture2D(tex, gl_TexCoord[0].st);\
+						gl_FragColor = texture2D(tex, gl_TexCoord[0].st) * col;\
 					}\
 				";
 
@@ -475,11 +477,13 @@ namespace ce
 				program->Use();
 					g_defaultTexturedProgram->mvpMatrix = program->GetUniformLocation("mvp");
 					g_defaultTexturedProgram->position = program->GetAttribLocation("pos");
+					g_defaultTexturedProgram->color = program->GetUniformLocation("col");
 					g_defaultTexturedProgram->uv = program->GetAttribLocation("uv");
 
 					//- Default texture to GL_TEXTURE0, we will probably never use another texture slot -
 					glUniform1i(program->GetAttribLocation("tex"), 0);
-				g_texturedProgram = g_defaultTexturedProgram;
+					glUniform4f(g_defaultTexturedProgram->color, 1.f, 1.f, 1.f, 1.f);
+					g_texturedProgram = g_defaultTexturedProgram;
 			}
 		return g_texturedProgram;
 	}

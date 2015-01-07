@@ -128,11 +128,12 @@ namespace ce
 				curFrame++;
 			}
 
+			ConfigTextured();
+
 			m_source->Bind();
 			BindVBO(m_glBuffer);
 			BindSquareEBO();
 
-			glEnable(GL_TEXTURE_2D);
 			ShaderProgram::TexturedProgram *program = 0;
 			if(context.useShaders)
 				program = UseTexturedProgram();
@@ -149,7 +150,6 @@ namespace ce
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 			}
-			glDisable(GL_TEXTURE_2D);
 		}
 	}
 	int Sprite::AddAnimation(Vector2<float> min, Vector2<float> max, Vector2<float> step, float *frameTimes, int numFrames, float duration)

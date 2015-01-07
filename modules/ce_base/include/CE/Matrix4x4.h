@@ -125,11 +125,11 @@ namespace ce
 		inline Matrix4x4 &Transpose()
 		{
 			Type tempData[16];
-			for(unsigned int a = 0; a < 16; a++)
+			for(unsigned char a = 0; a < 16; a++)
 				tempData[a] = m_data[a];
 
-			for(unsigned int a = 0; a < 4; a++)
-				for(unsigned int b = 0; b < 4; b++)
+			for(unsigned char a = 0; a < 4; a++)
+				for(unsigned char b = 0; b < 4; b++)
 					m_data[a * 4 + b] = tempData[b * 4 + a];
 
 			return *this;

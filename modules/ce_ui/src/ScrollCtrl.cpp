@@ -48,16 +48,12 @@ namespace ce
 		}
 		void ScrollCtrl::DoRender(RenderContext &context)
 		{
-			glPushMatrix();
+/*			glPushMatrix();
 				Vector2<int_canvas> size = GetExtent();
 
 				Image *source = m_skin->GetImage();
 				if(source)
 					source->Bind();
-
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				glEnable(GL_TEXTURE_2D);
 
 				glColor4f(1.f, 1.f, 1.f, 1.f);
 
@@ -142,9 +138,6 @@ namespace ce
 					glEnd();
 				}
 
-				glBindTexture(GL_TEXTURE_2D, 0);
-				glDisable(GL_TEXTURE_2D);
-				glDisable(GL_BLEND);
 			glPopMatrix();
 			glPushMatrix();
 				glTranslatef((float)m_controlZones[0].x, (float)m_controlZones[0].y, 0.f);
@@ -156,9 +149,11 @@ namespace ce
 				glScalef((float)m_controlZones[1].width, (float)m_controlZones[1].height, 1.f);
 				RenderSquare(context);
 			glPopMatrix();
+			*/
 		}
 		void ScrollCtrl::DoOverlay()
 		{
+			/*
 			glPushMatrix();
 				Vector2<int_canvas> size = GetExtent();
 
@@ -166,9 +161,6 @@ namespace ce
 				if(source)
 					source->Bind();
 
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				glEnable(GL_TEXTURE_2D);
 
 				glColor4f(1.f, 1.f, 1.f, 1.f);
 
@@ -457,10 +449,7 @@ namespace ce
 					}
 				}
 
-				glBindTexture(GL_TEXTURE_2D, 0);
-				glDisable(GL_TEXTURE_2D);
-				glDisable(GL_BLEND);
-			glPopMatrix();
+			glPopMatrix();*/
 		}
 		void ScrollCtrl::OnMemberAdded(Control *ctrl)
 		{

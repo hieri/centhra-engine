@@ -25,7 +25,7 @@ namespace ce
 		{
 			m_position = position;
 			m_size = size;
-			m_color = Color(rand() % 256,  rand() % 256, rand() % 256);
+			m_color = Color<float>((float)(rand() % 256) / 255.f, (float)(rand() % 256) / 255.f, (float)(rand() % 256) / 255.f, 1.f);
 			m_velocity = Vector3<float>(0.f, 0.f, 0.f);
 			m_collisionMask = 1;
 

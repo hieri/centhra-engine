@@ -19,14 +19,15 @@ namespace ce
 {
 	namespace ui
 	{
-		TextButtonCtrl::TextButtonCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, const char *text, Color color, Color backgroundColor) : TextCtrl(position, extent, font, text, color), ButtonCtrl(position, extent), m_backgroundColor(backgroundColor)
+		TextButtonCtrl::TextButtonCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, const char *text, Color<float> color, Color<float> backgroundColor) : TextCtrl(position, extent, font, text, color), ButtonCtrl(position, extent), m_backgroundColor(backgroundColor)
 		{
 			ButtonCtrl::m_type = Type_TextButtonCtrl;
 		}
 		void TextButtonCtrl::DoRender(RenderContext &context)
 		{
-			glPushMatrix();
-				glColor4ubv(&m_backgroundColor[0]);
+			//TODO: Update rendering
+/*			glPushMatrix();
+				glColor4fv(&m_backgroundColor[0]);
 				glPushMatrix();
 					glScalef((float)ButtonCtrl::m_extent[0], (float)ButtonCtrl::m_extent[1], 0.f);
 					RenderSquare(context);
@@ -34,8 +35,8 @@ namespace ce
 				TextCtrl::DoRender(context);
 				glColor4ub(255, 255, 255, 255);
 			glPopMatrix();
-		}
-		void TextButtonCtrl::SetBackgroundColor(Color backgroundColor)
+*/		}
+		void TextButtonCtrl::SetBackgroundColor(Color<float> backgroundColor)
 		{
 			m_backgroundColor = backgroundColor;
 		}

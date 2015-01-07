@@ -22,11 +22,11 @@ namespace ce
 				unsigned short m_hoverIdx;
 
 				virtual void DoRender(RenderContext &context);
-	
+
 				friend class TextDropDownCtrl;
 
 			public:
-				TextDropDownSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, TextDropDownCtrl *source, Color color = Color(0, 0, 0, 0));
+				TextDropDownSelectCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, TextDropDownCtrl *source, Color<float> textColor = Color<float>(1.f, 1.f, 1.f, 1.f), Color<float> backgroundColor = Color<float>(0.f, 1.f, 0.f, 0.25f));
 				~TextDropDownSelectCtrl();
 
 				virtual bool OnEvent(Event &event);
@@ -44,10 +44,8 @@ namespace ce
 			int_canvas m_selectorWidth;
 			std::string m_placeHolder;
 
-			virtual void DoRender(RenderContext &context);
-
 		public:
-			TextDropDownCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, int_canvas selectorWidth, const char *text = "", Color color = Color());
+			TextDropDownCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, int_canvas selectorWidth, const char *text = "", Color<float> textColor = Color<float>(1.f, 1.f, 1.f, 1.f), Color<float> backgroundColor = Color<float>(1.f, 0.f, 0.f, 0.25f));
 			~TextDropDownCtrl();
 
 			void ReattachSelector();

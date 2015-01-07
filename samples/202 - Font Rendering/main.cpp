@@ -9,8 +9,10 @@
 
 //- Centhra Engine -
 #include <CE/Base.h>
+#include <CE/Image.h>
 #include <CE/Font.h>
 #include <CE/Frontend.h>
+#include <CE/Renderer.h>
 
 using namespace ce;
 
@@ -27,19 +29,16 @@ public:
 	}
 	bool OnStart()
 	{
-		print("Initializing Font Library\n");
-		Font::Init();
-
 		m_canvas = Canvas::Create(300, 300, "202 - Font Rendering");
 
+		print("Initializing Font Library\n");
+		Image::Init();
+		Font::Init();
+
 		print("Loading <../res/FreeMono.ttf>\n");
-		m_font = Font::CreateFromFile("../res/FreeMono.ttf");
-		if(m_font)
-		{
-			m_font->SetDPI(m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
-			m_font->SetCharacterDimensions(14);
-		}
-		else
+		m_font = Font::CreateFromFile("../res/FreeMono.ttf", 14, m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
+
+		if(m_font == 0)
 			print("  Unable to load font.\n");
 
 		return true;
@@ -59,28 +58,41 @@ public:
 		switch(event.type)
 		{
 			case event::PostRender:
-				glPushMatrix();
-					glTranslatef(0.f, 8.f, 0.f);
-					glColor4f(1.f, 0.f, 0.f, 1.f);
+				{
+			/*		RenderContext context;
+					context.useShaders = false;
 					glPushMatrix();
-						m_font->DrawString("Hello font rendering!");
+					glEnable(GL_TEXTURE_2D);
+					glScalef(300.f, 300.f, 1.f);
+					glBindTexture(GL_TEXTURE_2D, 1);
+						glBegin(GL_QUADS);
+							glTexCoord2i(0, 1);
+							glVertex2i(0, 1);
+
+							glTexCoord2i(0, 0);
+							glVertex2i(0, 0);
+
+							glTexCoord2i(1, 0);
+							glVertex2i(1, 0);
+
+							glTexCoord2i(1, 1);
+							glVertex2i(1, 1);
+						glEnd();
+					glDisable(GL_TEXTURE_2D);
 					glPopMatrix();
-					glTranslatef(0.f, 20.f, 0.f);
-					glColor4f(1.f, 1.f, 1.f, 1.f);
+					*/
+					glEnableClientState(GL_VERTEX_ARRAY);
+					RenderContext context;
+					context.modelViewMatrix = Matrix4x4<float>();
+					context.projectionMatrix = m_canvas->GetProjectionMatrix();
+					context.mvpMatrix = context.projectionMatrix * context.modelViewMatrix;
+					context.useShaders = false;
 					glPushMatrix();
-						m_font->DrawString("Hello font rendering!");
+					glScalef(1.f, 1.f, 1.f);
+					m_font->DrawStringUI(context, "Hello World!\nHello New Line!!");
 					glPopMatrix();
-					glTranslatef(0.f, 20.f, 0.f);
-					glColor4f(0.f, 0.f, 1.f, 1.f);
-					glPushMatrix();
-						m_font->DrawString("Hello font rendering!");
-					glPopMatrix();
-					glTranslatef(0.f, 20.f, 0.f);
-					glColor4f(0.f, 1.f, 0.f, 1.f);
-					glPushMatrix();
-						m_font->DrawString("Hello font rendering!");
-					glPopMatrix();
-				glPopMatrix();
+					glDisableClientState(GL_VERTEX_ARRAY);
+				}
 				break;
 		}
 		return true;

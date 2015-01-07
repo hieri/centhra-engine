@@ -26,9 +26,7 @@ namespace ce
 		}
 		void TiledBackground::Render()
 		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+			//TODO: Update rendering
 			glPushMatrix();
 			Camera *camera = m_viewCtrl->GetCamera();
 			if(camera)
@@ -90,8 +88,6 @@ namespace ce
 				}
 			}
 			glPopMatrix();
-
-			glDisable(GL_BLEND);
 		}
 	}
 }

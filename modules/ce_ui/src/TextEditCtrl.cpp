@@ -12,6 +12,7 @@
 #include <GL/gl.h>
 
 //- Centhra Engine -
+#include <CE/Renderer.h>
 #include <CE/UI/TextEditCtrl.h>
 
 //TODO: Add navigation via Mouse and Keyboard
@@ -21,7 +22,7 @@ namespace ce
 {
 	namespace ui
 	{
-		TextEditCtrl::TextEditCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, unsigned short maxSize, const char *text, Color color) : TextCtrl(position, extent, font, text, color)
+		TextEditCtrl::TextEditCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, unsigned short maxSize, const char *text, Color<float> color) : TextCtrl(position, extent, font, text, color)
 		{
 			m_type = Type_TextEditCtrl;
 			m_eventMask |= event::Mask_KeyDown | event::Mask_KeyUp;
@@ -37,11 +38,9 @@ namespace ce
 		}
 		void TextEditCtrl::DoRender(RenderContext &context)
 		{
-			glPushMatrix();
-				glColor4ubv(&m_color[0]);
-				m_font->DrawStringUI(m_text.c_str());
-				glColor4ub(255, 255, 255, 255);
-			glPopMatrix();
+			TextCtrl::DoRender(context);
+
+			//TODO: Render the cursor
 		}
 		bool TextEditCtrl::OnEvent(Event &event)
 		{

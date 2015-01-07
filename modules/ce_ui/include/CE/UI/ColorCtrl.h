@@ -12,18 +12,27 @@ namespace ce
 {
 	namespace ui
 	{
-		class ColorCtrl : public Control
+		class IBackgroundColor
 		{
-		protected:
-			Color m_color;
-
-			virtual void DoRender(RenderContext &context);
-
 		public:
-			ColorCtrl(Vector2<short> position, Vector2<short> extent, Color color = Color());
-			
-			Color GetColor() const;
-			void SetColor(Color color);
+			IBackgroundColor(Color<float> color);
+			virtual ~IBackgroundColor();
+
+			//- Background Color -
+		protected:
+			Color<float> m_backgroundColor;
+		public:
+			Color<float> GetBackgroundColor() const;
+			void SetBackgroundColor(Color<float> color);
+		};
+
+		class ColorCtrl : public Control, public IBackgroundColor
+		{
+		public:
+			ColorCtrl(Vector2<short> position, Vector2<short> extent, Color<float> backgroundColor = Color<float>(1.f, 1.f, 1.f, 1.f));
+
+		protected:
+			virtual void DoRender(RenderContext &context);
 		};
 	}
 }

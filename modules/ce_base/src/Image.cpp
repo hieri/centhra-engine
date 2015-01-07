@@ -250,9 +250,9 @@ namespace ce
 			glBindTexture(GL_TEXTURE_2D, m_glTexture);
 		g_imageMutex.Unlock();
 	}
-	Color Image::GetPixel(unsigned int x, unsigned int y) const
+	Color<unsigned char> Image::GetPixel(unsigned int x, unsigned int y) const
 	{
-		Color color;
+		Color<unsigned char> color;
 		ilBindImage(m_ilImage);
 		unsigned char *data = ilGetData();
 		unsigned int bytesPerPixel = ilGetInteger(IL_IMAGE_BPP);

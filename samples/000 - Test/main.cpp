@@ -34,9 +34,9 @@ public:
 
 		m_masterCtrl = new ui::Control(Vector2<int_canvas>(0, 0), Vector2<int_canvas>(640, 480));
 
-		ui::ColorCtrl *color1 = new ui::ColorCtrl(Vector2<int_canvas>(16, 16), Vector2<int_canvas>(64, 64), Color(255, 0, 0, 255));
-		ui::ColorCtrl *color2 = new ui::ColorCtrl(Vector2<int_canvas>(32, 32), Vector2<int_canvas>(64, 64), Color(0, 255, 0, 255));
-		ui::ColorCtrl *color3 = new ui::ColorCtrl(Vector2<int_canvas>(48, 48), Vector2<int_canvas>(64, 64), Color(0, 0, 255, 255));
+		ui::ColorCtrl *color1 = new ui::ColorCtrl(Vector2<int_canvas>(16, 16), Vector2<int_canvas>(64, 64), Color<float>(1.f, 0.f, 0.f, 1.f));
+		ui::ColorCtrl *color2 = new ui::ColorCtrl(Vector2<int_canvas>(32, 32), Vector2<int_canvas>(64, 64), Color<float>(0.f, 1.f, 0.f, 1.f));
+		ui::ColorCtrl *color3 = new ui::ColorCtrl(Vector2<int_canvas>(48, 48), Vector2<int_canvas>(64, 64), Color<float>(0.f, 0.f, 1.f, 1.f));
 		m_masterCtrl->Add(color1);
 		m_masterCtrl->Add(color2);
 		m_masterCtrl->Add(color3);

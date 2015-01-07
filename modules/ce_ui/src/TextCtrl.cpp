@@ -26,8 +26,8 @@ namespace ce
 {
 	namespace ui
 	{
-		TextCtrl::TextCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, const char *text, Color color) : ColorCtrl(position, extent, color),
-			m_isWrapping(false)
+		TextCtrl::TextCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Font *font, const char *text, Color<float> textColor, Color<float> backgroundColor)
+			: ColorCtrl(position, extent, backgroundColor), m_isWrapping(false), m_textColor(textColor)
 		{
 			m_type = Type_TextCtrl;
 			m_font = font;
@@ -57,16 +57,42 @@ namespace ce
 		}
 		void TextCtrl::DoRender(RenderContext &context)
 		{
-/*			glPushMatrix();
-				glColor4ub(0, 255, 0, 127);
-				glScalef(m_extent[0], m_extent[1], 1.f);
-				RenderSquare(context);
-			glPopMatrix();*/
-/*			glPushMatrix();
-				glColor4ubv(&m_color[0]);
-				m_font->DrawStringUI(m_text.c_str(), 0);
-				glColor4ub(255, 255, 255, 255);
-			glPopMatrix();*/
+			//TODO: Refer to previous context mvp matrix
+			RenderContext currentContext = context;
+
+			//- Render Background -
+			ColorCtrl::DoRender(context);
+
+			//- Render Text -
+			{
+				ShaderProgram::TexturedProgram *program = 0;
+				if(context.useShaders)
+					program = UseTexturedProgram();
+				if(program != 0)
+				{
+					currentContext.mvpMatrix = context.projectionMatrix * m_absoluteMatrix;
+					glUniform4fv(program->color, 1, &m_textColor[0]);
+					m_font->DrawStringUI(currentContext, m_text.c_str(), 0);
+					glUniform4f(program->color, 1.f, 1.f, 1.f, 1.f);
+				}
+				else
+				{
+					glColor4fv(&m_textColor[0]);
+					glLoadMatrixf(&m_absoluteMatrix[0]);
+					m_font->DrawStringUI(currentContext, m_text.c_str(), 0);
+					glColor4ub(255, 255, 255, 255);
+				}
+			}
+		}
+
+		//- Text Color -
+		Color<float> TextCtrl::GetTextColor() const
+		{
+			return m_textColor;
+		}
+		void TextCtrl::SetTextColor(Color<float> textColor)
+		{
+			m_textColor = textColor;
 		}
 
 		//- Text Wrap -

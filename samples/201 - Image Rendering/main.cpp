@@ -67,7 +67,8 @@ public:
 			case event::PostRender:
 				if(m_image)
 				{
-					glEnable(GL_TEXTURE_2D);
+					//TODO: Update rendering
+/*					glEnable(GL_TEXTURE_2D);
 						m_image->Bind();
 						glBegin(GL_QUADS);
 							glTexCoord2i(0, 1);
@@ -82,7 +83,7 @@ public:
 							glTexCoord2i(0, 0);
 							glVertex2i(0, 300);
 						glEnd();
-					glDisable(GL_TEXTURE_2D);
+					glDisable(GL_TEXTURE_2D);*/
 				}
 				break;
 		}

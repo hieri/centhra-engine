@@ -1,17 +1,10 @@
-//- Standard Library -
-#include <algorithm>
-
-#ifdef _WIN32
-	//- Windows -
-	#include <Windows.h>
-#endif
-
-//- OpenGL -
-#include <GL/gl.h>
-
 //- Centhra Engine -
 #include <CE/Base.h>
+#include <CE/Renderer.h>
 #include <CE/UI/ButtonCtrl.h>
+
+//- Standard Library -
+#include <algorithm>
 
 using namespace std;
 
@@ -48,20 +41,26 @@ namespace ce
 		}
 		void ButtonCtrl::DoRender(RenderContext &context)
 		{
-			glPushMatrix();
+			//TODO: Consider generating absolute matrix w/ scale on position/extent change
+			ConfigGeneric();
+			ShaderProgram::GenericProgram *program = 0;
+			if(context.useShaders)
+				program = UseGenericProgram();
+			if(program != 0)
+			{
+				Matrix4x4<float> mvpMatrix = context.mvpMatrix * m_absoluteMatrix;
+				mvpMatrix *= Matrix4x4<float>::BuildFromScale(m_extent);
+				glUniformMatrix4fv(program->mvpMatrix, 1, GL_FALSE, &mvpMatrix[0]);
+				glUniform4f(program->color, 1.f, 1.f, 0.f, 1.f);
+			}
+			else
+			{
+				Matrix4x4<float> mvMatrix = context.modelViewMatrix * m_absoluteMatrix;
+				mvMatrix *= Matrix4x4<float>::BuildFromScale(m_extent);
+				glLoadMatrixf(&mvMatrix[0]);
 				glColor4ub(255, 255, 0, 255);
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				glScalef((float)m_extent[0], (float)m_extent[1], 0.f);
-				glBegin(GL_QUADS);
-					glVertex2i(0, 0);
-					glVertex2i(1, 0);
-					glVertex2i(1, 1);
-					glVertex2i(0, 1);
-				glEnd();
-				glDisable(GL_BLEND);
-				glColor4ub(255, 255, 255, 255);
-			glPopMatrix();
+			}
+			RenderSquare(context);
 		}
 		int ButtonCtrl::GetGroup() const
 		{

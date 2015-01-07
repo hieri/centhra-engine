@@ -58,7 +58,7 @@ namespace ce
 		{
 			Shader *vertex, *fragment;
 			ShaderProgram *program;
-			int mvpMatrix, position, uv;
+			int mvpMatrix, position, color, uv;
 		} TexturedProgram;
 
 		//- Generic Rendering -

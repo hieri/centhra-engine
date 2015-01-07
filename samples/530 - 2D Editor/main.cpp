@@ -94,12 +94,7 @@ public:
 
 		m_world = new game2d::World();
 
-		m_font = Font::CreateFromFile("../res/FreeMono.ttf");
-		if(m_font)
-		{
-			m_font->SetDPI(m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
-			m_font->SetCharacterDimensions(16);
-		}
+		m_font = Font::CreateFromFile("../res/FreeMono.ttf", 16, m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
 
 		game2d::PropDef::LoadFromFile("../res/sampleProps.txt");
 		game2d::ProjectileDef::LoadFromFile("../res/sampleProjectiles.txt");
@@ -108,7 +103,7 @@ public:
 		m_tmx = plugin::tiled::TMX::CreateFromFile("../res/Test.tmx");
 		m_tmx->PopulateWorld(m_world, Vector2<float>(32.f, 32.f));
 
-		Directory::GetFromPath("../res/")->SetMonitoring(true);
+//		Directory::GetFromPath("../res/")->SetMonitoring(true);
 
 		game2d::World::ObjectLayer *objectLayerA = (game2d::World::ObjectLayer *)m_world->GetLayer(1);
 

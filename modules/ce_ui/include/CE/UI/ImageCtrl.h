@@ -17,7 +17,7 @@ namespace ce
 			virtual void DoRender(RenderContext &context);
 
 		public:
-			ImageCtrl(Vector2<short> position, Vector2<short> extent, Image *image, Color color = Color());
+			ImageCtrl(Vector2<short> position, Vector2<short> extent, Image *image, Color<float> color = Color<float>(1.f, 1.f, 1.f, 1.f));
 			
 			Image *GetImage() const;
 			void SetImage(Image *image);

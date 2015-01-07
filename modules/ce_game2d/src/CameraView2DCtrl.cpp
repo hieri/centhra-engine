@@ -42,6 +42,7 @@ namespace ce
 		{
 			if(m_camera)
 			{
+				//TODO: Apply control's position and size to the view
 				RenderContext worldContext = context;
 
 				//- Calculate View Matrix -

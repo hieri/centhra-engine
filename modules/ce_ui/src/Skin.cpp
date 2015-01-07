@@ -14,16 +14,16 @@ namespace ce
 		Skin::Skin(Image *image) : m_image(image)
 		{
 			Vector2<unsigned int> size = image->GetSize();
-			Color null = image->GetPixel(size[0] - 1, size[1] - 1);
+			Color<unsigned char> zero = image->GetPixel(size[0] - 1, size[1] - 1);
 			vector<unsigned int> rowStart, rowEnd;
 			bool isRow = false;
 
 			for(unsigned int a = 0; a < size[1]; a++)
 			{
-				Color color = image->GetPixel(0, a);
+				Color<unsigned char> color = image->GetPixel(0, a);
 				if(isRow)
 				{
-					if(color == null)
+					if(color == zero)
 					{
 						rowEnd.insert(rowEnd.end(), a);
 						isRow = false;
@@ -31,7 +31,7 @@ namespace ce
 				}
 				else
 				{
-					if(color != null)
+					if(color != zero)
 					{
 						rowStart.insert(rowStart.end(), a);
 						isRow = true;
@@ -56,10 +56,10 @@ namespace ce
 
 				for(unsigned int b = 0; b < size[0]; b++)
 				{
-					Color color = image->GetPixel(b, y);
+					Color<unsigned char> color = image->GetPixel(b, y);
 					if(isColumn)
 					{
-						if(color == null)
+						if(color == zero)
 						{
 							columnEnd[a].insert(columnEnd[a].end(), b);
 							isColumn = false;
@@ -67,7 +67,7 @@ namespace ce
 					}
 					else
 					{
-						if(color != null)
+						if(color != zero)
 						{
 							columnStart[a].insert(columnStart[a].end(), b);
 							isColumn = true;

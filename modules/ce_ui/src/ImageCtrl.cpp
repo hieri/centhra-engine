@@ -8,6 +8,7 @@
 
 //- Centhra Engine -
 #include <CE/UI/ImageCtrl.h>
+#include <CE/Renderer.h>
 #include <CE/Base.h>
 
 using namespace std;
@@ -16,7 +17,7 @@ namespace ce
 {
 	namespace ui
 	{
-		ImageCtrl::ImageCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Image *image, Color color) : ColorCtrl(position, extent, color)
+		ImageCtrl::ImageCtrl(Vector2<int_canvas> position, Vector2<int_canvas> extent, Image *image, Color<float> color) : ColorCtrl(position, extent, color)
 		{
 			m_type = Type_ImageCtrl;
 			m_image = image;
@@ -31,33 +32,25 @@ namespace ce
 		}
 		void ImageCtrl::DoRender(RenderContext &context)
 		{
-			glPushMatrix();
-				glColor4ubv(&m_color[0]);
-				glScalef((float)m_extent[0], (float)m_extent[1], 0.f);
-				if(m_image)
-				{
-					glEnable(GL_BLEND);
-					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-					glEnable(GL_TEXTURE_2D);
-						m_image->Bind();
-						glBegin(GL_QUADS);
-							glTexCoord2i(0, 1);
-							glVertex2i(0, 0);
-
-							glTexCoord2i(1, 1);
-							glVertex2i(1, 0);
-
-							glTexCoord2i(1, 0);
-							glVertex2i(1, 1);
-
-							glTexCoord2i(0, 0);
-							glVertex2i(0, 1);
-						glEnd();
-					glDisable(GL_TEXTURE_2D);
-					glDisable(GL_BLEND);
-				}
+			ConfigTextured();
+			ShaderProgram::TexturedProgram *program = 0;
+			if(context.useShaders)
+				program = UseTexturedProgram();
+			if(program != 0)
+			{
+				Matrix4x4<float> mvpMatrix = context.projectionMatrix * m_absoluteMatrix;
+				mvpMatrix *= Matrix4x4<float>::BuildFromScale(m_extent);
+				glUniformMatrix4fv(program->mvpMatrix, 1, GL_FALSE, &mvpMatrix[0]);
+			}
+			else
+			{
+				Matrix4x4<float> mvMatrix = context.modelViewMatrix * m_absoluteMatrix;
+				mvMatrix *= Matrix4x4<float>::BuildFromScale(m_extent);
+				//TODO: Determine if this is necessary
 				glColor4ub(255, 255, 255, 255);
-			glPopMatrix();
+				glLoadMatrixf(&mvMatrix[0]);
+			}
+			RenderSquareTexturedFull(context);
 		}
 	}
 }

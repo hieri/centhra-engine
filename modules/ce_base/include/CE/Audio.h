@@ -1,5 +1,6 @@
 #ifndef _CE_BASE_AUDIO_H_
 #define _CE_BASE_AUDIO_H_
+#if !CE_NOCLIENT 
 
 namespace ce
 {
@@ -24,4 +25,5 @@ namespace ce
 	};
 }
 
+#endif
 #endif

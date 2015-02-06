@@ -1,3 +1,11 @@
+//- Centhra Engine -
+#include <CE/Base.h>
+#if !CE_NOCLIENT
+#include <CE/App.h>
+#include <CE/Audio.h>
+#include <CE/Thread.h>
+#include <CE/Plugin.h>
+
 //- Standard Library -
 #include <string>
 #include <cstdio>
@@ -18,14 +26,9 @@
 #include <al.h>
 #include <alc.h>
 
-//- Centhra Engine -
-#include <CE/App.h>
-#include <CE/Audio.h>
-#include <CE/Thread.h>
-#include <CE/Plugin.h>
-#include <CE/Base.h>
-
 using namespace std;
+
+//TODO: Investigate best way to handle sound threads.
 
 namespace ce
 {
@@ -299,3 +302,5 @@ namespace ce
 			Play2DProcess(data);
 	}
 }
+
+#endif

@@ -1,12 +1,13 @@
-//- Freeunsigned char 2-
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
 //- Centhra Engine -
 #include <CE/Base.h>
+#if !CE_NOCLIENT 
 #include <CE/Font.h>
 #include <CE/Image.h>
 #include <CE/Renderer.h>
+
+//- FreeType 2 -
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 //- Standard Library -
 #include <cstring>
@@ -442,3 +443,5 @@ namespace ce
 		return m_charSize;
 	}
 }
+
+#endif

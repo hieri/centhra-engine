@@ -10,7 +10,6 @@ set(INC
 	${INC_DIR}/CE/Plugin/Box2D/PhysicsHandler.h
 )
 
-find_package(OpenGL REQUIRED)
 if(NOT BOX2D_FOUND)
 	find_package(Box2D)
 	if(NOT BOX2D_FOUND)
@@ -93,8 +92,13 @@ endif()
 set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include ${BOX2D_INCLUDE_DIR})
 set(LIB ${BOX2D_LIBRARIES})
 
-list(APPEND INCLUDE ${CE_BASE_INCLUDE_DIRS} ${CE_FRONTEND_INCLUDE_DIRS} ${CE_GAME2D_INCLUDE_DIRS} ${CE_UI_INCLUDE_DIRS})
-list(APPEND LIB ce_base ce_frontend ce_game2d ce_ui)
+list(APPEND INCLUDE ${CE_BASE_INCLUDE_DIRS} ${CE_GAME2D_INCLUDE_DIRS})
+list(APPEND LIB ce_base ce_game2d)
+
+if(NOT CE_NOCLIENT)
+	list(APPEND INCLUDE ${CE_FRONTEND_INCLUDE_DIRS} ${CE_UI_INCLUDE_DIRS})
+	list(APPEND LIB ce_frontend ce_ui)
+endif()
 
 list(REMOVE_DUPLICATES INCLUDE)
 list(REMOVE_DUPLICATES LIB)
@@ -110,5 +114,5 @@ set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJ
 set_target_properties(${TARGET} PROPERTIES DEBUG_POSTFIX -d)
 target_include_directories(${TARGET} PUBLIC ${INCLUDE})
 target_link_libraries(${TARGET} ${LIB})
-add_dependencies(${TARGET} ce_base ce_frontend ce_game2d)
+add_dependencies(${TARGET} ${LIB})
 set(CE_PLUGBOX2D_INCLUDE_DIRS ${INCLUDE} CACHE PATH "ce_plugBox2d include directories")

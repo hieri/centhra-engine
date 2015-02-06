@@ -18,6 +18,11 @@ set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 list(APPEND INCLUDE ${CE_BASE_INCLUDE_DIRS} ${CE_FRONTEND_INCLUDE_DIRS} ${CE_GAME2D_INCLUDE_DIRS} ${CE_UI_INCLUDE_DIRS})
 list(APPEND LIB ce_base ce_frontend ce_game2d ce_ui)
 
+if(NOT CE_NOCLIENT)
+	list(APPEND INCLUDE ${CE_FRONTEND_INCLUDE_DIRS} ${CE_UI_INCLUDE_DIRS})
+	list(APPEND LIB ce_frontend ce_ui)
+endif()
+
 list(REMOVE_DUPLICATES INCLUDE)
 list(REMOVE_DUPLICATES LIB)
 
@@ -32,5 +37,5 @@ set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJ
 set_target_properties(${TARGET} PROPERTIES DEBUG_POSTFIX -d)
 target_include_directories(${TARGET} PUBLIC ${INCLUDE})
 target_link_libraries(${TARGET} ${LIB})
-add_dependencies(${TARGET} ce_base ce_frontend ce_game2d ce_ui)
+add_dependencies(${TARGET} ${LIB})
 set(CE_PLUGTILED_INCLUDE_DIRS ${INCLUDE} CACHE PATH "ce_plugTiled include directories")

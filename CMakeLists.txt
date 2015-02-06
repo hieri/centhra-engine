@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 
+if(NOT DEFINED CE_NOCLIENT)
+	set(CE_NOCLIENT 1)
+endif()
+
 if(NOT DEFINED CE_BUILD_SAMPLES)
 	set(CE_BUILD_SAMPLES 1)
 endif()
@@ -17,8 +21,8 @@ set(CE_FRONTEND_USEWIN 1)
 
 project(centhra-engine)
 
-set(VERSION_MAJOR 0)
-set(VERSION_MINOR 04)
+set(CE_VERSION_MAJOR 0)
+set(CE_VERSION_MINOR 04)
 
 if(WIN32)
 	set(CMAKE_FIND_LIBRARY_SUFFIXES .lib .a)

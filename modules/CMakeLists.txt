@@ -1,5 +1,8 @@
 add_subdirectory(ce_base)
-add_subdirectory(ce_frontend)
-add_subdirectory(ce_ui)
+if(NOT CE_NOCLIENT)
+	add_subdirectory(ce_frontend)
+	add_subdirectory(ce_ui)
+endif()
 add_subdirectory(ce_game2d)
-add_subdirectory(ce_game3d)
+# Note: We are ignoring Game 3D for now.
+# add_subdirectory(ce_game3d)

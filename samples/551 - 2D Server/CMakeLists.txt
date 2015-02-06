@@ -4,8 +4,19 @@ set(SRC
 	${SRC_DIR}/main.cpp
 )
 
-set(INCLUDE ${CE_BASE_INCLUDE_DIRS} ${CE_FRONTEND_INCLUDE_DIRS} ${CE_GAME2D_INCLUDE_DIRS} ${CE_UI_INCLUDE_DIRS} ${CE_PLUGBOX2D_INCLUDE_DIRS})
-set(LIB ce_base ce_frontend ce_game2d ce_ui ce_plugBox2d)
+set(INCLUDE "")
+set(LIB "")
+
+list(APPEND INCLUDE ${CE_BASE_INCLUDE_DIRS} ${CE_GAME2D_INCLUDE_DIRS} ${CE_PLUGBOX2D_INCLUDE_DIRS})
+list(APPEND LIB ce_base ce_game2d ce_plugBox2d)
+
+if(NOT CE_NOCLIENT)
+	list(APPEND INCLUDE ${CE_FRONTEND_INCLUDE_DIRS} ${CE_UI_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/external/opengl/include)
+	list(APPEND LIB ce_frontend ce_ui)
+endif()
+
+list(REMOVE_DUPLICATES INCLUDE)
+list(REMOVE_DUPLICATES LIB)
 
 set(TARGET "551_2D_Server")
 add_executable(${TARGET} ${SRC})

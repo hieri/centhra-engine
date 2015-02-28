@@ -26,7 +26,7 @@
 	#include <GL/wglext.h>
 	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXTFunc = 0;
 #elif __linux__
-	#if CE_FRONTEND_USEXLIB
+	#if CE_BASE_USEXLIB
 		//- Xlib -
 		#include <GL/glext.h>
 		#include <X11/Xatom.h>
@@ -35,7 +35,7 @@
 		PFNGLXSWAPINTERVALMESAPROC glXSwapIntervalMESAFunc = 0;
 		PFNGLXSWAPINTERVALSGIPROC glXSwapIntervalSGIFunc = 0;
 
-		#if CE_FRONTEND_USEXCB
+		#if CE_BASE_USEXCB
 			//- XCB -
 			#include <X11/Xlib-xcb.h>
 			#include <xcb/xcb.h>
@@ -52,7 +52,7 @@ namespace ce
 {
 	int g_glxVersionMajor = 0, g_glxVersionMinor = 0;
 
-#if CE_FRONTEND_USEWIN
+#if CE_BASE_USEWIN
 	LRESULT CALLBACK WindowProc(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	{
 		Canvas *canvas = (Canvas *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
@@ -240,7 +240,7 @@ namespace ce
 
 		float horizontalDpi, verticalDpi;
 
-		#if CE_FRONTEND_USEXLIB
+		#if CE_BASE_USEXLIB
 			Display *xDisplay = (Display *)app->GetXDisplay();
 			int xDefaultScreen = app->GetXDefaultScreen();
 			GLXContext glxContext;
@@ -254,7 +254,7 @@ namespace ce
 				return 0;
 			}
 
-			#if CE_FRONTEND_USEXCB
+			#if CE_BASE_USEXCB
 				xcb_connection_t *xcbConnection = (xcb_connection_t *)app->GetXCBConnection();
 				xcb_screen_t *screen = 0;
 				xcb_screen_iterator_t screen_iter = xcb_setup_roots_iterator(xcb_get_setup(xcbConnection));
@@ -306,7 +306,7 @@ namespace ce
 					return 0;
 				}
 
-				#if CE_FRONTEND_USEXCB
+				#if CE_BASE_USEXCB
 					int visualID = 0;
 					glXGetFBConfigAttrib(xDisplay, fbConfig[0], GLX_VISUAL_ID , &visualID);
 
@@ -407,7 +407,7 @@ namespace ce
 			}
 			else
 			{
-				#if CE_FRONTEND_USEXCB
+				#if CE_BASE_USEXCB
 					xcb_visualtype_t *xcbVisualInfo = NULL;
 
 					for(xcb_depth_iterator_t depth_iter = xcb_screen_allowed_depths_iterator(screen); depth_iter.rem; xcb_depth_next(&depth_iter))
@@ -537,7 +537,7 @@ namespace ce
 		canvas->m_windowedWidth = width;
 		canvas->m_windowedHeight = height;
 
-		#if CE_FRONTEND_USEWIN
+		#if CE_BASE_USEWIN
 			HINSTANCE hInstance = (HINSTANCE)app->GetHInstance();
 
 			WNDCLASS windowClass;
@@ -603,11 +603,11 @@ namespace ce
 			UpdateWindow(hWnd);
 		#endif
 
-		#if CE_FRONTEND_USEXLIB
+		#if CE_BASE_USEXLIB
 			canvas->m_glxContext = glxContext;
 			canvas->m_glxWindow = glxWindow;
 
-			#if CE_FRONTEND_USEXCB
+			#if CE_BASE_USEXCB
 				xcb_change_property(xcbConnection, XCB_PROP_MODE_REPLACE, xcbWindow, XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8, strlen(title), title);
 				canvas->m_xcbWindow = xcbWindow;
 				app->m_canvasMap[xcbWindow] = canvas;
@@ -618,14 +618,14 @@ namespace ce
 			#endif
 		#endif
 
-		#if CE_FRONTEND_USEWIN
+		#if CE_BASE_USEWIN
 			canvas->m_windowHandle = hWnd;
 			canvas->m_deviceContextHandle = hDC;
 			canvas->m_glRenderingContextHandle = hRC;
 			app->m_canvasMap[hWnd] = canvas;
 		#endif
 		
-		#if CE_FRONTEND_USEXLIB
+		#if CE_BASE_USEXLIB
 			canvas->Resize(width, height);
 		#endif
 
@@ -658,8 +658,8 @@ namespace ce
 		m_vsync = true;
 		m_fullscreen = false;
 
-		#if CE_FRONTEND_USEXLIB
-			#if CE_FRONTEND_USEXCB
+		#if CE_BASE_USEXLIB
+			#if CE_BASE_USEXCB
 				m_xcbWindow = 0;
 				m_glxContext = 0;
 				m_glxWindow = 0;
@@ -668,7 +668,7 @@ namespace ce
 			#endif
 		#endif
 
-		#if CE_FRONTEND_USEWIN
+		#if CE_BASE_USEWIN
 			m_windowClass = "";
 			m_windowHandle = 0;
 			m_deviceContextHandle = 0;
@@ -693,7 +693,7 @@ namespace ce
 			#endif
 		#endif
 
-		#if CE_FRONTEND_USEWIN
+		#if CE_BASE_USEWIN
 			m_app->m_canvasMap.erase(m_windowHandle);
 
 			HINSTANCE hInstance = (HINSTANCE)m_app->GetHInstance();
@@ -737,15 +737,15 @@ namespace ce
 		m_app->OnEvent(event);
 
 		//- Swap Buffers & Flush Rendering Calls -
-		#if CE_FRONTEND_USEXLIB
+		#if CE_BASE_USEXLIB
 			Display *xDisplay = (Display *)m_app->GetXDisplay();
-			#if CE_FRONTEND_USEXCB
+			#if CE_BASE_USEXCB
 				glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3) ? m_glxWindow : m_xcbWindow);
 			#else
 				glXSwapBuffers(xDisplay, (g_glxVersionMajor >= 1 && g_glxVersionMinor >= 3) ? m_glxWindow : m_xWindow);
 			#endif
 		#endif
-		#if CE_FRONTEND_USEWIN
+		#if CE_BASE_USEWIN
 			SwapBuffers((HDC)m_deviceContextHandle);
 		#endif
 
@@ -766,7 +766,7 @@ namespace ce
 		m_fullscreen = fullscreen;
 		if(fullscreen)
 		{
-			#if CE_FRONTEND_USEXLIB
+			#if CE_BASE_USEXLIB
 				Display *xDisplay = (Display *)m_app->GetXDisplay();
 				Atom a_wm_state = XInternAtom(xDisplay, "_NET_WM_STATE", False);
 				Atom a_fullscreen = XInternAtom(xDisplay, "_NET_WM_STATE_FULLSCREEN", False);
@@ -774,7 +774,7 @@ namespace ce
 				XEvent xev;
 				memset(&xev, 0, sizeof(xev));
 				xev.type = ClientMessage;
-				#if CE_FRONTEND_USEXCB
+				#if CE_BASE_USEXCB
 					xev.xclient.window = m_xcbWindow;
 				#else
 					xev.xclient.window = m_xWindow;
@@ -787,7 +787,7 @@ namespace ce
 				XSendEvent(xDisplay, DefaultRootWindow(xDisplay), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 			#endif
 
-			#if CE_FRONTEND_USEWIN
+			#if CE_BASE_USEWIN
 				HWND hwnd = (HWND)m_windowHandle;
 				HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
 				MONITORINFO mi = { sizeof(mi) };
@@ -803,7 +803,7 @@ namespace ce
 		}
 		else
 		{
-			#if CE_FRONTEND_USEXLIB
+			#if CE_BASE_USEXLIB
 				Display *xDisplay = (Display *)m_app->GetXDisplay();
 				Atom a_wm_state = XInternAtom(xDisplay, "_NET_WM_STATE", False);
 				Atom a_fullscreen = XInternAtom(xDisplay, "_NET_WM_STATE_FULLSCREEN", False);
@@ -811,7 +811,7 @@ namespace ce
 				XEvent xev;
 				memset(&xev, 0, sizeof(xev));
 				xev.type = ClientMessage;
-				#if CE_FRONTEND_USEXCB
+				#if CE_BASE_USEXCB
 					xev.xclient.window = m_xcbWindow;
 				#else
 					xev.xclient.window = m_xWindow;
@@ -824,7 +824,7 @@ namespace ce
 				XSendEvent(xDisplay, DefaultRootWindow(xDisplay), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 			#endif
 
-			#if CE_FRONTEND_USEWIN
+			#if CE_BASE_USEWIN
 				HWND hwnd = (HWND)m_windowHandle;
 				HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
 				MONITORINFO mi = {sizeof(mi)};
@@ -910,10 +910,10 @@ namespace ce
 		if(IsFullscreen())
 			return;
 
-		#if CE_FRONTEND_USEXLIB
+		#if CE_BASE_USEXLIB
 			Display *xDisplay = (Display *)m_app->GetXDisplay();
 
-			#if CE_FRONTEND_USEXCB
+			#if CE_BASE_USEXCB
 				xcb_connection_t *xcbConnection = (xcb_connection_t *)m_app->GetXCBConnection();
 				uint32_t xcbValueList[] = { (uint32_t)width, (uint32_t)height };
 				xcb_configure_window(xcbConnection, m_xcbWindow, XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT, xcbValueList);

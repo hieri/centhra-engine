@@ -15,12 +15,12 @@
 #include <CE/Canvas.h>
 #include <CE/Keyboard.h>
 
-#if CE_FRONTEND_USEXLIB
+#if CE_BASE_USEXLIB
 	//- Xlib -
 	#include <X11/Xatom.h>
 	#include <X11/Xlib.h>
 
-	#if CE_FRONTEND_USEXCB
+	#if CE_BASE_USEXCB
 		//- XCB -
 		#include <X11/Xlib-xcb.h>
 		#include <xcb/xcb.h>
@@ -35,16 +35,16 @@ namespace ce
 {
 	AppFrontend::AppFrontend() : m_consoleOnly(false)
 	{
-		#if CE_FRONTEND_USEXLIB
+		#if CE_BASE_USEXLIB
 			m_xDefaultScreen = 0;
 			m_xDisplay = 0;
 
-			#if CE_FRONTEND_USEXCB
+			#if CE_BASE_USEXCB
 				m_xcbConnection = 0;
 			#endif
 		#endif
 
-		#if CE_FRONTEND_USEWIN
+		#if CE_BASE_USEWIN
 			m_hInstance = 0;
 		#endif
 	}
@@ -59,8 +59,8 @@ namespace ce
 
 		if(!m_consoleOnly)
 		{
-			#if CE_FRONTEND_USEXLIB
-				#if CE_FRONTEND_USEXCB
+			#if CE_BASE_USEXLIB
+				#if CE_BASE_USEXCB
 					xcb_generic_event_t *xcbEvent;
 					xcb_window_t xcbWindow;
 					while((xcbEvent = xcb_poll_for_event((xcb_connection_t *)m_xcbConnection)))
@@ -345,7 +345,7 @@ namespace ce
 				#endif
 			#endif
 
-			#if CE_FRONTEND_USEWIN
+			#if CE_BASE_USEWIN
 				MSG wMsg;
 				while(PeekMessage(&wMsg, NULL, 0, 0, PM_REMOVE))
 				{
@@ -354,10 +354,10 @@ namespace ce
 				}
 			#endif
 
-			#if CE_FRONTEND_USEXLIB
+			#if CE_BASE_USEXLIB
 				map<int, Canvas *>::iterator it;
 			#endif
-			#if CE_FRONTEND_USEWIN
+			#if CE_BASE_USEWIN
 				map<void *, Canvas *>::iterator it;
 			#endif
 			for(it = m_canvasMap.begin(); it != m_canvasMap.end(); it++)
@@ -377,7 +377,7 @@ namespace ce
 
 		if(!m_consoleOnly)
 		{
-			#if CE_FRONTEND_USEXLIB
+			#if CE_BASE_USEXLIB
 				Display *xDisplay = XOpenDisplay(NULL);
 				if(!xDisplay)
 				{
@@ -388,7 +388,7 @@ namespace ce
 
 				int xDefaultScreen = DefaultScreen(xDisplay);
 
-				#if CE_FRONTEND_USEXCB
+				#if CE_BASE_USEXCB
 					xcb_connection_t *xcbConnection = XGetXCBConnection(xDisplay);
 					if(!xcbConnection)
 					{
@@ -406,18 +406,18 @@ namespace ce
 				#endif
 			#endif
 
-			#if CE_FRONTEND_USEXLIB
+			#if CE_BASE_USEXLIB
 				m_wmDeleteMessage = wmDeleteMessage;
 				m_xDefaultScreen = xDefaultScreen;
 				m_xDisplay = xDisplay;
 
-				#if CE_FRONTEND_USEXCB
+				#if CE_BASE_USEXCB
 					m_xcbConnection = xcbConnection;
 				#endif
 			#endif
 		}
 
-		#if CE_FRONTEND_USEWIN
+		#if CE_BASE_USEWIN
 			m_hInstance = GetModuleHandle(NULL);
 		#endif
 
@@ -436,8 +436,8 @@ namespace ce
 
 			if(!m_consoleOnly)
 			{
-				#if CE_FRONTEND_USEXLIB
-					#if CE_FRONTEND_USEXCB
+				#if CE_BASE_USEXLIB
+					#if CE_BASE_USEXCB
 						m_xcbConnection = 0;
 					#endif
 					if(m_xDisplay)
@@ -447,7 +447,7 @@ namespace ce
 				#endif
 			}
 
-			#if CE_FRONTEND_USEWIN
+			#if CE_BASE_USEWIN
 				m_hInstance = 0;
 			#endif
 		}
@@ -455,7 +455,7 @@ namespace ce
 		return isValid;
 	}
 
-#if CE_FRONTEND_USEXLIB
+#if CE_BASE_USEXLIB
 	void *AppFrontend::GetXDisplay() const
 	{
 		return m_xDisplay;
@@ -464,7 +464,7 @@ namespace ce
 	{
 		return m_xDefaultScreen;
 	}
-	#if CE_FRONTEND_USEXCB
+	#if CE_BASE_USEXCB
 		void *AppFrontend::GetXCBConnection() const
 		{
 			return m_xcbConnection;
@@ -472,7 +472,7 @@ namespace ce
 	#endif
 #endif
 
-#if CE_FRONTEND_USEWIN
+#if CE_BASE_USEWIN
 	void *AppFrontend::GetHInstance() const
 	{
 		return m_hInstance;

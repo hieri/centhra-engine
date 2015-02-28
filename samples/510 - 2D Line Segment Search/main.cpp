@@ -12,9 +12,10 @@
 
 //- Centhra Engine -
 #include <CE/Base.h>
-#include <CE/Frontend.h>
 #include <CE/Game2D.h>
 #include <CE/Game2D/DefaultPhysicsHandler.h>
+#include <CE/AppFrontend.h>
+#include <CE/Canvas.h>
 
 #define NUMRANDOMS 64
 

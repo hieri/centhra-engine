@@ -2,8 +2,9 @@
 #include <CE/Base.h>
 #include <CE/Image.h>
 #include <CE/Font.h>
-#include <CE/Frontend.h>
 #include <CE/Renderer.h>
+#include <CE/AppFrontend.h>
+#include <CE/Canvas.h>
 
 #ifdef _WIN32
 	//- Windows -

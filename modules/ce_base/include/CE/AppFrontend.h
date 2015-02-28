@@ -1,12 +1,12 @@
-#ifndef _CE_APP_FRONTEND_H_
-#define _CE_APP_FRONTEND_H_
+#ifndef _CE_BASE_APP_FRONTEND_H_
+#define _CE_BASE_APP_FRONTEND_H_
 
 //- Standard Library -
 #include <map>
 
 //- Centhra Engine -
 #include <CE/App.h>
-#include <CE/ConfigFrontend.h>
+#include <CE/ConfigBase.h>
 #include <CE/Event.h>
 
 namespace ce
@@ -21,17 +21,17 @@ namespace ce
 		//-   Xlib: XAssocTable -
 		//-   Windows: [Set,Get]WindowLongPtr(hWnd, GWLP_USERDATA[, canvasPtr]); -
 
-		#if CE_FRONTEND_USEXLIB
+		#if CE_BASE_USEXLIB
 			void *m_xDisplay;
 			int m_xDefaultScreen;
 			unsigned long m_wmDeleteMessage;
-			#if CE_FRONTEND_USEXCB
+			#if CE_BASE_USEXCB
 				void *m_xcbConnection;
 			#endif
 			std::map<int, Canvas *> m_canvasMap;
 		#endif
 
-		#if CE_FRONTEND_USEWIN
+		#if CE_BASE_USEWIN
 			void *m_hInstance;
 			std::map<void *, Canvas *> m_canvasMap;
 		#endif
@@ -63,7 +63,7 @@ namespace ce
 		 */
 		bool Stop(bool force = false);
 
-		#if CE_FRONTEND_USEXLIB
+		#if CE_BASE_USEXLIB
 			/**	@brief [x11 Only] Returns the XDisplay of the application.
 			 *	@return XDisplay of the application.
 			 */
@@ -74,7 +74,7 @@ namespace ce
 			 */
 			int GetXDefaultScreen() const;
 
-			#if CE_FRONTEND_USEXCB
+			#if CE_BASE_USEXCB
 				/**	@brief [x11 + xcb Only] Returns the XCBConnection of the application.
 				 *	@return XCBConnection of the application.
 				 */
@@ -82,7 +82,7 @@ namespace ce
 			#endif
 		#endif
 
-		#if CE_FRONTEND_USEWIN
+		#if CE_BASE_USEWIN
 			/**	@brief [Windows Only] Returns the HInstance of the application.
 			 *	@return HInstance of the application.
 			 */

@@ -1,5 +1,5 @@
-#ifndef _CE_KEYBOARD_H_
-#define _CE_KEYBOARD_H_
+#ifndef _CE_BASE_KEYBOARD_H_
+#define _CE_BASE_KEYBOARD_H_
 
 //- Centhra Engine -
 #include <CE/KeyCode.h>

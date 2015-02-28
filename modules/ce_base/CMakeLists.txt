@@ -50,6 +50,22 @@ set(SRC
 	${SRC_DIR}/Thread.cpp
 )
 
+if(CE_CLIENT)
+	list(APPEND INC
+		${INC_DIR}/AppFrontend.h
+		${INC_DIR}/Canvas.h
+		${INC_DIR}/Event.h
+		${INC_DIR}/Keyboard.h
+		${INC_DIR}/KeyCode.h
+		${INC_DIR}/ScanCode.h
+	)
+	list(APPEND SRC
+		${SRC_DIR}/AppFrontend.cpp
+		${SRC_DIR}/Canvas.cpp
+		${SRC_DIR}/Keyboard.cpp
+	)
+endif()
+
 set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(LIB "")
 
@@ -64,7 +80,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	list(APPEND LIB ${X11_LIBRARIES})
 	list(APPEND INCLUDE ${X11_INCLUDE_DIR})
 
-	#if(${CE_FRONTEND_USEXCB})
+	set(BASE_USEXLIB ${CE_BASE_USEXLIB})
+	set(BASE_USEXCB ${CE_BASE_USEXCB})
+
+	#if(${CE_BASE_USEXCB})
 	if(1)
 		find_package(XCB REQUIRED)
 		list(APPEND LIB ${XCB_LIBRARY} ${XLIB_XCB_LIBRARY})
@@ -77,9 +96,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	endif()
 
 	list(APPEND LIB dl Xau Xdmcp)
+
 else()
-	set(BASE_USEPOSIXTHREAD 0)
-	set(BASE_USEPOSIXSOCKET 0)
+	set(BASE_USEXLIB 0)
+	set(BASE_USEXCB 0)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
@@ -88,9 +108,11 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	if(${BASE_USEWINSOCKET})
 		list(APPEND LIB ws2_32)
 	endif()
+	set(BASE_USEWIN ${CE_BASE_USEWIN})
 else()
 	set(BASE_USEWINTHREAD "0")
 	set(BASE_USEWINSOCKET "0")
+	set(BASE_USEWIN "0")
 endif()
 
 if(CE_CLIENT)

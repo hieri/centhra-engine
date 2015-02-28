@@ -5,6 +5,6 @@ set(SRC
 )
 
 set(INCLUDE ${CE_BASE_INCLUDE_DIRS} ${CE_FRONTEND_INCLUDE_DIRS} ${CE_UI_INCLUDE_DIRS})
-set(LIB ce_base ce_frontend ce_ui )
+set(LIB ce_base ce_ui )
 
 ce_sample("000_Test" "${INCLUDE}" "${SRC}" "${INC}" "${RES}" "${LIB}" "${LIB}")

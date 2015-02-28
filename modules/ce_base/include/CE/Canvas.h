@@ -5,7 +5,7 @@
 #include <string>
 
 //- Centhra Engine -
-#include <CE/ConfigFrontend.h>
+#include <CE/ConfigBase.h>
 #include <CE/Event.h>
 #include <CE/Matrix4x4.h>
 
@@ -22,17 +22,17 @@ namespace ce
 		unsigned long long m_lastRenderTimeMS;
 		int_canvas m_width, m_height, m_windowedWidth, m_windowedHeight;
 
-		#if CE_FRONTEND_USEXLIB
+		#if CE_BASE_USEXLIB
 			int m_glxWindow;
 			void *m_glxContext;
-			#if CE_FRONTEND_USEXCB
+			#if CE_BASE_USEXCB
 				int m_xcbWindow;
 			#else
 				int m_xWindow;
 			#endif
 		#endif
 
-		#if CE_FRONTEND_USEWIN
+		#if CE_BASE_USEWIN
 			std::string m_windowClass;
 			void *m_windowHandle, *m_deviceContextHandle, *m_glRenderingContextHandle;
 		#endif

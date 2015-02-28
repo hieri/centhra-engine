@@ -3,7 +3,7 @@
 
 //- Centhra Engine -
 #include <CE/Vector2.h>
-#include <CE/Frontend.h>
+#include <CE/AppFrontend.h>
 #include <CE/Mutex.h>
 #include <CE/Game2D/PhysicalObject.h>
 #include <CE/UI/CameraView2DCtrl.h>

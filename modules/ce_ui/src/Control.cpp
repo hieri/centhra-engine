@@ -334,6 +334,7 @@ namespace ce
 			context.width = canvas->GetWidth();
 			context.height = canvas->GetHeight();
 			context.isCanvas = true;
+			//TODO: Move this config to the app implementation
 			context.useShaders = false;
 			context.projectionMatrix = canvas->GetProjectionMatrix();
 			context.modelViewMatrix = Matrix4x4<float>();

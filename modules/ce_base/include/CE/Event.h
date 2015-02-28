@@ -1,8 +1,7 @@
-#ifndef _CE_EVENT_H_
-#define _CE_EVENT_H_
+#ifndef _CE_BASE_EVENT_H_
+#define _CE_BASE_EVENT_H_
 
 //- Centhra Engine -
-#include <CE/ConfigFrontend.h>
 #include <CE/KeyCode.h>
 
 //TODO: incorporate event stack, with peek/wait functionality

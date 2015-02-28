@@ -34,11 +34,11 @@ configure_file(${INC_DIR}/ConfigUI.h.in ${INC_DIR}/ConfigUI.h)
 set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(LIB "")
 
-list(APPEND INCLUDE ${CE_BASE_INCLUDE_DIRS} ${CE_FRONTEND_INCLUDE_DIRS})
-list(APPEND LIB ce_base ce_frontend)
+list(APPEND INCLUDE ${CE_BASE_INCLUDE_DIRS})
+list(APPEND LIB ce_base)
 
 list(REMOVE_DUPLICATES INCLUDE)
 list(REMOVE_DUPLICATES LIB)
 
-ce_library("ce_ui" "${INCLUDE}" "${SRC}" "${INC}" "${RES}" "${LIB}" "ce_base ce_frontend")
+ce_library("ce_ui" "${INCLUDE}" "${SRC}" "${INC}" "${RES}" "${LIB}" "ce_base")
 set(CE_UI_INCLUDE_DIRS ${INCLUDE} CACHE PATH "ce_ui include directories")

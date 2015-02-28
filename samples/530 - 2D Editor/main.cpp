@@ -6,7 +6,6 @@
 //- Centhra Engine -
 #include <CE/Base.h>
 #include <CE/Thread.h>
-#include <CE/Frontend.h>
 #include <CE/Counter.h>
 #include <CE/Game2D.h>
 #include <CE/Game2D/DefaultPhysicsHandler.h>
@@ -15,6 +14,8 @@
 #include <CE/UI/Editor2D.h>
 #include <CE/Math.h>
 #include <CE/Renderer.h>
+#include <CE/AppFrontend.h>
+#include <CE/Canvas.h>
 
 #include <CE/UI/ImageCtrl.h>
 

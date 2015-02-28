@@ -40,5 +40,5 @@ list(APPEND LIB ce_base ce_frontend)
 list(REMOVE_DUPLICATES INCLUDE)
 list(REMOVE_DUPLICATES LIB)
 
-ce_library_module("ce_ui" "${INCLUDE}" "${SRC}" "${INC}" "${RES}" "${LIB}" "ce_base ce_frontend")
+ce_library("ce_ui" "${INCLUDE}" "${SRC}" "${INC}" "${RES}" "${LIB}" "ce_base ce_frontend")
 set(CE_UI_INCLUDE_DIRS ${INCLUDE} CACHE PATH "ce_ui include directories")

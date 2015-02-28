@@ -1,4 +1,4 @@
-function(ce_library_module TARGET INCLUDE SRC INC RES LIB DEPENDS)
+function(ce_library TARGET INCLUDE SRC INC RES LIB DEPENDS)
 	add_library(${TARGET} STATIC ${SRC} ${INC} ${RES})
 	set_target_properties(${TARGET} PROPERTIES LINKER_LANGUAGE CXX)
 	set_target_properties(${TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)

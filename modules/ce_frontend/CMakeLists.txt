@@ -38,11 +38,11 @@ set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(LIB "")
 
 find_package(OpenGL REQUIRED)
-list(APPEND INCLUDE ${OPENGL_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/external/opengl/include ${CE_BASE_INCLUDE_DIRS})
+list(APPEND INCLUDE ${OPENGL_INCLUDE_DIR} ${PROJECT_BINARY_DIR}/external/opengl/include ${CE_BASE_INCLUDE_DIRS})
 list(APPEND LIB ce_base ${OPENGL_LIBRARIES})
 
 list(REMOVE_DUPLICATES INCLUDE)
 list(REMOVE_DUPLICATES LIB)
 
-ce_library_module("ce_frontend" "${INCLUDE}" "${SRC}" "${INC}" "${RES}" "ce_base" "${LIB}" "")
+ce_library("ce_frontend" "${INCLUDE}" "${SRC}" "${INC}" "${RES}" "ce_base" "${LIB}" "")
 set(CE_FRONTEND_INCLUDE_DIRS ${INCLUDE} CACHE PATH "ce_frontend include directories")

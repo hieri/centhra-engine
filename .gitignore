@@ -52,6 +52,7 @@ external/*
 lib
 samples/bin
 docs/*
+build
 
 # Generated Archived Files
 archive/include/CE/Config.h

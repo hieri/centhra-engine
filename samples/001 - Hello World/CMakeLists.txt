@@ -7,5 +7,4 @@ set(SRC
 set(INCLUDE ${CE_BASE_INCLUDE_DIRS})
 set(LIB ce_base)
 
-set(TARGET "001_Hello_World")
 ce_sample("001_Hello_World" "${INCLUDE}" "${SRC}" "${INC}" "${RES}" "${LIB}" "${LIB}")

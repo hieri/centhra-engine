@@ -7,12 +7,4 @@ set(SRC
 set(INCLUDE ${CE_BASE_INCLUDE_DIRS} ${CE_FRONTEND_INCLUDE_DIRS})
 set(LIB ce_base ce_frontend)
 
-set(TARGET "202_Font_Rendering")
-add_executable(${TARGET} ${SRC})
-set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/samples/bin)
-set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/samples/bin)
-set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/samples/bin)
-set_target_properties(${TARGET} PROPERTIES DEBUG_POSTFIX -d)
-target_include_directories(${TARGET} PUBLIC ${INCLUDE})
-target_link_libraries(${TARGET} ${LIB})
-add_dependencies(${TARGET} ${LIB})
+ce_sample("202_Font_Rendering" "${INCLUDE}" "${SRC}" "${INC}" "${RES}" "${LIB}" "${LIB}")

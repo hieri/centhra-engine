@@ -7,12 +7,4 @@ set(SRC
 set(INCLUDE ${CE_BASE_INCLUDE_DIRS} ${CE_FRONTEND_INCLUDE_DIRS} ${CE_GAME2D_INCLUDE_DIRS} ${CE_UI_INCLUDE_DIRS})
 set(LIB ce_base ce_frontend ce_game2d ce_ui)
 
-set(TARGET "510_2D_Line_Segment_Search")
-add_executable(${TARGET} ${SRC})
-set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/samples/bin)
-set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/samples/bin)
-set_target_properties(${TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/samples/bin)
-set_target_properties(${TARGET} PROPERTIES DEBUG_POSTFIX -d)
-target_include_directories(${TARGET} PUBLIC ${INCLUDE})
-target_link_libraries(${TARGET} ${LIB})
-add_dependencies(${TARGET} ${LIB})
+ce_sample("510_2D_Line_Segment_Search" "${INCLUDE}" "${SRC}" "${INC}" "${RES}" "${LIB}" "${LIB}")

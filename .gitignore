@@ -35,6 +35,9 @@ Win32
 ipch
 *.dir
 
+# VIM
+*.swp
+
 # Generated Config files
 modules/ce_base/include/CE/ConfigBase.h
 modules/ce_frontend/include/CE/ConfigFrontend.h

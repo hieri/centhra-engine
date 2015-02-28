@@ -9,7 +9,7 @@
 #include <CE/Renderer.h>
 #include <CE/Shader.h>
 
-PFNGLACTIVETEXTUREPROC glActiveTexture = 0;
+//PFNGLACTIVETEXTUREPROC glActiveTexture = 0;
 PFNGLCREATEPROGRAMOBJECTARBPROC glCreateProgramObjectARB = 0;
 PFNGLCREATESHADEROBJECTARBPROC glCreateShaderObjectARB = 0;
 PFNGLSHADERSOURCEARBPROC glShaderSourceARB = 0;
@@ -56,7 +56,7 @@ namespace ce
 	{
 		if(!g_extensionsLoaded)
 		{
-			glActiveTexture = (PFNGLACTIVETEXTUREPROC)glGetProcAddress(GLPROCPREFIX"glActiveTexture");
+			//glActiveTexture = (PFNGLACTIVETEXTUREPROC)glGetProcAddress(GLPROCPREFIX"glActiveTexture");
 			glCreateProgramObjectARB = (PFNGLCREATEPROGRAMOBJECTARBPROC)glGetProcAddress(GLPROCPREFIX"glCreateProgramObjectARB");
 			glCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC)glGetProcAddress(GLPROCPREFIX"glCreateShaderObjectARB");
 			glShaderSourceARB = (PFNGLSHADERSOURCEARBPROC)glGetProcAddress(GLPROCPREFIX"glShaderSourceARB");

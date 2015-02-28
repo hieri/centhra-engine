@@ -29,7 +29,7 @@
 #endif
 
 //- GLSL -
-extern PFNGLACTIVETEXTUREPROC glActiveTexture;
+//extern PFNGLACTIVETEXTUREPROC glActiveTexture;
 extern PFNGLCREATEPROGRAMOBJECTARBPROC glCreateProgramObjectARB;
 extern PFNGLCREATESHADEROBJECTARBPROC glCreateShaderObjectARB;
 extern PFNGLSHADERSOURCEARBPROC glShaderSourceARB;

@@ -1,6 +1,6 @@
 #ifndef _CE_BASE_FONT_H_
 #define _CE_BASE_FONT_H_
-#if !CE_NOCLIENT 
+#if CE_CLIENT 
 
 //- Centhra Engine -
 #include <CE/Matrix4x4.h>

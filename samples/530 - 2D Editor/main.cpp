@@ -36,7 +36,7 @@ class App2DEditorSample : public AppGame2D
 	ui::CameraView2DCtrl *m_view;
 	game2d::DefaultPhysicsHandler *m_defaultPhysicsHandler;
 	plugin::box2d::bPhysicsHandler *m_box2dPhysicsHandler;
-	Font *m_font;
+	ce::Font *m_font;
 	bool m_isEditMode;
 	bool w,a,s,d;
 	unsigned long long m_lastProcess;
@@ -90,11 +90,11 @@ public:
 		#endif
 
 		Image::Init();
-		Font::Init();
+		ce::Font::Init();
 
 		m_world = new game2d::World();
 
-		m_font = Font::CreateFromFile("../res/FreeMono.ttf", 16, m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
+		m_font = ce::Font::CreateFromFile("../res/FreeMono.ttf", 16, m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
 
 		game2d::PropDef::LoadFromFile("../res/sampleProps.txt");
 		game2d::ProjectileDef::LoadFromFile("../res/sampleProjectiles.txt");

@@ -1,3 +1,10 @@
+//- Centhra Engine -
+#include <CE/Base.h>
+#include <CE/Image.h>
+#include <CE/Font.h>
+#include <CE/Frontend.h>
+#include <CE/Renderer.h>
+
 #ifdef _WIN32
 	//- Windows -
 	#include <Windows.h>
@@ -7,19 +14,12 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-//- Centhra Engine -
-#include <CE/Base.h>
-#include <CE/Image.h>
-#include <CE/Font.h>
-#include <CE/Frontend.h>
-#include <CE/Renderer.h>
-
 using namespace ce;
 
 class AppFontRenderingSample : public AppFrontend
 {
 	Canvas *m_canvas;
-	Font *m_font;
+	ce::Font *m_font;
 
 public:
 	AppFontRenderingSample()
@@ -29,14 +29,14 @@ public:
 	}
 	bool OnStart()
 	{
-		m_canvas = Canvas::Create(300, 300, "202 - Font Rendering");
+		m_canvas = Canvas::Create(300, 300, "202 - ce::Font Rendering");
 
-		print("Initializing Font Library\n");
+		print("Initializing ce::Font Library\n");
 		Image::Init();
-		Font::Init();
+		ce::Font::Init();
 
 		print("Loading <../res/FreeMono.ttf>\n");
-		m_font = Font::CreateFromFile("../res/FreeMono.ttf", 14, m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
+		m_font = ce::Font::CreateFromFile("../res/FreeMono.ttf", 14, m_canvas->GetHorizontalDPI(), m_canvas->GetVerticalDPI());
 
 		if(m_font == 0)
 			print("  Unable to load font.\n");

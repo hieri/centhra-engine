@@ -1,7 +1,7 @@
 #ifndef _CE_UI_H_
 #define _CE_UI_H_
 
-#include <CE/ConfigUI.h>
+#include <CE/ConfigBase.h>
 
 #include <CE/UI/Control.h>
 #include <CE/UI/Skin.h>

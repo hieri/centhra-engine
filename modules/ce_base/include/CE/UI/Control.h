@@ -7,7 +7,7 @@
 #include <map>
 
 //- Centhra Engine -
-#include <CE/ConfigUI.h>
+#include <CE/ConfigBase.h>
 #include <CE/Canvas.h>
 #include <CE/Event.h>
 #include <CE/Matrix4x4.h>

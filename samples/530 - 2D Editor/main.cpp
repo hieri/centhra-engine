@@ -104,7 +104,7 @@ public:
 		m_tmx = plugin::tiled::TMX::CreateFromFile("../res/Test.tmx");
 		m_tmx->PopulateWorld(m_world, Vector2<float>(32.f, 32.f));
 
-//		Directory::GetFromPath("../res/")->SetMonitoring(true);
+		Directory::GetFromPath("../res/")->SetMonitoring(true);
 
 		game2d::World::ObjectLayer *objectLayerA = (game2d::World::ObjectLayer *)m_world->GetLayer(1);
 

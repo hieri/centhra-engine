@@ -54,17 +54,10 @@ set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 list(APPEND INCLUDE ${CE_BASE_INCLUDE_DIRS})
 list(APPEND LIB ce_base)
-if(NOT CE_NOCLIENT)
-	list(APPEND INCLUDE {CE_UI_INCLUDE_DIRS})
-	list(APPEND LIB ce_ui)
-endif()
 
 list(REMOVE_DUPLICATES INCLUDE)
 list(REMOVE_DUPLICATES LIB)
 
 set(DEPENDS ce_base)
-if(CE_CLIENT)
-	list(APPEND DEPENDS ce_ui)
-endif()
 ce_library("ce_game2d" "${INCLUDE}" "${SRC}" "${INC}" "${RES}" "${LIB}" "${DEPENDS}")
 set(CE_GAME2D_INCLUDE_DIRS ${INCLUDE} CACHE PATH "ce_game2d include directories")

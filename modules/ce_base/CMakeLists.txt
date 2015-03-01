@@ -58,11 +58,32 @@ if(CE_CLIENT)
 		${INC_DIR}/Keyboard.h
 		${INC_DIR}/KeyCode.h
 		${INC_DIR}/ScanCode.h
+		${INC_DIR}/UI.h
+		${INC_DIR}/UI/Control.h
+		${INC_DIR}/UI/ButtonCtrl.h
+		${INC_DIR}/UI/ColorCtrl.h
+		${INC_DIR}/UI/ImageCtrl.h
+		${INC_DIR}/UI/ScrollCtrl.h
+		${INC_DIR}/UI/Skin.h
+		${INC_DIR}/UI/TextCtrl.h
+		${INC_DIR}/UI/TextButtonCtrl.h
+		${INC_DIR}/UI/TextDropDownCtrl.h
+		${INC_DIR}/UI/TextEditCtrl.h
 	)
 	list(APPEND SRC
 		${SRC_DIR}/AppFrontend.cpp
 		${SRC_DIR}/Canvas.cpp
 		${SRC_DIR}/Keyboard.cpp
+		${SRC_DIR}/Control.cpp
+		${SRC_DIR}/ButtonCtrl.cpp
+		${SRC_DIR}/ColorCtrl.cpp
+		${SRC_DIR}/ImageCtrl.cpp
+		${SRC_DIR}/ScrollCtrl.cpp
+		${SRC_DIR}/Skin.cpp
+		${SRC_DIR}/TextCtrl.cpp
+		${SRC_DIR}/TextButtonCtrl.cpp
+		${SRC_DIR}/TextDropDownCtrl.cpp
+		${SRC_DIR}/TextEditCtrl.cpp
 	)
 endif()
 
